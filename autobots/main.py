@@ -1,24 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 
+from autobots.api.v1 import v1
+from autobots.core.lifespan import lifespan
 from autobots.core.settings import settings
 
-app = FastAPI()
-
-
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     # startup work
-#     settings = Settings()
-#     await resource.set_settings(settings=settings)
-#     yield
-#     # shutdown work
-
-
-@app.get("/")
-async def hello():
-    return {"hello": "settings.APP_HOST"}
-
+app = FastAPI(lifespan=lifespan)
+app.include_router(v1.router)
 
 if __name__ == "__main__":
     # Run server

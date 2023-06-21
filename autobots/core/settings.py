@@ -8,5 +8,8 @@ class Settings(BaseSettings):
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
 
+    API_v1: str = "/v1"
+    API_Hello: str = "/hello"
+
 
 settings = Settings()
