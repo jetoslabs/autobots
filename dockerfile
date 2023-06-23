@@ -14,7 +14,7 @@ COPY ./autobots ./autobots
 
 LABEL "com.datadoghq.ad.check_names"='["autobots"]'
 LABEL "com.datadoghq.ad.init_configs"='[{}]'
-LABEL "com.datadoghq.ad.instances"='[{"autobots_status_url": "https://%%host%%:%%port%%/v1/info"}]'
+LABEL "com.datadoghq.ad.instances"='[{"autobots_status_url": "https://%%host%%:%%port%%/v1/hello"}]'
 LABEL "com.datadoghq.ad.logs"='[{"source": "autobots", "service": "autobots"}]'
 
 
