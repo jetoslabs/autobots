@@ -25,7 +25,7 @@ jobs:
           python-version: '3.10'
 
       - name: Run Tests
-        working-directory: ./app
+#        working-directory: ./app
         run: |
           pip3 install poetry
           poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
