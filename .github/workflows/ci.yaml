@@ -25,10 +25,9 @@ jobs:
           python-version: '3.10'
 
       - name: Prepare for Tests
-#        working-directory: ./app
-          run: |
-            pip3 install poetry
-            poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
+        run: |
+          pip3 install poetry
+          poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
       - name: Run Tests
 #        working-directory: ./app
@@ -37,7 +36,6 @@ jobs:
         env:
           OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
 
       - name: Login to GitLab Container Registry
         uses: docker/login-action@v1
@@ -53,4 +51,3 @@ jobs:
       - name: Push Docker image to GitLab Container Registry
         run: |
           docker push registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
-
