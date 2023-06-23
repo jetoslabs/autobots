@@ -11,12 +11,12 @@ class Selenium:
     def __init__(self, options: Options = Options()):
         # options = Options()
         # Do not open browser
-        options.headless = True
+        options.add_argument("--headless=new")
         # # Do open browser
         # options.add_argument("--headless=new")
         # options.add_argument("--window-size=1920,1200")
 
-        # Expensive operation!!
+        # Expensive operation!! so do it once and close resource at the end
         # WebDriver Chrome
         self.driver = webdriver.Chrome(options=options)
 
