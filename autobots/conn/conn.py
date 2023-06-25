@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from autobots.conn.openai.openai import OpenAI
 from autobots.conn.selenium.selenium import Selenium
+from autobots.conn.stability.stability import Stability
 from autobots.core.settings import Settings, get_settings
 
 
@@ -11,6 +12,7 @@ class Conn:
         # setting up OpenAI
         OpenAI(settings.OPENAI_ORG_ID, settings.OPENAI_API_KEY)
         self.selenium = Selenium()
+        self.stability = Stability()
 
 
 @lru_cache

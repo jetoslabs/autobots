@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     OPENAI_ORG_ID: str
     OPENAI_API_KEY: str
 
+    STABILITY_HOST: str
+    STABILITY_KEY: str
+
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
 
