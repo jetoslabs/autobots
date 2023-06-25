@@ -36,6 +36,8 @@ jobs:
         env:
           OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
+          STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
 
       - name: Login to GitLab Container Registry
         uses: docker/login-action@v1
