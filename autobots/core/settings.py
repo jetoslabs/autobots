@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     STABILITY_HOST: str
     STABILITY_KEY: str
 
+    UNSPLASH_ACCESS_KEY: str
+    # UNSPLASH_SECRET_KEY: str
+
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
 

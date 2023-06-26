@@ -38,6 +38,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
           STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
 
       - name: Login to GitLab Container Registry
         uses: docker/login-action@v1
