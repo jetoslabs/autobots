@@ -90,13 +90,13 @@ class Image(BaseModel):
     slug: str
     created_at: str
     updated_at: str
-    promoted_at: str
+    promoted_at: Optional[str]
     width: int
     height: int
     color: str
     blur_hash: str
     description: Optional[str]
-    alt_description: str
+    alt_description: Optional[str]
     urls: Urls
     links: Links
     # likes: int
