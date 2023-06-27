@@ -14,12 +14,12 @@ class OpenAI:
         openai.api_key = api_key
 
     @staticmethod
-    async def chat(params: ChatReq) -> OpenAIObject:
+    async def chat(chat_req: ChatReq) -> ChatRes:
         try:
             log.debug("Starting OpenAI Chat")
-            res: OpenAIObject = await openai.ChatCompletion.acreate(**params.dict(), timeout=30)
+            res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
             log.debug("Completed OpenAI Chat")
-            # resp: ChatRes = ChatRes(**res.to_dict_recursive())
-            return res
+            resp: ChatRes = ChatRes(**res.to_dict())
+            return resp
         except Exception as e:
             log.error(e)

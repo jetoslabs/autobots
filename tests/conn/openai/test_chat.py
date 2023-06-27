@@ -19,8 +19,7 @@ async def test_chat_happy_path(set_openai):
     msg1 = Message(role="user", content="Most famous Mechanics law")
     params = ChatReq(messages=[msg0, msg1])
 
-    res = await OpenAI.chat(params=params)
-    resp: ChatRes = ChatRes(**res.to_dict())
+    resp: ChatRes = await OpenAI.chat(chat_req=params)
 
     assert "assistant" == resp.choices[0].message.role
     assert "Newton" in resp.choices[0].message.content
