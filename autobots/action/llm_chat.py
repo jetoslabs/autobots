@@ -19,4 +19,4 @@ class LLMChat(Action):
         # add response message to context
         [action_data.context.append(choice.message) for choice in res.choices]
         # action_data.context = action_data.context + res
-        return action_data
+        return action_data  # Don't return action_data as it is not new, same input object is modified
