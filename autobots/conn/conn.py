@@ -11,7 +11,7 @@ class Conn:
 
     def __init__(self, settings: Settings):
         # setting up OpenAI
-        self.open_ai = OpenAI(settings.OPENAI_ORG_ID, settings.OPENAI_API_KEY)
+        self.open_ai = OpenAI()
         self.selenium = Selenium()
         self.stability = Stability()
         self.unsplash = Unsplash()
