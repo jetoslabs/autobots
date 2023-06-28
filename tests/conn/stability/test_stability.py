@@ -2,6 +2,7 @@ import pytest
 import pytest_asyncio
 
 from autobots.conn.conn import get_conn
+from autobots.conn.stability.stability import Stability
 from autobots.core.settings import get_settings
 
 
@@ -14,6 +15,7 @@ async def set_settings():
 @pytest.mark.asyncio
 async def test_text_to_image_happy_path(set_settings):
     prompt = "create a clean image with correct face and correct body for Nike shoes advertisement in India fit for top sports magazine "
-    url_text = await get_conn().stability.text_to_image(prompt=prompt, cfg_scale=9)
+    get_conn().stability = Stability(engine="stable-diffusion-768-v2-0")
+    await get_conn().stability.text_to_image(prompt=prompt, cfg_scale=9)
     assert True
 
