@@ -22,7 +22,7 @@ async def test_action_factory_read_urls_happy_path(set_settings):
     await factory.register(name, ReadUrls, ReadUrlsData)
     action_class, action_data_class = await factory.get_action_classes(name)
 
-    action_data = action_data_class(read_urls_req=["https://meetkiwi.co"])
+    action_data = action_data_class(name=name, read_urls_req=["https://meetkiwi.co"])
     action_data = await factory.run_action(action_class(), action_data)
     assert len(action_data.context) > 0
     assert True
@@ -39,7 +39,7 @@ async def test_action_factory_llm_chat_happy_path(set_settings):
     msg1 = Message(role="user", content="What structure of a good blog")
     chat_req = ChatReq(messages=[msg0, msg1])
 
-    action_data = action_data_class(chat_req=chat_req)
+    action_data = action_data_class(name=name, chat_req=chat_req)
     action_data = await factory.run_action(action_class(), action_data)
     assert len(action_data.context) > 0
     assert True
