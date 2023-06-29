@@ -1,10 +1,17 @@
+from enum import Enum
 from typing import List
 
 from pydantic import BaseModel
 
 
+class Role(str, Enum):
+    system = "system"
+    user = "user"
+    assistant = "assistant"
+
+
 class Message(BaseModel):
-    role: str
+    role: str | Role
     content: str
 
 
