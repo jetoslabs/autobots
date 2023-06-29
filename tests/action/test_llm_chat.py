@@ -13,7 +13,7 @@ async def set_settings():
 
 
 @pytest.mark.asyncio
-async def test_chat_happy_path(set_settings):
+async def test_llm_chat_happy_path(set_settings):
     msg0 = Message(role="system", content="You are a helpful assistant.")
     msg1 = Message(role="user", content="What structure of a good blog")
     chat_req = ChatReq(messages=[msg0, msg1])

@@ -1,8 +1,7 @@
 import pytest
 import pytest_asyncio
 
-from autobots.conn.conn import get_conn
-from autobots.conn.stability.stability import Stability
+from autobots.action.stability_chat import StabilityChatData, StabilityChat
 from autobots.conn.stability.stability_data import StabilityReq
 from autobots.core.settings import get_settings
 
@@ -14,12 +13,12 @@ async def set_settings():
 
 
 @pytest.mark.asyncio
-async def test_text_to_image_happy_path(set_settings):
-    # Making test cheaper by using old engine
-    get_conn().stability = Stability(engine="stable-diffusion-768-v2-0")
-
+async def test_stability_chat_happy_path(set_settings):
     prompt = "create a clean image with correct face and correct body for Nike shoes advertisement in India fit for top sports magazine "
-    stability_req = StabilityReq(prompt=prompt, cfg_scale=9)
-    img_bytes = await get_conn().stability.text_to_image(stability_req)
-    assert img_bytes is not None
+    stability_req = StabilityReq(prompt=prompt)
+    chat_data = StabilityChatData(name="test_stability_chat", stability_req=stability_req)
+
+    result = await StabilityChat().run(chat_data)
+
+    assert result.image_bytes is not None
 

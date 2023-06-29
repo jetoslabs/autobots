@@ -31,7 +31,7 @@ class Stability:
             # stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-diffusion-xl-beta-v2-2-2 stable-inpainting-v1-0 stable-inpainting-512-v2-0
         )
 
-    async def text_to_image(self, stability_req: StabilityReq):
+    async def text_to_image(self, stability_req: StabilityReq) -> bytes:
         # Set up our initial generation parameters.
         answers = self.stability_api.generate(
             prompt=stability_req.prompt,  # "expansive landscape rolling greens with blue daisies and weeping willow trees under a blue alien sky, masterful, ghibli",
@@ -62,3 +62,4 @@ class Stability:
                     img = Image.open(io.BytesIO(artifact.binary))
                     # Save our generated images with their seed number as the filename.
                     img.save(str(artifact.seed) + ".png")
+                    return artifact.binary
