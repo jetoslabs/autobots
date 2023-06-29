@@ -11,10 +11,10 @@ fastapi = "^0.98.0"
 uvicorn = "^0.22.0"
 pydantic = {extras = ["dotenv", "email"], version = "^1.10.9"}
 loguru = "^0.7.0"
-openai = "^0.27.8"
+openai = {extras = ["datalib"], version = "^0.27.8"}
 pytest-asyncio = "^0.21.0"
 selenium = "^4.10.0"
-stability-sdk = "^0.8.1"
+stability-sdk = "^0.8.2"
 aiohttp = "^3.8.4"
 pytest-xdist = "^3.3.1"
 

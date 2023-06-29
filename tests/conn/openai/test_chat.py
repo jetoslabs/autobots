@@ -3,7 +3,6 @@ import pytest_asyncio
 
 from autobots.conn.conn import get_conn
 from autobots.conn.openai.chat import ChatReq, Message, ChatRes
-from autobots.conn.openai.openai import OpenAI
 from autobots.core.settings import get_settings
 
 

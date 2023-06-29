@@ -2,6 +2,7 @@ import openai
 from openai.openai_object import OpenAIObject
 
 from autobots.conn.openai.chat import ChatReq, ChatRes
+from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.core.log import log
 from autobots.core.settings import get_settings
 
@@ -20,6 +21,16 @@ class OpenAI:
             res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
             log.debug("Completed OpenAI Chat")
             resp: ChatRes = ChatRes(**res.to_dict())
+            return resp
+        except Exception as e:
+            log.error(e)
+
+    async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes:
+        try:
+            log.debug("Starting OpenAI Embedding")
+            res: OpenAIObject = await openai.Embedding.acreate(**embedding_req.dict())
+            log.debug("Completed OpenAI Embedding")
+            resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
             return resp
         except Exception as e:
             log.error(e)
