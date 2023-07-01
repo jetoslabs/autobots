@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ActionData(BaseModel):
-    name: str
+    name: str = ""
     # context: dict = {}
 
 
