@@ -1,10 +1,16 @@
 # Autobots
 
-## Description
+### Description
 
 Autobots is a Software as a Service (SaaS) application designed to automate the process of achieving a goal through a sequence of user-defined actions. Leveraging Large Language Model, Autobots can generate dynamic, human-like text for executing actions and making decisions, providing users with a flexible tool for a wide range of tasks.
 
-## Features
+## Steps to run the app
+1. Create a .env.local file alongside .env.sample
+2. Add env vars to .env.local file
+3. Run main.py
+
+
+### Features
 
 * **Automated Goal Completion**: Our core functionality is to automate the process of reaching a user-defined goal through a sequence of actions.
 
@@ -20,16 +26,16 @@ Autobots is a Software as a Service (SaaS) application designed to automate the 
 
 * **Security and Privacy**: Autobots ensures that user data is handled securely with features such as end-to-end encryption, access controls, and compliance with privacy regulations.
 
-## Building blocks
+### Building blocks
 
-### Action
+#### Action
 **Every Action contains ActionGraph. ActionGraph gets run**
 1. ReadUrls(list of url)
 2. LLMChat(list of message) -> *generate_decision, *is_goal_completed
 3. CreatePromptForLLMChat(goal) -> generate_decision_prompt, is_goal_completed_prompt
 4. Create new Action by defining Action Graph (** Every Action contains ActionGraph. ActionGGraph gets run)
 
-### ActionGraph
+#### ActionGraph
 **if len(Value) == 1 AND Key == Value[0] then add Value[0] to list of allowed actions in ActionGraph**
 1. ReadUrls: { ReadUrls: {} }
 2. LLMChat: { LLMChat: {} }
@@ -46,23 +52,23 @@ Next steps... Allow users to create automaton using state_diagram (https://en.wi
 Agents are state diagram (Automata Theory)
 11. Automated Goal Completion - input_goal -> START_LOOP if goal_completed == 0 -> decide_next_action, execute_action else -> break END_LOOP
 
-### Goal
+#### Goal
 **User Goals, including setting, tracking, and checking the completion of goals. It will interact with the Action module to execute actions toward achieving these goals.**
 
-### Journey
+#### Journey
 **Loop with a combination of actions until user goal is achieved**
 
-### Context
+#### Context
 **History of actions, action graphs during completion of user goal**
 
-### Data
+#### Data
 **Data Lake for semantic search**
 
-### Integration
+#### Integration
 **External services connection, will be consumed by related actions**
 
-### User
+#### User
 **Human entity representation**
 
-### Bot
+#### Bot
 **Forever loop with diff Tasks**
