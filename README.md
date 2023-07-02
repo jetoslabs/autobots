@@ -6,9 +6,14 @@ Autobots is a Software as a Service (SaaS) application designed to automate the 
 
 ## Steps to run the app
 1. Create a .env.local file alongside .env.sample
-2. Add env vars to .env.local file
-3. Run main.py
+2. Add env vars to `.env.local` file
+3. Change dir to autobots `cd autobots`
+4. Run `poetry install` / `poetry update`
+5. Run `python3 main.py`
 
+## Steps to run tests
+1. Change dir to autobots `cd tests`
+2. Run `pytest -vv -n 5`
 
 ### Features
 
