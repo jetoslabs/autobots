@@ -42,6 +42,7 @@ jobs:
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
 
   build:
+    needs: [tests]
     runs-on: ubuntu-latest
 
     steps:
