@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from autobots.action.llm_chat import LLMChatData, LLMChat
 from autobots.action.prompt.prompt_generator import prompt_generator_messages
+from autobots.action.prompt.tot import tot_message
 from autobots.action.read_urls import ReadUrls, ReadUrlsData
 from autobots.conn.openai.chat import ChatReq, Message, Role
 
@@ -20,6 +21,7 @@ class OneStepAgent:
         agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
         while not await self.is_goal_completed(agent_data):
             print(agent_data.context[-1].json())
+            plan_str: str = await self.plan_for_goal(agent_data)
             # Decide the next action based on the current context
             next_action_str: str = await self.decide_next_action(agent_data)
             # Execute the action and update the context
@@ -48,7 +50,7 @@ class OneStepAgent:
 
     async def generate_prompt_for_goal(self, agent_data) -> str:
 
-        msg1 = Message(role="user", content=f"My goal is {agent_data.context[-1].content}")
+        msg1 = Message(role="user", content=f"My goal: {agent_data.context[-1].content}")
         chat_req = ChatReq(messages=prompt_generator_messages + [msg1])  # + agent_data.context)
 
         llm_chat_data = LLMChatData(name="generate_prompt_for_goal", chat_req=chat_req)
@@ -65,6 +67,7 @@ class OneStepAgent:
                                "2. Name: ReadUrls, Description: Use this browse information on internet, Usage: ReadUrls[comma seperated list of valid urls]\n"
                                "Only output value of Usage. So examples of correct output are LLMChat[do this do that]"
                        )
+        # msg01 = tot_message
         # msg01 = Message(role="user",
         #                 content="My goal: ..."
         #                 )
@@ -103,7 +106,20 @@ class OneStepAgent:
             urls = next_action_input.split(",")
             read_urls_data = ReadUrlsData(read_urls_req=urls)
             await ReadUrls().run(read_urls_data)
+            content = ""
+            for url in read_urls_data.context.keys():
+                content = f"{read_urls_data.context.get(url)}\n"
+
             agent_data.context.append(
-                Message(role=Role.user, content=json.dumps(read_urls_data.context))
+                Message(role=Role.user, content=content)
             )
         # await next_action().run(action_data=agent_data.)
+
+    async def plan_for_goal(self, agent_data):
+        msg1 = Message(role="user", content=f"My goal: {agent_data.goal}")
+        chat_req = ChatReq(messages=[tot_message, msg1])
+
+        llm_chat_data = LLMChatData(name="plan_for_goal", chat_req=chat_req)
+        await LLMChat().run(llm_chat_data)
+
+        return llm_chat_data.context[-1].content

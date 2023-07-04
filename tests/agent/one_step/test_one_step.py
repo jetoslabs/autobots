@@ -14,7 +14,7 @@ async def set_settings():
 
 @pytest.mark.asyncio
 async def test_prompt_generate_blog_happy_path_1(set_settings):
-    agent_data = AgentData(goal="What is the current temperature difference between Delhi and San Francisco")
+    agent_data = AgentData(goal="Advert for Nike shoes")
     await OneStepAgent().run(agent_data)
     print(agent_data.json())
     assert True
