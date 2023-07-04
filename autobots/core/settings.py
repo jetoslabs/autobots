@@ -2,6 +2,8 @@ from functools import lru_cache
 
 from pydantic import BaseSettings
 
+from autobots.core.log import log
+
 
 class Settings(BaseSettings):
     APP_HOST: str = "0.0.0.0"
@@ -10,14 +12,14 @@ class Settings(BaseSettings):
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
 
-    OPENAI_ORG_ID: str
-    OPENAI_API_KEY: str
+    OPENAI_ORG_ID: str = None
+    OPENAI_API_KEY: str = None
 
-    STABILITY_HOST: str
-    STABILITY_KEY: str
+    STABILITY_HOST: str = None
+    STABILITY_KEY: str = None
 
-    UNSPLASH_ACCESS_KEY: str
-    # UNSPLASH_SECRET_KEY: str
+    UNSPLASH_ACCESS_KEY: str = None
+    # UNSPLASH_SECRET_KEY: str = None
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
@@ -29,4 +31,13 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings(_env_file: str = '../.env.local') -> Settings:
-    return Settings(_env_file=_env_file)
+    settings = Settings(_env_file=_env_file)
+    check_for_none(settings)
+    return settings
+
+
+def check_for_none(settings: Settings):
+    for field in settings.__dict__.keys():
+        if settings.__dict__[field] is None:
+            log.warning(f"Field: {field} is not set")
+

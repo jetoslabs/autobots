@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from autobots.conn.duckduckgo.duckduckgo import DuckDuckGo
 from autobots.conn.openai.openai import OpenAI
 from autobots.conn.selenium.selenium import Selenium
 from autobots.conn.stability.stability import Stability
@@ -15,6 +16,7 @@ class Conn:
         self.selenium = Selenium()
         self.stability = Stability()
         self.unsplash = Unsplash()
+        self.duckduckgo = DuckDuckGo()
 
 
 @lru_cache
