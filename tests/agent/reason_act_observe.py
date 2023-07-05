@@ -11,7 +11,7 @@ async def set_settings():
 
 
 @pytest.mark.asyncio
-async def test_prompt_generate_blog_happy_path_1(set_settings):
+async def test_agent_reason_act_observe_happy_path_1(set_settings):
     # user_goal = "What is the difference in celsius in current temperature in San Francisco and New Delhi"
     user_goal = "What is the nearest costco address for California zipcode 94132"
     # user_goal = "According to medicine science what is the best position to do sex for having a baby"
