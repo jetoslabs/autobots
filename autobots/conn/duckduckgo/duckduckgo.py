@@ -17,7 +17,7 @@ class NewsRes(BaseModel):
     title: str
     body: str
     url: HttpUrl
-    image: HttpUrl
+    image: Optional[HttpUrl]
     source: str
 
 
