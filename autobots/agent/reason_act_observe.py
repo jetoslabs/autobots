@@ -46,9 +46,6 @@ class ReasonActObserve():
             thought = await self.think(messages)
             messages = messages + [Message(role=Role.assistant, content=thought)]
 
-            # thought = await self.think(messages)
-            # messages = messages + [Message(role=Role.user, content=thought)]
-
             action = await self.act(messages)
             messages = messages + [Message(role=Role.assistant, content=action)]
 
@@ -81,20 +78,22 @@ class ReasonActObserve():
             log.error(e)
 
     async def observe(self, action: str) -> str:
-        res = ""
         if "search" in action:
+            res = ""
             search_for = action.split("[")[1].replace("]", "")
             search_res = await get_conn().duckduckgo.search_text(search_for, num_results=3)
             for search in search_res:
                 res = res + f"{search.title}: {search.body}\n"
             res = Observe_Prefix + res
             log.info(f"{Observe_Prefix}{res}")
+            return res
 
         elif "news" in action:
+            res = ""
             search_for = action.split("[")[1].replace("]", "")
             search_res = await get_conn().duckduckgo.news(search_for, num_results=3)
             for search in search_res:
                 res = res + f"{search.title}: {search.body} - source({search.source})\n"
             res = Observe_Prefix + res
             log.info(f"{Observe_Prefix}{res}")
-        return res
+            return res
