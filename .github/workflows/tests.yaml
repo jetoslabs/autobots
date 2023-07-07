@@ -7,9 +7,9 @@ on:
       - '!main'
     tags:
       - '!v**'
-    pull_request:
-      branches:
-        - '*'
+  pull_request:
+    branches:
+      - '*'
   workflow_dispatch:
 
 env:
