@@ -1,6 +1,5 @@
 import pytest
 import pytest_asyncio
-import hashlib
 
 from autobots.conn.conn import get_conn
 from autobots.core.settings import get_settings
