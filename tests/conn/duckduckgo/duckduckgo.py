@@ -15,7 +15,7 @@ async def set_settings():
 
 @pytest.mark.asyncio
 async def test_search_text_happy_path(set_settings):
-    search_res: List[SearchRes] = await get_conn().duckduckgo.search("latest arsenal signing")
+    search_res: List[SearchRes] = await get_conn().duckduckgo.search_text("where is Arsenal Football club located")
     assert len(search_res) > 0
     assert search_res[0].href
     assert search_res[0].title
@@ -23,7 +23,7 @@ async def test_search_text_happy_path(set_settings):
 
 @pytest.mark.asyncio
 async def test_news_happy_path(set_settings):
-    news_res = await get_conn().duckduckgo.news("latest arsenal signing")
+    news_res = await get_conn().duckduckgo.news("current temperature in San Francisco")
     assert len(news_res) > 0
     assert news_res[0].url
     assert news_res[0].title

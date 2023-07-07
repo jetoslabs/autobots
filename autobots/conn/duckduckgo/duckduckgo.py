@@ -17,7 +17,7 @@ class NewsRes(BaseModel):
     title: str
     body: str
     url: HttpUrl
-    image: HttpUrl
+    image: Optional[HttpUrl]
     source: str
 
 
@@ -140,7 +140,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = ImageRes(**r)
                 images.append(res)
-                log.trace(f"Answer for {keywords}: {r}")
+                log.trace(f"Image for {keywords}: {r}")
         return images
 
     async def search_videos(self, keywords: str, num_results: int = 3) -> List[VideoRes]:
@@ -161,7 +161,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = VideoRes(**r)
                 videos.append(res)
-                log.trace(f"Videos for {keywords}: {r}")
+                log.trace(f"Video for {keywords}: {r}")
         return videos
 
     async def search_map(
@@ -180,7 +180,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = MapRes(**r)
                 maps.append(res)
-                log.trace(f"Videos for {keywords}: {r}")
+                log.trace(f"Map search for {keywords}: {r}")
         return maps
 
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
@@ -202,5 +202,5 @@ class DuckDuckGo:
                 num = num + 1
                 res = SuggestionRes(**r)
                 suggestions.append(res)
-                log.trace(f"Suggestions for {keywords}: {r}")
+                log.trace(f"Suggestion for {keywords}: {r}")
         return suggestions

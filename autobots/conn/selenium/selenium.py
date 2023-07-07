@@ -20,14 +20,14 @@ class Selenium:
         # WebDriver Chrome
         self.driver = webdriver.Chrome(options=options)
 
-    async def read_url_text(self, url: HttpUrl) -> str:
+    async def read_url_text(self, url: HttpUrl, xpath: str = "/html/body") -> str:
         # Target URL
         self.driver.get(url)
         # To load entire webpage
         time.sleep(5)
 
         # whole body text
-        text: str = self.driver.find_element(By.XPATH, "/html/body").text
+        text: str = self.driver.find_element(By.XPATH, xpath).text
         return text
 
     def __del__(self):

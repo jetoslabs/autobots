@@ -17,9 +17,9 @@ class OpenAI:
 
     async def chat(self, chat_req: ChatReq) -> ChatRes:
         try:
-            log.debug("Starting OpenAI Chat")
+            log.trace("Starting OpenAI Chat")
             res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
-            log.debug("Completed OpenAI Chat")
+            log.trace("Completed OpenAI Chat")
             resp: ChatRes = ChatRes(**res.to_dict())
             return resp
         except Exception as e:
