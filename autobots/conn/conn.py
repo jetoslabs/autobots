@@ -1,7 +1,9 @@
 from functools import lru_cache
 
+from autobots.conn.aws.s3 import S3
 from autobots.conn.duckduckgo.duckduckgo import DuckDuckGo
 from autobots.conn.openai.openai import OpenAI
+from autobots.conn.pinecone.pinecone import Pinecone
 from autobots.conn.selenium.selenium import Selenium
 from autobots.conn.stability.stability import Stability
 from autobots.conn.unsplash.unsplash import Unsplash
@@ -17,6 +19,8 @@ class Conn:
         self.stability = Stability()
         self.unsplash = Unsplash()
         self.duckduckgo = DuckDuckGo()
+        self.s3 = S3()
+        self.pinecone = Pinecone(self.open_ai)
 
 
 @lru_cache

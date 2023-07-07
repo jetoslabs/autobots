@@ -21,6 +21,14 @@ class Settings(BaseSettings):
     UNSPLASH_ACCESS_KEY: str = None
     # UNSPLASH_SECRET_KEY: str = None
 
+    AWS_ACCESS_KEY_ID: str = None
+    AWS_SECRET_ACCESS_KEY: str = None
+    AWS_S3_BUCKET_NAME: str = None
+    AWS_S3_BUCKET_REGION: str = None
+
+    PINECONE_ENVIRONMENT: str = None
+    PINECONE_API_KEY: str = None
+
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
 
