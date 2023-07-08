@@ -1,3 +1,5 @@
+import time
+
 import pytest
 import pytest_asyncio
 
@@ -27,3 +29,29 @@ async def test_aws_s3_happy_path(set_settings):
     # delete file from s3
     del_res1 = await get_conn().s3.delete(filename=str1_id)
     assert del_res1[0].get("Key") == gen_filename(str1)
+
+
+@pytest.mark.asyncio
+async def test_aws_s3_list(set_settings):
+    prefix = "test_aws_s3_list"
+    data = "testdata"
+    num_of_files = 5
+    try:
+        # put objects
+        for i in range(num_of_files):
+            await get_conn().s3.put(data, f"{prefix}/{data}_{i}")
+
+        time.sleep(3)
+        # list objects
+        s3_objects = await get_conn().s3.list(prefix)
+        assert len(s3_objects) == num_of_files
+
+    finally:
+
+        # Delete list of objects
+        await get_conn().s3.delete_prefix(prefix)
+
+        time.sleep(3)
+
+        s3_objects = await get_conn().s3.list(prefix)
+        assert len(s3_objects) == 0

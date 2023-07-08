@@ -1,8 +1,11 @@
 from functools import lru_cache
 from io import BytesIO
+from typing import List
+
 import boto3
 
 from mypy_boto3_s3 import S3ServiceResource
+from mypy_boto3_s3.service_resource import ObjectSummary
 from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 
 from autobots.core.log import log
@@ -50,6 +53,21 @@ class S3:
             return delete_res["Deleted"]
         except Exception as e:
             log.error(e)
+
+    async def list(self, prefix: str, limit: int = 300) -> List[ObjectSummary]:
+        s3_objects = []
+        size = 0
+        for s3_object in self.bucket.objects.filter(Prefix=prefix):
+            if size >= limit:
+                break
+            size = size + 1
+            s3_objects.append(s3_object)
+        return s3_objects
+
+    async def delete_prefix(self, prefix: str):
+        s3_objects = await self.list(prefix=prefix)
+        for s3_object in s3_objects:
+            await self.delete(s3_object.key)
 
 
 @lru_cache
