@@ -9,7 +9,6 @@ from autobots.core.utils import gen_filename
 @pytest_asyncio.fixture
 async def set_openai():
     settings = get_settings(_env_file='../.env.local')
-    # OpenAI(settings.OPENAI_ORG_ID, settings.OPENAI_API_KEY)
 
 
 @pytest.mark.asyncio
@@ -24,7 +23,7 @@ async def test_pinecone_happy_path(set_openai):
     await get_conn().pinecone.upsert_data(str1_id, str1, metadata={"type": "places"})
     await get_conn().pinecone.upsert_data(str2_id, str2, metadata={"type": "places"})
 
-    query_res = await get_conn().pinecone.query(query=query, top_k=2)
+    query_res = await get_conn().pinecone.query(data=query, top_k=2)
     vec_id = query_res[0].id
 
     assert str1_id == vec_id

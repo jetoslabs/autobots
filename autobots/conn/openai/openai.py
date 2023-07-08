@@ -1,10 +1,12 @@
+from functools import lru_cache
+
 import openai
 from openai.openai_object import OpenAIObject
 
 from autobots.conn.openai.chat import ChatReq, ChatRes
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.core.log import log
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class OpenAI:
@@ -27,10 +29,15 @@ class OpenAI:
 
     async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes:
         try:
-            log.debug("Starting OpenAI Embedding")
+            log.trace("Starting OpenAI Embedding")
             res: OpenAIObject = await openai.Embedding.acreate(**embedding_req.dict())
-            log.debug("Completed OpenAI Embedding")
+            log.trace("Completed OpenAI Embedding")
             resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
             return resp
         except Exception as e:
             log.error(e)
+
+
+@lru_cache
+def get_openai(settings: Settings = get_settings()) -> OpenAI:
+    return OpenAI()
