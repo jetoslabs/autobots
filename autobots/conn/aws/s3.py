@@ -1,3 +1,4 @@
+from functools import lru_cache
 from io import BytesIO
 import boto3
 
@@ -5,7 +6,7 @@ from mypy_boto3_s3 import S3ServiceResource
 from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 
 from autobots.core.log import log
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class S3:
@@ -49,3 +50,8 @@ class S3:
             return delete_res["Deleted"]
         except Exception as e:
             log.error(e)
+
+
+@lru_cache
+def get_s3(settings: Settings = get_settings()) -> S3:
+    return S3()

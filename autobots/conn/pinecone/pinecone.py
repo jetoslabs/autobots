@@ -1,12 +1,14 @@
 import time
+from functools import lru_cache
 from typing import List
 
 import pinecone
 from pinecone import QueryResponse, FetchResponse, ScoredVector
+from pinecone.core.grpc.protos.vector_service_pb2 import DeleteResponse
 
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.conn.openai.openai import OpenAI, get_openai
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class Pinecone:
@@ -45,7 +47,7 @@ class Pinecone:
         for embedding_data in embedding_res.data:
             # vector = (Vector_ID, Dense_vector_values, Vector_metadata)
             vector = (vector_id, embedding_data.embedding, metadata)
-            upsert_res = self.index.upsert(vectors=[vector], namespace="default")
+            upsert_res = self.index.upsert(vectors=[vector], namespace=namespace)
             upserted.append(upsert_res)
 
     async def query(
@@ -73,3 +75,17 @@ class Pinecone:
     async def fetch(self, vector_ids: List[str], namespace: str = "default") -> FetchResponse:
         fetch_res: FetchResponse = self.index.fetch(ids=vector_ids, namespace=namespace)
         return fetch_res
+
+    async def delete(self,
+                     ids:  list[str] | None = None,
+                     delete_all: bool | None = None,
+                     namespace: str | None = None,
+                     filter: dict[str, str | float | int | bool | list | dict] | None = None
+                     ) -> DeleteResponse:
+        deleted = self.index.delete(ids=ids, delete_all=delete_all, namespace=namespace, filter=filter)
+        return deleted
+
+
+@lru_cache
+def get_pinecone(settings: Settings = get_settings()) -> Pinecone:
+    return Pinecone()
