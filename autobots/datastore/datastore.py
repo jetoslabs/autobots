@@ -16,8 +16,14 @@ class Datastore:
     Each datastore will have unique namespace in pinecone
     """
 
-    def __init__(self, name: str, s3: S3 = get_s3(), pinecone: Pinecone = get_pinecone()):
+    def __init__(self, name: str | None = None):
         self.name = name
+        self.trace = None
+        self.id = None
+        self.s3 = None
+        self.pinecone = None
+
+    def init(self, s3: S3 = get_s3(), pinecone: Pinecone = get_pinecone()):
         self.trace = ''.join(random.choices(string.hexdigits, k=9))
         # Id for the datastore is unique identifier for the datastore
         self.id = f"{self.name}-{self.trace}"
@@ -25,6 +31,19 @@ class Datastore:
         self.s3 = s3
         # pinecone conn
         self.pinecone = pinecone
+        return self
+
+    def hydrate(self, datastore_id: str, s3: S3 = get_s3(), pinecone: Pinecone = get_pinecone()):
+        self.id = datastore_id
+        # Get Trace from datastore_id
+        self.trace = datastore_id.split("-")[-1]
+        # Get name from datastore_id
+        self.name = datastore_id.replace(self.trace, "")
+        # s3 conn
+        self.s3 = s3
+        # pinecone conn
+        self.pinecone = pinecone
+        return self
 
     def _get_s3_basepath(self):
         return self.id
