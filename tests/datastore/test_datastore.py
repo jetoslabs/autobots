@@ -18,7 +18,7 @@ async def test_datastore_path(set_openai):
     str2 = "San Francisco, officially the City and County of San Francisco, is a commercial, financial, and cultural center of Northern California. The city proper is the fourth most populous in California, with 808,437 residents as of 2022, and covers a land area of 46.9 square miles (121 square kilometers), at the end of the San Francisco Peninsula, making it the second most densely populated large U.S. city after New York City and the fifth-most densely populated U.S. county, behind only four of the five New York City boroughs. Among the 91 U.S. cities proper with over 250,000 residents, San Francisco was ranked first by per capita income and sixth by aggregate income as of 2021. Colloquial nicknames for San Francisco include Frisco, San Fran, The City, and SF."
     query = "Indian cities"
 
-    datastore = Datastore(name="teststore").init()
+    datastore = Datastore().init(name="teststore")
 
     try:
         await datastore.put(str1)
@@ -33,6 +33,9 @@ async def test_datastore_path(set_openai):
 
         # testing hydrated datastore
         hydrated_datastore = Datastore().hydrate(datastore_id=datastore.id)
+        assert hydrated_datastore.id == datastore.id
+        assert hydrated_datastore.trace == datastore.trace
+        assert hydrated_datastore.name == datastore.name
 
         result_from_hydrated: List[str] = await hydrated_datastore.search(query=query)
 
