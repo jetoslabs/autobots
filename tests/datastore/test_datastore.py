@@ -31,6 +31,16 @@ async def test_datastore_path(set_openai):
         assert result[0] == str1
         assert result[1] == str2
 
+        # testing hydrated datastore
+        hydrated_datastore = Datastore().hydrate(datastore_id=datastore.id)
+
+        result_from_hydrated: List[str] = await hydrated_datastore.search(query=query)
+
+        assert len(result_from_hydrated) > 0
+
+        assert result_from_hydrated[0] == str1
+        assert result_from_hydrated[1] == str2
+
     finally:
-        # cleanup namespace
+        # cleanup datastore
         deleted = await datastore.delete()
