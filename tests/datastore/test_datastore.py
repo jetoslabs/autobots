@@ -48,4 +48,4 @@ async def test_datastore_happy_path(set_openai):
 
     finally:
         # cleanup datastore
-        deleted = await datastore.delete()
+        deleted = await datastore.empty_and_close()

@@ -85,7 +85,7 @@ class Datastore:
             result.append(data)
         return result
 
-    async def delete(self):
+    async def empty_and_close(self):
         # delete namespace in pinecone
         deleted_embeddings = await self.pinecone.delete(delete_all=True, namespace=self._get_pinecone_namespace())
         # delete folder in s3
