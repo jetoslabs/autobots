@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     PINECONE_ENVIRONMENT: str = None
     PINECONE_API_KEY: str = None
 
+    DATASTORE_IDENTIFIER: str = "datastore"
+
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
 

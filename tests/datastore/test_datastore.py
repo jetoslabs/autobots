@@ -19,6 +19,8 @@ async def test_datastore_happy_path(set_openai):
     query = "Indian cities"
 
     datastore = Datastore().init(name="teststore")
+    # connect between data in s3 and embedding in pinecone depends on this!
+    assert datastore._get_s3_basepath() == datastore._get_pinecone_namespace()
 
     try:
         await datastore.put(str1)

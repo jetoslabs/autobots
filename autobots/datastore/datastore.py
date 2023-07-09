@@ -6,7 +6,8 @@ from pinecone import ScoredVector
 
 from autobots.conn.aws.s3 import S3, get_s3
 from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
-from autobots.core.utils import gen_filename
+from autobots.core.settings import get_settings
+from autobots.core.utils import gen_hash
 
 
 class Datastore:
@@ -38,20 +39,23 @@ class Datastore:
         self.name = datastore_id.replace(f"-{self.trace}", "")
         return self
 
-    def _get_s3_basepath(self):
-        return self.id
+    def _datastore_identifier(self) -> str:
+        return get_settings().DATASTORE_IDENTIFIER
 
-    def _get_namespace(self):
-        return self.id
+    def _get_s3_basepath(self) -> str:
+        return f"{self._datastore_identifier()}/{self.id}"
+
+    def _get_pinecone_namespace(self) -> str:
+        return f"{self._datastore_identifier()}/{self.id}"
 
     async def _put_data(self, data: str):
-        await self.s3.put(data=data, filename=f"{self._get_s3_basepath()}/{gen_filename(data)}")
+        await self.s3.put(data=data, filename=f"{self._get_s3_basepath()}/{gen_hash(data)}")
 
     async def _put_embedding(self, data: str):
         await self.pinecone.upsert_data(
-            gen_filename(data),
+            gen_hash(data),
             data=data, metadata={},
-            namespace=self._get_namespace()
+            namespace=self._get_pinecone_namespace()
         )
 
     async def put(self, data: str):
@@ -75,7 +79,7 @@ class Datastore:
         :return:
         """
         result = []
-        scored_vectors: List[ScoredVector] = await self.pinecone.query(data=query, namespace=self._get_namespace())
+        scored_vectors: List[ScoredVector] = await self.pinecone.query(data=query, namespace=self._get_pinecone_namespace())
         for scored_vector in scored_vectors:
             data = await self.s3.get(f"{self._get_s3_basepath()}/{scored_vector.id}")
             result.append(data)
@@ -83,7 +87,7 @@ class Datastore:
 
     async def delete(self):
         # delete namespace in pinecone
-        deleted_embeddings = await self.pinecone.delete(delete_all=True, namespace=self._get_namespace())
+        deleted_embeddings = await self.pinecone.delete(delete_all=True, namespace=self._get_pinecone_namespace())
         # delete folder in s3
         deleted_objects = await self.s3.delete_prefix(prefix=self._get_s3_basepath())
 
