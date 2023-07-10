@@ -73,13 +73,17 @@ class Datastore:
         """
         pass
 
-    async def search(self, query: str) -> List[str]:
+    async def search(self, query: str, top_k: int = 10) -> List[str]:
         """
         Semantic search data
         :return:
         """
         result = []
-        scored_vectors: List[ScoredVector] = await self.pinecone.query(data=query, namespace=self._get_pinecone_namespace())
+        scored_vectors: List[ScoredVector] = await self.pinecone.query(
+            data=query,
+            top_k=top_k,
+            namespace=self._get_pinecone_namespace()
+        )
         for scored_vector in scored_vectors:
             data = await self.s3.get(f"{self._get_s3_basepath()}/{scored_vector.id}")
             result.append(data)
