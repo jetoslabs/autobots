@@ -1,13 +1,20 @@
 import random
 import string
-from typing import List
+from typing import List, Dict, Callable, AsyncGenerator
 
 from pinecone import ScoredVector
+from pydantic import BaseModel
 
 from autobots.conn.aws.s3 import S3, get_s3
 from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
 from autobots.core.settings import get_settings
 from autobots.core.utils import gen_hash
+from autobots.datastore.data_provider import DataProvider
+
+
+class DataModel(BaseModel):
+    data: str
+    meta: Dict[str, str]
 
 
 class Datastore:
@@ -66,6 +73,17 @@ class Datastore:
         await self._put_data(data=data)
         await self._put_embedding(data=data)
 
+    async def put_file(
+            self,
+            filename: str,
+            chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_file_line_by_line,
+            chunk_token_size: int = 512
+    ):
+
+        async for chunk in DataProvider.create_file_chunks(filename, chunk_func, chunk_token_size):
+            await self._put_data(data=chunk)
+            await self._put_embedding(data=chunk)
+
     async def get(self):
         """
         Retrieve data
@@ -94,4 +112,3 @@ class Datastore:
         deleted_embeddings = await self.pinecone.delete(delete_all=True, namespace=self._get_pinecone_namespace())
         # delete folder in s3
         deleted_objects = await self.s3.delete_prefix(prefix=self._get_s3_basepath())
-

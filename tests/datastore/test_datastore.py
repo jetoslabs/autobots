@@ -49,3 +49,24 @@ async def test_datastore_happy_path(set_openai):
     finally:
         # cleanup datastore
         deleted = await datastore.empty_and_close()
+
+
+@pytest.mark.asyncio
+async def test_put_file_happy_path(set_openai):
+    filename = "resources/datastore/google.txt"
+    query = "How to make search engine large scale"
+
+    datastore = Datastore().init(name="teststore")
+
+    try:
+        await datastore.put_file(filename)
+        results: List[str] = await datastore.search(query, 2)
+
+        assert len(results) > 0
+        assert "scale" in results[0]
+        assert "scale" in results[1]
+
+    finally:
+        # cleanup datastore
+        deleted = await datastore.empty_and_close()
+

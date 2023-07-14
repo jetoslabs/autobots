@@ -16,7 +16,7 @@ class Message(BaseModel):
 
 
 class ChatReq(BaseModel):
-    model: str = "gpt-3.5-turbo"
+    model: str = "gpt-4"
     messages: List[Message]
     temperature: int = 0.8
     top_p: int = 1
