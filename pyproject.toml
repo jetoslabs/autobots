@@ -21,6 +21,9 @@ duckduckgo-search = "^3.8.3"
 pinecone-client = {extras = ["grpc"], version = "^2.2.2"}
 boto3 = "^1.28.0"
 boto3-stubs = {extras = ["essential"], version = "^1.28.0"}
+tiktoken = "^0.4.0"
+spacy = "^3.6.0"
+pillow = "^10.0.0"
 
 [build-system]
 requires = ["poetry-core"]

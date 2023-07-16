@@ -1,0 +1,31 @@
+FROM { table_name }
+
+SHOW { column1 AS { alias } , column2 AS { alias } , ... }
+
+VISUALIZE { column1 AS { alias } , column2 AS { alias } , ... }
+
+  TYPE { visualization_type }
+
+GROUP BY { dimension | date }
+
+  ALL { date }
+
+WHERE { condition }
+
+SINCE { date_offset }
+
+UNTIL { date_offset }
+
+DURING { named_date_range }
+
+COMPARE TO { named_date_range | relative_date_range }
+
+ORDER BY { column } ASC | DESC
+
+LIMIT { number }
+
+-- Single line comment
+
+/*
+Multi line comment
+*/

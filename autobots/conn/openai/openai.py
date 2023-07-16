@@ -1,10 +1,13 @@
+import time
+from functools import lru_cache
+
 import openai
 from openai.openai_object import OpenAIObject
 
 from autobots.conn.openai.chat import ChatReq, ChatRes
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.core.log import log
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class OpenAI:
@@ -16,21 +19,29 @@ class OpenAI:
         openai.api_key = api_key
 
     async def chat(self, chat_req: ChatReq) -> ChatRes:
-        try:
-            log.trace("Starting OpenAI Chat")
-            res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
-            log.trace("Completed OpenAI Chat")
-            resp: ChatRes = ChatRes(**res.to_dict())
-            return resp
-        except Exception as e:
-            log.error(e)
+        max_retry = 3
+        for i in range(max_retry):
+            try:
+                log.trace("Starting OpenAI Chat, try: 1")
+                res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
+                log.trace("Completed OpenAI Chat")
+                resp: ChatRes = ChatRes(**res.to_dict())
+                return resp
+            except Exception as e:
+                log.error(e)
+                time.sleep(60)
 
     async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes:
         try:
-            log.debug("Starting OpenAI Embedding")
+            log.trace("Starting OpenAI Embedding")
             res: OpenAIObject = await openai.Embedding.acreate(**embedding_req.dict())
-            log.debug("Completed OpenAI Embedding")
+            log.trace("Completed OpenAI Embedding")
             resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
             return resp
         except Exception as e:
             log.error(e)
+
+
+@lru_cache
+def get_openai(settings: Settings = get_settings()) -> OpenAI:
+    return OpenAI()

@@ -10,7 +10,7 @@ from autobots.core.settings import get_settings
 @pytest_asyncio.fixture
 async def set_openai():
     settings = get_settings(_env_file='../.env.local')
-    # OpenAI(settings.OPENAI_ORG_ID, settings.OPENAI_API_KEY)
+    settings.OPENAI_ENGINE = "gpt-3.5-turbo-16k-0613"
 
 
 @pytest.mark.asyncio
