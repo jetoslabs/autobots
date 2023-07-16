@@ -1,3 +1,4 @@
+import time
 from functools import lru_cache
 
 import openai
@@ -18,14 +19,17 @@ class OpenAI:
         openai.api_key = api_key
 
     async def chat(self, chat_req: ChatReq) -> ChatRes:
-        try:
-            log.trace("Starting OpenAI Chat")
-            res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
-            log.trace("Completed OpenAI Chat")
-            resp: ChatRes = ChatRes(**res.to_dict())
-            return resp
-        except Exception as e:
-            log.error(e)
+        max_retry = 3
+        for i in range(max_retry):
+            try:
+                log.trace("Starting OpenAI Chat, try: 1")
+                res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
+                log.trace("Completed OpenAI Chat")
+                resp: ChatRes = ChatRes(**res.to_dict())
+                return resp
+            except Exception as e:
+                log.error(e)
+                time.sleep(60)
 
     async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes:
         try:
