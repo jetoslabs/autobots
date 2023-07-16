@@ -3,6 +3,8 @@ from typing import List
 
 from pydantic import BaseModel
 
+from autobots.core.settings import get_settings
+
 
 class Role(str, Enum):
     system = "system"
@@ -16,7 +18,7 @@ class Message(BaseModel):
 
 
 class ChatReq(BaseModel):
-    model: str = "gpt-4"
+    model: str = get_settings().OPENAI_ENGINE  # "gpt-4"
     messages: List[Message]
     temperature: int = 0.8
     top_p: int = 1

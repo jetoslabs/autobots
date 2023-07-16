@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
+    OPENAI_ENGINE: str = "gpt-4"
 
     STABILITY_HOST: str = None
     STABILITY_KEY: str = None
