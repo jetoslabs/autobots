@@ -6,7 +6,7 @@ from PIL import Image
 from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
-from autobots.conn.stability.stability_data import StabilityReq
+from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
 from autobots.core.settings import get_settings
 
 
@@ -16,8 +16,8 @@ class Stability:
             self,
             host: str = get_settings().STABILITY_HOST,
             key: str = get_settings().STABILITY_KEY,
-            engine: str = "stable-diffusion-xl-beta-v2-2-2",
-            upscale_engine: str = "esrgan-v1-x2plus",
+            engine: str = "stable-diffusion-xl-1024-v0-9",#"stable-diffusion-xl-beta-v2-2-2",
+            upscale_engine: str = "stable-diffusion-x4-latent-upscaler",
             verbose: bool = True,
             wait_for_ready: bool = True
     ):
@@ -62,4 +62,28 @@ class Stability:
                     img = Image.open(io.BytesIO(artifact.binary))
                     # Save our generated images with their seed number as the filename.
                     img.save(str(artifact.seed) + ".png")
+                    return artifact.binary
+
+    async def upscale_image(self, stability_upscale_req: StabilityUpscaleReq) -> bytes:
+        """
+        https://platform.stability.ai/docs/features/image-upscaling
+        :param stability_upscale_req:
+        :type stability_upscale_req:
+        :return:
+        :rtype:
+        """
+        answers = self.stability_api.upscale(**stability_upscale_req.dict())
+
+        # Set up our warning to print to the console if the adult content classifier is tripped.
+        # If adult content classifier is not tripped, save our image.
+
+        for resp in answers:
+            for artifact in resp.artifacts:
+                if artifact.finish_reason == generation.FILTER:
+                    warnings.warn(
+                        "Your request activated the API's safety filters and could not be processed."
+                        "Please submit a different image and try again.")
+                if artifact.type == generation.ARTIFACT_IMAGE:
+                    big_img = Image.open(io.BytesIO(artifact.binary))
+                    big_img.save("imageupscaled" + ".png")  # Save our image to a local file.
                     return artifact.binary

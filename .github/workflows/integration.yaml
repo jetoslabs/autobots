@@ -31,7 +31,7 @@ jobs:
           poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
       - name: Run Tests
-#        working-directory: ./app
+        working-directory: ./tests
         run: |
           python -m pytest -vv -n 5
         env:

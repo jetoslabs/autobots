@@ -13,14 +13,13 @@ from autobots.core.settings import Settings, get_settings
 class Conn:
 
     def __init__(self, settings: Settings):
-        # setting up OpenAI
         self.open_ai = OpenAI()
         self.selenium = Selenium()
         self.stability = Stability()
         self.unsplash = Unsplash()
         self.duckduckgo = DuckDuckGo()
         self.s3 = S3()
-        self.pinecone = Pinecone(self.open_ai)
+        self.pinecone = Pinecone()
 
 
 @lru_cache
