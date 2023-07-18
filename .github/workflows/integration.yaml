@@ -74,8 +74,8 @@ jobs:
       - name: Build Docker image
         run: docker build -t registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} .
         env:
-          DD_ENV: ${{ DD_ENV }}
-          DD_VERSION: ${{ DD_VERSION }}
+          DD_ENV: ${DD_ENV}
+          DD_VERSION: ${DD_VERSION}
 #        working-directory: ./app
 
       - name: Push Docker image to GitLab Container Registry
