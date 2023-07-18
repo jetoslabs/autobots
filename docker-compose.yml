@@ -6,11 +6,11 @@ services:
     container_name: autobots-local
     build:
       context: .
-      dockerfile: ./dockerfile.local
+      dockerfile: ./dockerfile
     ports:
       - "8001:80"
     env_file:
-      - .env.local
+      - .env.dev
     networks:
       network:
 
