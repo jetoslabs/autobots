@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+
+  autobots-local:
+    container_name: autobots-local
+    build:
+      context: .
+      dockerfile: ./dockerfile.local
+    ports:
+      - "8001:80"
+    env_file:
+      - .env.local
+    networks:
+      network:
+
+  autobots:
+    container_name: autobots
+    image: registry.gitlab.com/meetkiwi/autobots:main
+    ports:
+      - "80:80"
+    env_file:
+      - .env.dev
+    networks:
+      network:
+
+  #  DD_AGENT_HOST env contains name of the service datadog-agent
+  datadog-agent:
+    container_name: datadog-agent
+    image: gcr.io/datadoghq/agent:latest
+#    cgroupns host
+    cgroup_parent: host
+    pid: host
+    env_file:
+      - .env.dev.datadog
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+    networks:
+      network:
+
+networks:
+  network:
+    driver: bridge

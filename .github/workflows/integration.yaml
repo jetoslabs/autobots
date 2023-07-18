@@ -10,6 +10,10 @@ on:
 
 env:
   IMAGE_TAG: ${{ github.ref_name }}
+  # Datadog Environment
+  DD_ENV: ${{ github.ref_name }}
+  # Datadog Version
+  DD_VERSION: ${{ github.ref_name }}-${{ github.run_number }}
 
 jobs:
 
