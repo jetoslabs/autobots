@@ -72,11 +72,7 @@ jobs:
           password: ${{ secrets.GITLAB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} .
-        env:
-          DD_ENV: ${DD_ENV}
-          DD_VERSION: ${DD_VERSION}
-#        working-directory: ./app
+        run: docker build -t registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} --build-arg DD_ENV=${DD_ENV} --build-arg DD_VERSION=${DD_VERSION} .
 
       - name: Push Docker image to GitLab Container Registry
         run: |
