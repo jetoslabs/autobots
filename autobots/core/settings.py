@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
 
+    DD_ENV: str = None
+    DD_VERSION: str = None
+
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
     OPENAI_ENGINE: str = "gpt-4"
