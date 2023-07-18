@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from autobots.api.v1 import v1
 from autobots.core.lifespan import lifespan
 from autobots.core.settings import get_settings
+from ddtrace import patch
 
+patch(fastapi=True)
 app = FastAPI(lifespan=lifespan)
 app.include_router(v1.router)
 
