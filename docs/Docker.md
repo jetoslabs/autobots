@@ -12,4 +12,4 @@ Eg for Autobots App
 - docker run -d -p 80:80 registry.gitlab.com/meetkiwi/autobots:main
 
 Run on Local:
-- docker run -p 80:80 --env-file .env.local registry.gitlab.com/meetkiwi/autobots:main
+- docker run -p 80:80 --name autobots --env-file .env.local registry.gitlab.com/meetkiwi/autobots:main
