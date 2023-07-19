@@ -26,8 +26,9 @@ class Unsplash:
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url=url, params=params) as r:
                 json_body = await r.json()
-                img_list = ImageList.parse_obj(json_body)
-                return img_list.__root__
+                img_list: List[Image] = [Image(**image_json_body) for image_json_body in json_body]
+                # List[Image](json_body)]ImageList.parse_obj(json_body)
+                return img_list
 
     async def search_photo(self, query: str):
         params = copy.deepcopy(self.params)
