@@ -16,7 +16,7 @@ async def set_settings():
 
 @pytest.mark.asyncio
 async def test_read_urls_happy_path(set_settings):
-    read_urls_req: List[HttpUrl] = ["https://meetkiwi.co", "https://google.com"]
+    read_urls_req: List[HttpUrl] = [HttpUrl("https://meetkiwi.co"), HttpUrl("https://google.com")]
     read_urls_data = ReadUrlsData(name="test_read_urls", read_urls_req=read_urls_req)
     await ReadUrls().run(read_urls_data)
 
