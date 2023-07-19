@@ -111,5 +111,6 @@ class Image(BaseModel):
     # downloads: int
 
 
-class ImageList(BaseModel):
-    __root__: List[Image]
+# class ImageList(BaseModel):
+#     # __root__: List[Image]
+#     pass
