@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 from autobots.core.log import log
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
 
-    class Config:
+    class ConfigDict:
         # env_file = f"../.env.local"
         env_file_encoding = 'utf-8'
 
