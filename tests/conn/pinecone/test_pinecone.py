@@ -35,4 +35,4 @@ async def test_pinecone_happy_path(set_openai):
 
     finally:
 
-        await get_conn().pinecone.delete(delete_all=True, namespace=namespace)
+        await get_conn().pinecone.delete_all(namespace=namespace)
