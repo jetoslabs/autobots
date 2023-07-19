@@ -22,7 +22,7 @@ class Selenium:
 
     async def read_url_text(self, url: HttpUrl, xpath: str = "/html/body") -> str:
         # Target URL
-        self.driver.get(url)
+        self.driver.get(url.unicode_string())
         # To load entire webpage
         time.sleep(5)
 
