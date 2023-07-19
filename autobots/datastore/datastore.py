@@ -2,7 +2,7 @@ import random
 import string
 from typing import List, Dict, Callable, AsyncGenerator
 
-from pinecone import ScoredVector
+from pinecone import QueryResult
 from pydantic import BaseModel
 
 from autobots.conn.aws.s3 import S3, get_s3
@@ -97,18 +97,18 @@ class Datastore:
         :return:
         """
         result = []
-        scored_vectors: List[ScoredVector] = await self.pinecone.query(
+        query_results: List[QueryResult] = await self.pinecone.query(
             data=query,
             top_k=top_k,
             namespace=self._get_pinecone_namespace()
         )
-        for scored_vector in scored_vectors:
-            data = await self.s3.get(f"{self._get_s3_basepath()}/{scored_vector.id}")
+        for query_result in query_results:
+            data = await self.s3.get(f"{self._get_s3_basepath()}/{query_result.id}")
             result.append(data)
         return result
 
     async def empty_and_close(self):
         # delete namespace in pinecone
-        deleted_embeddings = await self.pinecone.delete(delete_all=True, namespace=self._get_pinecone_namespace())
+        deleted_embeddings = await self.pinecone.delete_all(namespace=self._get_pinecone_namespace())
         # delete folder in s3
         deleted_objects = await self.s3.delete_prefix(prefix=self._get_s3_basepath())
