@@ -1,5 +1,6 @@
 import pytest
 import pytest_asyncio
+from pydantic import HttpUrl
 
 from autobots.conn.conn import get_conn
 from autobots.core.settings import get_settings
@@ -14,6 +15,6 @@ async def set_settings():
 @pytest.mark.asyncio
 async def test_read_url_happy_path(set_settings):
 
-    url_text = await get_conn().selenium.read_url_text("https://meetkiwi.co")
+    url_text = await get_conn().selenium.read_url_text(HttpUrl("https://meetkiwi.co"))
     assert "Meetkiwi" in url_text
 
