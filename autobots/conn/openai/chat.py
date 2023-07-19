@@ -20,7 +20,7 @@ class Message(BaseModel):
 class ChatReq(BaseModel):
     model: str = get_settings().OPENAI_ENGINE  # "gpt-4"
     messages: List[Message]
-    temperature: int = 0.8
+    temperature: float = 0.8
     top_p: int = 1
     n: int = 1
     stream: bool = False
