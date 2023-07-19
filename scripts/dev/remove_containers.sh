@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker_compose down -v
+docker compose down -v
