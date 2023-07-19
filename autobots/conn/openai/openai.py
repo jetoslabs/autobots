@@ -23,7 +23,7 @@ class OpenAI:
         for i in range(max_retry):
             try:
                 log.trace("Starting OpenAI Chat, try: 1")
-                res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.dict(), timeout=30)
+                res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.model_dump(), timeout=30)
                 log.trace("Completed OpenAI Chat")
                 resp: ChatRes = ChatRes(**res.to_dict())
                 return resp
@@ -34,7 +34,7 @@ class OpenAI:
     async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes:
         try:
             log.trace("Starting OpenAI Embedding")
-            res: OpenAIObject = await openai.Embedding.acreate(**embedding_req.dict())
+            res: OpenAIObject = await openai.Embedding.acreate(**embedding_req.model_dump())
             log.trace("Completed OpenAI Embedding")
             resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
             return resp
