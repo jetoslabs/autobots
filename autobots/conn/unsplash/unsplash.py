@@ -3,7 +3,7 @@ from typing import List
 import aiohttp
 import copy
 
-from autobots.conn.unsplash.random_photo import ImageList, Image
+from autobots.conn.unsplash.random_photo import Image
 from autobots.conn.unsplash.search_photo import SearchImageList
 from autobots.core.settings import get_settings
 
@@ -37,7 +37,7 @@ class Unsplash:
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url=url, params=params) as r:
                 json_body = await r.json()
-                img_list = SearchImageList.parse_obj(json_body)
+                img_list = SearchImageList.model_validate(json_body)
                 return img_list
 
 

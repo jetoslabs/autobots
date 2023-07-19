@@ -72,7 +72,7 @@ class Stability:
         :return:
         :rtype:
         """
-        answers = self.stability_api.upscale(**stability_upscale_req.dict())
+        answers = self.stability_api.upscale(**stability_upscale_req.model_dump())
 
         # Set up our warning to print to the console if the adult content classifier is tripped.
         # If adult content classifier is not tripped, save our image.
