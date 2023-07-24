@@ -2,7 +2,6 @@ import pytest
 import pytest_asyncio
 
 from autobots.action.stability_chat import StabilityChatData, StabilityChat
-from autobots.conn.conn import get_conn
 from autobots.conn.stability.stability import Stability
 from autobots.conn.stability.stability_data import StabilityReq
 from autobots.core.settings import get_settings
@@ -13,7 +12,7 @@ from autobots.core.settings import get_settings
 async def set_settings():
     settings = get_settings(_env_file='../.env.local')
     # Making test cheaper by using old engine
-    get_conn().stability = Stability(engine="stable-diffusion-768-v2-0")
+    # stability = Stability(engine="stable-diffusion-768-v2-0")
 
 
 @pytest.mark.asyncio
