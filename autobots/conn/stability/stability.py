@@ -1,5 +1,6 @@
 import io
 import warnings
+from functools import lru_cache
 from typing import Any, Sequence
 
 from PIL import Image
@@ -7,7 +8,7 @@ from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class Stability:
@@ -16,7 +17,7 @@ class Stability:
             self,
             host: str = get_settings().STABILITY_HOST,
             key: str = get_settings().STABILITY_KEY,
-            engine: str = "stable-diffusion-xl-1024-v0-9",#"stable-diffusion-xl-beta-v2-2-2",
+            engine: str = "stable-diffusion-xl-1024-v0-9",  # "stable-diffusion-xl-beta-v2-2-2",
             upscale_engine: str = "stable-diffusion-x4-latent-upscaler",
             verbose: bool = True,
             wait_for_ready: bool = True
@@ -34,12 +35,15 @@ class Stability:
     async def text_to_image(self, stability_req: StabilityReq) -> bytes:
         # Set up our initial generation parameters.
         answers = self.stability_api.generate(
-            prompt=stability_req.prompt,  # "expansive landscape rolling greens with blue daisies and weeping willow trees under a blue alien sky, masterful, ghibli",
-            seed=stability_req.seed,  # 992446758,  # If a seed is provided, the resulting generated image will be deterministic.
+            prompt=stability_req.prompt,
+            # "expansive landscape rolling greens with blue daisies and weeping willow trees under a blue alien sky, masterful, ghibli",
+            seed=stability_req.seed,
+            # 992446758,  # If a seed is provided, the resulting generated image will be deterministic.
             # What this means is that as long as all generation parameters remain the same, you can always recall the same image simply by generating it again.
             # Note: This isn't quite the case for CLIP Guided generations, which we tackle in the CLIP Guidance documentation.
             steps=stability_req.steps,  # Amount of inference steps performed on image generation. Defaults to 30.
-            cfg_scale=stability_req.cfg_scale,  # 8.0,  # Influences how strongly your generation is guided to match your prompt.
+            cfg_scale=stability_req.cfg_scale,
+            # 8.0,  # Influences how strongly your generation is guided to match your prompt.
             # Setting this value higher increases the strength in which it tries to match your prompt.
             # Defaults to 7.0 if not specified.
             width=stability_req.width,  # 512,  # Generation width, defaults to 512 if not included.
@@ -87,3 +91,8 @@ class Stability:
                     big_img = Image.open(io.BytesIO(artifact.binary))
                     big_img.save("imageupscaled" + ".png")  # Save our image to a local file.
                     return artifact.binary
+
+
+@lru_cache
+def get_stability(settings: Settings = get_settings()) -> Stability:
+    return Stability()

@@ -1,9 +1,12 @@
 import time
+from functools import lru_cache
 
 from pydantic import HttpUrl
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+
+from autobots.core.settings import Settings, get_settings
 
 
 class Selenium:
@@ -33,3 +36,8 @@ class Selenium:
     def __del__(self):
         # Closing the driver
         self.driver.close()
+
+
+@lru_cache
+def get_selenium(settings: Settings = get_settings()) -> Selenium:
+    return Selenium()

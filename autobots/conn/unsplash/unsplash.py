@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import List
 
 import aiohttp
@@ -5,7 +6,7 @@ import copy
 
 from autobots.conn.unsplash.random_photo import Image
 from autobots.conn.unsplash.search_photo import SearchImageList
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class Unsplash:
@@ -41,5 +42,7 @@ class Unsplash:
                 return img_list
 
 
-
+@lru_cache
+def get_unsplash(settings: Settings = get_settings()) -> Unsplash:
+    return Unsplash()
 
