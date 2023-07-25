@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
 
+    SQLALCHEMY_DATABASE_URL: str = None
+    SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
+
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
     OPENAI_ENGINE: str = "gpt-4"
