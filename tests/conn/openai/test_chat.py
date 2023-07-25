@@ -1,8 +1,8 @@
 import pytest as pytest
 import pytest_asyncio
 
-from autobots.conn.conn import get_conn
 from autobots.conn.openai.chat import ChatReq, Message, ChatRes
+from autobots.conn.openai.openai import get_openai
 from autobots.core.settings import get_settings
 
 
@@ -19,7 +19,7 @@ async def test_chat_happy_path(set_openai):
     msg1 = Message(role="user", content="Most famous Mechanics law")
     params = ChatReq(messages=[msg0, msg1])
 
-    resp: ChatRes = await get_conn().open_ai.chat(chat_req=params)
+    resp: ChatRes = await get_openai().chat(chat_req=params)
 
     assert "assistant" == resp.choices[0].message.role
     assert "Newton" in resp.choices[0].message.content

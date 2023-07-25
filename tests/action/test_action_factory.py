@@ -1,6 +1,7 @@
 
 import pytest
 import pytest_asyncio
+from pydantic import HttpUrl
 
 from autobots.action.action_factory import ActionFactory
 from autobots.action.llm_chat import LLMChat, LLMChatData
@@ -13,7 +14,6 @@ from autobots.core.settings import get_settings
 @pytest_asyncio.fixture
 async def set_settings():
     settings = get_settings(_env_file='../.env.local')
-    settings.OPENAI_ENGINE = "gpt-3.5-turbo-16k-0613"
 
 
 @pytest.mark.asyncio
@@ -23,7 +23,7 @@ async def test_action_factory_read_urls_happy_path(set_settings):
     await factory.register(name, ReadUrls, ReadUrlsData)
     action_class, action_data_class = await factory.get_action_classes(name)
 
-    action_data = action_data_class(name=name, read_urls_req=["https://meetkiwi.co"])
+    action_data = action_data_class(name=name, read_urls_req=[HttpUrl("https://meetkiwi.co")])
     action_data = await factory.run_action(action_class(), action_data)
     assert len(action_data.context) > 0
     assert True

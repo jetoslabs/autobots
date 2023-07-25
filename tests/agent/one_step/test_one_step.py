@@ -16,5 +16,5 @@ async def set_settings():
 async def test_prompt_generate_blog_happy_path_1(set_settings):
     agent_data = AgentData(goal="Advert for Nike shoes")
     await OneStepAgent().run(agent_data)
-    print(agent_data.json())
+    print(agent_data.model_dump_json())
     assert True

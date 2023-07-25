@@ -14,15 +14,15 @@ services:
     networks:
       network:
 
-  autobots:
-    container_name: autobots
-    image: registry.gitlab.com/meetkiwi/autobots:main
-    ports:
-      - "80:80"
-    env_file:
-      - .env.dev
-    networks:
-      network:
+#  autobots:
+#    container_name: autobots
+#    image: registry.gitlab.com/meetkiwi/autobots:main
+#    ports:
+#      - "80:80"
+#    env_file:
+#      - .env.dev
+#    networks:
+#      network:
 
   #  DD_AGENT_HOST env contains name of the service datadog-agent
   datadog-agent:

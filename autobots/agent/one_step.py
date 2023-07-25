@@ -20,7 +20,7 @@ class OneStepAgent:
     async def run(self, agent_data: AgentData):
         agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
         while not await self.is_goal_completed(agent_data):
-            print(agent_data.context[-1].json())
+            print(agent_data.context[-1].model_dump_json())
             plan_str: str = await self.plan_for_goal(agent_data)
             # Decide the next action based on the current context
             next_action_str: str = await self.decide_next_action(agent_data)

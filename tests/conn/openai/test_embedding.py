@@ -2,8 +2,8 @@
 import pytest
 import pytest_asyncio
 
-from autobots.conn.conn import get_conn
 from autobots.conn.openai.embedding import EmbeddingRes, EmbeddingReq
+from autobots.conn.openai.openai import get_openai
 from autobots.core.settings import get_settings
 
 
@@ -18,7 +18,7 @@ async def test_embedding_happy_path(set_openai):
     texts = ["Hello", "World"]
     embedding_req = EmbeddingReq(input=texts)
 
-    resp: EmbeddingRes = await get_conn().open_ai.embedding(embedding_req=embedding_req)
+    resp: EmbeddingRes = await get_openai().embedding(embedding_req=embedding_req)
 
     assert len(resp.data) == 2
     assert len(resp.data[0].embedding) == 1536

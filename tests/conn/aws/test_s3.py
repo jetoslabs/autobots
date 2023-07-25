@@ -3,7 +3,7 @@ import time
 import pytest
 import pytest_asyncio
 
-from autobots.conn.conn import get_conn
+from autobots.conn.aws.s3 import get_s3
 from autobots.core.settings import get_settings
 from autobots.core.utils import gen_hash
 
@@ -19,15 +19,15 @@ async def test_aws_s3_happy_path(set_settings):
     str1_id = gen_hash(str1)
 
     # put data in s3
-    res1 = await get_conn().s3.put(data=str1, filename=gen_hash(str1))
+    res1 = await get_s3().put(data=str1, filename=gen_hash(str1))
     assert res1 == len(str1)
 
     # get data from file
-    res1_data = await get_conn().s3.get(filename=gen_hash(str1))
+    res1_data = await get_s3().get(filename=gen_hash(str1))
     assert res1_data == str1
 
     # delete file from s3
-    del_res1 = await get_conn().s3.delete(filename=str1_id)
+    del_res1 = await get_s3().delete(filename=str1_id)
     assert del_res1[0].get("Key") == gen_hash(str1)
 
 
@@ -39,19 +39,19 @@ async def test_aws_s3_list(set_settings):
     try:
         # put objects
         for i in range(num_of_files):
-            await get_conn().s3.put(data, f"{prefix}/{data}_{i}")
+            await get_s3().put(data, f"{prefix}/{data}_{i}")
 
         time.sleep(3)
         # list objects
-        s3_objects = await get_conn().s3.list(prefix)
+        s3_objects = await get_s3().list(prefix)
         assert len(s3_objects) == num_of_files
 
     finally:
 
         # Delete list of objects
-        await get_conn().s3.delete_prefix(prefix)
+        await get_s3().delete_prefix(prefix)
 
         time.sleep(3)
 
-        s3_objects = await get_conn().s3.list(prefix)
+        s3_objects = await get_s3().list(prefix)
         assert len(s3_objects) == 0

@@ -1,6 +1,7 @@
 from functools import lru_cache
 
-from pydantic import BaseSettings
+from pydantic import ConfigDict
+from pydantic_settings import BaseSettings
 
 from autobots.core.log import log
 
@@ -11,6 +12,9 @@ class Settings(BaseSettings):
     APP_RELOAD: bool = True
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
+
+    SQLALCHEMY_DATABASE_URL: str = None
+    SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
@@ -35,7 +39,7 @@ class Settings(BaseSettings):
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
 
-    class Config:
+    class ConfigDict:
         # env_file = f"../.env.local"
         env_file_encoding = 'utf-8'
 
