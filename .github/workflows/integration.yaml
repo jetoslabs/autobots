@@ -39,6 +39,7 @@ jobs:
         run: |
           python -m pytest -vv -n 5
         env:
+          SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
