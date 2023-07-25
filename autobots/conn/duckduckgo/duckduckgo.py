@@ -1,9 +1,11 @@
+from functools import lru_cache
 from typing import List, Optional
 
 from duckduckgo_search import DDGS
 from pydantic import BaseModel, HttpUrl
 
 from autobots.core.log import log
+from autobots.core.settings import Settings, get_settings
 
 
 class SearchRes(BaseModel):
@@ -165,9 +167,9 @@ class DuckDuckGo:
         return videos
 
     async def search_map(
-        self, keywords: str, place: str = None, street: str = None, city: str = None,
-        county: str = None, state: str = None, country: str = None, postalcode: str = None,
-        latitude: str = None, longitude: str = None, radius: int = 0, num_results: int = 3
+            self, keywords: str, place: str = None, street: str = None, city: str = None,
+            county: str = None, state: str = None, country: str = None, postalcode: str = None,
+            latitude: str = None, longitude: str = None, radius: int = 0, num_results: int = 3
     ) -> List[MapRes]:
         maps = []
         num = 1
@@ -204,3 +206,8 @@ class DuckDuckGo:
                 suggestions.append(res)
                 log.trace(f"Suggestion for {keywords}: {r}")
         return suggestions
+
+
+@lru_cache
+def get_duckduckgo(settings: Settings = get_settings()) -> DuckDuckGo:
+    return DuckDuckGo()

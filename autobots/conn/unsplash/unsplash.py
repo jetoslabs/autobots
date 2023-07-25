@@ -1,11 +1,12 @@
+from functools import lru_cache
 from typing import List
 
 import aiohttp
 import copy
 
-from autobots.conn.unsplash.random_photo import ImageList, Image
+from autobots.conn.unsplash.random_photo import Image
 from autobots.conn.unsplash.search_photo import SearchImageList
-from autobots.core.settings import get_settings
+from autobots.core.settings import get_settings, Settings
 
 
 class Unsplash:
@@ -26,8 +27,9 @@ class Unsplash:
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url=url, params=params) as r:
                 json_body = await r.json()
-                img_list = ImageList.parse_obj(json_body)
-                return img_list.__root__
+                img_list: List[Image] = [Image(**image_json_body) for image_json_body in json_body]
+                # List[Image](json_body)]ImageList.parse_obj(json_body)
+                return img_list
 
     async def search_photo(self, query: str):
         params = copy.deepcopy(self.params)
@@ -36,9 +38,11 @@ class Unsplash:
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url=url, params=params) as r:
                 json_body = await r.json()
-                img_list = SearchImageList.parse_obj(json_body)
+                img_list = SearchImageList.model_validate(json_body)
                 return img_list
 
 
-
+@lru_cache
+def get_unsplash(settings: Settings = get_settings()) -> Unsplash:
+    return Unsplash()
 

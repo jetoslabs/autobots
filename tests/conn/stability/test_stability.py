@@ -5,8 +5,7 @@ import pytest_asyncio
 from PIL import Image
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
-from autobots.conn.conn import get_conn
-from autobots.conn.stability.stability import Stability
+from autobots.conn.stability.stability import Stability, get_stability
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
 from autobots.core.settings import get_settings
 
@@ -16,14 +15,14 @@ from autobots.core.settings import get_settings
 async def set_settings():
     settings = get_settings(_env_file='../.env.local')
     # Making test cheaper by using old engine
-    get_conn().stability = Stability()#(engine="stable-diffusion-768-v2-0")
+    # get_conn().stability = Stability()#(engine="stable-diffusion-768-v2-0")
 
 
 @pytest.mark.asyncio
 async def test_text_to_image_happy_path(set_settings):
     prompt = "Image of a family wearing Nike shoes"
     stability_req = StabilityReq(prompt=prompt, cfg_scale=9)
-    img_bytes = await get_conn().stability.text_to_image(stability_req)
+    img_bytes = await get_stability().text_to_image(stability_req)
     assert img_bytes is not None
 
 
@@ -38,7 +37,7 @@ async def test_image_to_image_happy_path(set_settings):
         # height=1024,
         sampler=generation.SAMPLER_K_DPMPP_2M
     )
-    img_bytes = await get_conn().stability.text_to_image(stability_req)
+    img_bytes = await get_stability().text_to_image(stability_req)
     img = Image.open(io.BytesIO(img_bytes))
 
     assert img.height > 0
@@ -58,7 +57,7 @@ async def test_image_to_image_happy_path(set_settings):
         # height=1024,
         sampler=generation.SAMPLER_K_DPMPP_2M
     )
-    img_bytes = await get_conn().stability.text_to_image(stability_req)
+    img_bytes = await get_stability().text_to_image(stability_req)
 
     assert img.height > 0
     assert img.width > 0
@@ -71,7 +70,7 @@ async def test_upscale_image_happy_path(set_settings):
     height = 1024
 
     stability_req = StabilityReq(prompt=prompt, cfg_scale=9, width=width, height=height)
-    img_bytes = await get_conn().stability.text_to_image(stability_req)
+    img_bytes = await get_stability().text_to_image(stability_req)
     img = Image.open(io.BytesIO(img_bytes))
 
     assert img.width == width
@@ -80,7 +79,7 @@ async def test_upscale_image_happy_path(set_settings):
     new_width = 1080#width * 2
     new_height = 1080#(new_width/width) * height
     stability_req = StabilityUpscaleReq(init_image=img, width=new_width)
-    img_bytes = await get_conn().stability.upscale_image(stability_req)
+    img_bytes = await get_stability().upscale_image(stability_req)
     new_img = Image.open(io.BytesIO(img_bytes))
 
     assert new_img.width == new_width

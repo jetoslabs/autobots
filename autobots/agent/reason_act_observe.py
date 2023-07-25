@@ -1,8 +1,9 @@
 from typing import List
 
 from autobots.action.prompt.tot import tot_prompt
-from autobots.conn.conn import get_conn
+from autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from autobots.conn.openai.chat import Message, Role, ChatRes, ChatReq
+from autobots.conn.openai.openai import get_openai
 from autobots.core.log import log
 
 Task_Prefix = "Task: "
@@ -61,7 +62,7 @@ class ReasonActObserve():
     async def think(self, messages: List[Message]) -> str:
         req_message = messages + [Message(role=Role.user, content="Now Think. Respond in maximum of 500 words")]
         chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-        resp: ChatRes = await get_conn().open_ai.chat(chat_req)
+        resp: ChatRes = await get_openai().chat(chat_req)
         response = resp.choices[0].message.content
         log.info(f"{Thought_Prefix}{response}")
         return f"{response}"
@@ -70,7 +71,7 @@ class ReasonActObserve():
         try:
             req_message = messages + [Message(role=Role.user, content="Based on above thought, Now Select one Action and one action only")]
             chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-            resp: ChatRes = await get_conn().open_ai.chat(chat_req)
+            resp: ChatRes = await get_openai().chat(chat_req)
             response = resp.choices[0].message.content
             log.info(f"{response}")
             return f"{response}"
@@ -81,7 +82,7 @@ class ReasonActObserve():
         if "search" in action:
             res = ""
             search_for = action.split("[")[1].replace("]", "")
-            search_res = await get_conn().duckduckgo.search_text(search_for, num_results=3)
+            search_res = await get_duckduckgo().search_text(search_for, num_results=3)
             for search in search_res:
                 res = res + f"{search.title}: {search.body}\n"
             res = Observe_Prefix + res
@@ -91,7 +92,7 @@ class ReasonActObserve():
         elif "news" in action:
             res = ""
             search_for = action.split("[")[1].replace("]", "")
-            search_res = await get_conn().duckduckgo.news(search_for, num_results=3)
+            search_res = await get_duckduckgo().news(search_for, num_results=3)
             for search in search_res:
                 res = res + f"{search.title}: {search.body} - source({search.source})\n"
             res = Observe_Prefix + res
