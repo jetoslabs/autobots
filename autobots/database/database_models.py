@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import Column, String, Date, UUID, ForeignKey, DateTime, func, text
+from sqlalchemy import Column, String, UUID, ForeignKey, DateTime, func, text, Float
 from sqlalchemy.dialects.postgresql import JSONB
 
 from autobots.conn.openai.chat import Message
@@ -24,13 +24,18 @@ class PromptORM(Base):
     id = Column(UUID(as_uuid=True), server_default=text("gen_random_uuid()"), primary_key=True, index=True)
     created_at = Column(DateTime, server_default=func.now())
     name = Column(String)
+    version = Column(Float)
     description = Column(String, default='')
     prompt = Column(JSONB)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
     target_platform = Column(String)
 
-    def __init__(self, name: str, prompt: List[Message], user_id: UUID, target_platform: str, description: str = None):
+    def __init__(
+            self, name: str, prompt: List[Message], user_id: UUID, target_platform: str,
+            version: float = 1, description: str = None
+    ):
         self.name = name
+        self.version = version
         self.description = description
         self.prompt = jsonable_encoder(prompt)
         self.user_id = user_id
