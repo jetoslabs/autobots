@@ -6,7 +6,7 @@ from autobots.core import settings
 from autobots.core.settings import get_settings
 
 
-class Prompt:
+class LLM:
 
     @staticmethod
     async def chat_openai(
