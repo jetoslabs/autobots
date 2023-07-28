@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 from autobots.conn.openai.chat import Message
 from autobots.database.base import Base
+from autobots.database.target_platform import LLMTargetPlatform
 
 
 class UserORM(Base):
@@ -31,7 +32,7 @@ class PromptORM(Base):
     target_platform = Column(String)
 
     def __init__(
-            self, name: str, prompt: List[Message], user_id: UUID, target_platform: str,
+            self, name: str, prompt: List[Message], user_id: UUID, target_platform: LLMTargetPlatform,
             version: float = 1, description: str = None
     ):
         self.name = name
