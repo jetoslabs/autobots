@@ -1,10 +1,13 @@
+from typing import Generator
+
 from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm.session import sessionmaker, Session
 
 from autobots.core.settings import get_settings
 
 engine = create_engine(get_settings().SQLALCHEMY_DATABASE_URL)
-Session = sessionmaker(bind=engine)
+SessionLocal: sessionmaker = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 metadata = MetaData(schema=get_settings().SQLALCHEMY_DATABASE_SCHEMA)
 # Creating Base for so Alembic sees only models in this App
@@ -18,3 +21,9 @@ def create_database_schema():
 create_database_schema()
 
 
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
