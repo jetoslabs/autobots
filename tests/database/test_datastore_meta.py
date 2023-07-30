@@ -3,8 +3,8 @@ import uuid
 import pytest
 import pytest_asyncio
 
-from autobots.core.settings import Settings, get_settings
-from autobots.database.base import Session
+from autobots.core.settings import get_settings
+from autobots.database.base import SessionLocal
 from autobots.database.database_models import UserORM, DatastoreMetaORM
 
 
@@ -15,7 +15,7 @@ async def set_settings():
 
 @pytest.mark.asyncio
 async def test_datastore_meta_happy_path(set_settings):
-    session = Session()
+    session = SessionLocal()
     try:
         # add user
         user1 = UserORM(id=uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37"))

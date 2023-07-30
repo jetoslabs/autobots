@@ -4,19 +4,20 @@ import pytest
 import pytest_asyncio
 
 from autobots.conn.openai.chat import Message
-from autobots.core.settings import get_settings, Settings
-from autobots.database.base import Session
+from autobots.core.settings import get_settings
+from autobots.database.base import SessionLocal
 from autobots.database.database_models import UserORM, PromptORM
+from autobots.database.target_platform import LLMTargetPlatform
 
 
 @pytest_asyncio.fixture
-async def set_settings() -> Settings:
+async def set_settings():
     settings = get_settings(_env_file='../.env.local')
 
 
 @pytest.mark.asyncio
 async def test_database_models_happy_path(set_settings):
-    session = Session()
+    session = SessionLocal()
     try:
         # add user
         user1 = UserORM(id=uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37"))
@@ -30,7 +31,7 @@ async def test_database_models_happy_path(set_settings):
             name=prompt_name,
             prompt=prompt,
             user_id=user1.id,
-            target_platform="openai"
+            target_platform=LLMTargetPlatform.openai#"openai"
         )
         session.add(prompt1)
         session.commit()
