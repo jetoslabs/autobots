@@ -26,10 +26,10 @@ async def test_database_models_happy_path(set_settings):
 
         # add prompt
         prompt_name = "test_random_photo_happy_path"
-        prompt = [Message(role="user", content="Act as a expert blog writer")]
+        messages = [Message(role="user", content="Act as a expert blog writer")]
         prompt1 = PromptORM(
             name=prompt_name,
-            prompt=prompt,
+            messages=messages,
             user_id=user1.id,
             target_platform=LLMTargetPlatform.openai#"openai"
         )

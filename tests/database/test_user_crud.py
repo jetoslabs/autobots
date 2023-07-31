@@ -15,7 +15,7 @@ async def set_settings():
 
 
 @pytest.mark.asyncio
-async def test_datastore_meta_happy_path(set_settings):
+async def test_user_crud_happy_path(set_settings):
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
     try:
         with next(get_db()) as db:

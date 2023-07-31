@@ -19,7 +19,7 @@ class UserPrompts:
     async def create(self, name: str, messages: List[Message], target_platform: LLMTargetPlatform, description: str | None = None):
         prompt = PromptORM(
             name=name,
-            prompt=messages,
+            messages=messages,
             user_id=self.user.id,
             target_platform=target_platform,
             description=description)
