@@ -27,18 +27,18 @@ class PromptORM(Base):
     name = Column(String)
     version = Column(Float)
     description = Column(String, default='')
-    prompt = Column(JSONB)
+    messages = Column(JSONB)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
     target_platform = Column(String)
 
     def __init__(
-            self, name: str, prompt: List[Message], user_id: UUID, target_platform: LLMTargetPlatform,
+            self, name: str, messages: List[Message], user_id: UUID, target_platform: LLMTargetPlatform,
             version: float = 1, description: str = None
     ):
         self.name = name
         self.version = version
         self.description = description
-        self.prompt = jsonable_encoder(prompt)
+        self.messages = jsonable_encoder(messages)
         self.user_id = user_id
         self.target_platform = target_platform
 
