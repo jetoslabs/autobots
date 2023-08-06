@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import ConfigDict
+from jose.constants import ALGORITHMS
 from pydantic_settings import BaseSettings
 
 from autobots.core.log import log
@@ -15,6 +15,12 @@ class Settings(BaseSettings):
 
     SQLALCHEMY_DATABASE_URL: str = None
     SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
+
+    SUPABASE_URL: str = None
+    SUPABASE_ANON_KEY: str = None
+
+    JWT_SECRET_KEY: str = None
+    JWT_ALGORITHM: str = ALGORITHMS.HS256
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
@@ -38,6 +44,8 @@ class Settings(BaseSettings):
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
+    API_AUTH: str = "/auth"
+    API_AUTH_TOKEN: str = "/token"
 
     class ConfigDict:
         # env_file = f"../.env.local"
