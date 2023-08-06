@@ -1,7 +1,10 @@
+from typing import Optional
+
 import gotrue
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from gotrue import AuthResponse
+from pydantic import EmailStr, HttpUrl
 
 from autobots.auth.auth import get_auth
 from autobots.auth.data_models import BearerAccessToken
@@ -12,7 +15,7 @@ router = APIRouter()
 
 
 @router.post("/")
-def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends()) -> AuthResponse:
+async def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends()) -> AuthResponse:
     """
     Returns Auth Response (User and Session)
     :return: AuthResponse
@@ -26,7 +29,7 @@ def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends()) ->
 
 
 @router.post(get_settings().API_AUTH_TOKEN)
-def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> BearerAccessToken:
+async def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> BearerAccessToken:
     """
     OAuth2 endpoint
     signs in user(username/password) and returns JWT token
@@ -45,11 +48,21 @@ def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> BearerAcce
     return bearer_token
 
 
-@router.post(f"/test/token")
-def test_auth_access_token(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> gotrue.User:
+@router.post(f"/token/test")
+async def test_auth_access_token(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> gotrue.User:
     return user_res.user
 
 
-@router.post("/test/creds")
-def test_auth_creds(user_res: gotrue.UserResponse = Depends(get_user_from_creds)) -> gotrue.User:
+@router.post("/creds/test")
+async def test_auth_creds(user_res: gotrue.UserResponse = Depends(get_user_from_creds)) -> gotrue.User:
     return user_res.user
+
+
+@router.post("/password/reset")
+async def reset_password_email(email: EmailStr, redirect_to: Optional[HttpUrl] = None) -> bool:
+    return get_auth().reset_password_email(email, redirect_to)
+
+
+@router.post("/session/refresh")
+async def reset_password_email(refresh_token: str, user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> AuthResponse:
+    return get_auth().refresh_session(refresh_token)
