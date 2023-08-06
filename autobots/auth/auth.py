@@ -2,7 +2,7 @@ from functools import lru_cache
 
 import gotrue
 from fastapi import HTTPException
-from pydantic import EmailStr
+from pydantic import EmailStr, HttpUrl
 
 from autobots.conn.supabase.supabase import Supabase, get_supabase
 
@@ -26,6 +26,17 @@ class Auth:
         res: gotrue.AuthResponse = self.supabase_client.auth.sign_up({"email": email, "password": password})
         if not res.user:
             raise HTTPException(status_code=409, detail="System conflict while creating user")
+        return res
+
+    def reset_password_email(self, email: EmailStr, redirect_to: HttpUrl = None) -> bool:
+        options = {}
+        if redirect_to:
+            options["redirect_to"] = redirect_to
+        self.supabase_client.auth.reset_password_email(email=email, options=options)
+        return True
+
+    def refresh_session(self, refresh_token: str) -> gotrue.AuthResponse:
+        res: gotrue.AuthResponse = self.supabase_client.auth.refresh_session(refresh_token=refresh_token)
         return res
 
 
