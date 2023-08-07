@@ -10,14 +10,11 @@ from autobots.database.database_models import PromptORM
 class PromptCRUD:
 
     @staticmethod
-    async def create(prompt: PromptORM, db: Session = get_db()):
+    async def create(prompt: PromptORM, db: Session = next(get_db())) -> PromptORM:
         db.add(prompt)
-        # session: SessionLocal = SessionLocal()
-        # try:
-        #     session.add(prompt)
-        #     session.commit()
-        # finally:
-        #     session.close()
+        db.commit()
+        db.refresh(prompt)
+        return prompt
 
     @staticmethod
     async def read(user_id: UUID, id: UUID, db: Session = get_db()) -> List[PromptORM]:
