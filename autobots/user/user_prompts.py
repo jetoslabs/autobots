@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from fastapi import Depends, HTTPException
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
-from autobots.conn.openai.chat import Message
+from autobots.conn.openai.chat import Message, Role
 from autobots.conn.openai.openai import get_openai
 from autobots.database.base import get_db
 from autobots.database.database_models import UserORM, PromptORM
@@ -26,6 +27,12 @@ class UserPromptCreateOutput(UserPromptCreateInput):
     id: UUID
     created_at: datetime
 
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Input(BaseModel):
+    input: str
+
 
 class UserPrompts:
 
@@ -39,16 +46,44 @@ class UserPrompts:
         prompt_orm: PromptORM = await PromptCRUD.create(prompt, db)
         return prompt_orm
 
-    @staticmethod
-    async def test(messages: List[Message], target_platform: LLMTargetPlatform) -> Message | None:
-        if target_platform.lower() == LLMTargetPlatform.openai:
-            resp = await LLM.chat_openai(messages, llm=get_openai())
-            return resp
-
-    async def read_by_name(self, name: str) -> list[PromptORM]:
-        prompts = await PromptCRUD.read_by_name(self.user.id, name)
+    async def list(
+            self, limit: int = 100, offset: int = 0, db: Session = Depends(get_db)
+    ) -> List[PromptORM]:
+        if limit < 0 or limit > 100:
+            limit = 100
+        if offset < 0:
+            offset = 0
+        prompts = await PromptCRUD.list(self.user.id, limit, offset, db)
         return prompts
 
-    async def read(self, id: UUID) -> PromptORM:
-        prompts = await PromptCRUD.read(self.user.id, id)
-        return prompts[0]
+    async def read(self, id: UUID, db: Session = Depends(get_db)) -> PromptORM:
+        prompt = await PromptCRUD.read(self.user.id, id, db)
+        return prompt
+
+    async def delete(self, id: UUID, db: Session = Depends(get_db)) -> PromptORM:
+        existing_prompt = await self.read(id, db)
+        if self.user.id != existing_prompt.user_id:
+            raise HTTPException(405, "User does not own prompt")
+        prompt_orm: PromptORM = await PromptCRUD.delete(existing_prompt, db)
+        return prompt_orm
+
+    async def upsert(
+            self, id: UUID, user_prompt_create_input: UserPromptCreateInput, db: Session = Depends(get_db)
+    ) -> PromptORM:
+        existing_prompt = await self.read(id, db)
+        if self.user.id != existing_prompt.user_id:
+            raise HTTPException(405, "User does not own prompt")
+        new_prompt = PromptORM(user_id=self.user.id, **user_prompt_create_input.__dict__)
+        prompt_orm: PromptORM = await PromptCRUD.upsert(existing_prompt, new_prompt, db)
+        return prompt_orm
+
+    async def run(self, id: UUID, input: Input, db: Session = Depends(get_db)) -> Message | None:
+        user_message = Message(role=Role.user, content=input.input)
+        prompt_orm = await self.read(id, db)
+        if prompt_orm.target_platform.lower() == LLMTargetPlatform.openai:
+            resp = await LLM.chat_openai(prompt_orm.messages + [user_message], llm=get_openai())
+            return resp
+
+    async def read_by_name(self, name: str) -> List[PromptORM]:
+        prompts = await PromptCRUD.read_by_name(self.user.id, name)
+        return prompts
