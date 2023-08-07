@@ -13,7 +13,7 @@ class Role(str, Enum):
 
 
 class Message(BaseModel):
-    role: str | Role
+    role: Role
     content: str
 
 

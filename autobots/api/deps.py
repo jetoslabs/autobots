@@ -1,9 +1,9 @@
-from typing import Generator
+# from typing import Generator
+#
+# from sqlalchemy.orm import Session
+#
+# from autobots.database import base
+#
 
-from sqlalchemy.orm import Session
-
-from autobots.database import base
-
-
-def get_db() -> Generator[Session, None, None]:
-    return base.get_db()
+# def get_db() -> Generator[Session, None, None]:
+#     return base.get_db()

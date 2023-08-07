@@ -33,7 +33,7 @@ class PromptORM(Base):
 
     def __init__(
             self, name: str, messages: List[Message], user_id: UUID, target_platform: LLMTargetPlatform,
-            version: float = 1, description: str = None
+            version: float = 1, description: str = ""
     ):
         self.name = name
         self.version = version
