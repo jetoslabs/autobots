@@ -85,3 +85,16 @@ async def run_prompt(
     user_orm = UserORM(id=UUID(user_res.user.id))
     message = await UserPrompts(user=user_orm).run(UUID(id), input, db)
     return message
+
+
+@router.get("/name/{name}/version/{version}")
+async def get_prompt(
+        name: str, version: str = None,
+        limit: int = 100, offset: int = 0,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Session = Depends(get_db)
+) -> List[UserPromptCreateOutput]:
+    user_orm = UserORM(id=UUID(user_res.user.id))
+    prompt_orm_s = await UserPrompts(user=user_orm).read_by_name_version(name, version, limit, offset, db)
+    output = [UserPromptCreateOutput.model_validate(prompt_orm) for prompt_orm in prompt_orm_s]
+    return output

@@ -56,9 +56,23 @@ class PromptCRUD:
         return await PromptCRUD.create(new_prompt, db)
 
     @staticmethod
-    async def read_by_name(user_id: UUID, name: str, db: Session = get_db()) -> List[PromptORM]:
-        prompts = db.query(PromptORM) \
+    async def read_by_name_version(
+            user_id: UUID,
+            name: str, version: str = None,
+            limit: int = 100, offset: int = 0,
+            db: Session = Depends(get_db)
+    ) -> List[PromptORM]:
+        if limit < 0 or limit > 100:
+            limit = 100
+        if offset < 0:
+            offset = 0
+
+        query = db.query(PromptORM) \
+            .limit(limit) \
+            .offset(offset) \
             .filter_by(user_id=user_id) \
-            .filter_by(name=name) \
-            .all()
+            .filter_by(name=name)
+        if version:
+            query.filter_by(version=version)
+        prompts = query.all()
         return prompts
