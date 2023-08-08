@@ -2,11 +2,13 @@ from typing import List
 from uuid import UUID
 
 import gotrue
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.openai.chat import Message
+from autobots.core.log import log
 from autobots.database.base import get_db
 from autobots.database.database_models import UserORM
 from autobots.user.user_prompts import UserPrompts, UserPromptCreateInput, UserPromptCreateOutput, Input
@@ -20,10 +22,17 @@ async def create_prompt(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
 ) -> UserPromptCreateOutput:
-    user_orm = UserORM(id=UUID(user_res.user.id))
-    prompt_orm = await UserPrompts(user=user_orm).create(user_prompt_create_input, db)
-    output = UserPromptCreateOutput.model_validate(prompt_orm)
-    return output
+    try:
+        user_orm = UserORM(id=UUID(user_res.user.id))
+        prompt_orm = await UserPrompts(user=user_orm).create(user_prompt_create_input, db)
+        output = UserPromptCreateOutput.model_validate(prompt_orm)
+        return output
+    except IntegrityError as ie:
+        log.error(ie)
+        raise HTTPException(400, "Name and version is not unique")
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(500)
 
 
 @router.get("/")
