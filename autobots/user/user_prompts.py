@@ -87,6 +87,8 @@ class UserPrompts:
             resp = chat_res.choices[0].message
             return resp
 
-    async def read_by_name(self, name: str) -> List[PromptORM]:
-        prompts = await PromptCRUD.read_by_name(self.user.id, name)
+    async def read_by_name_version(
+            self, name: str, version: str = None, limit: int = 100, offset: int = 0, db: Session = Depends(get_db)
+    ) -> List[PromptORM]:
+        prompts = await PromptCRUD.read_by_name_version(self.user.id, name, version, limit, offset, db)
         return prompts
