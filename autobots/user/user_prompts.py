@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
-from autobots.conn.openai.chat import Message, Role
+from autobots.conn.openai.chat import Message, Role, ChatReq
 from autobots.conn.openai.openai import get_openai
 from autobots.database.base import get_db
 from autobots.database.database_models import UserORM, PromptORM
@@ -17,7 +17,7 @@ from autobots.llm.llm import LLM
 
 class UserPromptCreateInput(BaseModel):
     name: str
-    messages: List[Message]
+    chat_req: ChatReq
     target_platform: LLMTargetPlatform
     version: Optional[float]
     description: Optional[str]
@@ -81,7 +81,10 @@ class UserPrompts:
         user_message = Message(role=Role.user, content=input.input)
         prompt_orm = await self.read(id, db)
         if prompt_orm.target_platform.lower() == LLMTargetPlatform.openai:
-            resp = await LLM.chat_openai(prompt_orm.messages + [user_message], llm=get_openai())
+            chat_req = ChatReq(**prompt_orm.chat_req)
+            chat_req.messages = chat_req.messages + [user_message]
+            chat_res = await get_openai().chat(chat_req=chat_req)
+            resp = chat_res.choices[0].message
             return resp
 
     async def read_by_name(self, name: str) -> List[PromptORM]:

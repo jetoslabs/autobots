@@ -1,10 +1,8 @@
-from typing import List
-
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import Column, String, UUID, ForeignKey, DateTime, func, text, Float
 from sqlalchemy.dialects.postgresql import JSONB
 
-from autobots.conn.openai.chat import Message
+from autobots.conn.openai.chat import ChatReq
 from autobots.database.base import Base
 from autobots.database.target_platform import LLMTargetPlatform
 
@@ -27,18 +25,18 @@ class PromptORM(Base):
     name = Column(String)
     version = Column(Float)
     description = Column(String, default='')
-    messages = Column(JSONB)
+    chat_req = Column(JSONB)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
     target_platform = Column(String)
 
     def __init__(
-            self, name: str, messages: List[Message], user_id: UUID, target_platform: LLMTargetPlatform,
+            self, name: str, chat_req: ChatReq, user_id: UUID, target_platform: LLMTargetPlatform,
             version: float = 1, description: str = ""
     ):
         self.name = name
         self.version = version
         self.description = description
-        self.messages = jsonable_encoder(messages)
+        self.chat_req = jsonable_encoder(chat_req)
         self.user_id = user_id
         self.target_platform = target_platform
 
