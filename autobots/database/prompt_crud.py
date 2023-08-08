@@ -67,12 +67,9 @@ class PromptCRUD:
         if offset < 0:
             offset = 0
 
-        query = db.query(PromptORM) \
-            .limit(limit) \
-            .offset(offset) \
-            .filter_by(user_id=user_id) \
-            .filter_by(name=name)
+        query = db.query(PromptORM).filter_by(user_id=user_id).filter_by(name=name)
         if version:
             query.filter_by(version=version)
+        query.limit(limit).offset(offset)
         prompts = query.all()
         return prompts
