@@ -12,7 +12,7 @@ from autobots.database.base import get_db
 from autobots.database.database_models import UserORM, PromptORM
 from autobots.database.prompt_crud import PromptCRUD
 from autobots.database.target_platform import LLMTargetPlatform
-from autobots.llm.llm import LLM
+# from autobots.llm.llm import LLM
 
 
 class UserPromptCreateInput(BaseModel):
