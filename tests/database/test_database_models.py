@@ -7,10 +7,10 @@ from autobots.conn.openai.chat import Message, ChatReq
 from autobots.core.settings import get_settings
 from autobots.core.utils import gen_uuid
 from autobots.database.base import SessionLocal
-from autobots.database.prompt_orm_model import PromptORM
+from autobots.prompts.prompt_orm_model import PromptORM
 # from autobots.database.database_models import UserORM, PromptORM
-from autobots.database.target_platform import LLMTargetPlatform
-from autobots.database.user_orm_model import UserORM
+from autobots.prompts.target_platform import LLMTargetPlatform
+from autobots.user.user_orm_model import UserORM
 
 
 @pytest_asyncio.fixture

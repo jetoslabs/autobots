@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 from autobots.conn.openai.chat import Message, Role, ChatReq
 from autobots.conn.openai.openai import get_openai
 from autobots.database.base import get_db
-from autobots.database.prompt_crud import PromptCRUD
-from autobots.database.prompt_orm_model import PromptORM
-from autobots.database.target_platform import LLMTargetPlatform
-from autobots.database.user_orm_model import UserORM
+from autobots.prompts.prompt_crud import PromptCRUD
+from autobots.prompts.prompt_orm_model import PromptORM
+from autobots.prompts.target_platform import LLMTargetPlatform
+from autobots.user.user_orm_model import UserORM
 
 
 class UserPromptCreateInput(BaseModel):

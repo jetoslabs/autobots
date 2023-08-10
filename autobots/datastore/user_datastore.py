@@ -1,7 +1,7 @@
 from autobots.conn.aws.s3 import S3, get_s3
 from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
 from autobots.database.database_models import UserORM, DatastoreMetaORM
-from autobots.database.datastore_meta_crud import DatastoreMetaCRUD
+from autobots.datastore.datastore_meta_crud import DatastoreMetaCRUD
 from autobots.datastore.datastore import Datastore
 
 

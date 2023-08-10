@@ -5,7 +5,7 @@ from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 
 from autobots.database.base import get_db
-from autobots.database.prompt_orm_model import PromptORM
+from autobots.prompts.prompt_orm_model import PromptORM
 
 
 # from autobots.database.database_models import PromptORM
