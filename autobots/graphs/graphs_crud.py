@@ -5,7 +5,7 @@ from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 
 from autobots.database.base import get_db
-from autobots.database.database_models import GraphORM
+from autobots.graphs.graph_orm_model import GraphORM
 
 
 class GraphsCRUD:

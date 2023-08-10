@@ -7,6 +7,7 @@ from autobots.database.base import get_db
 from autobots.user.user_orm_model import UserORM
 
 
+# TODO
 class UserCRUD:
 
     @staticmethod
