@@ -4,10 +4,7 @@ from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 
 from autobots.database.base import get_db
-from autobots.database.user_orm_model import UserORM
-
-
-# from autobots.database.database_models import UserORM
+from autobots.user.user_orm_model import UserORM
 
 
 class UserCRUD:

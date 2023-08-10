@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 from autobots.conn.openai.chat import ChatReq
 from autobots.database.base import Base
-from autobots.database.target_platform import LLMTargetPlatform
+from autobots.prompts.target_platform import LLMTargetPlatform
 
 
 class PromptORM(Base):

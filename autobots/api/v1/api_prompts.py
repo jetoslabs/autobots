@@ -10,8 +10,8 @@ from autobots.auth.security import get_user_from_access_token
 from autobots.conn.openai.chat import Message
 from autobots.core.log import log
 from autobots.database.base import get_db
-from autobots.database.user_orm_model import UserORM
-from autobots.user.user_prompts import UserPrompts, UserPromptCreateInput, UserPromptCreateOutput, Input
+from autobots.user.user_orm_model import UserORM
+from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, UserPromptCreateOutput, Input
 
 router = APIRouter()
 

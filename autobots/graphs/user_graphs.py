@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from autobots.database.base import get_db
 from autobots.database.database_models import GraphORM, UserORM
-from autobots.database.graphs_crud import GraphsCRUD
+from autobots.graphs.graphs_crud import GraphsCRUD
 
 
 class UserGraphCreateInput(BaseModel):
