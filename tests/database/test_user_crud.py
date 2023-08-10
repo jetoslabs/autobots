@@ -5,8 +5,9 @@ import pytest_asyncio
 
 from autobots.core.settings import get_settings
 from autobots.database.base import get_db
-from autobots.database.database_models import UserORM
+# from autobots.database.database_models import UserORM
 from autobots.database.user_crud import UserCRUD
+from autobots.database.user_orm_model import UserORM
 
 
 @pytest_asyncio.fixture

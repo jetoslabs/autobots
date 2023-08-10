@@ -5,7 +5,10 @@ from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 
 from autobots.database.base import get_db
-from autobots.database.database_models import PromptORM
+from autobots.database.prompt_orm_model import PromptORM
+
+
+# from autobots.database.database_models import PromptORM
 
 
 class PromptCRUD:

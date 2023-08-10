@@ -5,7 +5,11 @@ import pytest_asyncio
 
 from autobots.core.settings import get_settings
 from autobots.database.base import SessionLocal
-from autobots.database.database_models import UserORM, DatastoreMetaORM
+from autobots.database.datastore_meta_orm_model import DatastoreMetaORM
+from autobots.database.user_orm_model import UserORM
+
+
+# from autobots.database.database_models import UserORM, DatastoreMetaORM
 
 
 @pytest_asyncio.fixture

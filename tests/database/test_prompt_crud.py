@@ -3,13 +3,16 @@ import uuid
 import pytest
 import pytest_asyncio
 
-from autobots.conn.openai.chat import Message, Role
+from autobots.conn.openai.chat import Message, Role, ChatReq
 from autobots.core.settings import get_settings
+from autobots.core.utils import gen_uuid
 from autobots.database.base import get_db
-from autobots.database.database_models import UserORM, PromptORM
+# from autobots.database.database_models import UserORM, PromptORM
 from autobots.database.prompt_crud import PromptCRUD
+from autobots.database.prompt_orm_model import PromptORM
 from autobots.database.target_platform import LLMTargetPlatform
 from autobots.database.user_crud import UserCRUD
+from autobots.database.user_orm_model import UserORM
 
 
 @pytest_asyncio.fixture
@@ -23,19 +26,20 @@ async def test_prompt_crud_happy_path(set_settings):
     created_prompt = None
     with next(get_db()) as db:
         try:
-            is_user_exist = await UserCRUD.read(user_id, db)
-            if len(is_user_exist) == 0:
-                # add user
-                user1 = UserORM(id=user_id)
-                await UserCRUD.create(user1, db)
-                db.commit()
+            # is_user_exist = await UserCRUD.read(user_id, db)
+            # if len(is_user_exist) == 0:
+            #     # add user
+            #     user1 = UserORM(id=user_id)
+            #     await UserCRUD.create(user1, db)
+            #     db.commit()
 
             # add prompt
-            prompt_name = "test_prompt_crud_happy_path"
+            prompt_name = "test_prompt_crud_happy_path"+ gen_uuid().hex
             message_content = "Be a blog writer"
+            chat_req = ChatReq(messages=[Message(role=Role.user, content=message_content)])
             prompt1 = PromptORM(
                 name=prompt_name,
-                messages=[Message(role=Role.user, content=message_content)],
+                chat_req=chat_req,
                 user_id=user_id,
                 target_platform=LLMTargetPlatform.openai
             )
@@ -43,21 +47,18 @@ async def test_prompt_crud_happy_path(set_settings):
             db.commit()
 
             # select prompt
-            prompts = await PromptCRUD.read_by_name(user_id, prompt_name, db)
+            prompts = await PromptCRUD.read_by_name_version(user_id, prompt_name, db=db)
             assert len(prompts) > 0
             # verify content of 1st message
             created_prompt = prompts[0]
-            assert created_prompt.messages[0]["content"] == message_content
-
-        except Exception as e:
-            assert e is None
+            assert created_prompt.chat_req["messages"][0]["content"] == message_content
 
         finally:
             # delete prompt
             await PromptCRUD.delete(created_prompt, db)
             db.commit()
-            # delete user if exist (provisioning for other tests)
-            is_user_exist = await UserCRUD.read(user_id, db)
-            if len(is_user_exist) > 0:
-                await UserCRUD.delete(user1, db)
-                db.commit()
+            # # delete user if exist (provisioning for other tests)
+            # is_user_exist = await UserCRUD.read(user_id, db)
+            # if len(is_user_exist) > 0:
+            #     await UserCRUD.delete(user1, db)
+            #     db.commit()
