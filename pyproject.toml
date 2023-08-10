@@ -27,6 +27,9 @@ ddtrace = "^1.16.1"
 pydantic-settings = "^2.0.2"
 sqlalchemy = "^2.0.19"
 psycopg2 = "^2.9.6"
+supabase = "^1.0.4"
+python-jose = "^3.3.0"
+python-multipart = "^0.0.6"
 
 [build-system]
 requires = ["poetry-core"]
