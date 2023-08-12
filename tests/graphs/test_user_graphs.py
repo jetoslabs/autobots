@@ -22,7 +22,7 @@ async def set_settings():
 
 
 @pytest.mark.asyncio
-async def test_user_graphs_run_graph_happy_path(set_settings):
+async def test_user_graph_run_happy_path(set_settings):
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
     user = UserORM(id=user_id)
 
@@ -52,6 +52,7 @@ async def test_user_graphs_run_graph_happy_path(set_settings):
 
             # testing run (involves creating record in graphs table)
             input2 = Input(input="Campaign for Nike shoes during Diwali Festival")
+            # create graph in table
             graph = await create_graph(user_graphs, graph_map, db1)
             # run stored graph
             results2 = await user_graphs.run(input2, graph.id, db1)
