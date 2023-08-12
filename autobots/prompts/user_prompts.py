@@ -19,8 +19,8 @@ class UserPromptCreateInput(BaseModel):
     name: str
     chat_req: ChatReq
     target_platform: LLMTargetPlatform
-    version: Optional[float]
-    description: Optional[str]
+    version: Optional[float] = 0
+    description: Optional[str] = ""
 
 
 class UserPromptCreateOutput(UserPromptCreateInput):
