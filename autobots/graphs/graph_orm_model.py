@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 
 from fastapi.encoders import jsonable_encoder
@@ -15,15 +16,16 @@ class GraphORM(Base):
     name = Column(String)
     version = Column(Float)
     description = Column(String, default='')
-    graph = Column(JSONB)
+    graph_map = Column(JSONB)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
 
     def __init__(
-            self, name: str, graph: Dict[str, List[str]], user_id: UUID,
+            self, name: str, graph_map: Dict[str, List[str]], user_id: UUID,
             version: float = 1, description: str = ""
     ):
         self.name = name
         self.version = version
         self.description = description
-        self.graph = jsonable_encoder(graph)
+        # self.graph_map = jsonable_encoder(graph_map)
+        self.graph_map = json.dumps(graph_map)
         self.user_id = user_id
