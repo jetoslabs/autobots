@@ -1,7 +1,5 @@
-import json
 from typing import Dict, List
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy import Column, UUID, text, DateTime, func, String, Float, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -26,6 +24,5 @@ class GraphORM(Base):
         self.name = name
         self.version = version
         self.description = description
-        # self.graph_map = jsonable_encoder(graph_map)
-        self.graph_map = json.dumps(graph_map)
+        self.graph_map = graph_map
         self.user_id = user_id
