@@ -48,10 +48,10 @@ class Graph:
         return inverted_map
 
     @staticmethod
-    async def run(user: UserORM, input: Input, graph: Dict[str, List[str]], db: Session) -> Dict[str, str]:
+    async def run(user: UserORM, input: Input, graph_map: Dict[str, List[str]], db: Session) -> Dict[str, str]:
         user_prompts = UserPrompts(user)
-        prompts = await Graph.prompts_for_user(user, graph, db)
-        inverted_map = await Graph.invert_map(graph)
+        prompts = await Graph.prompts_for_user(user, graph_map, db)
+        inverted_map = await Graph.invert_map(graph_map)
         prompt_response: Dict[str, str] = {}
 
         while len(prompt_response) != len(prompts):

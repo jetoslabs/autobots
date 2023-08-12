@@ -44,25 +44,28 @@ async def test_user_graphs_run_graph_happy_path(set_settings):
             }
 
         with next(get_db()) as db1:
+            # testing run_graph
             user_graphs = UserGraphs(user=user)
-            # graph = await create_graph(user_graphs, graph_map, db1)
+            input1 = Input(input="Campaign for Nike shoes during Diwali Festival")
+            results1 = await user_graphs.run_graph(input1, graph_map, db1)
+            assert len(results1) == 5
 
-            # run graph
-            input = Input(input="Campaign for Nike shoes during Diwali Festival")
-            # results = await user_graphs.run(input, graph.id, db1)
-            results = await user_graphs.run_graph(input, graph_map, db1)
-            assert len(results) == 5
+            # testing run (involves creating record in graphs table)
+            input2 = Input(input="Campaign for Nike shoes during Diwali Festival")
+            graph = await create_graph(user_graphs, graph_map, db1)
+            # run stored graph
+            results2 = await user_graphs.run(input2, graph.id, db1)
+            assert len(results2) == 5
 
     finally:
-        pass
         with next(get_db()) as db:
             await user_prompts.delete(prompt_persona.id, db)
             await user_prompts.delete(prompt_manager.id, db)
             await user_prompts.delete(prompt_product.id, db)
             await user_prompts.delete(prompt_creative.id, db)
             await user_prompts.delete(prompt_jingle.id, db)
-        #
-        #     await user_graphs.delete(graph.id, db1)
+        with next(get_db()) as db1:
+            await user_graphs.delete(graph.id, db1)
 
 
 @pytest.mark.asyncio
