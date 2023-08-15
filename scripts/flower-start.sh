@@ -1,4 +1,4 @@
 #! /usr/bin/env bash
 set -e
 
-celery -A autobots.worker.celery flower 5555 --loglevel=info
+celery -b redis://localhost:6379/0 flower 5555 --loglevel=info
