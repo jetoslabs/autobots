@@ -1,7 +1,7 @@
 import os
 import time
 
-from celery import Celery
+from celery import Celery, shared_task
 
 from autobots.core.log import log
 
@@ -10,8 +10,8 @@ celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
 
 
-@celery.task(name="hello_task")
+@shared_task
 def hello_task(seconds: int):
-    log.info("celery task hello_task")
+    log.info("hello_task")
     time.sleep(int(seconds))
     return {"hello": "distributed world"}
