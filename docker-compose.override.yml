@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+
+  flower:
+    ports:
+      - "5555:5555"
+
+  redis:
+    ports:
+      - "6379:6379"
