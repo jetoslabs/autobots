@@ -47,7 +47,6 @@ class Settings(BaseSettings):
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
-    API_TASK: str = "/task"
     API_AUTH: str = "/auth"
     API_AUTH_TOKEN: str = "/token"
     API_PROMPTS: str = "/prompts"
