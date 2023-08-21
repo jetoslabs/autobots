@@ -12,6 +12,7 @@ from autobots.conn.openai.openai import get_openai
 from autobots.core.log import log
 from autobots.database.base import get_db
 from autobots.prompts.prompt_crud import PromptCRUD
+from autobots.prompts.prompt_factory import PromptFactory
 from autobots.prompts.prompt_orm_model import PromptORM
 from autobots.prompts.target_platform import LLMTargetPlatform
 from autobots.user.user_orm_model import UserORM
@@ -86,12 +87,7 @@ class UserPrompts:
     async def run(self, id: UUID, input: Input, db: Session = Depends(get_db)) -> Message | None:
         user_message = Message(role=Role.user, content=input.input)
         prompt_orm = await self.read(id, db)
-        if prompt_orm.target_platform.lower() == LLMTargetPlatform.openai:
-            chat_req = ChatReq(**prompt_orm.chat_req)
-            chat_req.messages = chat_req.messages + [user_message]
-            chat_res = await get_openai().chat(chat_req=chat_req)
-            resp = chat_res.choices[0].message
-            return resp
+        return await PromptFactory.run(prompt_orm, user_message)
 
     async def read_by_name_version(
             self, name: str, version: str = None, limit: int = 100, offset: int = 0, db: Session = Depends(get_db)
