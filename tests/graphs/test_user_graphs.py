@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.settings import get_settings
+from autobots.core.utils import gen_random_str
 from autobots.database.base import get_db
 from autobots.graphs.graph_orm_model import GraphORM
 from autobots.graphs.user_graphs import UserGraphCreateInput, UserGraphs
@@ -23,6 +24,8 @@ async def set_settings():
 
 @pytest.mark.asyncio
 async def test_user_graph_run_happy_path(set_settings):
+    rand: str = gen_random_str()
+
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
     user = UserORM(id=user_id)
 
@@ -30,11 +33,11 @@ async def test_user_graph_run_happy_path(set_settings):
         with next(get_db()) as db:
             # create prompts
             user_prompts = UserPrompts(user=user)
-            prompt_persona = await create_prompt_persona(user_prompts, db)
-            prompt_manager = await create_prompt_manager(user_prompts, db)
-            prompt_product = await create_prompt_product(user_prompts, db)
-            prompt_creative = await create_prompt_creative(user_prompts, db)
-            prompt_jingle = await create_prompt_jingle(user_prompts, db)
+            prompt_persona = await create_prompt_persona(user_prompts, db, rand)
+            prompt_manager = await create_prompt_manager(user_prompts, db, rand)
+            prompt_product = await create_prompt_product(user_prompts, db, rand)
+            prompt_creative = await create_prompt_creative(user_prompts, db, rand)
+            prompt_jingle = await create_prompt_jingle(user_prompts, db, rand)
 
             # create graph
             graph_map = {
@@ -53,7 +56,7 @@ async def test_user_graph_run_happy_path(set_settings):
             # testing run (involves creating record in graphs table)
             input2 = Input(input="Campaign for Nike shoes during Diwali Festival")
             # create graph in table
-            graph = await create_graph(user_graphs, graph_map, db1)
+            graph = await create_graph(user_graphs, graph_map, db1, rand)
             # run stored graph
             results2 = await user_graphs.run(input2, graph.id, db1)
             assert len(results2) == 5
@@ -70,9 +73,9 @@ async def test_user_graph_run_happy_path(set_settings):
 
 
 @pytest.mark.asyncio
-async def create_prompt_persona(user_prompts: UserPrompts, db: Session) -> PromptORM:
+async def create_prompt_persona(user_prompts: UserPrompts, db: Session, rand: str) -> PromptORM:
     user_prompt_create_input = UserPromptCreateInput(
-        name="persona",
+        name="persona_" + rand,
         chat_req=ChatReq(messages=[Message(
             role=Role.user,
             content="Generate personas for Marketing this product"
@@ -84,9 +87,9 @@ async def create_prompt_persona(user_prompts: UserPrompts, db: Session) -> Promp
 
 
 @pytest.mark.asyncio
-async def create_prompt_manager(user_prompts: UserPrompts, db: Session) -> PromptORM:
+async def create_prompt_manager(user_prompts: UserPrompts, db: Session, rand: str = gen_random_str()) -> PromptORM:
     user_prompt_create_input = UserPromptCreateInput(
-        name="manager",
+        name="manager_" + rand,
         chat_req=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as market manager, create input for department"
@@ -98,9 +101,9 @@ async def create_prompt_manager(user_prompts: UserPrompts, db: Session) -> Promp
 
 
 @pytest.mark.asyncio
-async def create_prompt_product(user_prompts: UserPrompts, db: Session) -> PromptORM:
+async def create_prompt_product(user_prompts: UserPrompts, db: Session, rand: str = gen_random_str()) -> PromptORM:
     user_prompt_create_input = UserPromptCreateInput(
-        name="market researcher",
+        name="market researcher_" + rand,
         chat_req=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as product researcher, create research report for the product"
@@ -112,9 +115,9 @@ async def create_prompt_product(user_prompts: UserPrompts, db: Session) -> Promp
 
 
 @pytest.mark.asyncio
-async def create_prompt_creative(user_prompts: UserPrompts, db: Session) -> PromptORM:
+async def create_prompt_creative(user_prompts: UserPrompts, db: Session, rand: str = gen_random_str()) -> PromptORM:
     user_prompt_create_input = UserPromptCreateInput(
-        name="creative",
+        name="creative_" + rand,
         chat_req=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as a creative editor, generate text creative"
@@ -126,9 +129,9 @@ async def create_prompt_creative(user_prompts: UserPrompts, db: Session) -> Prom
 
 
 @pytest.mark.asyncio
-async def create_prompt_jingle(user_prompts: UserPrompts, db: Session) -> PromptORM:
+async def create_prompt_jingle(user_prompts: UserPrompts, db: Session, rand: str = gen_random_str()) -> PromptORM:
     user_prompt_create_input = UserPromptCreateInput(
-        name="jingle",
+        name="jingle_" + rand,
         chat_req=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as a creative editor, generate jingle for marketing"
@@ -140,9 +143,9 @@ async def create_prompt_jingle(user_prompts: UserPrompts, db: Session) -> Prompt
 
 
 @pytest.mark.asyncio
-async def create_graph(user_graphs: UserGraphs, graph_map: Dict[str, List[str]], db: Session) -> GraphORM:
+async def create_graph(user_graphs: UserGraphs, graph_map: Dict[str, List[str]], db: Session, rand: str = gen_random_str()) -> GraphORM:
     user_graph_create_input = UserGraphCreateInput(
-        name="marketing dept",
+        name="marketing dept_" + rand,
         graph_map=graph_map
     )
     graph = await user_graphs.create(user_graph_create_input, db)

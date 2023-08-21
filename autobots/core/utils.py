@@ -1,4 +1,6 @@
 import hashlib
+import random
+import string
 import uuid
 
 
@@ -10,3 +12,8 @@ def gen_uuid() -> uuid.UUID:
     # This function (uuid4) guarantees the random no. and doesn’t compromise with privacy.
     trace_id: uuid.UUID = uuid.uuid4()
     return trace_id
+
+
+def gen_random_str(k: int = 9) -> str:
+    random_str = ''.join(random.choices(string.hexdigits, k=k))
+    return random_str
