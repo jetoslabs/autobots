@@ -14,6 +14,7 @@ async def set_settings():
     settings = get_settings(_env_file='../.env.local')
 
 
+@pytest.mark.skip(reason="Selenium driver not working")
 @pytest.mark.asyncio
 async def test_read_urls_happy_path(set_settings):
     read_urls_req: List[HttpUrl] = [HttpUrl("https://meetkiwi.co"), HttpUrl("https://google.com")]
