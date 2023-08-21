@@ -1,21 +1,25 @@
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from uuid import UUID
 
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
+from autobots.core.log import log
 from autobots.database.base import get_db
-from autobots.database.database_models import GraphORM, UserORM
+from autobots.graphs.graph import Graph
+from autobots.graphs.graph_orm_model import GraphORM
 from autobots.graphs.graphs_crud import GraphsCRUD
+from autobots.prompts.user_prompts import Input
+from autobots.user.user_orm_model import UserORM
 
 
 class UserGraphCreateInput(BaseModel):
     name: str
-    graph: Dict[str, List[str]]
-    version: Optional[float]
-    description: Optional[str]
+    graph_map: Any #Dict[str, List[str]]
+    version: Optional[float] = 0
+    description: Optional[str] = ""
 
 
 class UserGraphCreateOutput(UserGraphCreateInput):
@@ -25,7 +29,7 @@ class UserGraphCreateOutput(UserGraphCreateInput):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserPrompts:
+class UserGraphs:
 
     def __init__(self, user: UserORM):
         self.user = user
@@ -74,5 +78,13 @@ class UserPrompts:
         graphs = await GraphsCRUD.read_by_name_version(self.user.id, name, version, limit, offset, db)
         return graphs
 
+    async def run(self, input: Input, graph_id: UUID, db: Session = Depends(get_db)) -> Dict[str, str]:
+        graph_orm: GraphORM = await self.read(graph_id, db)
+        response = await Graph.run(self.user, input, graph_orm.graph_map, db)
+        log.info(f"Graph run results: {response}")
+        return response
 
-
+    async def run_graph(self, input: Input, graph_map: Dict[str, List[str]], db: Session = Depends(get_db)) -> Dict[str, str]:
+        response = await Graph.run(self.user, input, graph_map, db)
+        log.info(f"Graph run results: {response}")
+        return response

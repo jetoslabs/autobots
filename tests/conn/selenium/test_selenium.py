@@ -12,6 +12,7 @@ async def set_settings():
     settings = get_settings(_env_file='../.env.local')
 
 
+@pytest.mark.skip(reason="Selenium driver not working")
 @pytest.mark.asyncio
 async def test_read_url_happy_path(set_settings):
 

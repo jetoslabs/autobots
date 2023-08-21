@@ -7,13 +7,13 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.100.0"
+fastapi = "^0.101.1"
 uvicorn = "^0.23.0"
 pydantic = {extras = ["dotenv", "email"], version = "^2.0.3"}
 loguru = "^0.7.0"
 openai = {extras = ["datalib"], version = "^0.27.8"}
 pytest-asyncio = "^0.21.1"
-selenium = "^4.10.0"
+selenium = "4.11.2"
 stability-sdk = "^0.8.3"
 aiohttp = "^3.8.5"
 pytest-xdist = "^3.3.1"
@@ -30,6 +30,7 @@ psycopg2 = "^2.9.6"
 supabase = "^1.0.4"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.6"
+redis = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]

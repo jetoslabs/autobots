@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
 
-  autobots-local:
-    container_name: autobots-local
+  autobots:
+    container_name: autobots
     build:
       context: .
       dockerfile: ./dockerfile
@@ -37,6 +37,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+    networks:
+      network:
+
+  redis:
+    container_name: redis
+    image: redis:7
     networks:
       network:
 
