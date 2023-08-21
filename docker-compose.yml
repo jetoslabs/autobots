@@ -40,23 +40,6 @@ services:
     networks:
       network:
 
-#  worker:
-#    container_name: worker
-#    build:
-#      context: .
-#      dockerfile: ./worker.dockerfile
-#    volumes:
-#      - .:/usr/src/app
-#    env_file:
-#      - .env.dev
-#    depends_on:
-#      - autobots
-#      - redis
-#    networks:
-#      network:
-
-
-
   redis:
     container_name: redis
     image: redis:7

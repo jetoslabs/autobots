@@ -22,9 +22,6 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = None
     JWT_ALGORITHM: str = ALGORITHMS.HS256
 
-    CELERY_BROKER_URL: str = None
-    CELERY_RESULT_BACKEND: str = None
-
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
     OPENAI_ENGINE: str = "gpt-4"
