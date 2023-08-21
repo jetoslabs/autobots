@@ -4,10 +4,12 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from autobots.conn.openai.chat import Message, Role, ChatReq
 from autobots.conn.openai.openai import get_openai
+from autobots.core.log import log
 from autobots.database.base import get_db
 from autobots.prompts.prompt_crud import PromptCRUD
 from autobots.prompts.prompt_orm_model import PromptORM
@@ -42,9 +44,13 @@ class UserPrompts:
     async def create(
             self, user_prompt_create_input: UserPromptCreateInput, db: Session = next(get_db())
     ) -> PromptORM:
-        prompt = PromptORM(user_id=self.user.id, **user_prompt_create_input.__dict__)
-        prompt_orm: PromptORM = await PromptCRUD.create(prompt, db)
-        return prompt_orm
+        try:
+            prompt = PromptORM(user_id=self.user.id, **user_prompt_create_input.__dict__)
+            prompt_orm: PromptORM = await PromptCRUD.create(prompt, db)
+            return prompt_orm
+        except IntegrityError as ie:
+            log.error(ie.detail)
+            raise HTTPException(400, "Name and version is not unique")
 
     async def list(
             self, limit: int = 100, offset: int = 0, db: Session = Depends(get_db)
