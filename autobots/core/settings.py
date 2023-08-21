@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     API_AUTH: str = "/auth"
     API_AUTH_TOKEN: str = "/token"
     API_PROMPTS: str = "/prompts"
+    API_GRAPHS: str = "/graphs"
 
     class ConfigDict:
         # env_file = f"../.env.local"
