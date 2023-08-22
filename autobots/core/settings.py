@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = None
     JWT_ALGORITHM: str = ALGORITHMS.HS256
 
+    MONGO_CONN: str = None
+    MONGO_DATABASE: str = "backend"
+
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
     OPENAI_ENGINE: str = "gpt-4"
