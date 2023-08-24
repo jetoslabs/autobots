@@ -10,6 +10,11 @@ class ActionManager:
     def __init__(self):
         pass
 
+    @staticmethod
+    async def get_action_types():
+        action_types = [action_type for action_type in ActionType]
+        return action_types
+
     async def run_action(self, action: ActionDoc, action_input: Message) -> Message:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:
