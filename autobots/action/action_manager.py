@@ -14,7 +14,7 @@ class ActionManager:
 
     @staticmethod
     @lru_cache
-    async def get_action_types():
+    def get_action_types():
         action_types = [action_type for action_type in ActionType]
         return action_types
 
