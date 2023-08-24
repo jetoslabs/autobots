@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from autobots.action.action_doc_model import ActionDoc
 from autobots.action.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq, Message
@@ -11,6 +13,7 @@ class ActionManager:
         pass
 
     @staticmethod
+    @lru_cache
     async def get_action_types():
         action_types = [action_type for action_type in ActionType]
         return action_types
