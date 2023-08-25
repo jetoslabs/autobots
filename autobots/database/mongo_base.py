@@ -11,7 +11,7 @@ def get_mongo_db() -> [Database, None, None]:
     try:
         yield db
     finally:
-        db.close()
+        client.close()
 
 
 def get_mongo_db_collection(db: Database, collection_name: str) -> Collection:
