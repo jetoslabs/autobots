@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 from uuid import UUID
 
 import gotrue
@@ -10,7 +10,6 @@ from autobots.action.action_manager import ActionManager
 from autobots.action.action_types import ActionType
 from autobots.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
-from autobots.conn.openai.chat import Message, Role
 from autobots.database.mongo_base import get_mongo_db
 from autobots.prompts.user_prompts import Input
 from autobots.user.user_orm_model import UserORM
@@ -84,10 +83,8 @@ async def run_action(
         input: Input,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
-) -> Message:
+) -> Any:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    user_actions = UserActions(user=user_orm)
-    user_message = Message(role=Role.user, content=input.input)
-    resp_message = await user_actions.run_action(id, user_message, db)
-    return resp_message
+    resp = await UserActions(user=user_orm).run_action(id, input, db)
+    return resp
 

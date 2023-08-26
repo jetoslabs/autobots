@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 
 from fastapi import Depends, HTTPException
 from pymongo.database import Database
@@ -7,8 +7,8 @@ from autobots.action.action_crud import ActionCRUD
 from autobots.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
     ActionUpdate, ActionDocUpdate
 from autobots.action.action_manager import ActionManager
-from autobots.conn.openai.chat import Message
 from autobots.database.mongo_base import get_mongo_db
+from autobots.prompts.user_prompts import Input
 from autobots.user.user_orm_model import UserORM
 
 
@@ -58,11 +58,11 @@ class UserActions:
         return delete_result.deleted_count
 
     async def run_action(
-            self, action_id: str, message: Message, db: Database = Depends(get_mongo_db)
-    ) -> Message:
+            self, action_id: str, input: Input, db: Database = Depends(get_mongo_db)
+    ) -> Any:
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await ActionCRUD(db).find(action_doc_find)
         if len(action_docs) != 1:
             raise HTTPException(405, "Action cannot be run")
-        resp = await ActionManager().run_action(action_docs[0], message)
+        resp = await ActionManager().run_action(action_docs[0], input)
         return resp
