@@ -50,10 +50,6 @@ class ActionCreate(BaseModel):
     input: Dict[str, Any]
 
 
-class ActionCreateGenTextLlmChatOpenai(ActionCreate):
-    input: ChatReq
-
-
 class ActionDocCreate(ActionCreate):
     """
     Add in user id to enforce multi-tenancy
