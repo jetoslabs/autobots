@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     AWS_S3_BUCKET_NAME: str = None
     AWS_S3_BUCKET_REGION: str = None
 
+    AWS_S3_PUBLIC_BUCKET_NAME: str = None
+    AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: str = None
+
     PINECONE_ENVIRONMENT: str = None
     PINECONE_API_KEY: str = None
 

@@ -6,6 +6,8 @@ from autobots.action.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.conn.openai.image_model import ImageReq, ImageRes
 from autobots.conn.openai.openai import get_openai
+from autobots.conn.stability.stability import get_stability
+from autobots.conn.stability.stability_data import StabilityReq
 from autobots.core.log import log
 from autobots.prompts.user_prompts import Input
 
@@ -31,6 +33,8 @@ class ActionManager:
                 return await self._run_gen_text_llm_chat_openai(action, action_input)
             case ActionType.gen_image_dalle_openai:
                 return await self._run_gen_image_dalle_openai(action, action_input)
+            case ActionType.gen_image_stability_ai:
+                return await self._run_gen_image_stability_ai(action, action_input)
             case _:
                 log.error("Action Type not found")
 
@@ -47,6 +51,14 @@ class ActionManager:
         image_req.prompt = action_input.input
         images = await get_openai().create_image(image_req)
         return images
+
+    async def _run_gen_image_stability_ai(self,  action: ActionDoc, action_input: Input) -> List[ImageRes]:
+        stability_req = StabilityReq.model_validate(action.input)
+        stability_req.prompt = action_input.input
+        file_url = await get_stability().text_to_image(stability_req)
+        resp = [ImageRes(url=file_url.unicode_string())]
+        return resp
+
 
 
 
