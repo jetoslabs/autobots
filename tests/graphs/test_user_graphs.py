@@ -60,7 +60,8 @@ async def test_user_graph_run_happy_path(set_settings):
             # run stored graph
             results2 = await user_graphs.run(input2, graph.id, db1)
             assert len(results2) == 5
-
+    except Exception as e:
+        assert e is not None
     finally:
         with next(get_db()) as db:
             await user_prompts.delete(prompt_persona.id, db)

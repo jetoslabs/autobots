@@ -1,10 +1,21 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
+from ddtrace import patch
 from fastapi import FastAPI
 
 from autobots.api.v1 import v1
-from autobots.core.lifespan import lifespan
+from autobots.core.log import log
 from autobots.core.settings import get_settings
-from ddtrace import patch
+from autobots.database.mongo_base import close_mongo_client
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    log.info("Clean up and release the resources")
+    close_mongo_client()
+
 
 patch(fastapi=True)
 app = FastAPI(lifespan=lifespan)

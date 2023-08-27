@@ -5,7 +5,8 @@ import pytest_asyncio
 from PIL import Image
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
-from autobots.conn.stability.stability import Stability, get_stability
+from autobots.conn.http_cllient.http_client import HttpClient
+from autobots.conn.stability.stability import get_stability
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
 from autobots.core.settings import get_settings
 
@@ -37,7 +38,8 @@ async def test_image_to_image_happy_path(set_settings):
         # height=1024,
         sampler=generation.SAMPLER_K_DPMPP_2M
     )
-    img_bytes = await get_stability().text_to_image(stability_req)
+    img_url = await get_stability().text_to_image(stability_req)
+    img_bytes = await HttpClient.download_from_url(img_url)
     img = Image.open(io.BytesIO(img_bytes))
 
     assert img.height > 0
@@ -70,7 +72,11 @@ async def test_upscale_image_happy_path(set_settings):
     height = 1024
 
     stability_req = StabilityReq(prompt=prompt, cfg_scale=9, width=width, height=height)
-    img_bytes = await get_stability().text_to_image(stability_req)
+    image_url = await get_stability().text_to_image(stability_req)
+
+    img_bytes = await HttpClient.download_from_url(image_url)
+    assert img_bytes is not None
+
     img = Image.open(io.BytesIO(img_bytes))
 
     assert img.width == width

@@ -27,7 +27,7 @@ class OpenAI:
                 log.trace("Starting OpenAI Chat, try: 1")
                 res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.model_dump(), timeout=30)
                 log.trace("Completed OpenAI Chat")
-                resp: ChatRes = ChatRes(**res.to_dict())
+                resp: ChatRes = ChatRes.model_validate(res)
                 return resp
             except Exception as e:
                 log.error(e)

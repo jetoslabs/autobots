@@ -9,6 +9,7 @@ from autobots.conn.openai.chat import ChatReq, Role, Message
 from autobots.core.settings import get_settings
 from autobots.core.utils import gen_uuid
 from autobots.database.mongo_base import get_mongo_db
+from autobots.prompts.user_prompts import Input
 
 
 @pytest_asyncio.fixture
@@ -32,20 +33,21 @@ async def test_action_crud_happy_path(set_settings):
         inserted = await action_crud.insert_one(action_doc_create)
         assert inserted is not None
 
-        action_find = ActionDocFind(id=str(inserted.inserted_id))
+        action_find = ActionDocFind(id=str(inserted.id))
         action_docs = await action_crud.find(action_find)
         assert len(action_docs) == 1
         action_doc = action_docs.pop()
 
         assert action_doc.type == ActionType.gen_text_llm_chat_openai
-        user_message = Message(role=Role.user, content="Blog on San Francisco")
+        user_input = Input(input="Blog on San Francisco")
         action_manager = ActionManager()
-        resp = await action_manager.run_action(action_doc, user_message)
+        resp = await action_manager.run_action(action_doc, user_input)
         assert resp.role == Role.assistant
 
         delete_result = await action_crud.delete_many(action_find)
         assert delete_result.deleted_count == 1
-
+    except Exception as e:
+        assert e is None
     finally:
         find = ActionDocFind(name="test_action_crud_happy_path")
         deleted = await action_crud.delete_many(find)
