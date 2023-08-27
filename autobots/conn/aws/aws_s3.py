@@ -42,8 +42,9 @@ class AwsS3:
         try:
             length = len(file_obj.getvalue())
             self.bucket.upload_fileobj(file_obj, filename)
-            log.debug(f"File written to s3, filename: {filename}, size: {length}")
-            return await self.get_object_url(filename)
+            object_url = await self.get_object_url(filename)
+            log.debug(f"File written to s3, filename: {object_url}, size: {length}")
+            return object_url
         except Exception as e:
             log.error(e)
         return ""

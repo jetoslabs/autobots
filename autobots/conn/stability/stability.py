@@ -10,6 +10,7 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from autobots.conn.aws.aws_s3 import get_aws_s3
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
 from autobots.core.settings import get_settings, Settings
+from autobots.core.utils import gen_uuid
 
 
 class Stability:
@@ -72,7 +73,7 @@ class Stability:
                                     get_settings().AWS_SECRET_ACCESS_KEY, get_settings().AWS_S3_PUBLIC_BUCKET_NAME)
                     added_file_url = await s3.put_file_obj(
                         io.BytesIO(artifact.binary),
-                        f"{get_settings().AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(artifact.seed)}.png"
+                        f"{get_settings().AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(gen_uuid())}.png"
                     )
 
                     # return artifact.binary
