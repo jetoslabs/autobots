@@ -59,7 +59,9 @@ async def test_image_to_image_happy_path(set_settings):
         # height=1024,
         sampler=generation.SAMPLER_K_DPMPP_2M
     )
-    img_bytes = await get_stability().text_to_image(stability_req)
+    img_url = await get_stability().text_to_image(stability_req)
+    img_bytes = await HttpClient.download_from_url(img_url)
+    img = Image.open(io.BytesIO(img_bytes))
 
     assert img.height > 0
     assert img.width > 0
