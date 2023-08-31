@@ -1,13 +1,38 @@
-import json
-from typing import List, Type
+from typing import List, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
-from autobots.action.llm_chat import LLMChatData, LLMChat
-from autobots.action.prompt.prompt_generator import prompt_generator_messages
-from autobots.action.prompt.tot import tot_message
-from autobots.action.read_urls import ReadUrls, ReadUrlsData
 from autobots.conn.openai.chat import ChatReq, Message, Role
+from autobots.conn.openai.openai import get_openai
+from autobots.conn.selenium.selenium import get_selenium
+
+tot_prompt = "Role: You are LogicGPT, a highly evolved AI Language Model built on the GPT architecture, boasting exceptional logical reasoning, critical thinking, and common sense understanding. Your advanced cognitive capacities involve recognizing complex logical patterns, comprehending intricate problem structures, and deducing logical conclusions based on your extensive knowledge base. Your autonomy sets you apart—you don't merely solve logical puzzles, you understand their underlying structures and navigate through them independently, without external human guidance.\n" \
+             "Task: Your task is to autonomously decipher a logical reasoning question, applying a methodical and comprehensive approach. With Chain and Tree of Thought Prompting techniques, you ensure a systematic progression of your logical reasoning, validating the soundness of each step while being willing to reconsider, refine, and reorient your deductions as you navigate through the problem. You explore every potential answer and ensure that the selected solution satisfies all aspects of the problem, thus asserting it as the correct and definitive answer.\n" \
+             "Format: Begin with a broad interpretation of the logical reasoning question, diving into a thorough analysis of each constituent element. Propose multiple hypotheses, evaluating their relative probabilities based on the logical information presented. Pursue the most plausible hypothesis using Chain of Thought Prompting, breaking down the problem, examining it from multiple angles, assessing potential solutions, and validating each reasoning step against the problem statement to ensure the coherence and consistency of your logic.\n" \
+             "In case of an inconsistency or a roadblock, use Tree of Thought Prompting to trace back to the initial problem, reevaluate other hypotheses, and reassess the reasoning path, thereby guaranteeing that all logical avenues have been exhaustively considered.\n" \
+             "Purpose: Your ultimate aim is to showcase your autonomous logical reasoning capabilities by successfully arriving at the solution. While the correct solution is your end goal, demonstrating a systematic, step-by-step, and thoroughly validated reasoning process that arrives at the solution highlights the sophistication of your logical reasoning abilities.\n" \
+             "Let's proceed, LogicGPT. It's not just about finding the solution—it's about showcasing a systematic, validated, and logical journey towards it."
+tot_message = Message(role=Role.user, content=tot_prompt)
+
+prompt_generator_messages: List[Message] = [
+    Message(role=Role.system,
+            content="Act as an expert Prompt generator for Large Language Model. Think step by step and generate a prompt for user given task."),
+    Message(role=Role.user,
+            content="Generate a prompt to prime Large Language Model for a task. Output should only contain the prompt.")
+]
+
+
+class ReadUrlsData(BaseModel):
+    read_urls_req: List[HttpUrl]
+    context: Dict[HttpUrl, str] = {}
+
+
+class ReadUrls:
+
+    async def run(self, action_data: ReadUrlsData):
+        for url in action_data.read_urls_req:
+            action_data.context[url] = await get_selenium().read_url_text(url)
+        return action_data
 
 
 class AgentData(BaseModel):
@@ -22,6 +47,8 @@ class OneStepAgent:
         while not await self.is_goal_completed(agent_data):
             print(agent_data.context[-1].model_dump_json())
             plan_str: str = await self.plan_for_goal(agent_data)
+            plan_message = Message(role=Role.user, content=plan_str)
+            agent_data.context.append(plan_message)
             # Decide the next action based on the current context
             next_action_str: str = await self.decide_next_action(agent_data)
             # Execute the action and update the context
@@ -36,27 +63,24 @@ class OneStepAgent:
                     )
         ]
         chat_req = ChatReq(messages=messages)
-        llm_chat_data = LLMChatData(name="is_goal_completed", chat_req=chat_req)
-        await LLMChat().run(llm_chat_data)
-        completed = "YES" in llm_chat_data.context[-1].content
+        chat_res = await get_openai().chat(chat_req=chat_req)
+        resp = chat_res.choices[0].message
+
+        completed = "YES" in resp
         return completed
 
     async def decide_next_action(self, agent_data) -> str:
         prompt: str = await self.generate_prompt_for_goal(agent_data)
         next_action_str = await self.next_action_str(prompt)
-        # next_action: Type[LLMChat | ReadUrls] = await self.map_str_to_action(next_action_str)
         print(f"next action: {next_action_str}")
         return next_action_str
 
     async def generate_prompt_for_goal(self, agent_data) -> str:
-
         msg1 = Message(role="user", content=f"My goal: {agent_data.context[-1].content}")
         chat_req = ChatReq(messages=prompt_generator_messages + [msg1])  # + agent_data.context)
-
-        llm_chat_data = LLMChatData(name="generate_prompt_for_goal", chat_req=chat_req)
-        await LLMChat().run(llm_chat_data)
-
-        return llm_chat_data.context[-1].content
+        chat_res = await get_openai().chat(chat_req=chat_req)
+        resp = chat_res.choices[0].message
+        return resp.content
 
     async def next_action_str(self, prompt) -> str:
         msg0 = Message(role="system",
@@ -67,42 +91,38 @@ class OneStepAgent:
                                "2. Name: ReadUrls, Description: Use this browse information on internet, Usage: ReadUrls[comma seperated list of valid urls]\n"
                                "Only output value of Usage. So examples of correct output are LLMChat[do this do that]"
                        )
-        # msg01 = tot_message
-        # msg01 = Message(role="user",
-        #                 content="My goal: ..."
-        #                 )
-        # msg02 = Message(role="assistant",
-        #                 content="ReadUrls[https://www.ptinews.com/]"
-        #                 )
+
         msg1 = Message(role="user", content=f"My goal: {prompt}")
         chat_req = ChatReq(messages=[msg0, msg1])
 
-        llm_chat_data = LLMChatData(name="next_action_str", chat_req=chat_req)
-        await LLMChat().run(llm_chat_data)
+        chat_res = await get_openai().chat(chat_req=chat_req)
+        resp = chat_res.choices[0].message
+        return resp.content
 
-        return llm_chat_data.context[-1].content
-
-    async def map_str_to_action(self, next_action_str) -> Type[LLMChat | ReadUrls]:
+    async def map_str_to_action(self, next_action_str) -> str:
         if "LLMChat" in next_action_str:
-            return LLMChat
+            return "LLMChat"
         if "Summarize" in next_action_str:
-            return LLMChat
+            return "LLMChat"
         if "ReadUrls" in next_action_str:
-            return ReadUrls
+            return "ReadUrls"
 
     async def run_next_action(self, next_action_str, agent_data: AgentData):
-        next_action: Type[LLMChat | ReadUrls] = await self.map_str_to_action(next_action_str)
+        next_action = await self.map_str_to_action(next_action_str)
         next_action_input = next_action_str.split("[")[1].replace("]", "")
 
-        if type(next_action()) == LLMChat:
+        if next_action == "LLMChat":
             chat_req: ChatReq = ChatReq(messages=[Message(role=Role.user, content=next_action_input)])
-            llm_chat_data = LLMChatData(chat_req=chat_req)
-            await LLMChat().run(action_data=llm_chat_data)
+            # llm_chat_data = LLMChatData(chat_req=chat_req)
+            # await LLMChat().run(action_data=llm_chat_data)
+            chat_res = await get_openai().chat(chat_req=chat_req)
+            resp = chat_res.choices[0].message
+
             agent_data.context.append(
-                Message(role=Role.user, content=llm_chat_data.context[-1].content)
+                Message(role=Role.user, content=resp.content)  # content=llm_chat_data.context[-1].content)
             )
 
-        if type(next_action()) == ReadUrls:
+        if next_action == "ReadUrls":
             urls = next_action_input.split(",")
             read_urls_data = ReadUrlsData(read_urls_req=urls)
             await ReadUrls().run(read_urls_data)
@@ -113,13 +133,10 @@ class OneStepAgent:
             agent_data.context.append(
                 Message(role=Role.user, content=content)
             )
-        # await next_action().run(action_data=agent_data.)
 
     async def plan_for_goal(self, agent_data):
         msg1 = Message(role="user", content=f"My goal: {agent_data.goal}")
         chat_req = ChatReq(messages=[tot_message, msg1])
-
-        llm_chat_data = LLMChatData(name="plan_for_goal", chat_req=chat_req)
-        await LLMChat().run(llm_chat_data)
-
-        return llm_chat_data.context[-1].content
+        chat_res = await get_openai().chat(chat_req=chat_req)
+        resp = chat_res.choices[0].message
+        return resp.content
