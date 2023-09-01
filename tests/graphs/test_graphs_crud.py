@@ -5,8 +5,8 @@ import pytest_asyncio
 
 from autobots.core.settings import get_settings
 from autobots.database.base import get_db
-from autobots.graphs.graph_orm_model import GraphORM
-from autobots.graphs.graphs_crud import GraphsCRUD
+from autobots.graphs.to_del.graph_orm_model import GraphORM
+from autobots.graphs.to_del.graphs_crud import GraphsCRUD
 
 
 @pytest_asyncio.fixture

@@ -1,14 +1,16 @@
 import io
 import warnings
 from functools import lru_cache
-from typing import Any, Sequence
 
 from PIL import Image
+from pydantic import HttpUrl
 from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
+from autobots.conn.aws.aws_s3 import get_aws_s3
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
 from autobots.core.settings import get_settings, Settings
+from autobots.core.utils import gen_uuid
 
 
 class Stability:
@@ -32,7 +34,7 @@ class Stability:
             # stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-diffusion-xl-beta-v2-2-2 stable-inpainting-v1-0 stable-inpainting-512-v2-0
         )
 
-    async def text_to_image(self, stability_req: StabilityReq) -> bytes:
+    async def text_to_image(self, stability_req: StabilityReq) -> HttpUrl:
         # Set up our initial generation parameters.
         answers = self.stability_api.generate(
             prompt=stability_req.prompt,
@@ -66,7 +68,16 @@ class Stability:
                     img = Image.open(io.BytesIO(artifact.binary))
                     # Save our generated images with their seed number as the filename.
                     img.save(str(artifact.seed) + ".png")
-                    return artifact.binary
+
+                    s3 = get_aws_s3(get_settings().AWS_S3_BUCKET_REGION, get_settings().AWS_ACCESS_KEY_ID,
+                                    get_settings().AWS_SECRET_ACCESS_KEY, get_settings().AWS_S3_PUBLIC_BUCKET_NAME)
+                    added_file_url = await s3.put_file_obj(
+                        io.BytesIO(artifact.binary),
+                        f"{get_settings().AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(gen_uuid())}.png"
+                    )
+
+                    # return artifact.binary
+                    return added_file_url
 
     async def upscale_image(self, stability_upscale_req: StabilityUpscaleReq) -> bytes:
         """

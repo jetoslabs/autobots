@@ -1,11 +1,13 @@
 import time
 from functools import lru_cache
+from typing import List
 
 import openai
 from openai.openai_object import OpenAIObject
 
 from autobots.conn.openai.chat import ChatReq, ChatRes
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
+from autobots.conn.openai.image_model import ImageReq, ImageRes
 from autobots.core.log import log
 from autobots.core.settings import get_settings, Settings
 
@@ -25,7 +27,7 @@ class OpenAI:
                 log.trace("Starting OpenAI Chat, try: 1")
                 res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.model_dump(), timeout=30)
                 log.trace("Completed OpenAI Chat")
-                resp: ChatRes = ChatRes(**res.to_dict())
+                resp: ChatRes = ChatRes.model_validate(res)
                 return resp
             except Exception as e:
                 log.error(e)
@@ -38,6 +40,18 @@ class OpenAI:
             log.trace("Completed OpenAI Embedding")
             resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
             return resp
+        except Exception as e:
+            log.error(e)
+
+    async def create_image(self, image_req: ImageReq) -> List[ImageRes]:
+        try:
+            log.trace("Starting OpenAI create image")
+            res: OpenAIObject = await openai.Image.acreate(**image_req.model_dump())
+            log.trace("Completed OpenAI create image")
+            images = []
+            for data in res.data:
+                images = images + [ImageRes.model_validate(data)]
+            return images
         except Exception as e:
             log.error(e)
 

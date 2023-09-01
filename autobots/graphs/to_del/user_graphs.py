@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 
 from autobots.core.log import log
 from autobots.database.base import get_db
-from autobots.graphs.graph import Graph
-from autobots.graphs.graph_orm_model import GraphORM
-from autobots.graphs.graphs_crud import GraphsCRUD
+from autobots.graphs.to_del.graph import Graph
+from autobots.graphs.to_del.graph_orm_model import GraphORM
+from autobots.graphs.to_del.graphs_crud import GraphsCRUD
 from autobots.prompts.user_prompts import Input
 from autobots.user.user_orm_model import UserORM
 

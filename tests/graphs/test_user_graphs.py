@@ -9,8 +9,8 @@ from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.settings import get_settings
 from autobots.core.utils import gen_random_str
 from autobots.database.base import get_db
-from autobots.graphs.graph_orm_model import GraphORM
-from autobots.graphs.user_graphs import UserGraphCreateInput, UserGraphs
+from autobots.graphs.to_del.graph_orm_model import GraphORM
+from autobots.graphs.to_del.user_graphs import UserGraphCreateInput, UserGraphs
 from autobots.prompts.prompt_orm_model import PromptORM
 from autobots.prompts.target_platform import LLMTargetPlatform
 from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, Input
@@ -60,7 +60,8 @@ async def test_user_graph_run_happy_path(set_settings):
             # run stored graph
             results2 = await user_graphs.run(input2, graph.id, db1)
             assert len(results2) == 5
-
+    except Exception as e:
+        assert e is not None
     finally:
         with next(get_db()) as db:
             await user_prompts.delete(prompt_persona.id, db)

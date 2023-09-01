@@ -12,7 +12,7 @@ class StabilityReq(BaseModel):
     width: int = 512
     start_schedule: float = 0.6
     end_schedule: float = 0.1
-    cfg_scale: float = 7.0
+    cfg_scale: float = 8.0
     sampler: Any = generation.SAMPLER_K_DPMPP_2M
     steps: int | None = 50
     seed: Sequence[int] | int = 0
