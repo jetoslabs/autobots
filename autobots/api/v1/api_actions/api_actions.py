@@ -24,7 +24,7 @@ async def get_action_types(
     return ActionManager.get_action_types()
 
 
-@router.get("/list")
+@router.get("/")
 async def list_actions(
         id: str = None, name: str = None, version: float = None, type: ActionType = None,
         limit: int = 100, offset: int = 0,
