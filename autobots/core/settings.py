@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = None
     JWT_ALGORITHM: str = ALGORITHMS.HS256
 
+    MONGO_CONN: str = None
+    MONGO_DATABASE: str = "backend"
+
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
     OPENAI_ENGINE: str = "gpt-4"
@@ -37,6 +40,9 @@ class Settings(BaseSettings):
     AWS_S3_BUCKET_NAME: str = None
     AWS_S3_BUCKET_REGION: str = None
 
+    AWS_S3_PUBLIC_BUCKET_NAME: str = None
+    AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: str = None
+
     PINECONE_ENVIRONMENT: str = None
     PINECONE_API_KEY: str = None
 
@@ -46,6 +52,8 @@ class Settings(BaseSettings):
     API_Hello: str = "/hello"
     API_AUTH: str = "/auth"
     API_AUTH_TOKEN: str = "/token"
+    API_ACTIONS: str = "/actions"
+    API_ACTION_GRAPHS: str = "/action_graphs"
     API_PROMPTS: str = "/prompts"
     API_GRAPHS: str = "/graphs"
 
