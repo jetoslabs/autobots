@@ -18,14 +18,14 @@ class UserActionGraphs:
         self.user = user
         self.user_id = str(user.id)
 
-    async def create_action_graph(
+    async def create(
             self, action_graph_create: ActionGraphCreate, db: Database = Depends(get_mongo_db)
     ) -> ActionGraphDoc:
         action_graph_doc_create = ActionGraphDocCreate(user_id=self.user_id, **action_graph_create.model_dump())
         action_graph_doc = await ActionGraphCRUD(db).insert_one(action_graph_doc_create)
         return action_graph_doc
 
-    async def list_action_graph(
+    async def list(
             self, action_graph_find: ActionGraphFind,
             db: Database = Depends(get_mongo_db),
             limit: int = 100, offset: int = 0
@@ -34,7 +34,7 @@ class UserActionGraphs:
         action_graph_docs = await ActionGraphCRUD(db).find(action_graph_doc_find, limit, offset)
         return action_graph_docs
 
-    async def get_action_graph(
+    async def get(
             self, action_graph_id: str, db: Database = Depends(get_mongo_db)
     ) -> ActionGraphDoc:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
@@ -43,21 +43,21 @@ class UserActionGraphs:
             raise HTTPException(500, "Error in finding action")
         return action_graph_docs[0]
 
-    async def update_action_graph(
+    async def update(
             self, action_graph_id: str, action_graph_update: ActionGraphUpdate, db: Database = Depends(get_mongo_db)
     ) -> ActionGraphDoc:
         action_graph_doc_update = ActionGraphDocUpdate(id=action_graph_id, user_id=self.user_id, **action_graph_update.model_dump())
         action_graph_doc = await ActionGraphCRUD(db).update_one(action_graph_doc_update)
         return action_graph_doc
 
-    async def delete_action_graph(
+    async def delete(
             self, action_graph_id: str, db: Database = Depends(get_mongo_db)
     ) -> int:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
         delete_result = await ActionGraphCRUD(db).delete_many(action_graph_doc_find)
         return delete_result.deleted_count
 
-    async def run_action_graph(
+    async def run(
             self, action_graph_id: str, input: Input, db: Database = Depends(get_mongo_db)
     ) -> Dict[str, Any]:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
