@@ -41,8 +41,6 @@ async def test_user_graph_run_happy_path(set_settings):
     action_llm_product = await create_action_product(user_actions, db, rand)
     action_llm_creative = await create_action_creative(user_actions, db, rand)
     action_llm_jingle = await create_action_jingle(user_actions, db, rand)
-    # init action graph
-    action_graph_doc = None
 
     try:
         # create action graph
@@ -61,12 +59,15 @@ async def test_user_graph_run_happy_path(set_settings):
         action_graph_create = ActionGraphCreate(
             name="Marketing Dept", graph=action_graph
         )
-        action_graph_doc = await user_action_graph.create_action_graph(action_graph_create, db)
+        action_graph_doc = await user_action_graph.create(action_graph_create, db)
 
         # run saved action graph
         input = Input(input="Create ad for sports shoes")
-        action_graph_resp = await user_action_graph.run_action_graph(action_graph_doc.id, input, db)
+        action_graph_resp = await user_action_graph.run(action_graph_doc.id, input, db)
         assert len(action_graph_resp) > 1
+
+        # cleanup action graph
+        await user_action_graph.delete(action_graph_doc.id, db)
 
     except Exception as e:
         assert e is not None
@@ -78,8 +79,6 @@ async def test_user_graph_run_happy_path(set_settings):
         await user_actions.delete_action(action_llm_product.id, db)
         await user_actions.delete_action(action_llm_creative.id, db)
         await user_actions.delete_action(action_llm_jingle.id, db)
-        # cleanup action graph
-        await user_action_graph.delete_action_graph(action_graph_doc.id, db)
 
 
 @pytest.mark.asyncio
@@ -155,7 +154,6 @@ async def create_action_jingle(user_actions: UserActions, db: Database, rand: st
         ActionCreate(**action_create.model_dump()), db
     )
     return action_doc
-
 
 # @pytest.mark.asyncio
 # async def create_graph(user_graphs: UserGraphs, graph_map: Dict[str, List[str]], db: Session, rand: str = gen_random_str()) -> GraphORM:
