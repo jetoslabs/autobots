@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
 from autobots.database.base import get_db
-from autobots.graphs.user_graphs import UserGraphCreateInput, UserGraphCreateOutput, UserGraphs
+from autobots.graphs.to_del.user_graphs import UserGraphCreateInput, UserGraphCreateOutput, UserGraphs
 from autobots.prompts.user_prompts import Input
 from autobots.user.user_orm_model import UserORM
 
