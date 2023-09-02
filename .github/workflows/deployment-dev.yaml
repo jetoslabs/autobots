@@ -95,7 +95,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-          MONGO_CONN: ${{ secrets.MONGO_CONN }}
+          MONGO_CONN: '${{ secrets.MONGO_CONN }}'
           OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
