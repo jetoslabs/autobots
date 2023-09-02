@@ -1,0 +1,116 @@
+name: Continuous Deployment Dev
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE_TAG: ${{ github.ref_name }}
+  # Datadog Environment
+  DD_ENV: ${{ github.ref_name }}
+  # Datadog Version
+  DD_VERSION: ${{ github.ref_name }}-${{ github.run_number }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setting up lightsail.pem for ssh in Runner
+        run: |
+          echo "$LIGHTSAIL_SSH_KEY" > lightsail.pem
+          chmod 600 lightsail.pem
+          echo "cat lightsail.pem" && cat lightsail.pem
+        env:
+          LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_SSH_KEY }}
+
+      - name: SSH and Login to Container Registry
+        run: |
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker login registry.gitlab.com -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+
+      - name: SSH and Remove Running container and image
+        #        if: always()
+        run: |
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker ps -a
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker stop autobots
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker rm autobots
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker ps -a
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker image prune -a -f
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker images
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+
+      - name: SSH and Pull Docker image
+        if: always()
+        run: |
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker pull registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+
+      - name: SSH and Run Docker image
+        if: always()
+        run: |
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker ps -a
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker run -d \
+              -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL \
+              -e SUPABASE_URL=$SUPABASE_URL \
+              -e SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+              -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+              -e MONGO_CONN=$MONGO_CONN \
+              -e OPENAI_ORG_ID=$OPENAI_ORG_ID \
+              -e OPENAI_API_KEY=$OPENAI_API_KEY \
+              -e STABILITY_HOST=$STABILITY_HOST \
+              -e STABILITY_KEY=$STABILITY_KEY \
+              -e UNSPLASH_ACCESS_KEY=$UNSPLASH_ACCESS_KEY \
+              -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+              -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+              -e AWS_S3_BUCKET_NAME=$AWS_S3_BUCKET_NAME \
+              -e AWS_S3_BUCKET_REGION=$AWS_S3_BUCKET_REGION \
+              -e AWS_S3_PUBLIC_BUCKET_NAME=$AWS_S3_PUBLIC_BUCKET_NAME \
+              -e AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER=$AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER \
+              -e PINECONE_ENVIRONMENT=$PINECONE_ENVIRONMENT \
+              -e PINECONE_API_KEY=$PINECONE_API_KEY \
+              -p 80:80 
+              --name autobots registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            sudo docker ps -a
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          MONGO_CONN: ${{ secrets.MONGO_CONN }}
+          OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
+          STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_S3_BUCKET_REGION: ${{ secrets.AWS_S3_BUCKET_REGION }}
+          AWS_S3_PUBLIC_BUCKET_NAME: ${{ secrets.AWS_S3_PUBLIC_BUCKET_NAME }}
+          AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: ${{ secrets.AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
