@@ -66,10 +66,9 @@ jobs:
 
       - name: SSH and Run Docker image
         if: always()
-        run: |
-          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker ps -a
-          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+        run: >
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22
+            sudo docker ps -a &&
             sudo docker run -d
               -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL
               -e SUPABASE_URL=$SUPABASE_URL
@@ -90,8 +89,7 @@ jobs:
               -e PINECONE_ENVIRONMENT=$PINECONE_ENVIRONMENT
               -e PINECONE_API_KEY=$PINECONE_API_KEY
               -p 80:80
-              --name autobots registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
-          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+              --name autobots registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} &&
             sudo docker ps -a
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
