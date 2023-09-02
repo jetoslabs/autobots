@@ -68,7 +68,7 @@ jobs:
         if: always()
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22
-            docker inspect registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} &&
+            sudo docker inspect registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} &&
             sudo docker run -d \
             -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL \
             -e SUPABASE_URL=$SUPABASE_URL \
