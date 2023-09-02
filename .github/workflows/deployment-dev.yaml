@@ -29,7 +29,7 @@ jobs:
       - name: SSH and Login to Container Registry
         run: |
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker login registry.gitlab.com -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
+            docker login registry.gitlab.com -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
           LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
@@ -40,17 +40,17 @@ jobs:
         #        if: always()
         run: |
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker ps -a
+            docker ps -a
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker stop autobots
+            docker stop autobots
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker rm autobots
+            docker rm autobots
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker ps -a
+            docker ps -a
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker image prune -a -f
+            docker image prune -a -f
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker images
+            docker images
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
           LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
@@ -59,7 +59,7 @@ jobs:
         if: always()
         run: |
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
-            sudo docker pull registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
+            docker pull registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
           LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
@@ -68,8 +68,8 @@ jobs:
         if: always()
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22
-            sudo docker inspect registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} &&
-            sudo docker run -d \
+            docker inspect registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG} &&
+            docker run -d \
             -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL \
             -e SUPABASE_URL=$SUPABASE_URL \
             -e SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
