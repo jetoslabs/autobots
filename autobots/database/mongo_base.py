@@ -9,7 +9,9 @@ from autobots.core.settings import get_settings
 
 @lru_cache
 def get_mongo_client() -> MongoClient:
-    client = MongoClient(get_settings().MONGO_CONN)
+    # moved ?retryWrites=true&w=majority out of secrets as github unable to handle it
+    # TODO: move it back to secrets
+    client = MongoClient(f"{get_settings().MONGO_CONN}?retryWrites=true&w=majority")
     return client
 
 
