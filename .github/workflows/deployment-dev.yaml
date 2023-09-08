@@ -69,6 +69,7 @@ jobs:
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
           docker run -d --name autobots -p 80:80 
+          -e COOKIE_DOMAIN=$COOKIE_DOMAIN 
           -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL 
           -e SUPABASE_URL=$SUPABASE_URL 
           -e SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY 
@@ -91,6 +92,7 @@ jobs:
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
           LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}

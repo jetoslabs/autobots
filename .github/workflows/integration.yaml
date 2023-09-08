@@ -39,6 +39,7 @@ jobs:
         run: |
           python -m pytest -vv -n 5
         env:
+          COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
