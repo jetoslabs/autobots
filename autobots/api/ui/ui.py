@@ -8,7 +8,6 @@ from starlette.templating import Jinja2Templates
 
 from autobots.auth.auth import get_auth
 from autobots.auth.security import get_user_from_access_token
-from autobots.conn.supabase.supabase import get_supabase
 from autobots.core.log import log
 from autobots.core.settings import get_settings
 
