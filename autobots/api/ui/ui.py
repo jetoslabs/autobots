@@ -8,6 +8,7 @@ from starlette.templating import Jinja2Templates
 
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.supabase.supabase import get_supabase
+from autobots.core.log import log
 from autobots.core.settings import get_settings
 
 router = APIRouter()
@@ -28,6 +29,7 @@ async def get_user_from_cookie(request: Request) -> UserResponse | None:
 
 @router.post("/cookie")
 async def cookie(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends()
 ):
     auth_res: AuthResponse = get_supabase().client.auth.sign_in_with_password(
@@ -41,21 +43,24 @@ async def cookie(
         raise HTTPException(status_code=401, detail="User Session not found")
 
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(
-        "Authorization",
-        value=f"Bearer {auth_res.session.access_token}",
-        domain=get_settings().COOKIE_DOMAIN,
-        httponly=True,
-        max_age=1800,
-        expires=1800,
-    )
+    if get_settings().COOKIE_DOMAIN.find(request.base_url.hostname) >= 0:
+        response.set_cookie(
+            "Authorization",
+            value=f"Bearer {auth_res.session.access_token}",
+            domain=request.base_url.hostname,
+            httponly=True,
+            max_age=1800,
+            expires=1800,
+        )
+    else:
+        log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
     return response
 
 
 @router.get("/cookie/logout")
-async def logout():
+async def logout(request: Request):
     response = RedirectResponse(url="/")
-    response.delete_cookie("Authorization", domain=get_settings().COOKIE_DOMAIN)
+    response.delete_cookie("Authorization", domain=request.base_url.hostname)
     return response
 
 
@@ -83,11 +88,11 @@ async def api_docs(request: Request):
         return response
 
 
-# @router.get("/platform_summary")
-# async def api_docs(request: Request):
-#     user: UserResponse | None = await get_user_from_cookie(request)
-#     if user:
-#         return templates.TemplateResponse("platform_summary.html", {"request": request, "user": user})
-#     else:
-#         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-#         return response
+@router.get("/logs")
+async def api_docs(request: Request):
+    user: UserResponse | None = await get_user_from_cookie(request)
+    if user:
+        return templates.TemplateResponse("logs.html", {"request": request, "user": user})
+    else:
+        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        return response
