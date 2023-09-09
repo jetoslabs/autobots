@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 class="jumbotron">User</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="email" name="email" value="{{ user.user.email }}" readonly>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+{% endblock content %}

@@ -32,29 +32,33 @@ async def cookie(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends()
 ):
-    auth_res: AuthResponse = get_supabase().client.auth.sign_in_with_password(
-        credentials=SignInWithEmailAndPasswordCredentials(
-            email=form_data.username, password=form_data.password
+    try:
+        auth_res: AuthResponse = get_supabase().client.auth.sign_in_with_password(
+            credentials=SignInWithEmailAndPasswordCredentials(
+                email=form_data.username, password=form_data.password
+            )
         )
-    )
-    user: gotrue.User | None = auth_res.user
-    session: gotrue.Session | None = auth_res.session
-    if not user or not session:
-        raise HTTPException(status_code=401, detail="User Session not found")
+        user: gotrue.User | None = auth_res.user
+        session: gotrue.Session | None = auth_res.session
+        if not user or not session:
+            raise HTTPException(status_code=401, detail="User Session not found")
 
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    if get_settings().COOKIE_DOMAIN.find(request.base_url.hostname) >= 0:
-        response.set_cookie(
-            "Authorization",
-            value=f"Bearer {auth_res.session.access_token}",
-            domain=request.base_url.hostname,
-            httponly=True,
-            max_age=1800,
-            expires=1800,
-        )
-    else:
-        log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
-    return response
+        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        if get_settings().COOKIE_DOMAIN.find(request.base_url.hostname) >= 0:
+            response.set_cookie(
+                "Authorization",
+                value=f"Bearer {auth_res.session.access_token}",
+                domain=request.base_url.hostname,
+                httponly=True,
+                max_age=1800,
+                expires=1800,
+            )
+        else:
+            log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+        return response
+    except Exception as e:
+        log.error(e)
+        return templates.TemplateResponse("index.html", {"request": request})
 
 
 @router.get("/cookie/logout")
@@ -96,3 +100,14 @@ async def api_docs(request: Request):
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
+
+
+@router.get("/user")
+async def api_user(request: Request):
+    user: UserResponse | None = await get_user_from_cookie(request)
+    if user:
+        return templates.TemplateResponse("user.html", {"request": request, "user": user})
+    else:
+        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        return response
+
