@@ -33,7 +33,7 @@ async def cookie(
         form_data: OAuth2PasswordRequestForm = Depends()
 ):
     try:
-        auth_res: AuthResponse = get_auth().sign_in_with_password(form_data.username, form_data.password)
+        auth_res: AuthResponse = await get_auth().sign_in_with_password(form_data.username, form_data.password)
         user: gotrue.User | None = auth_res.user
         session: gotrue.Session | None = auth_res.session
         if not user or not session:
