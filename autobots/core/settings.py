@@ -60,12 +60,12 @@ class Settings(BaseSettings):
     API_GRAPHS: str = "/graphs"
 
     class ConfigDict:
-        # env_file = f"../.env.local"
+        # env_file = f".env.local"
         env_file_encoding = 'utf-8'
 
 
 @lru_cache
-def get_settings(_env_file: str = '../.env.local') -> Settings:
+def get_settings(_env_file: str = '.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
     return settings

@@ -16,7 +16,7 @@ services:
 
 #  autobots:
 #    container_name: autobots
-#    image: registry.gitlab.com/meetkiwi/autobots:main
+#    image: registry.gitlab.com/meetkiwi/autobots:feat-ui
 #    ports:
 #      - "80:80"
 #    env_file:
@@ -40,11 +40,11 @@ services:
     networks:
       network:
 
-  redis:
-    container_name: redis
-    image: redis:7
-    networks:
-      network:
+#  redis:
+#    container_name: redis
+#    image: redis:7
+#    networks:
+#      network:
 
 networks:
   network:
