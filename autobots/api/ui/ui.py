@@ -61,6 +61,7 @@ async def cookie(
 async def logout(request: Request):
     response = RedirectResponse(url="/")
     response.delete_cookie("Authorization", domain=request.base_url.hostname)
+    await get_auth().sign_out()
     return response
 
 

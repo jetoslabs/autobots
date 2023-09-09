@@ -39,6 +39,10 @@ class Auth:
         res: gotrue.AuthResponse = self.supabase_client.auth.refresh_session(refresh_token=refresh_token)
         return res
 
+    async def sign_out(self) -> None:
+        self.supabase_client.auth.sign_out()
+
+
 
 @lru_cache
 def get_auth(supabase: Supabase = get_supabase()) -> Auth:
