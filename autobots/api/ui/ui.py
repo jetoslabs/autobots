@@ -27,10 +27,7 @@ async def get_user_from_cookie(request: Request) -> UserResponse | None:
 
 
 @router.post("/cookie")
-async def cookie(
-        request: Request,
-        form_data: OAuth2PasswordRequestForm = Depends()
-):
+async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     try:
         auth_res: AuthResponse = await get_auth().sign_in_with_password(form_data.username, form_data.password)
         user: gotrue.User | None = auth_res.user
@@ -64,12 +61,52 @@ async def logout(request: Request):
     return response
 
 
+@router.post("/signup")
+async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
+    try:
+        # Only allow meetkiwi emails to register
+        if not form_data.username.endswith("@meetkiwi.co"):
+            raise HTTPException(status_code=401, detail="User not a Meetkiwi email")
+
+        auth_res: AuthResponse = await get_auth().sign_up_with_password(
+            form_data.username, form_data.password, str(request.base_url)
+        )
+        user: gotrue.User | None = auth_res.user
+        session: gotrue.Session | None = auth_res.session
+        if not user or not session:
+            raise HTTPException(status_code=401, detail="User Session not found")
+
+        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        if get_settings().COOKIE_DOMAIN.find(request.base_url.hostname) >= 0:
+            response.set_cookie(
+                "Authorization",
+                value=f"Bearer {auth_res.session.access_token}",
+                domain=request.base_url.hostname,
+                httponly=True,
+                max_age=1800,
+                expires=1800,
+            )
+        else:
+            log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+        return response
+    except HTTPException as e:
+        log.error(e.__dict__)
+    except Exception as e:
+        log.error(e)
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
 @router.get("/")
 async def index(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("home.html", {"request": request, "user": user.user})
     else:
         return templates.TemplateResponse("index.html", {"request": request})
+
+
+@router.get("/signup")
+async def login(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
 
 
 @router.get("/login")

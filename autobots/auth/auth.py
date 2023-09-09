@@ -22,8 +22,13 @@ class Auth:
 
         return res
 
-    async def sign_up_with_password(self, email: EmailStr, password: str) -> gotrue.AuthResponse:
-        res: gotrue.AuthResponse = self.supabase_client.auth.sign_up({"email": email, "password": password})
+    async def sign_up_with_password(
+            self, email: EmailStr, password: str, redirect_to: None | EmailStr = None
+    ) -> gotrue.AuthResponse:
+        credentials = {"email": email, "password": password}
+        if redirect_to:
+            credentials["options"] = {"redirect_to": redirect_to}
+        res: gotrue.AuthResponse = self.supabase_client.auth.sign_up(credentials)
         if not res.user:
             raise HTTPException(status_code=409, detail="System conflict while creating user")
         return res
