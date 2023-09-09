@@ -13,7 +13,6 @@ from autobots.core.settings import get_settings
 
 router = APIRouter()
 
-
 templates = Jinja2Templates(directory="autobots/ui/templates")
 
 
@@ -29,8 +28,8 @@ async def get_user_from_cookie(request: Request) -> UserResponse | None:
 
 @router.post("/cookie")
 async def cookie(
-    request: Request,
-    form_data: OAuth2PasswordRequestForm = Depends()
+        request: Request,
+        form_data: OAuth2PasswordRequestForm = Depends()
 ):
     try:
         auth_res: AuthResponse = get_supabase().client.auth.sign_in_with_password(
@@ -69,8 +68,7 @@ async def logout(request: Request):
 
 
 @router.get("/")
-async def index(request: Request):
-    user: UserResponse | None = await get_user_from_cookie(request)
+async def index(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("home.html", {"request": request, "user": user.user})
     else:
@@ -83,8 +81,7 @@ async def login(request: Request):
 
 
 @router.get("/docs")
-async def api_docs(request: Request):
-    user: UserResponse | None = await get_user_from_cookie(request)
+async def api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("docs.html", {"request": request, "user": user})
     else:
@@ -93,8 +90,7 @@ async def api_docs(request: Request):
 
 
 @router.get("/logs")
-async def api_docs(request: Request):
-    user: UserResponse | None = await get_user_from_cookie(request)
+async def api_logs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("logs.html", {"request": request, "user": user})
     else:
@@ -103,11 +99,9 @@ async def api_docs(request: Request):
 
 
 @router.get("/user")
-async def api_user(request: Request):
-    user: UserResponse | None = await get_user_from_cookie(request)
+async def api_user(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("user.html", {"request": request, "user": user})
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
-
