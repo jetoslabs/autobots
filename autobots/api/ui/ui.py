@@ -97,7 +97,7 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
 
 
 @router.get("/")
-async def index(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_index(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("home.html", {"request": request, "user": user.user})
     else:
@@ -105,17 +105,17 @@ async def index(request: Request, user: UserResponse | None = Depends(get_user_f
 
 
 @router.get("/signup")
-async def login(request: Request):
+async def page_signup(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
 
 
 @router.get("/login")
-async def login(request: Request):
+async def page_login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
 @router.get("/docs")
-async def api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("docs.html", {"request": request, "user": user})
     else:
@@ -124,7 +124,7 @@ async def api_docs(request: Request, user: UserResponse | None = Depends(get_use
 
 
 @router.get("/logs")
-async def api_logs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_logs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("logs.html", {"request": request, "user": user})
     else:
@@ -133,7 +133,7 @@ async def api_logs(request: Request, user: UserResponse | None = Depends(get_use
 
 
 @router.get("/user")
-async def api_user(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_user(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("user.html", {"request": request, "user": user})
     else:
