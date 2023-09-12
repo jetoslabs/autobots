@@ -1,0 +1,24 @@
+{% block content %}
+
+    <div class="container">
+        <div class="">
+
+            <form method="post" action={{post_to_url}}>
+                {% for item in input_schema %}
+                <div class="form-group">
+<!--                    <label for={{item.name}}>Username</label>-->
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+{% endblock content %}
