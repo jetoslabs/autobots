@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
 
+    COOKIE_DOMAIN: str = "127.0.0.1"
+
     SQLALCHEMY_DATABASE_URL: str = None
     SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
 
@@ -58,12 +60,12 @@ class Settings(BaseSettings):
     API_GRAPHS: str = "/graphs"
 
     class ConfigDict:
-        # env_file = f"../.env.local"
+        # env_file = f".env.local"
         env_file_encoding = 'utf-8'
 
 
 @lru_cache
-def get_settings(_env_file: str = '../.env.local') -> Settings:
+def get_settings(_env_file: str = '.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
     return settings

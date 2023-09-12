@@ -21,7 +21,7 @@ async def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends
     :return: AuthResponse
     """
 
-    auth_res: AuthResponse = get_auth().sign_in_with_password(
+    auth_res: AuthResponse = await get_auth().sign_in_with_password(
         form_data.username, form_data.password
     )
 
@@ -36,7 +36,7 @@ async def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Bear
     :return: BearerToken
     """
 
-    auth_res: AuthResponse = get_auth().sign_in_with_password(
+    auth_res: AuthResponse = await get_auth().sign_in_with_password(
         form_data.username, form_data.password
     )
 
@@ -60,9 +60,9 @@ async def test_auth_creds(user_res: gotrue.UserResponse = Depends(get_user_from_
 
 @router.post("/password/reset")
 async def reset_password_email(email: EmailStr, redirect_to: Optional[HttpUrl] = None) -> bool:
-    return get_auth().reset_password_email(email, redirect_to)
+    return await get_auth().reset_password_email(email, redirect_to)
 
 
 @router.post("/session/refresh")
 async def reset_password_email(refresh_token: str, user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> AuthResponse:
-    return get_auth().refresh_session(refresh_token)
+    return await get_auth().refresh_session(refresh_token)
