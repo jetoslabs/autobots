@@ -35,7 +35,7 @@ class DatastoreMetaCRUD:
         return datastore_meta
 
     @staticmethod
-    async def read(user_id: UUID, id: UUID, db: Session = Depends(get_db)) -> DatastoreMetaORM:
+    async def read_by_id(user_id: UUID, id: str, db: Session = Depends(get_db)) -> DatastoreMetaORM:
         datastore_meta = db.query(DatastoreMetaORM) \
             .filter_by(user_id=user_id) \
             .filter_by(id=id) \
@@ -70,48 +70,8 @@ class DatastoreMetaCRUD:
             offset = 0
 
         query = db.query(DatastoreMetaORM).filter_by(user_id=user_id).filter_by(name=name)
-        if version:
-            query.filter_by(version=version)
+        # if version:
+        #     query.filter_by(version=version)
         query.limit(limit).offset(offset)
         datastore_meta = query.all()
         return datastore_meta
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @staticmethod
-    async def read(user_id: UUID, name: str, db: Session = Depends(get_db)) -> List[DatastoreMetaORM]:
-        metas = db.query(DatastoreMetaORM) \
-            .filter_by(user_id=user_id) \
-            .filter_by(name=name) \
-            .all()
-        return metas
-
-    @staticmethod
-    async def delete(datastore_meta: DatastoreMetaORM, db: Session = Depends(get_db)):
-        db.delete(datastore_meta)
-        # session: SessionLocal = SessionLocal()
-        # try:
-        #     session.delete(datastore_meta)
-        #     session.commit()
-        # finally:
-        #     session.close()
-
-    @staticmethod
-    async def upsert(
-            del_datastore_meta: DatastoreMetaORM,
-            new_datastore_meta: DatastoreMetaORM,
-            db: Session = Depends(get_db)
-    ):
-        await DatastoreMetaCRUD.delete(del_datastore_meta, db)
-        await DatastoreMetaCRUD.create(new_datastore_meta, db)
-
