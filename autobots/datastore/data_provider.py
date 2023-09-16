@@ -65,7 +65,7 @@ class DataProvider:
             token_count = get_tiktoken().token_count(part)
             count = count + token_count
 
-            chunk = chunk + part + ". "
+            chunk = chunk + part + "."
 
         # yield last chunk
         yield chunk
