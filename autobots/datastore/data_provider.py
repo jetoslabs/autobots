@@ -42,7 +42,11 @@ class DataProvider:
     ####### Data
     @staticmethod
     async def read_data_line_by_line(data: str) -> AsyncGenerator[str, None]:
-        lines = data.split(".")
+        # lines = data.split(".")
+        # split without removing delimiter
+        delimiter = "."
+        lines = [line + delimiter for line in data.split(delimiter)]
+        lines.remove(delimiter)
         for line in lines:
             yield line
 
