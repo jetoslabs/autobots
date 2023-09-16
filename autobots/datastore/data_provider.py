@@ -41,17 +41,16 @@ class DataProvider:
 
     ####### Data
     @staticmethod
-    async def read_data_line_by_line(data: str) -> AsyncGenerator[str, None]:
-        # lines = data.split(".")
-        # split without removing delimiter
-        delimiter = "."
-        lines = [line + delimiter for line in data.split(delimiter)]
-        try:
-            lines.remove(delimiter)
-        except Exception as e:
-            pass
-        for line in lines:
-            yield line
+    async def read_data_line_by_line(data: str, delimiter: str = "\n") -> AsyncGenerator[str, None]:
+        if not delimiter:
+            yield data
+        else:
+            lines = [line + delimiter for line in data.split(delimiter)]
+            lines[-1] = lines[-1].rstrip(delimiter)
+
+            for line in lines:
+                if line == delimiter: continue
+                yield line
 
     @staticmethod
     async def create_data_chunks(
