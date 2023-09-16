@@ -46,7 +46,10 @@ class DataProvider:
         # split without removing delimiter
         delimiter = "."
         lines = [line + delimiter for line in data.split(delimiter)]
-        lines.remove(delimiter)
+        try:
+            lines.remove(delimiter)
+        except Exception as e:
+            pass
         for line in lines:
             yield line
 
