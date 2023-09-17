@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     API_ACTIONS: str = "/actions"
     API_ACTION_GRAPHS: str = "/action_graphs"
     API_PROMPTS: str = "/prompts"
+    API_DATASTORE: str = "/datastore"
     API_GRAPHS: str = "/graphs"
 
     class ConfigDict:
@@ -65,7 +66,7 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def get_settings(_env_file: str = '.env.local') -> Settings:
+def get_settings(_env_file: str = '../.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
     return settings

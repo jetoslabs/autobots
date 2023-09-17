@@ -23,8 +23,8 @@ async def test_datastore_happy_path(set_openai):
     assert datastore._get_s3_basepath() == datastore._get_pinecone_namespace()
 
     try:
-        await datastore.put(str1)
-        await datastore.put(str2)
+        await datastore.put_data(str1)
+        await datastore.put_data(str2)
 
         result: List[str] = await datastore.search(query=query)
 
