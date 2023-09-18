@@ -12,13 +12,13 @@ def setup_logger():
     logger.bind().info("Setting up logger")
     # prod mode
     if get_settings().ENV == get_config().APP_ENV.prod:
-        logger.add(sys.stderr,
+        logger.add(sys.stdout,
                    level=get_config().LOG_LEVEL.debug,
                    # colorize=True,
                    serialize=True)
     # dev mode
     elif get_settings().ENV == get_config().APP_ENV.dev:
-        logger.add(sys.stderr,
+        logger.add(sys.stdout,
                    level=get_config().LOG_LEVEL.debug,
                    format="<green>{time:YYYY-MM-DD at HH:mm:ss}</green> | <level>{level}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <yellow>{message}</yellow> - <level>{extra}</level>",
                    colorize=True,
