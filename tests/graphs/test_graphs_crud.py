@@ -11,7 +11,7 @@ from autobots.graphs.to_del.graphs_crud import GraphsCRUD
 
 @pytest_asyncio.fixture
 async def set_settings():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio

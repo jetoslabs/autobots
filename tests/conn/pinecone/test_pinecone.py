@@ -8,7 +8,7 @@ from autobots.core.utils import gen_hash
 
 @pytest_asyncio.fixture
 async def set_openai():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio
