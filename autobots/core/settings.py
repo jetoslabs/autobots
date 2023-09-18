@@ -1,10 +1,10 @@
 from functools import lru_cache
 
 from jose.constants import ALGORITHMS
+from loguru import logger
 from pydantic_settings import BaseSettings
 
 from autobots.core.config import get_config
-from autobots.core.log import log
 
 
 class Settings(BaseSettings):
@@ -78,5 +78,5 @@ def get_settings(_env_file: str = '../.env.local') -> Settings:
 def check_for_none(settings: Settings):
     for field in settings.__dict__.keys():
         if settings.__dict__[field] is None:
-            log.warning(f"Field: {field} is not set")
+            logger.warning(f"Field: {field} is not set")
 
