@@ -9,7 +9,7 @@ from autobots.database.mongo_base import get_mongo_db, get_mongo_db_collection
 
 @pytest_asyncio.fixture
 async def set_settings():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio

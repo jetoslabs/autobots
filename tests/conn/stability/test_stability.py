@@ -14,7 +14,7 @@ from autobots.core.settings import get_settings
 # Run command `python -m pytest -s` from `autobots/tests` folder
 @pytest_asyncio.fixture
 async def set_settings():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
     # Making test cheaper by using old engine
     # get_conn().stability = Stability()#(engine="stable-diffusion-768-v2-0")
 

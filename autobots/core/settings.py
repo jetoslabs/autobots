@@ -69,7 +69,7 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def get_settings(_env_file: str = '../.env.local') -> Settings:
+def get_settings(_env_file: str = '.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
     return settings

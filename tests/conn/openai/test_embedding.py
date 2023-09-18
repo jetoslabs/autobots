@@ -10,7 +10,7 @@ from autobots.core.settings import get_settings
 # Run command `pytest -vv -n 5` from `autobots/tests` folder
 @pytest_asyncio.fixture
 async def set_openai():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio
