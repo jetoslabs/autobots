@@ -31,6 +31,7 @@ jobs:
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
           docker run -d --name datadog-agent 
+          --expose 8126
           --cgroupns host 
           --pid host 
           -e DD_API_KEY=$DD_API_KEY 
