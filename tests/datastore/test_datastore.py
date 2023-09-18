@@ -53,7 +53,7 @@ async def test_datastore_happy_path(set_openai):
 
 @pytest.mark.asyncio
 async def test_put_file_happy_path(set_openai):
-    filename = "resources/datastore/google.txt"
+    filename = "tests/resources/datastore/google.txt"
     query = "How to make search engine large scale"
 
     datastore = Datastore().init(name="teststore")

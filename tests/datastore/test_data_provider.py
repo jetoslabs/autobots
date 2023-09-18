@@ -4,7 +4,7 @@ import pytest_asyncio
 from autobots.core.settings import get_settings
 from autobots.datastore.data_provider import DataProvider
 
-FILENAME = "resources/datastore/shopifyql"
+FILENAME = "tests/resources/datastore/shopifyql"
 
 
 @pytest_asyncio.fixture
