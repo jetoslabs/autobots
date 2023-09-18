@@ -3,10 +3,13 @@ from functools import lru_cache
 from jose.constants import ALGORITHMS
 from pydantic_settings import BaseSettings
 
+from autobots.core.config import get_config
 from autobots.core.log import log
 
 
 class Settings(BaseSettings):
+    ENV: str = get_config().APP_ENV.prod
+
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
     APP_RELOAD: bool = True
