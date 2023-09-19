@@ -1,23 +1,15 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
 from ddtrace import patch
 from fastapi import FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
 from autobots.api.ui import ui
 from autobots.api.v1 import v1
 from autobots.core.fastapi_desc import FastAPIDesc
-from autobots.core.log import log
+from autobots.core.lifespan import lifespan
 from autobots.core.settings import get_settings
-from autobots.database.mongo_base import close_mongo_client
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    yield
-    log.info("Clean up and release the resources")
-    close_mongo_client()
+from autobots.subscription.api_usage import usage_info
 
 
 patch(fastapi=True)
@@ -25,11 +17,13 @@ app = FastAPI(lifespan=lifespan, **FastAPIDesc().model_dump())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(BaseHTTPMiddleware, dispatch=usage_info)
+
 
 app.include_router(v1.router)
 app.include_router(router=v1.router_docs)

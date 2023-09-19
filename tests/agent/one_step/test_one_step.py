@@ -7,7 +7,7 @@ from autobots.core.settings import get_settings
 
 @pytest_asyncio.fixture
 async def set_settings():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
     # settings.OPENAI_ENGINE = "gpt-3.5-turbo-16k-0613"
 
 

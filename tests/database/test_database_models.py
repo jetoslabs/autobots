@@ -15,7 +15,7 @@ from autobots.user.user_orm_model import UserORM
 
 @pytest_asyncio.fixture
 async def set_settings():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio

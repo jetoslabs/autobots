@@ -13,7 +13,7 @@ from autobots.core.settings import get_settings
 
 router = APIRouter()
 
-templates = Jinja2Templates(directory="ui/templates")
+templates = Jinja2Templates(directory="autobots/ui/templates")
 
 
 async def get_user_from_cookie(request: Request) -> UserResponse | None:
