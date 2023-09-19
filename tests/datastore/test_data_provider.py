@@ -4,12 +4,12 @@ import pytest_asyncio
 from autobots.core.settings import get_settings
 from autobots.datastore.data_provider import DataProvider
 
-FILENAME = "resources/datastore/shopifyql"
+FILENAME = "tests/resources/datastore/shopifyql"
 
 
 @pytest_asyncio.fixture
 async def set_settings():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio

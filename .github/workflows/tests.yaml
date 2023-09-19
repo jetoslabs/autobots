@@ -1,15 +1,6 @@
 name: Continuous Tests
 
 on:
-  push:
-    branches:
-      - '*'
-      - '!main'
-    tags:
-      - '!v**'
-  pull_request:
-    branches:
-      - '*'
   workflow_dispatch:
 
 env:
@@ -35,10 +26,11 @@ jobs:
           poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
       - name: Run Tests
-        working-directory: ./tests
+#        working-directory: ./tests
         run: |
           python -m pytest -vv -n 5
         env:
+          ENV: ${{ secrets.ENV }}
           COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

@@ -1,12 +1,15 @@
 from functools import lru_cache
 
 from jose.constants import ALGORITHMS
+from loguru import logger
 from pydantic_settings import BaseSettings
 
-from autobots.core.log import log
+from autobots.core.config import get_config
 
 
 class Settings(BaseSettings):
+    ENV: str = get_config().APP_ENV.prod
+
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
     APP_RELOAD: bool = True
@@ -66,7 +69,7 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def get_settings(_env_file: str = '../.env.local') -> Settings:
+def get_settings(_env_file: str = '.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
     return settings
@@ -75,5 +78,5 @@ def get_settings(_env_file: str = '../.env.local') -> Settings:
 def check_for_none(settings: Settings):
     for field in settings.__dict__.keys():
         if settings.__dict__[field] is None:
-            log.warning(f"Field: {field} is not set")
+            logger.warning(f"Field: {field} is not set")
 
