@@ -5,7 +5,7 @@ import pytest_asyncio
 from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionCreate
-from autobots.action.action_gen_text_llm_chat_openai import ActionCreateGenTextLlmChatOpenai
+from autobots.action.action_gen_text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
 from autobots.action.user_actions import UserActions
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.settings import get_settings
