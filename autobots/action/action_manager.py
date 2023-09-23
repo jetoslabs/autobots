@@ -2,10 +2,13 @@ from functools import lru_cache
 from typing import Any
 
 from autobots.action.action_doc_model import ActionDoc
-from autobots.action.action_gen_image_dalle_openai import ActionGenImageDalleOpenai
-from autobots.action.action_gen_image_stability_ai import ActionGenImageStabilityAi
-from autobots.action.action_gen_text_llm_chat_openai import ActionGenTextLlmChatOpenai
+from autobots.action.action_gen_image_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
+from autobots.action.action_gen_image_stability_ai_v2 import ActionGenImageStabilityAiV2
+from autobots.action.action_gen_text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
 from autobots.action.action_types import ActionType
+from autobots.conn.openai.chat import ChatReq
+from autobots.conn.openai.image_model import ImageReq
+from autobots.conn.stability.stability_data import StabilityReq
 from autobots.core.log import log
 from autobots.prompts.user_prompts import Input
 
@@ -24,10 +27,13 @@ class ActionManager:
     async def run_action(self, action: ActionDoc, action_input: Input) -> Any:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:
-                return await ActionGenTextLlmChatOpenai.run(action, action_input)
+                return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.input))\
+                    .run_action(action_input)
             case ActionType.gen_image_dalle_openai:
-                return await ActionGenImageDalleOpenai.run(action, action_input)
+                return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.input))\
+                    .run_action(action_input)
             case ActionType.gen_image_stability_ai:
-                return await ActionGenImageStabilityAi.run(action, action_input)
+                return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.input))\
+                    .run_action(action_input)
             case _:
                 log.error("Action Type not found")
