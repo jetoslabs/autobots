@@ -46,6 +46,7 @@ class ActionCreate(BaseModel):
     name: str
     version: float = 0
     description: str = ""
+    user_manual: str = ""
     type: ActionType
     input: Dict[str, Any]
 
