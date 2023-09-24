@@ -57,7 +57,21 @@ class Settings(BaseSettings):
     API_PROMPTS: str = "/prompts"
     API_GRAPHS: str = "/graphs"
 
-    class ConfigDict:
+    GOOGLE_CLIENT_ID: str = None
+    GOOGLE_CLIENT_SECRET: str = None
+    GOOGLE_REDIRECT_URI: str = None
+    DEVELOPER_TOKEN: str = None
+    ENVIRONMENT: str = None
+    TEST_MANAGER_ACCOUNT_ID:str = None
+
+    GOOGLE_ADS_AUTH: str = '/google/auth'
+    GOOGLE_ADS_CAMPAIGNS: str = '/google/ad-campaigns'
+    GOOGLE_ADS_ACCOUNTS: str = '/google/ad-accounts'
+    GOOGLE_ADS_GROUPS: str = '/google/ad-groups'
+    GOOGLE_ADS: str = '/google/ads'
+    
+
+    class Config:
         # env_file = f"../.env.local"
         env_file_encoding = 'utf-8'
 

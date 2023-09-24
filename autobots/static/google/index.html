@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Ads Playground</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        /* Custom Styles */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            flex: 1 0 auto; 
+        }
+
+        button:hover,
+        select:hover {
+            cursor: pointer;
+            transform: scale(1.02);
+            transition: transform 0.3s;
+        }
+
+        /* Tooltip styling */
+        [data-tooltip]:hover:after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Header and Footer */
+        header, footer {
+            padding: 20px;
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+        }
+
+        footer {
+            font-size: 0.8rem;
+            flex-shrink: 0; 
+        }
+
+        #loadingSpinner {
+            flex: 1 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        Kiwi - Google Ads Playground
+    </header>
+
+
+    <div class="container mt-5">
+        <!-- OAuth Trigger Button with Icon -->
+        <button id="startAuth" class="btn btn-primary mb-2"><i class="fas fa-key"></i> Onboard Customer</button>
+
+        <div class="mb-3">
+            <label for="emailDisplay">Email:</label>
+            <span id="emailDisplay" class="form-control">Logged in as: </span>
+        </div>
+
+        <!-- Dropdowns with labels and default 'Select' option -->
+
+        <!-- Ad Manager Accounts -->
+        <div class="form-group">
+            <label for="managerDropdown">Ad Manager Accounts:</label>
+            <select class="form-control" id="managerDropdown">
+                <option selected>Select</option>
+            </select>
+        </div>
+
+        <!-- Individual Accounts -->
+        <div class="form-group">
+            <label for="individualAccountDropdown">Individual Accounts:</label>
+            <select class="form-control" id="individualAccountDropdown">
+                <option selected>Select</option>
+            </select>
+        </div>
+
+        <!-- Ad Campaigns -->
+        <div class="form-group row">
+            <label for="campaignDropdown" class="col-sm-3 col-form-label">Ad Campaigns:</label>
+            <div class="col-sm-7">
+                <select class="form-control" id="campaignDropdown">
+                    <option selected>Select</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <button id="createCampaignBtn" class="btn btn-success btn-sm btn-block">Create Campaign</button>
+            </div>
+        </div>
+
+        <!-- Ad Groups -->
+        <div class="form-group row">
+            <label for="adGroupDropdown" class="col-sm-3 col-form-label">Ad Groups:</label>
+            <div class="col-sm-7">
+                <select class="form-control" id="adGroupDropdown">
+                    <option selected>Select</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <button id="createAdGroupBtn" class="btn btn-success btn-sm btn-block">Create Ad group</button>
+            </div>
+        </div>
+
+        <!-- Ads -->
+        <div class="form-group row">
+            <label for="adDropdown" class="col-sm-3 col-form-label">Ads:</label>
+            <div class="col-sm-7">
+                <select class="form-control" id="adDropdown">
+                    <option selected>Select</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <button id="createAdBtn" class="btn btn-success btn-sm btn-block">Create Ad</button>
+            </div>
+        </div>
+
+        <!-- Create Campaign Controls -->
+        <div id="createCampaignControls" class="mb-3" style="display: none;">
+            <!-- Campaign Name -->
+            <div class="form-group">
+                <label for="campaignName">Campaign Name:</label>
+                <input type="text" class="form-control" id="campaignName" minlength="3" maxlength="255" required>
+            </div>
+        
+            <!-- Campaign Status -->
+            <div class="form-group">
+                <label for="campaignStatus">Campaign Status:</label>
+                <select class="form-control" id="campaignStatus">
+                    <option value="ENABLED">ENABLED</option>
+                    <option value="PAUSED">PAUSED</option>
+                    <option value="REMOVED">REMOVED</option>
+                </select>
+            </div>
+        
+            <!-- Advertising Channel Type -->
+            <div class="form-group">
+                <label for="advertisingChannelType">Advertising Channel Type:</label>
+                <select class="form-control" id="advertisingChannelType">
+                    <option value="SEARCH">SEARCH</option>
+                    <option value="DISPLAY">DISPLAY</option>
+                    <option value="SHOPPING">SHOPPING</option>
+                    <option value="VIDEO">VIDEO</option>
+                    <option value="APP">APP</option>
+                </select>
+            </div>
+        
+            <!-- Budget -->
+            <div class="form-group">
+                <label for="budget">Budget:</label>
+                <input type="number" class="form-control" id="budget" min="0.01" step="0.01" required>
+            </div>
+        
+            <!-- Budget Delivery Method -->
+            <div class="form-group">
+                <label for="budgetDeliveryMethod">Budget Delivery Method:</label>
+                <select class="form-control" id="budgetDeliveryMethod">
+                    <option value="STANDARD">STANDARD</option>
+                    <option value="ACCELERATED">ACCELERATED</option>
+                </select>
+            </div>
+        
+            <!-- Bidding Strategy Details (For simplicity, only ManualCPC is included here) -->
+            <div class="form-group">
+                <label for="enhancedCpcOptIn">Enhanced CPC Opt-In:</label>
+                <input type="checkbox" id="enhancedCpcOptIn" checked>
+            </div>
+        
+            <!-- Ad Manager Account ID and Ad Account ID -->
+            <div class="form-group">
+                <label for="adManagerAccountId">Ad Manager Account ID:</label>
+                <input type="text" id="adManagerAccountId" class="form-control" disabled>
+            </div>
+        
+            <div class="form-group">
+                <label for="adAccountId">Ad Account ID:</label>
+                <input type="text" id="adAccountId" class="form-control" disabled>
+            </div>
+        
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button id="submitCampaignBtn" class="btn btn-primary">Create Campaign</button>
+                <button id="closeCampaignControlsBtn" class="btn btn-secondary ml-2">Close</button>
+            </div>
+        </div>
+        
+        <!-- Create Ad Group Controls -->
+        <div id="createAdGroupControls" class="mb-3" style="display: none;">
+            <!-- Ad Group Name -->
+            <div class="form-group">
+                <label for="adGroupName">Ad Group Name:</label>
+                <input type="text" class="form-control" id="adGroupName" required>
+            </div>
+
+            <!-- Campaign ID -->
+            <div class="form-group">
+                <label for="adGroupCampaignId">Campaign ID:</label>
+                <input type="text" class="form-control" id="adGroupCampaignId" disabled>
+            </div>
+            <!-- Ad Group Status -->
+            <div class="form-group">
+                <label for="adGroupStatus">Ad Group Status:</label>
+                <select class="form-control" id="adGroupStatus">
+                    <option value="ENABLED">ENABLED</option>
+                    <option value="PAUSED">PAUSED</option>
+                    <option value="REMOVED">REMOVED</option>
+                </select>
+            </div>
+
+            <!-- Bid Amount -->
+            <div class="form-group">
+                <label for="adGroupBidAmount">Bid Amount:</label>
+                <input type="number" class="form-control" id="adGroupBidAmount" min="0.01" step="0.01" required>
+            </div>
+
+            <!-- Ad Manager Account ID -->
+            <div class="form-group">
+                <label for="adGroupManagerAccountId">Ad Manager Account ID:</label>
+                <input type="text" class="form-control" id="adGroupManagerAccountId" disabled>
+            </div>
+
+            <!-- Ad Account ID -->
+            <div class="form-group">
+                <label for="adGroupAccountId">Ad Account ID:</label>
+                <input type="text" class="form-control" id="adGroupAccountId" disabled>
+            </div>
+
+    <!-- Submit and Close Buttons -->
+    <div class="form-group">
+        <button id="submitAdGroupBtn" class="btn btn-primary">Create Ad Group</button>
+        <button id="closeAdGroupControlsBtn" class="btn btn-secondary ml-2">Close</button>
+    </div>
+</div>
+
+
+        <!-- Create Ad Controls -->
+        <div id="createResponsiveAdControls" class="mb-3" style="display: none;">
+            <!-- Ad Manager Account ID -->
+            <div class="form-group">
+                <label for="rsaManagerAccountId">Ad Manager Account ID:</label>
+                <input type="text" class="form-control" id="rsaManagerAccountId" disabled>
+            </div>
+
+            <!-- Ad Account ID -->
+            <div class="form-group">
+                <label for="rsaAccountId">Ad Account ID:</label>
+                <input type="text" class="form-control" id="rsaAccountId" disabled>
+            </div>
+
+            <!-- Ad Group ID -->
+            <div class="form-group">
+                <label for="rsaAdGroupId">Ad Group ID:</label>
+                <input type="text" class="form-control" id="rsaAdGroupId" disabled>
+            </div>
+
+            <!-- Headlines -->
+            <div class="form-group">
+                <label for="rsaHeadlines">Headlines (comma-separated):</label>
+                <input type="text" class="form-control" id="rsaHeadlines" required>
+            </div>
+
+            <!-- Descriptions -->
+            <div class="form-group">
+                <label for="rsaDescriptions">Descriptions (comma-separated):</label>
+                <input type="text" class="form-control" id="rsaDescriptions" required>
+            </div>
+
+            <!-- Final URL -->
+            <div class="form-group">
+                <label for="rsaFinalUrl">Final URL:</label>
+                <input type="url" class="form-control" id="rsaFinalUrl" required>
+            </div>
+
+            <!-- Path 1 -->
+            <div class="form-group">
+                <label for="rsaPath1">Path 1:</label>
+                <input type="text" class="form-control" id="rsaPath1">
+            </div>
+
+            <!-- Path 2 -->
+            <div class="form-group">
+                <label for="rsaPath2">Path 2:</label>
+                <input type="text" class="form-control" id="rsaPath2">
+            </div>
+
+            <!-- Status -->
+            <div class="form-group">
+                <label for="rsaStatus">Ad Status:</label>
+                <select class="form-control" id="rsaStatus">
+                    <option value="ENABLED">ENABLED</option>
+                    <option value="PAUSED">PAUSED</option>
+                    <option value="REMOVED">REMOVED</option>
+                </select>
+            </div>
+
+            <!-- Submit and Close Buttons -->
+            <div class="form-group">
+                <button id="submitResponsiveAdBtn" class="btn btn-primary">Create Responsive Ad</button>
+                <button id="closeResponsiveAdControlsBtn" class="btn btn-secondary ml-2">Close</button>
+            </div>
+        </div>
+
+    </div>
+    <!-- Loading Spinner -->
+    <div class="text-center my-5" id="loadingSpinner" style="display: none;">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Kiwi. All Rights Reserved.
+    </footer>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+    <!-- This will contain our jQuery logic -->
+
+</body>
+
+</html>
