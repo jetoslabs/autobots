@@ -1,21 +1,17 @@
 from contextlib import asynccontextmanager
-import starlette
 import uvicorn
 from ddtrace import patch
-from fastapi import FastAPI
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import FastAPI, APIRouter
 from starlette.middleware.cors import CORSMiddleware
-from autobots.api.ui import ui
+from starlette.middleware.base import BaseHTTPMiddleware
 from autobots.api.v1 import v1
-from autobots.core.fastapi_desc import FastAPIDesc
 from autobots.api.v1.ads.google import google_auth
-from autobots.core.lifespan import lifespan
+from autobots.core.log import log
 from autobots.core.settings import get_settings
 from autobots.database.mongo_base import close_mongo_client
+from autobots.subscription.api_usage import usage_info
 from fastapi.staticfiles import StaticFiles
 import aiofiles
-from autobots.subscription.api_usage import usage_info
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,11 +21,12 @@ async def lifespan(app: FastAPI):
 
 patch(fastapi=True)
 
-# New root router   
+
 root_router = APIRouter()
 root_router.include_router(google_auth.router, tags=["google_ads_auth"]) 
 
-app = FastAPI(lifespan=lifespan, **FastAPIDesc().model_dump())
+app = FastAPI(lifespan=lifespan)
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,18 +37,16 @@ app.add_middleware(
 )
 app.add_middleware(BaseHTTPMiddleware, dispatch=usage_info)
 
-
 app.include_router(root_router)  # Include the root router
 app.include_router(v1.router)
-
 app.mount("/static", StaticFiles(directory="autobots/static"), name="static")
+
 
 @app.get("/")
 async def serve_root():
-    return await aiofiles.open("autobots/static/google/index.html", mode="r").read()
-
-app.include_router(router=v1.router_docs)
-app.include_router(router=ui.router)
+    async with aiofiles.open("autobots/static/google/index.html", mode="r") as f:
+        content = await f.read()
+    return content
 
 if __name__ == "__main__":
     # Run server

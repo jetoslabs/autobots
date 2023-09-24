@@ -475,7 +475,8 @@ def create_responsive_ad(access_token: str, rsa_details: ResponsiveSearchAdCreat
     ad_group_id_and_ad_id = resource_components[3].split('~')
     ad_group_id = ad_group_id_and_ad_id[0]
     ad_id = ad_group_id_and_ad_id[1]
-
+    
+    #TODO: The following URL doesnot work. Need to find a straight forward way to get the URL instead of genearting this URL.
     ad_url = f"https://ads.google.com/aw/ads/assetdetails?ocid={ad_account_id}&workspaceId=0&ascid={ad_account_id}&adId={ad_id}&adGroupIdForAd={ad_group_id}"
 
     return {

@@ -77,7 +77,7 @@ class Settings(BaseSettings):
     GOOGLE_ADS: str = '/google/ads'
     
 
-    class ConfigDict:
+    class Config:
         # env_file = f".env.local"
         env_file_encoding = 'utf-8'
 

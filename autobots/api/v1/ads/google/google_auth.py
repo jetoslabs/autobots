@@ -18,6 +18,7 @@ CLIENT_ID = get_settings().GOOGLE_CLIENT_ID
 CLIENT_SECRET = get_settings().GOOGLE_CLIENT_SECRET
 REDIRECT_URI = get_settings().GOOGLE_REDIRECT_URI
 
+# Bare minimum scopes required to access admanager for the user
 SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
