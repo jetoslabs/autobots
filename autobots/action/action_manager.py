@@ -1,10 +1,14 @@
 from functools import lru_cache
 from typing import Any
 
+from fastapi import HTTPException
+
 from autobots.action.action_doc_model import ActionDoc
 from autobots.action.action_gen_image_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from autobots.action.action_gen_image_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_gen_text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
+from autobots.action.action_gen_text_llm_chat_with_vector_search_openai import \
+    ActionGenTextLlmChatWithVectorSearchOpenai, ActionCreateGenTextLlmChatWithVectorSearchOpenai
 from autobots.action.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
@@ -35,5 +39,10 @@ class ActionManager:
             case ActionType.gen_image_stability_ai:
                 return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.input))\
                     .run_action(action_input)
+            case ActionType.gen_text_llm_chat_with_vector_search_openai:
+                return await ActionGenTextLlmChatWithVectorSearchOpenai(
+                    ActionCreateGenTextLlmChatWithVectorSearchOpenai.model_validate(action.model_dump())
+                ).run_action(action_input)
             case _:
                 log.error("Action Type not found")
+                raise HTTPException(status_code=404, detail="Action Type not found")
