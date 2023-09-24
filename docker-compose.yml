@@ -16,7 +16,7 @@ services:
 
 #  autobots:
 #    container_name: autobots
-#    image: registry.gitlab.com/meetkiwi/autobots:main
+#    image: registry.gitlab.com/meetkiwi/autobots:feat-ui
 #    ports:
 #      - "80:80"
 #    env_file:
@@ -33,6 +33,8 @@ services:
     pid: host
     env_file:
       - .env.dev.datadog
+    ports:
+      - "8126:8126"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -40,11 +42,11 @@ services:
     networks:
       network:
 
-  redis:
-    container_name: redis
-    image: redis:7
-    networks:
-      network:
+#  redis:
+#    container_name: redis
+#    image: redis:7
+#    networks:
+#      network:
 
 networks:
   network:

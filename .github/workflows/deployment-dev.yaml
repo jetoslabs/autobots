@@ -26,7 +26,55 @@ jobs:
         env:
           LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_SSH_KEY }}
 
+      - name: SSH and Remove Running container and image Datadog Agent
+        if: always()
+        run: |
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker ps -a
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker stop datadog-agent
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker rm datadog-agent
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker ps -a
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker image prune -a -f
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker images
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+
+      - name: SSH and Run Docker image Datadog agent
+        if: always()
+        run: >
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
+          docker run -d --name datadog-agent 
+          --expose 8126
+          --cgroupns host 
+          --pid host 
+          -e DD_API_KEY=$DD_API_KEY 
+          -e DD_LOGS_ENABLED=true 
+          -e DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true 
+          -e DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
+          -e DD_CONTAINER_EXCLUDE="name:datadog-agent" 
+          -e DD_APM_ENABLED=true
+          -e DD_APM_NON_LOCAL_TRAFFIC=true
+          -e DD_SITE=$DD_SITE 
+          -v /var/run/docker.sock:/var/run/docker.sock:ro 
+          -v /var/lib/docker/containers:/var/lib/docker/containers:ro 
+          -v /proc/:/host/proc/:ro 
+          -v /opt/datadog-agent/run:/opt/datadog-agent/run:rw 
+          -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro 
+          gcr.io/datadoghq/agent:latest
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: ${{ secrets.DD_SITE }}
+
       - name: SSH and Login to Container Registry
+        if: always()
         run: |
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker login registry.gitlab.com -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
@@ -37,7 +85,7 @@ jobs:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
 
       - name: SSH and Remove Running container and image
-        #        if: always()
+        if: always()
         run: |
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker ps -a
@@ -69,6 +117,8 @@ jobs:
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
           docker run -d --name autobots -p 80:80 
+          -e ENV=$ENV
+          -e COOKIE_DOMAIN=$COOKIE_DOMAIN 
           -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL 
           -e SUPABASE_URL=$SUPABASE_URL 
           -e SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY 
@@ -91,6 +141,8 @@ jobs:
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
           LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          ENV: ${{ secrets.ENV }}
+          COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}

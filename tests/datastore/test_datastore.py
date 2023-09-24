@@ -9,7 +9,7 @@ from autobots.datastore.datastore import Datastore
 
 @pytest_asyncio.fixture
 async def set_openai():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio
@@ -23,8 +23,8 @@ async def test_datastore_happy_path(set_openai):
     assert datastore._get_s3_basepath() == datastore._get_pinecone_namespace()
 
     try:
-        await datastore.put(str1)
-        await datastore.put(str2)
+        await datastore.put_data(str1)
+        await datastore.put_data(str2)
 
         result: List[str] = await datastore.search(query=query)
 
@@ -53,7 +53,7 @@ async def test_datastore_happy_path(set_openai):
 
 @pytest.mark.asyncio
 async def test_put_file_happy_path(set_openai):
-    filename = "resources/datastore/google.txt"
+    filename = "tests/resources/datastore/google.txt"
     query = "How to make search engine large scale"
 
     datastore = Datastore().init(name="teststore")

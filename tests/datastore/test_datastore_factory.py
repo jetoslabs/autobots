@@ -7,7 +7,7 @@ from autobots.datastore.datastore_factory import DatastoreFactory, get_datastore
 
 @pytest_asyncio.fixture
 async def set_openai():
-    settings = get_settings(_env_file='../.env.local')
+    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio
@@ -19,9 +19,9 @@ async def test_datastore_happy_path(set_openai):
     datastore = await get_datastore_factory().create_datastore("test_datastore_happy_path")
     try:
 
-        await datastore.put(str1)
-        await datastore.put(str2)
-        await datastore.put(str3)
+        await datastore.put_data(str1)
+        await datastore.put_data(str2)
+        await datastore.put_data(str3)
 
         search_res = await datastore.search("How to be happy?", top_k=1)
 

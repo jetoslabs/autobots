@@ -1,17 +1,22 @@
 from functools import lru_cache
 
 from jose.constants import ALGORITHMS
+from loguru import logger
 from pydantic_settings import BaseSettings
 
-from autobots.core.log import log
+from autobots.core.config import get_config
 
 
 class Settings(BaseSettings):
+    ENV: str = get_config().APP_ENV.prod
+
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
     APP_RELOAD: bool = True
     APP_LOG_LEVEL: str = "debug"
     APP_WORKERS: int = 1
+
+    COOKIE_DOMAIN: str = "127.0.0.1"
 
     SQLALCHEMY_DATABASE_URL: str = None
     SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
@@ -27,7 +32,7 @@ class Settings(BaseSettings):
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
-    OPENAI_ENGINE: str = "gpt-4"
+    # OPENAI_ENGINE: str = "gpt-3.5-turbo-16k-0613"  # "gpt-4"
 
     STABILITY_HOST: str = None
     STABILITY_KEY: str = None
@@ -55,6 +60,7 @@ class Settings(BaseSettings):
     API_ACTIONS: str = "/actions"
     API_ACTION_GRAPHS: str = "/action_graphs"
     API_PROMPTS: str = "/prompts"
+    API_DATASTORE: str = "/datastore"
     API_GRAPHS: str = "/graphs"
 
     GOOGLE_CLIENT_ID: str = None
@@ -71,13 +77,13 @@ class Settings(BaseSettings):
     GOOGLE_ADS: str = '/google/ads'
     
 
-    class Config:
-        # env_file = f"../.env.local"
+    class ConfigDict:
+        # env_file = f".env.local"
         env_file_encoding = 'utf-8'
 
 
 @lru_cache
-def get_settings(_env_file: str = '../.env.local') -> Settings:
+def get_settings(_env_file: str = '.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
     return settings
@@ -86,5 +92,5 @@ def get_settings(_env_file: str = '../.env.local') -> Settings:
 def check_for_none(settings: Settings):
     for field in settings.__dict__.keys():
         if settings.__dict__[field] is None:
-            log.warning(f"Field: {field} is not set")
+            logger.warning(f"Field: {field} is not set")
 

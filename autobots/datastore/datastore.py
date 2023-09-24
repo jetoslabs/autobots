@@ -65,13 +65,19 @@ class Datastore:
             namespace=self._get_pinecone_namespace()
         )
 
-    async def put(self, data: str):
+    async def put_data(
+            self,
+            data: str,
+            chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
+            chunk_token_size: int = 512
+    ):
         """
         Store data
         :return:
         """
-        await self._put_data(data=data)
-        await self._put_embedding(data=data)
+        async for chunk in DataProvider.create_data_chunks(data, chunk_func, chunk_token_size):
+            await self._put_data(data=chunk)
+            await self._put_embedding(data=chunk)
 
     async def put_file(
             self,
@@ -84,12 +90,12 @@ class Datastore:
             await self._put_data(data=chunk)
             await self._put_embedding(data=chunk)
 
-    async def get(self):
-        """
-        Retrieve data
-        :return:
-        """
-        pass
+    # async def get(self):
+    #     """
+    #     Retrieve data
+    #     :return:
+    #     """
+    #     pass
 
     async def search(self, query: str, top_k: int = 10) -> List[str]:
         """
