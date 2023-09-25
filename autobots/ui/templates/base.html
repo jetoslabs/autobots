@@ -59,6 +59,21 @@
         {% block content %}
 
         {% endblock content %}
+
+        <footer class="text-center text-white fixed-bottom bg-dark">
+              <!-- Grid container -->
+{#              <div class="container p-4"></div>#}
+              <!-- Grid container -->
+
+              <!-- Copyright -->
+            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+                version: {% if version %} {{ version }} {% endif %} 💠
+                © 2023 Copyright:<a class="text-white" target="_blank" href="https://myautobots.com/"> MyAutobots.com</a>
+
+            </div>
+
+            <!-- Copyright -->
+        </footer>
     </main>
 </body>
 </html>
