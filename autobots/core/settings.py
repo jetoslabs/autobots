@@ -9,7 +9,7 @@ from autobots.core.config import get_config
 
 class Settings(BaseSettings):
     ENV: str = get_config().APP_ENV.prod
-    # value from github deployment action
+    # value from github deployment action (CICD)
     VERSION: str = "local"
 
     APP_HOST: str = "0.0.0.0"
