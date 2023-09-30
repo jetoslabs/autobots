@@ -9,28 +9,28 @@ readme = "README.md"
 python = "^3.10"
 fastapi = "^0.103.1"
 uvicorn = "^0.23.0"
-pydantic = {extras = ["dotenv", "email"], version = "^2.0.3"}
+pydantic = {extras = ["dotenv", "email"], version = "^2.4.1"}
 loguru = "^0.7.0"
-openai = {extras = ["datalib"], version = "^0.28.0"}
+openai = {extras = ["datalib"], version = "^0.28.1"}
 pytest-asyncio = "^0.21.1"
-selenium = "4.12.0"
+selenium = "4.13.0"
 stability-sdk = "^0.8.3"
 aiohttp = "^3.8.5"
 pytest-xdist = "^3.3.1"
-duckduckgo-search = "^3.8.4"
+duckduckgo-search = "^3.8.5"
 pinecone-client = {extras = ["grpc"], version = "^V3.0.0rc2"}
-boto3 = "^1.28.53"
-boto3-stubs = {extras = ["essential"], version = "^1.28.53"}
+boto3 = "^1.28.55"
+boto3-stubs = {extras = ["essential"], version = "^1.28.55"}
 tiktoken = "^0.5.1"
 pillow = "^10.0.0"
-ddtrace = "^1.20.1"
+ddtrace = "^1.20.2"
 pydantic-settings = "^2.0.2"
 sqlalchemy = "^2.0.21"
 psycopg2 = "^2.9.6"
 supabase = "^1.0.4"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.6"
-redis = "^5.0.0"
+redis = "^5.0.1"
 pymongo = "^4.4.1"
 aiodns = "^3.0.0"
 jinja2 = "^3.1.2"
