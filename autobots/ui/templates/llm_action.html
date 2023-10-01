@@ -23,7 +23,7 @@
             form_data.forEach(function (value, key) {
                 object[key] = value;
             });
-            const response = await fetch("http://127.0.0.1:8000/action_search", {
+            const response = await fetch("/action_search", {
                 method: 'POST',
                 body: form_data
             });
@@ -119,7 +119,7 @@
             form_data.forEach(function (value, key) {
                 object[key] = value;
             });
-            const response = await fetch("http://127.0.0.1:8000/llm_action_test", {
+            const response = await fetch("/llm_action_test", {
                 method: 'POST',
                 body: form_data
             });
@@ -141,7 +141,7 @@
             form_data.forEach(function (value, key) {
                 object[key] = value;
             });
-            const response = await fetch("http://127.0.0.1:8000/llm_action_save", {
+            const response = await fetch("/llm_action_save", {
                 method: 'POST',
                 body: form_data
             });
