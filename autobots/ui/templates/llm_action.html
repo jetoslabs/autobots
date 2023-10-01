@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .form-label {
+            margin-bottom: 0;
+        }
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+    <script>
+
+        async function postSearchData() {
+            const form = document.getElementById('search_form');
+            const form_data = new FormData(form);
+            var object = {};
+            form_data.forEach(function (value, key) {
+                object[key] = value;
+            });
+            const response = await fetch("http://127.0.0.1:8000/action_search", {
+                method: 'POST',
+                body: form_data
+            });
+
+            // Empty search table
+            // Get the table element
+            const table_body = document.getElementById("table_body");
+            table_body.innerHTML = ""
+
+            if (response.ok) {
+                const res_json = await response.json()
+
+                const table_body = document.getElementById("table_body");
+
+                for (let j=0; j < res_json.length; j++) {
+                    const row = table_body.insertRow(j)
+                    const action_obj = res_json[j]
+                    console.log("res_search_action_id: " + action_obj.name)
+                    row.insertCell(0).innerHTML = action_obj._id
+                    row.insertCell(1).innerHTML = action_obj.name
+                    row.insertCell(2).innerHTML = action_obj.version
+                    row.insertCell(3).innerHTML = action_obj.type
+                    row.insertCell(4).innerHTML = `<form target="dummyframe"><button class="btn btn-success" onclick="fillActionForm('${encodeURIComponent(JSON.stringify(action_obj))}')"/>Go</button></form>`
+                }
+            } else {
+                console.log("response status: "+ response.status)
+                {#document.getElementById('error_container').hidden = false;#}
+                alert(response.statusText);
+            }
+        }
+
+        async function fillActionForm(action_obj_encoded) {
+            let action_obj_decoded = decodeURIComponent(action_obj_encoded)
+            console.log("fillActionForm action_obj_decoded: " + action_obj_decoded)
+            let action_obj = JSON.parse(action_obj_decoded)
+            console.log("action_obj: "+ action_obj._id)
+
+            const form_ele = document.getElementById("form")
+            console.log("form_ele id: "+ form_ele.getElementsByClassName("form_id")[0].value)
+            form_ele.getElementsByClassName("form_id")[0].value = action_obj._id
+            form_ele.getElementsByClassName("form_name")[0].value = action_obj.name
+            form_ele.getElementsByClassName("form_version")[0].value = action_obj.version
+            form_ele.getElementsByClassName("form_description")[0].value = action_obj.description
+            form_ele.getElementsByClassName("form_manual")[0].value = action_obj.manual?action_obj.manual:null
+            form_ele.getElementsByClassName("form_input[model]")[0].value = action_obj.input.model
+            form_ele.getElementsByClassName("form_input[temperature]")[0].value = action_obj.input.temperature
+            form_ele.getElementsByClassName("form_input[top_p]")[0].value = action_obj.input.top_p
+            form_ele.getElementsByClassName("form_input[n]")[0].value = action_obj.input.n
+            form_ele.getElementsByClassName("form_input[stream]")[0].value = action_obj.input.stream
+            form_ele.getElementsByClassName("form_input[stop]")[0].value = action_obj.input.stop?action_obj.input.stop:null
+            form_ele.getElementsByClassName("form_input[max_tokens]")[0].value = action_obj.input.max_tokens
+            form_ele.getElementsByClassName("form_input[presence_penalty]")[0].value = action_obj.input.presence_penalty
+            form_ele.getElementsByClassName("form_input[frequency_penalty]")[0].value = action_obj.input.frequency_penalty
+            form_ele.getElementsByClassName("form_input[user]")[0].value = action_obj.input.user
+            form_ele.getElementsByClassName("form_input[messages][0][role]")[0].value = action_obj.input.messages[0].role
+            form_ele.getElementsByClassName("form_input[messages][0][content]")[0].value = action_obj.input.messages[0].content
+
+
+        }
+
+        function addMessage() {
+            const messagesDiv = document.getElementById('messages');
+            const messageCount = messagesDiv.children.length;
+
+            const newMessageDiv = document.createElement('div');
+            newMessageDiv.classList.add('mb-3');
+            newMessageDiv.innerHTML = `
+                <h5>Message ${messageCount + 1}:</h5>
+                <div class="form-group row">
+                    <label for="role${messageCount}" class="col-sm-2 col-form-label form-label">Role:</label>
+                    <div class="col-sm-10">
+                        <select class="form-control form_input[messages][${messageCount}][content]" id="role${messageCount}" name="input[messages][${messageCount}][role]">
+                            <option value="system">system</option>
+                            <option value="user">user</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="content${messageCount}" class="col-sm-2 col-form-label form-label">Content:</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control form_input[messages][${messageCount}][content]" id="content${messageCount}" name="input[messages][${messageCount}][content]"></textarea>
+                    </div>
+                </div>
+            `;
+
+            messagesDiv.appendChild(newMessageDiv);
+        }
+
+        async function postTestData() {
+            const form = document.getElementById('form');
+            const form_data = new FormData(form);
+            var object = {};
+            form_data.forEach(function (value, key) {
+                object[key] = value;
+            });
+            const response = await fetch("http://127.0.0.1:8000/llm_action_test", {
+                method: 'POST',
+                body: form_data
+            });
+            const res_body = (await response.text()).slice(1,-1);
+            console.log("res_body: "+ res_body);
+
+            document.getElementById('test_result').value = res_body;
+        }
+
+        async function postSaveData() {
+            // Empty search table
+            // Get the table element
+            const table_body = document.getElementById("table_body");
+            table_body.innerHTML = ""
+
+            const form = document.getElementById('form');
+            const form_data = new FormData(form);
+            var object = {};
+            form_data.forEach(function (value, key) {
+                object[key] = value;
+            });
+            const response = await fetch("http://127.0.0.1:8000/llm_action_save", {
+                method: 'POST',
+                body: form_data
+            });
+
+            if (response.ok) {
+                const res_body = (await response.text()).slice(1,-1);
+                console.log("res_id: "+ res_body);
+
+                document.getElementById('_id').value = res_body;
+
+            } else {
+                console.log("response status: "+ response.status)
+                {#document.getElementById('error_container').hidden = false;#}
+                alert(response.statusText);
+            }
+        }
+    </script>
+    <div class="container mt-5 mb-5 pb-5">
+
+        <!-- Action search section -->
+        <div class="pl-2 pr-2 bg-light bg-gradient">
+            <div class="row">
+            <div class="col-md-12">
+                <h2>Search</h2>
+                <form id="search_form" class="form-inline mb-4">
+                    <input type="text" class="form-control mr-2" id="name" placeholder="Search by name">
+                    <input type="text" class="form-control mr-2" id="version" placeholder="Search by version">
+                    <select class="form-control mr-2" id="model" name="input[model]">
+                        <option value="gen_text_llm_chat_openai">gen_text_llm_chat_openai</option>
+                    </select>
+                    <input type="button" onclick="postSearchData()" class="btn btn-primary" value="Search">
+                </form>
+            </div>
+        </div>
+
+            <div class="row">
+            <div class="col-md-12">
+                <h3>Results</h3>
+                <table id="table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Version</th>
+                            <th scope="col">Type</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_body">
+                        <!-- Results dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+
+
+        <hr class="hr bg-warning" />
+        <hr class="hr bg-warning" />
+
+        <!-- Action run section -->
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <div hidden id="error_container">
+            <div class="alert alert-warning alert-dismissible fade in">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Not Successful!</strong>
+            </div>
+        </div>
+        <div class="pl-2 pr-2 bg-light bg-gradient">
+            <form id="form" action="/llm_action_submit" method="post" target="dummyframe">
+            <h4>LLM Chat</h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Left Column Fields -->
+
+
+                    <div class="form-group row">
+                        <label for="_id" class="col-sm-4 col-form-label form-label">Id:</label>
+                        <div class="col-sm-8">
+                            <input readonly type="text" class="form-control form_id" id="_id" name="id">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-4 col-form-label form-label">Name:</label>
+                        <div class="col-sm-8 d-inline-flex">
+                            <input type="text" class="form-control form_name" id="name" name="name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="version" class="col-sm-4 col-form-label form-label">Version:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_version" id="version" name="version" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="description" class="col-sm-4 col-form-label form-label">Description:</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control form_description" id="description" name="description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="user_manual" class="col-sm-4 col-form-label form-label">User Manual:</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control form_manual" id="user_manual" name="user_manual"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="type" class="col-sm-4 col-form-label form-label">Type:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form_type" id="type" name="type" value="gen_text_llm_chat_openai" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="model" class="col-sm-4 col-form-label form-label">Model:</label>
+                        <div class="col-sm-8">
+                            <select class="form-control form_input[model]" id="model" name="input[model]">
+                                <option value="gpt-3.5-turbo-16k-0613">gpt-3.5-turbo-16k-0613</option>
+                                <option value="gpt-4">gpt-4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="temperature" class="col-sm-4 col-form-label form-label">Temperature:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_input[temperature]" id="temperature" name="input[temperature]" step="0.1" value="0.8">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="top_p" class="col-sm-4 col-form-label form-label">Top P:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_input[top_p]" id="top_p" name="input[top_p]" value="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="n" class="col-sm-4 col-form-label form-label">N:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_input[n]" id="n" name="input[n]" value="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="stream" class="col-sm-4 col-form-label form-label">Stream:</label>
+                        <div class="col-sm-8">
+                            <input type="checkbox" class="form_input[stream]" id="stream" name="input[stream]">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="stop" class="col-sm-4 col-form-label form-label">Stop:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form_input[stop]" id="stop" name="input[stop]">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="max_tokens" class="col-sm-4 col-form-label form-label">Max Tokens:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_input[max_tokens]" id="max_tokens" name="input[max_tokens]" value="2000">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="presence_penalty" class="col-sm-4 col-form-label form-label">Presence Penalty:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_input[presence_penalty]" id="presence_penalty" name="input[presence_penalty]" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="frequency_penalty" class="col-sm-4 col-form-label form-label">Frequency Penalty:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control form_input[frequency_penalty]" id="frequency_penalty" name="input[frequency_penalty]" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="user" class="col-sm-4 col-form-label form-label">User:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form_input[user]" id="user" name="input[user]">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-8">
+                    <!-- Right Column Fields -->
+
+                    <h4>Messages:</h4>
+                    <div id="messages">
+                        <div class="mb-3">
+                            <h5>Message 1:</h5>
+                            <div class="form-group row">
+                                <label for="role0" class="col-sm-2 col-form-label form-label">Role:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control form_input[messages][0][role]" id="role0" name="input[messages][0][role]">
+                                        <option value="system">system</option>
+                                        <option value="user">user</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="content0" class="col-sm-2 col-form-label form-label">Content:</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control form_input[messages][0][content]" id="content0" name="input[messages][0][content]"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary mb-3" onclick="addMessage()">Add Another Message</button>
+
+                    <br/><br/><br/>
+                    <h4>Test Action:</h4>
+                    <div id="test">
+                        <div class="mb-3">
+                            <div class="form-group row">
+                                <label for="test_input" class="col-sm-2 col-form-label form-label">Message:</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" id="test_input" name="test[input]"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <h4>Test Result:</h4>
+                    <div id="test_result_div">
+                        <div class="mb-3">
+                            <div class="form-group row">
+                                <label for="test_result" class="col-sm-2 col-form-label form-label">Result:</label>
+                                <div class="col-sm-10">
+                                    <textarea readonly class="form-control" id="test_result" name="test[result]"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="button" onclick="postTestData()" class="btn btn-success" value="Test">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="button" onclick="postSaveData()" class="btn btn-success" value="Save">
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </form>
+        </div>
+
+    </div>
+
+{% endblock content %}

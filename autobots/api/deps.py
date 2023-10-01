@@ -4,6 +4,20 @@
 #
 # from autobots.database import base
 #
+from fastapi import Request, HTTPException
+from gotrue import UserResponse
+
+from autobots.auth.security import get_user_from_access_token
+
 
 # def get_db() -> Generator[Session, None, None]:
 #     return base.get_db()
+
+async def get_user_from_cookie(request: Request) -> UserResponse | None:
+    token = request.cookies.get("Authorization")
+    if not token:
+        raise HTTPException(401, "User not logged in")
+    user = get_user_from_access_token(api_key_query=None, api_key_header=None, api_key_cookie=token)
+    if not user:
+        raise HTTPException(401, "User not logged in")
+    return user
