@@ -7,6 +7,7 @@ from autobots.action.action_crud import ActionCRUD
 from autobots.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
     ActionUpdate, ActionDocUpdate
 from autobots.action.action_manager import ActionManager
+from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
 from autobots.prompts.user_prompts import Input
 from autobots.user.user_orm_model import UserORM
@@ -20,10 +21,14 @@ class UserActions:
 
     async def create_action(
             self, action_create: ActionCreate, db: Database = Depends(get_mongo_db)
-    ) -> ActionDoc:
-        action_doc_create = ActionDocCreate(user_id=self.user_id, **action_create.model_dump())
-        action_doc = await ActionCRUD(db).insert_one(action_doc_create)
-        return action_doc
+    ) -> ActionDoc | None:
+        try:
+            action_doc_create = ActionDocCreate(user_id=self.user_id, **action_create.model_dump())
+            action_doc = await ActionCRUD(db).insert_one(action_doc_create)
+            return action_doc
+        except Exception as e:
+            log.error(e)
+        return None
 
     async def list_actions(
             self, action_find: ActionFind,
@@ -36,12 +41,16 @@ class UserActions:
 
     async def get_action(
             self, action_id: str, db: Database = Depends(get_mongo_db)
-    ) -> ActionDoc:
-        action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
-        action_docs = await ActionCRUD(db).find(action_doc_find)
-        if len(action_docs) != 1:
-            raise HTTPException(500, "Error in finding action")
-        return action_docs[0]
+    ) -> ActionDoc | None:
+        try:
+            action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
+            action_docs = await ActionCRUD(db).find(action_doc_find)
+            if len(action_docs) != 1:
+                raise HTTPException(500, "Error in finding action")
+            return action_docs[0]
+        except Exception as e:
+            log.error(e)
+        return None
 
     async def update_action(
             self, action_id: str, action_update: ActionUpdate, db: Database = Depends(get_mongo_db)
@@ -65,4 +74,9 @@ class UserActions:
         if len(action_docs) != 1:
             raise HTTPException(405, "Action cannot be run")
         resp = await ActionManager().run_action(action_docs[0], input)
+        return resp
+
+    @staticmethod
+    async def test_action(action_doc: ActionDoc, input: Input) -> Any:
+        resp = await ActionManager().run_action(action_doc, input)
         return resp
