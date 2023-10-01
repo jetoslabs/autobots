@@ -16,8 +16,8 @@ from autobots.auth.security import get_user_from_access_token
 async def get_user_from_cookie(request: Request) -> UserResponse | None:
     token = request.cookies.get("Authorization")
     if not token:
-        raise HTTPException(401, "User not logged in")
+        return None
     user = get_user_from_access_token(api_key_query=None, api_key_header=None, api_key_cookie=token)
     if not user:
-        raise HTTPException(401, "User not logged in")
+        return None
     return user
