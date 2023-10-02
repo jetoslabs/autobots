@@ -17,7 +17,7 @@ app = FastAPI(lifespan=lifespan, **FastAPIDesc().model_dump())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000","https://app.myautobots.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
