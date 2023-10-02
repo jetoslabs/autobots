@@ -77,6 +77,7 @@ class Settings(BaseSettings):
 def get_settings(_env_file: str = '.env.local') -> Settings:
     settings = Settings(_env_file=_env_file)
     check_for_none(settings)
+    logger.bind(app="autobots", ALLOWED_ORIGINS=settings.ALLOWED_ORIGINS)
     return settings
 
 
