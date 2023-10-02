@@ -48,6 +48,7 @@ jobs:
         env:
           ENV: ${{ secrets.ENV }}
           COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
+          ALLOW_ORIGINS: ${{ secrets.ALLOW_ORIGINS }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -210,6 +211,7 @@ jobs:
           -e ENV=$ENV
           -e VERSION=${DD_VERSION}
           -e COOKIE_DOMAIN=$COOKIE_DOMAIN 
+          -e ALLOW_ORIGINS=$ALLOW_ORIGINS 
           -e SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL 
           -e SUPABASE_URL=$SUPABASE_URL 
           -e SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY 
@@ -234,6 +236,7 @@ jobs:
           LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
           ENV: ${{ secrets.ENV }}
           COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
+          ALLOW_ORIGINS: ${{ secrets.ALLOW_ORIGINS }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
