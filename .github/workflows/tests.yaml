@@ -32,6 +32,7 @@ jobs:
         env:
           ENV: ${{ secrets.ENV }}
           COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
+          ALLOW_ORIGINS: ${{ secrets.ALLOW_ORIGINS }}
           SQLALCHEMY_DATABASE_URL: ${{ secrets.SQLALCHEMY_DATABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
