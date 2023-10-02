@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import List
 
 from jose.constants import ALGORITHMS
 from loguru import logger
@@ -19,6 +20,8 @@ class Settings(BaseSettings):
     APP_WORKERS: int = 1
 
     COOKIE_DOMAIN: str = "127.0.0.1"
+    ALLOW_ORIGINS: str = "http://localhost:3000"
+    ALLOWED_ORIGINS: List[str] = ALLOW_ORIGINS.split(",")
 
     SQLALCHEMY_DATABASE_URL: str = None
     SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
