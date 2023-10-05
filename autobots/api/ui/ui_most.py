@@ -91,7 +91,8 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
 @router.get("/")
 async def page_index(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
-        return templates.TemplateResponse("home.html", {"request": request, "user": user.user, "version": get_settings().VERSION})
+        return templates.TemplateResponse("home.html",
+                                          {"request": request, "user": user.user, "version": get_settings().VERSION})
     else:
         return templates.TemplateResponse("index.html", {"request": request})
 
@@ -109,7 +110,18 @@ async def page_login(request: Request):
 @router.get("/docs")
 async def page_api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
-        return templates.TemplateResponse("docs.html", {"request": request, "user": user, "version": get_settings().VERSION})
+        return templates.TemplateResponse("docs.html",
+                                          {"request": request, "user": user, "version": get_settings().VERSION})
+    else:
+        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        return response
+
+
+@router.get("/redoc")
+async def page_api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+    if user:
+        return templates.TemplateResponse("redoc.html",
+                                          {"request": request, "user": user, "version": get_settings().VERSION})
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
@@ -118,7 +130,8 @@ async def page_api_docs(request: Request, user: UserResponse | None = Depends(ge
 @router.get("/logs")
 async def page_logs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
-        return templates.TemplateResponse("logs.html", {"request": request, "user": user, "version": get_settings().VERSION})
+        return templates.TemplateResponse("logs.html",
+                                          {"request": request, "user": user, "version": get_settings().VERSION})
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
@@ -127,7 +140,8 @@ async def page_logs(request: Request, user: UserResponse | None = Depends(get_us
 @router.get("/user")
 async def page_user(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
-        return templates.TemplateResponse("user.html", {"request": request, "user": user, "version": get_settings().VERSION})
+        return templates.TemplateResponse("user.html",
+                                          {"request": request, "user": user, "version": get_settings().VERSION})
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
