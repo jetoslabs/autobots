@@ -1,6 +1,6 @@
 import gotrue
 from fastapi import APIRouter, Depends
-from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
 from starlette.responses import JSONResponse
 
@@ -28,3 +28,8 @@ async def open_api_json(user_res: gotrue.UserResponse = Depends(get_user_from_ac
 @router.get("/docs")
 async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
     return get_swagger_ui_html(openapi_url=f"{get_settings().API_v1}/openapi.json", title="docs")
+
+
+@router.get("/redoc")
+async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
+    return get_redoc_html(openapi_url=f"{get_settings().API_v1}/openapi.json", title="redoc")
