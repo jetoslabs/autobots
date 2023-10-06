@@ -11,7 +11,7 @@ from autobots.action.action_types import ActionType
 from autobots.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -80,7 +80,7 @@ async def delete_prompt(
 @router.post("/{id}/run")
 async def run_action(
         id: str,
-        input: Input,
+        input: TextObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> Any:

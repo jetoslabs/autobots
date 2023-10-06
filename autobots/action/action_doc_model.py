@@ -30,6 +30,7 @@ class ActionUpdate(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
+    user_manual: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
 
 
@@ -40,7 +41,7 @@ class ActionDocUpdate(ActionUpdate):
 
 class ActionCreate(BaseModel):
     """
-    Input from User to create action
+    base class to be utilized by concrete action types to create action
     """
     name: str
     version: float = 0
@@ -48,6 +49,8 @@ class ActionCreate(BaseModel):
     user_manual: str = ""
     type: ActionType
     config: Dict[str, Any]
+    input: Dict[str, Any]
+    output: Dict[str, Any]
 
 
 class ActionDocCreate(ActionCreate):

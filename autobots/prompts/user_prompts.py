@@ -8,7 +8,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from autobots.conn.openai.chat import Message, Role, ChatReq
-from autobots.conn.openai.openai import get_openai
 from autobots.core.log import log
 from autobots.database.base import get_db
 from autobots.prompts.prompt_crud import PromptCRUD
@@ -33,8 +32,8 @@ class UserPromptCreateOutput(UserPromptCreateInput):
     model_config = ConfigDict(from_attributes=True)
 
 
-class Input(BaseModel):
-    input: str
+class TextObj(BaseModel):
+    text: str = ""
 
 
 class UserPrompts:
@@ -84,8 +83,8 @@ class UserPrompts:
         prompt_orm: PromptORM = await PromptCRUD.upsert(existing_prompt, new_prompt, db)
         return prompt_orm
 
-    async def run(self, id: UUID, input: Input, db: Session = Depends(get_db)) -> Message | None:
-        user_message = Message(role=Role.user, content=input.input)
+    async def run(self, id: UUID, input: TextObj, db: Session = Depends(get_db)) -> Message | None:
+        user_message = Message(role=Role.user, content=input.text)
         prompt_orm = await self.read(id, db)
         return await PromptFactory.run(prompt_orm, user_message)
 

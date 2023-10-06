@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from autobots.core.log import log
 from autobots.prompts.prompt_orm_model import PromptORM
-from autobots.prompts.user_prompts import UserPrompts, Input
+from autobots.prompts.user_prompts import UserPrompts, TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -48,7 +48,7 @@ class Graph:
         return inverted_map
 
     @staticmethod
-    async def run(user: UserORM, input: Input, graph_map: Dict[str, List[str]], db: Session) -> Dict[str, str]:
+    async def run(user: UserORM, input: TextObj, graph_map: Dict[str, List[str]], db: Session) -> Dict[str, str]:
         user_prompts = UserPrompts(user)
         prompts = await Graph.prompts_for_user(user, graph_map, db)
         inverted_map = await Graph.invert_map(graph_map)
@@ -65,7 +65,7 @@ class Graph:
                     input_msg = ""
                     for value in values:
                         input_msg = input_msg + prompt_response.get(value)
-                    message = await user_prompts.run(uuid.UUID(node), Input(input=input_msg), db)
+                    message = await user_prompts.run(uuid.UUID(node), TextObj(input=input_msg), db)
                     prompt_response[node] = message.content
 
         return prompt_response

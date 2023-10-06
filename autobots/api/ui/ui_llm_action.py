@@ -1,4 +1,3 @@
-from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Request, Depends, Form
@@ -6,13 +5,12 @@ from gotrue import UserResponse
 from starlette.templating import Jinja2Templates
 
 from autobots.action.action_doc_model import ActionDoc, ActionCreate, ActionUpdate, ActionFind
-from autobots.action.action_gen_text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
 from autobots.action.user_actions import UserActions
 from autobots.api.ui.ui_most import get_user_from_cookie
 from autobots.conn.openai.chat import ChatReq, Message
 from autobots.core.settings import get_settings
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -141,8 +139,8 @@ class LlmActionUtil:
         return action_doc
 
     @staticmethod
-    async def create_input(request: Request) -> Input:
+    async def create_input(request: Request) -> TextObj:
         form_data = await request.form()
         input_data = form_data.get("test[input]")
-        input = Input(input=input_data)
+        input = TextObj(text=input_data)
         return input

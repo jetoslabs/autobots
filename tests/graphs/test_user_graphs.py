@@ -13,7 +13,7 @@ from autobots.graphs.to_del.graph_orm_model import GraphORM
 from autobots.graphs.to_del.user_graphs import UserGraphCreateInput, UserGraphs
 from autobots.prompts.prompt_orm_model import PromptORM
 from autobots.prompts.target_platform import LLMTargetPlatform
-from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, Input
+from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -49,12 +49,12 @@ async def test_user_graph_run_happy_path(set_settings):
         with next(get_db()) as db1:
             # testing run_graph
             user_graphs = UserGraphs(user=user)
-            input1 = Input(input="Campaign for Nike shoes during Diwali Festival")
+            input1 = TextObj(input="Campaign for Nike shoes during Diwali Festival")
             results1 = await user_graphs.run_graph(input1, graph_map, db1)
             assert len(results1) == 5
 
             # testing run (involves creating record in graphs table)
-            input2 = Input(input="Campaign for Nike shoes during Diwali Festival")
+            input2 = TextObj(input="Campaign for Nike shoes during Diwali Festival")
             # create graph in table
             graph = await create_graph(user_graphs, graph_map, db1, rand)
             # run stored graph
