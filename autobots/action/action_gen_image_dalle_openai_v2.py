@@ -10,7 +10,7 @@ from autobots.prompts.user_prompts import Input
 
 class ActionCreateGenImageDalleOpenai(ActionCreate):
     type: ActionType = ActionType.gen_image_dalle_openai
-    input: ImageReq
+    config: ImageReq
 
 
 class ActionGenImageDalleOpenAiV2(IActionGenImage):

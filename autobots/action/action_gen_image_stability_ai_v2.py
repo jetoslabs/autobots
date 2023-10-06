@@ -10,7 +10,7 @@ from autobots.prompts.user_prompts import Input
 
 class ActionCreateGenImageStabilityAi(ActionCreate):
     type: ActionType = ActionType.gen_image_stability_ai
-    input: StabilityReq
+    config: StabilityReq
 
 class ActionGenImageStabilityAiV2(IActionGenImage):
     type = ActionType.gen_image_stability_ai

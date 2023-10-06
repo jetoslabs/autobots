@@ -31,13 +31,13 @@ class ActionManager:
     async def run_action(self, action: ActionDoc, action_input: Input) -> Any:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:
-                return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.input))\
+                return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.config))\
                     .run_action(action_input)
             case ActionType.gen_image_dalle_openai:
-                return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.input))\
+                return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.config))\
                     .run_action(action_input)
             case ActionType.gen_image_stability_ai:
-                return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.input))\
+                return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.config))\
                     .run_action(action_input)
             case ActionType.gen_text_llm_chat_with_vector_search_openai:
                 return await ActionGenTextLlmChatWithVectorSearchOpenai(

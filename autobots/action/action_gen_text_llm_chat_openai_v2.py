@@ -8,7 +8,7 @@ from autobots.prompts.user_prompts import Input
 
 class ActionCreateGenTextLlmChatOpenai(ActionCreate):
     type: ActionType = ActionType.gen_text_llm_chat_openai
-    input: ChatReq
+    config: ChatReq
 
 
 class ActionGenTextLlmChatOpenaiV2(IActionGenText):

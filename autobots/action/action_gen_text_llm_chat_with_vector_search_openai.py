@@ -16,7 +16,7 @@ class ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput(BaseModel):
 
 class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
     type: ActionType = ActionType.gen_text_llm_chat_with_vector_search_openai
-    input: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
+    config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
 
 
 class ActionGenTextLlmChatWithVectorSearchOpenai(IActionVectorSearch):
