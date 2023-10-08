@@ -11,7 +11,7 @@ from autobots.conn.openai.chat import Message
 from autobots.core.log import log
 from autobots.database.base import get_db
 from autobots.user.user_orm_model import UserORM
-from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, UserPromptCreateOutput, Input
+from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, UserPromptCreateOutput, TextObj
 
 router = APIRouter()
 
@@ -87,7 +87,7 @@ async def delete_prompt(
 @router.post("/{id}/run/")
 async def run_prompt(
         id: str,
-        input: Input,
+        input: TextObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
 ) -> Message:

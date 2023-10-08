@@ -14,7 +14,7 @@ from autobots.database.mongo_base import get_mongo_db
 from autobots.graphs.action_graph import ActionGraph
 from autobots.graphs.action_graph_doc_model import ActionGraphCreate
 from autobots.graphs.user_action_graph import UserActionGraphs
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -51,7 +51,7 @@ async def test_user_graph_run_happy_path(set_settings):
         }
 
         # run action graph on fly
-        user_input = Input(input="Campaign for Nike shoes during Diwali Festival")
+        user_input = TextObj(input="Campaign for Nike shoes during Diwali Festival")
         action_graph_response = await ActionGraph.run(user, user_input, action_graph, db)
         assert len(action_graph_response) > 1
 
@@ -62,7 +62,7 @@ async def test_user_graph_run_happy_path(set_settings):
         action_graph_doc = await user_action_graph.create(action_graph_create, db)
 
         # run saved action graph
-        input = Input(input="Create ad for sports shoes")
+        input = TextObj(input="Create ad for sports shoes")
         action_graph_resp = await user_action_graph.run(action_graph_doc.id, input, db)
         assert len(action_graph_resp) > 1
 
@@ -85,7 +85,7 @@ async def test_user_graph_run_happy_path(set_settings):
 async def create_action_persona(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="persona_" + rand,
-        input=ChatReq(messages=[Message(
+        config=ChatReq(messages=[Message(
             role=Role.user,
             content="Generate personas for Marketing this product"
         )])
@@ -100,7 +100,7 @@ async def create_action_persona(user_actions: UserActions, db: Database, rand: s
 async def create_action_manager(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="manager_" + rand,
-        input=ChatReq(messages=[Message(
+        config=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as market manager, create input for department"
         )])
@@ -115,7 +115,7 @@ async def create_action_manager(user_actions: UserActions, db: Database, rand: s
 async def create_action_product(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="market researcher_" + rand,
-        input=ChatReq(messages=[Message(
+        config=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as product researcher, create research report for the product"
         )])
@@ -130,7 +130,7 @@ async def create_action_product(user_actions: UserActions, db: Database, rand: s
 async def create_action_creative(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="creative_" + rand,
-        input=ChatReq(messages=[Message(
+        config=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as a creative editor, generate text creative"
         )])
@@ -145,7 +145,7 @@ async def create_action_creative(user_actions: UserActions, db: Database, rand: 
 async def create_action_jingle(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="jingle_" + rand,
-        input=ChatReq(messages=[Message(
+        config=ChatReq(messages=[Message(
             role=Role.user,
             content="Act as a creative editor, generate jingle for marketing"
         )])

@@ -3,7 +3,7 @@ from typing import Any, List
 
 from autobots.action.IAction import IAction
 from autobots.conn.openai.image_model import ImageRes
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 
 
 class IActionGenImage(IAction):
@@ -13,7 +13,7 @@ class IActionGenImage(IAction):
         self.action_data = action_data
 
     @abstractmethod
-    async def run_action(self, action_input: Input) -> List[ImageRes]:
+    async def run_action(self, action_input: TextObj) -> List[ImageRes]:
         pass
 
     @abstractmethod

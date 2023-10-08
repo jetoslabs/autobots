@@ -14,7 +14,7 @@ from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
 from autobots.conn.stability.stability_data import StabilityReq
 from autobots.core.log import log
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 
 
 class ActionManager:
@@ -28,16 +28,16 @@ class ActionManager:
         action_types = [action_type for action_type in ActionType]
         return action_types
 
-    async def run_action(self, action: ActionDoc, action_input: Input) -> Any:
+    async def run_action(self, action: ActionDoc, action_input: TextObj) -> Any:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:
-                return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.input))\
+                return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.config))\
                     .run_action(action_input)
             case ActionType.gen_image_dalle_openai:
-                return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.input))\
+                return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.config))\
                     .run_action(action_input)
             case ActionType.gen_image_stability_ai:
-                return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.input))\
+                return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.config))\
                     .run_action(action_input)
             case ActionType.gen_text_llm_chat_with_vector_search_openai:
                 return await ActionGenTextLlmChatWithVectorSearchOpenai(

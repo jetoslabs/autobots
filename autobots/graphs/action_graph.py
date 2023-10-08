@@ -5,7 +5,7 @@ from pymongo.database import Database
 from autobots.action.user_actions import UserActions
 from autobots.conn.openai.chat import Message
 from autobots.core.log import log
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -35,7 +35,7 @@ class ActionGraph:
         return inverted_map
 
     @staticmethod
-    async def run(user: UserORM, input: Input, graph_map: Dict[str, List[str]], db: Database) -> Dict[str, Any]:
+    async def run(user: UserORM, input: TextObj, graph_map: Dict[str, List[str]], db: Database) -> Dict[str, Any]:
         total_nodes = await ActionGraph.get_nodes(graph_map)
         inverted_map = await ActionGraph.invert_map(graph_map)
         action_response: Dict[str, Any] = {}
@@ -64,7 +64,7 @@ class ActionGraph:
         return True
 
     @staticmethod
-    async def to_input(values: List[str], action_response: Dict[str, Any]) -> Input:
+    async def to_input(values: List[str], action_response: Dict[str, Any]) -> TextObj:
         input_msg = ""
         for value in values:
             action_output = action_response.get(value)
@@ -74,4 +74,4 @@ class ActionGraph:
             else:
                 log.warning("Cannot convert to Input")
 
-        return Input(input=input_msg)
+        return TextObj(input=input_msg)

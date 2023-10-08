@@ -9,7 +9,7 @@ from autobots.action.action_doc_model import ActionFind, ActionDocFind, ActionDo
 from autobots.action.action_manager import ActionManager
 from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -67,7 +67,7 @@ class UserActions:
         return delete_result.deleted_count
 
     async def run_action(
-            self, action_id: str, input: Input, db: Database = Depends(get_mongo_db)
+            self, action_id: str, input: TextObj, db: Database = Depends(get_mongo_db)
     ) -> Any:
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await ActionCRUD(db).find(action_doc_find)
@@ -77,6 +77,6 @@ class UserActions:
         return resp
 
     @staticmethod
-    async def test_action(action_doc: ActionDoc, input: Input) -> Any:
+    async def test_action(action_doc: ActionDoc, input: TextObj) -> Any:
         resp = await ActionManager().run_action(action_doc, input)
         return resp

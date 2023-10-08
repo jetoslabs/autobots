@@ -3,7 +3,7 @@ from typing import Any
 
 from autobots.action.IAction import IAction
 from autobots.conn.openai.chat import Message
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 
 
 class IActionVectorSearch(IAction):
@@ -13,7 +13,7 @@ class IActionVectorSearch(IAction):
         self.action_data = action_data
 
     @abstractmethod
-    async def run_action(self, action_input: Input) -> Message:
+    async def run_action(self, action_input: TextObj) -> Message:
         pass
 
     @abstractmethod
