@@ -12,8 +12,8 @@ from autobots.prompts.user_prompts import TextObj
 class ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput(BaseModel):
     datastore_id: str
     chat_req: ChatReq
-    input: TextObj
-    output: TextObj
+    input: TextObj = TextObj()
+    output: TextObj = TextObj()
 
 
 class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):

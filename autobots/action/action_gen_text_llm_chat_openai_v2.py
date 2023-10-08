@@ -9,8 +9,8 @@ from autobots.prompts.user_prompts import TextObj
 class ActionCreateGenTextLlmChatOpenai(ActionCreate):
     type: ActionType = ActionType.gen_text_llm_chat_openai
     config: ChatReq
-    input: TextObj
-    output: TextObj
+    input: TextObj = TextObj()
+    output: TextObj = TextObj()
 
 
 class ActionGenTextLlmChatOpenaiV2(IActionGenText):

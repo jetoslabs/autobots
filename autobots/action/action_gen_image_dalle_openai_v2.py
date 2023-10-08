@@ -11,8 +11,8 @@ from autobots.prompts.user_prompts import TextObj
 class ActionCreateGenImageDalleOpenai(ActionCreate):
     type: ActionType = ActionType.gen_image_dalle_openai
     config: ImageReq
-    input: TextObj
-    output: TextObj
+    input: TextObj = TextObj()
+    output: TextObj = TextObj()
 
 
 class ActionGenImageDalleOpenAiV2(IActionGenImage):

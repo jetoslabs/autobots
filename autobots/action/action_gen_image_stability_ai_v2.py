@@ -11,8 +11,9 @@ from autobots.prompts.user_prompts import TextObj
 class ActionCreateGenImageStabilityAi(ActionCreate):
     type: ActionType = ActionType.gen_image_stability_ai
     config: StabilityReq
-    input: TextObj
-    output: TextObj
+    input: TextObj = TextObj()
+    output: TextObj = TextObj()
+
 
 class ActionGenImageStabilityAiV2(IActionGenImage):
     type = ActionType.gen_image_stability_ai

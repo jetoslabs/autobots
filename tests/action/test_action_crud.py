@@ -27,7 +27,9 @@ async def test_action_crud_happy_path(set_settings):
         action_doc_create = ActionDocCreate(
             name="test_action_crud_happy_path",
             type=ActionType.gen_text_llm_chat_openai,
-            input=chat_req.model_dump(),
+            config=chat_req.model_dump(),
+            input=TextObj().model_dump(),
+            output=TextObj().model_dump(),
             user_id=gen_uuid().hex
         )
         inserted = await action_crud.insert_one(action_doc_create)
