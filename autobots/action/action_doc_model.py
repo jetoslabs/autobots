@@ -65,3 +65,6 @@ class ActionDoc(ActionDocCreate):
     __collection__ = "Actions"
 
     id: str = Field(..., alias='_id')
+
+    class Config:
+        populate_by_name = True

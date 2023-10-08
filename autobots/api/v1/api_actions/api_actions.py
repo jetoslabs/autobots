@@ -61,7 +61,7 @@ async def update_action(
 
 
 @router.delete("/{id}")
-async def delete_prompt(
+async def delete_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
