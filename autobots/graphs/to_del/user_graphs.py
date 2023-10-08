@@ -11,7 +11,7 @@ from autobots.database.base import get_db
 from autobots.graphs.to_del.graph import Graph
 from autobots.graphs.to_del.graph_orm_model import GraphORM
 from autobots.graphs.to_del.graphs_crud import GraphsCRUD
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -78,13 +78,13 @@ class UserGraphs:
         graphs = await GraphsCRUD.read_by_name_version(self.user.id, name, version, limit, offset, db)
         return graphs
 
-    async def run(self, input: Input, graph_id: UUID, db: Session = Depends(get_db)) -> Dict[str, str]:
+    async def run(self, input: TextObj, graph_id: UUID, db: Session = Depends(get_db)) -> Dict[str, str]:
         graph_orm: GraphORM = await self.read(graph_id, db)
         response = await Graph.run(self.user, input, graph_orm.graph_map, db)
         log.info(f"Graph run results: {response}")
         return response
 
-    async def run_graph(self, input: Input, graph_map: Dict[str, List[str]], db: Session = Depends(get_db)) -> Dict[str, str]:
+    async def run_graph(self, input: TextObj, graph_map: Dict[str, List[str]], db: Session = Depends(get_db)) -> Dict[str, str]:
         response = await Graph.run(self.user, input, graph_map, db)
         log.info(f"Graph run results: {response}")
         return response

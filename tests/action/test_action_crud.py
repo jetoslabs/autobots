@@ -9,7 +9,7 @@ from autobots.conn.openai.chat import ChatReq, Role, Message
 from autobots.core.settings import get_settings
 from autobots.core.utils import gen_uuid
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 
 
 @pytest_asyncio.fixture
@@ -27,7 +27,9 @@ async def test_action_crud_happy_path(set_settings):
         action_doc_create = ActionDocCreate(
             name="test_action_crud_happy_path",
             type=ActionType.gen_text_llm_chat_openai,
-            input=chat_req.model_dump(),
+            config=chat_req.model_dump(),
+            input=TextObj().model_dump(),
+            output=TextObj().model_dump(),
             user_id=gen_uuid().hex
         )
         inserted = await action_crud.insert_one(action_doc_create)
@@ -39,7 +41,7 @@ async def test_action_crud_happy_path(set_settings):
         action_doc = action_docs.pop()
 
         assert action_doc.type == ActionType.gen_text_llm_chat_openai
-        user_input = Input(input="Blog on San Francisco")
+        user_input = TextObj(input="Blog on San Francisco")
         action_manager = ActionManager()
         resp = await action_manager.run_action(action_doc, user_input)
         assert resp.role == Role.assistant

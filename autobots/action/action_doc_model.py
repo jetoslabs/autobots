@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 from pydantic import BaseModel, Field
 
 from autobots.action.action_types import ActionType
-from autobots.conn.openai.chat import ChatReq
 
 
 class ActionFind(BaseModel):
@@ -16,7 +15,7 @@ class ActionFind(BaseModel):
     version: Optional[float] = None
     description: Optional[str] = None
     type: Optional[ActionType] = None
-    input: Optional[Dict[str, Any]] = None
+    config: Optional[Dict[str, Any]] = None
     created_at: Optional[datetime] = None
 
 
@@ -31,7 +30,8 @@ class ActionUpdate(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
-    input: Optional[Dict[str, Any]] = None
+    user_manual: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
 
 
 class ActionDocUpdate(ActionUpdate):
@@ -41,14 +41,16 @@ class ActionDocUpdate(ActionUpdate):
 
 class ActionCreate(BaseModel):
     """
-    Input from User to create action
+    base class to be utilized by concrete action types to create action
     """
     name: str
     version: float = 0
     description: str = ""
     user_manual: str = ""
     type: ActionType
+    config: Dict[str, Any]
     input: Dict[str, Any]
+    output: Dict[str, Any]
 
 
 class ActionDocCreate(ActionCreate):
@@ -63,3 +65,6 @@ class ActionDoc(ActionDocCreate):
     __collection__ = "Actions"
 
     id: str = Field(..., alias='_id')
+
+    class Config:
+        populate_by_name = True

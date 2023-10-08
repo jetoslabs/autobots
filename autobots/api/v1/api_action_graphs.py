@@ -10,7 +10,7 @@ from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
 from autobots.graphs.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, ActionGraphFind, ActionGraphUpdate
 from autobots.graphs.user_action_graph import UserActionGraphs
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -87,7 +87,7 @@ async def delete_action_graph(
 @router.post("/{id}/run")
 async def run_action_graph(
         id: str,
-        input: Input,
+        input: TextObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> Dict[str, Any]:

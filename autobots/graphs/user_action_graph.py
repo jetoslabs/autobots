@@ -8,7 +8,7 @@ from autobots.graphs.action_graph import ActionGraph
 from autobots.graphs.action_graph_crud import ActionGraphCRUD
 from autobots.graphs.action_graph_doc_model import ActionGraphCreate, ActionGraphDoc, ActionGraphDocCreate, \
     ActionGraphFind, ActionGraphDocFind, ActionGraphUpdate, ActionGraphDocUpdate
-from autobots.prompts.user_prompts import Input
+from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -58,7 +58,7 @@ class UserActionGraphs:
         return delete_result.deleted_count
 
     async def run(
-            self, action_graph_id: str, input: Input, db: Database = Depends(get_mongo_db)
+            self, action_graph_id: str, input: TextObj, db: Database = Depends(get_mongo_db)
     ) -> Dict[str, Any]:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
         action_docs = await ActionGraphCRUD(db).find(action_graph_doc_find)
