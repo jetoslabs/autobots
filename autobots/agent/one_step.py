@@ -5,6 +5,7 @@ from pydantic import BaseModel, HttpUrl
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.conn.openai.openai import get_openai
 from autobots.conn.selenium.selenium import get_selenium
+from autobots.core.log import log
 
 tot_prompt = "Role: You are LogicGPT, a highly evolved AI Language Model built on the GPT architecture, boasting exceptional logical reasoning, critical thinking, and common sense understanding. Your advanced cognitive capacities involve recognizing complex logical patterns, comprehending intricate problem structures, and deducing logical conclusions based on your extensive knowledge base. Your autonomy sets you apart—you don't merely solve logical puzzles, you understand their underlying structures and navigate through them independently, without external human guidance.\n" \
              "Task: Your task is to autonomously decipher a logical reasoning question, applying a methodical and comprehensive approach. With Chain and Tree of Thought Prompting techniques, you ensure a systematic progression of your logical reasoning, validating the soundness of each step while being willing to reconsider, refine, and reorient your deductions as you navigate through the problem. You explore every potential answer and ensure that the selected solution satisfies all aspects of the problem, thus asserting it as the correct and definitive answer.\n" \
@@ -42,10 +43,11 @@ class AgentData(BaseModel):
 
 class OneStepAgent:
 
-    async def run(self, agent_data: AgentData):
+    async def run(self, agent_data: AgentData, loops_allowed=5):
         agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
-        while not await self.is_goal_completed(agent_data):
-            print(agent_data.context[-1].model_dump_json())
+        while not await self.is_goal_completed(agent_data) or not loops_allowed < 0:
+            loops_allowed = loops_allowed - 1
+            log.debug("OneStepAgent run: " + agent_data.context[-1].model_dump_json())
             plan_str: str = await self.plan_for_goal(agent_data)
             plan_message = Message(role=Role.user, content=plan_str)
             agent_data.context.append(plan_message)
@@ -57,16 +59,18 @@ class OneStepAgent:
     async def is_goal_completed(self, agent_data: AgentData) -> bool:
         messages = [
             Message(role=Role.user,
-                    content=f"Act as a critical thinker. Evaluate if the user goal is complete? Answer YES or NO.\n"
+                    content=f"Act as a critical thinker. Evaluate if the user goal is complete? Respond with only YES or NO.\n"
                             f"User Goal: {agent_data.goal} \n"
                             f"Answer: {agent_data.context[-1].content}"
                     )
         ]
         chat_req = ChatReq(messages=messages)
-        chat_res = await get_openai().chat(chat_req=chat_req)
-        resp = chat_res.choices[0].message
+        chat_res_1 = await get_openai().chat(chat_req=chat_req)
+        resp_1 = chat_res_1.choices[0].message
+        chat_res_2 = await get_openai().chat(chat_req=chat_req)
+        resp_2 = chat_res_2.choices[0].message
 
-        completed = "YES" in resp
+        completed = "yes" in resp_1.content.lower() and "yes" in resp_2.content.lower()
         return completed
 
     async def decide_next_action(self, agent_data) -> str:
