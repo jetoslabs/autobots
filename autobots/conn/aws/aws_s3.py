@@ -29,7 +29,7 @@ class AwsS3:
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key
         )
-        self.object_prefix = f"{object_prefix}/" if object_prefix is not "" else object_prefix
+        self.object_prefix = f"{object_prefix}/" if object_prefix != "" else object_prefix
         self.bucket = s3.Bucket(bucket_name)
 
     async def put(self, data: str, filename: str) -> int:
