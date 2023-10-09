@@ -56,6 +56,8 @@ class Settings(BaseSettings):
     PINECONE_ENVIRONMENT: str = None
     PINECONE_API_KEY: str = None
 
+    UNSTRUCTURED_API_KEY: str = None
+
     DATASTORE_IDENTIFIER: str = "datastore"
 
     API_v1: str = "/v1"
@@ -67,6 +69,7 @@ class Settings(BaseSettings):
     API_PROMPTS: str = "/prompts"
     API_DATASTORE: str = "/datastore"
     API_CHAT: str = "/chat"
+    API_AGENTS: str = "/agents"
     API_GRAPHS: str = "/graphs"
 
     class ConfigDict:

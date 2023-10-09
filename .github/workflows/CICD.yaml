@@ -64,6 +64,7 @@ jobs:
           AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: ${{ secrets.AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER }}
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          UNSTRUCTURED_API_KEY: ${{ secrets.UNSTRUCTURED_API_KEY }}
 
   build:
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -228,6 +229,7 @@ jobs:
           -e AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER=$AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER 
           -e PINECONE_ENVIRONMENT=$PINECONE_ENVIRONMENT 
           -e PINECONE_API_KEY=$PINECONE_API_KEY 
+          -e UNSTRUCTURED_API_KEY=$UNSTRUCTURED_API_KEY
           registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
@@ -253,3 +255,4 @@ jobs:
           AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: ${{ secrets.AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER }}
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          UNSTRUCTURED_API_KEY: ${{ secrets.UNSTRUCTURED_API_KEY }}
