@@ -10,13 +10,12 @@ from selenium.webdriver.common.by import By
 from autobots.core.settings import Settings, get_settings
 
 
-# chromedriver_autoinstaller library will install ChromeDriver and add it to PATH if it is not already there
-chromedriver_autoinstaller.install()
-
-
 class Selenium:
 
     def __init__(self, options: Options = Options()):
+        # chromedriver_autoinstaller library will install ChromeDriver and add it to PATH if it is not already there
+        chromedriver_autoinstaller.install()
+
         # options = Options()
         # Do not open browser
         options.add_argument("--headless=new")

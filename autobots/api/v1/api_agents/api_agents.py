@@ -16,7 +16,8 @@ async def run_react_agent(input: TextObj) -> List[Message]:
     return messages
 
 
-@router.post("/act")
-async def run_act_agent(agent_data: AgentData) -> AgentData:
-    await OneStepAgent().run(agent_data, loops_allowed=7)
-    return agent_data
+# TODO: Make Selenium work, currently unable to install chromedriver in image
+# @router.post("/act")
+# async def run_act_agent(agent_data: AgentData) -> AgentData:
+#     await OneStepAgent().run(agent_data, loops_allowed=5)
+#     return agent_data
