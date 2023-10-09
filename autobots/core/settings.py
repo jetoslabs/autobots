@@ -69,6 +69,7 @@ class Settings(BaseSettings):
     API_PROMPTS: str = "/prompts"
     API_DATASTORE: str = "/datastore"
     API_CHAT: str = "/chat"
+    API_AGENTS: str = "/agents"
     API_GRAPHS: str = "/graphs"
 
     class ConfigDict:
