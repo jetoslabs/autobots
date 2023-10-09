@@ -18,7 +18,7 @@ async def test_agent_reason_act_observe_happy_path_1(set_settings):
     # user_goal = "What is the difference in celsius for current temperature between San Francisco and New Delhi"
     # user_goal = "What is the address of the nearest costco to California zipcode 94132"
     # user_goal = "What is value of 30th position in fibonacci series"
-    user_goal = "What is the difference between iterable.com and adcreative.ai"
+    user_goal = "What is the difference between iterable.com and mailchimp.com"
     # user_goal = "How will USA economy grow this year"
     # user_goal = "Arsenal Football club the latest signing"
     # user_goal = "What is the latest political news of India"
@@ -27,4 +27,5 @@ async def test_agent_reason_act_observe_happy_path_1(set_settings):
     # user_goal = "Plan a trip to Hawaii, leaving from San Francisco in budget of $5000"
     # user_goal = "Write a quick blog post on git commands"
     messages = await ReasonActObserve().do_task(user_goal=user_goal)
+    print("test_agent_reason_act_observe_happy_path_1: " + messages[-1].content)
     assert "finish[" in messages[-1].content
