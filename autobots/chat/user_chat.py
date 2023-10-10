@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from pymongo.database import Database
 
 from autobots.action.action_manager import ActionManager
-from autobots.action.action_types import ActionType
+from autobots.action.action_type.action_types import ActionType
 from autobots.chat.chat_crud import ChatCRUD
 from autobots.chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
     ChatUpdate

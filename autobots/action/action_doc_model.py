@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
-from autobots.action.action_types import ActionType
+from autobots.action.action_type.action_types import ActionType
 
 
 class ActionFind(BaseModel):
