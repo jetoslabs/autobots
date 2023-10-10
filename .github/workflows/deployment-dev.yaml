@@ -50,6 +50,7 @@ jobs:
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
           docker run -d --name datadog-agent 
+          --network autobots-network 
           --expose 8126
           --cgroupns host 
           --pid host 
@@ -118,6 +119,7 @@ jobs:
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
           docker run -d --name autobots -p 80:80 
+          --network autobots-network 
           -e ENV=$ENV
           -e VERSION=${DD_VERSION}
           -e COOKIE_DOMAIN=$COOKIE_DOMAIN 
