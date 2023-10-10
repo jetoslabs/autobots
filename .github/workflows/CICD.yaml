@@ -115,6 +115,15 @@ jobs:
         env:
           LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_SSH_KEY }}
 
+      - name: SSH and create docker network
+        if: always()
+        run: |
+          ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
+            docker network ls|grep autobots-network > /dev/null || docker network create autobots-network
+        env:
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+
       - name: SSH and Remove Running container and image Datadog Agent
         if: always()
         run: |
