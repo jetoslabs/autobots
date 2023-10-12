@@ -22,7 +22,7 @@ class ActionGenImageStabilityAiV2(IActionGenImage):
         self.stability_req = action_data
 
     async def run_action(self, action_input: TextObj) -> List[ImageRes]:
-        self.stability_req.prompt = action_input.text
+        self.stability_req.prompt = f"{self.stability_req.prompt}\n{action_input.text}"
         file_url = await get_stability().text_to_image(self.stability_req)
         resp = [ImageRes(url=file_url.unicode_string())]
         return resp
