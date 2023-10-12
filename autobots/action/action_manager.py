@@ -4,12 +4,12 @@ from typing import Any
 from fastapi import HTTPException
 
 from autobots.action.action_doc_model import ActionDoc
-from autobots.action.action_gen_image_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
-from autobots.action.action_gen_image_stability_ai_v2 import ActionGenImageStabilityAiV2
-from autobots.action.action_gen_text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
-from autobots.action.action_gen_text_llm_chat_with_vector_search_openai import \
+from autobots.action.action_type.action_gen_image_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
+from autobots.action.action_type.action_gen_image_stability_ai_v2 import ActionGenImageStabilityAiV2
+from autobots.action.action_type.action_gen_text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
+from autobots.action.action_type.action_gen_text_llm_chat_with_vector_search_openai import \
     ActionGenTextLlmChatWithVectorSearchOpenai, ActionCreateGenTextLlmChatWithVectorSearchOpenai
-from autobots.action.action_types import ActionType
+from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
 from autobots.conn.stability.stability_data import StabilityReq

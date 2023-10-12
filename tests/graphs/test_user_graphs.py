@@ -22,12 +22,19 @@ async def set_settings():
     settings = get_settings(_env_file='.env.local')
 
 
+@pytest.mark.skip(reason="Moved to to_del folder")
 @pytest.mark.asyncio
 async def test_user_graph_run_happy_path(set_settings):
     rand: str = gen_random_str()
 
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
     user = UserORM(id=user_id)
+
+    prompt_persona = None
+    prompt_manager = None
+    prompt_product = None
+    prompt_creative = None
+    prompt_jingle = None
 
     try:
         with next(get_db()) as db:
