@@ -7,7 +7,7 @@ from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate
 from autobots.action.action_manager import ActionManager
-from autobots.action.action_types import ActionType
+from autobots.action.action_type.action_types import ActionType
 from autobots.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.database.mongo_base import get_mongo_db

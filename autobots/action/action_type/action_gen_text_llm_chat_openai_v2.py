@@ -1,6 +1,6 @@
-from autobots.action.IActionGenText import IActionGenText
+from autobots.action.action_type.IActionGenText import IActionGenText
 from autobots.action.action_doc_model import ActionCreate
-from autobots.action.action_types import ActionType
+from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.chat import Message, ChatReq, Role
 from autobots.conn.openai.openai import get_openai
 from autobots.prompts.user_prompts import TextObj

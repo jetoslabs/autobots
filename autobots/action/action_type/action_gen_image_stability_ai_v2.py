@@ -1,8 +1,8 @@
 from typing import List
 
-from autobots.action.IActionGenImage import IActionGenImage
+from autobots.action.action_type.IActionGenImage import IActionGenImage
 from autobots.action.action_doc_model import ActionCreate
-from autobots.action.action_types import ActionType
+from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.image_model import ImageRes
 from autobots.conn.stability.stability import get_stability
 from autobots.conn.stability.stability_data import StabilityReq
