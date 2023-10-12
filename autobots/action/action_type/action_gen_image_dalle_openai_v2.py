@@ -22,7 +22,7 @@ class ActionGenImageDalleOpenAiV2(IActionGenImage):
         self.image_req = action_data
 
     async def run_action(self, action_input: TextObj) -> List[ImageRes]:
-        self.image_req.prompt = action_input.text
+        self.image_req.prompt = f"{self.image_req.prompt}\n{action_input.text}"
         images = await get_openai().create_image(self.image_req)
         return images
 
