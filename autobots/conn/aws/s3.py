@@ -9,19 +9,19 @@ from mypy_boto3_s3.service_resource import ObjectSummary
 from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 
 from autobots.core.log import log
-from autobots.core.settings import get_settings, Settings
+from autobots.core.settings import Settings, SettingsProvider
 
 
 class S3:
 
-    def __init__(self):
+    def __init__(self, region_name: str, aws_access_key_id: str, aws_secret_access_key: str, bucket_name: str):
         s3: S3ServiceResource = boto3.resource(
             service_name="s3",
-            region_name=get_settings().AWS_S3_BUCKET_REGION,
-            aws_access_key_id=get_settings().AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=get_settings().AWS_SECRET_ACCESS_KEY
+            region_name=region_name,
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key
         )
-        self.bucket = s3.Bucket(get_settings().AWS_S3_BUCKET_NAME)
+        self.bucket = s3.Bucket(bucket_name)
 
     async def put(self, data: str, filename: str) -> int:
         try:
@@ -71,5 +71,10 @@ class S3:
 
 
 @lru_cache
-def get_s3(settings: Settings = get_settings()) -> S3:
-    return S3()
+def get_s3(settings: Settings = SettingsProvider.sget()) -> S3:
+    return S3(
+        settings.AWS_S3_BUCKET_REGION,
+        settings.AWS_ACCESS_KEY_ID,
+        settings.AWS_SECRET_ACCESS_KEY,
+        settings.AWS_S3_BUCKET_NAME
+    )

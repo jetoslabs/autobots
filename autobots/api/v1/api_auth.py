@@ -9,7 +9,7 @@ from pydantic import EmailStr, HttpUrl
 from autobots.auth.auth import get_auth
 from autobots.auth.data_models import BearerAccessToken
 from autobots.auth.security import get_user_from_access_token, get_user_from_creds
-from autobots.core.settings import get_settings
+from autobots.core.settings import SettingsProvider
 
 router = APIRouter()
 
@@ -28,7 +28,7 @@ async def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends
     return auth_res
 
 
-@router.post(get_settings().API_AUTH_TOKEN)
+@router.post(SettingsProvider.sget().API_AUTH_TOKEN)
 async def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> BearerAccessToken:
     """
     OAuth2 endpoint

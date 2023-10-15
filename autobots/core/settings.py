@@ -78,16 +78,29 @@ class Settings(BaseSettings):
         env_file_encoding = 'utf-8'
 
 
-@lru_cache
-def get_settings(_env_file: str = '.env.local') -> Settings:
-    settings = Settings(_env_file=_env_file)
-    check_for_none(settings)
-    logger.bind(app="autobots", ALLOWED_ORIGINS=settings.ALLOWED_ORIGINS)
-    return settings
+class SettingsProvider:
+    _settings: Settings = None
 
+    @staticmethod
+    @lru_cache
+    def set(_env_file: str = '.env.local') -> None:
+        SettingsProvider._settings = Settings(_env_file=_env_file)
+        SettingsProvider.check_for_none(SettingsProvider._settings)
+        logger.bind(app="autobots", ALLOWED_ORIGINS=SettingsProvider._settings.ALLOWED_ORIGINS)
 
-def check_for_none(settings: Settings):
-    for field in settings.__dict__.keys():
-        if settings.__dict__[field] is None:
-            logger.warning(f"Field: {field} is not set")
+    @staticmethod
+    async def get() -> Settings:
+        return SettingsProvider._settings
+
+    @staticmethod
+    def sget() -> Settings:
+        if not SettingsProvider._settings:
+            SettingsProvider.set()
+        return SettingsProvider._settings
+
+    @staticmethod
+    def check_for_none(settings: Settings):
+        for field in settings.__dict__.keys():
+            if settings.__dict__[field] is None:
+                logger.warning(f"Field: {field} is not set")
 

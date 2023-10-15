@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from autobots.core.log import log, setup_logger
+from autobots.core.settings import SettingsProvider
 from autobots.database.mongo_base import close_mongo_client
 
 
