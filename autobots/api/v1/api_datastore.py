@@ -1,7 +1,8 @@
+from typing import Annotated
 from uuid import UUID
 
 import gotrue
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from autobots.auth.security import get_user_from_access_token
@@ -59,7 +60,7 @@ async def get_datastore(
         raise HTTPException(500, "unable to get datastore")
 
 
-@router.post("/{id}/store")
+@router.post("/{id}/store_text")
 async def store_text(
         id: str,
         text: TextObj,
@@ -75,6 +76,20 @@ async def store_text(
     except Exception as e:
         log.error(e)
         raise HTTPException(500, "unable to get datastore")
+
+
+@router.post("/{id}/store_file")
+async def upload_files(
+        id: str,
+        files: Annotated[list[UploadFile], File(description="Multiple files as UploadFile")],
+        chunk_size: int = 500,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Session = Depends(get_db)
+):
+    user = UserORM(id=UUID(user_res.user.id))
+    user_datastore = await UserDatastore(user, db).hydrate(id)
+    await user_datastore.put_files(files, chunk_size=chunk_size)
+    return {"done": "ok"}
 
 
 @router.post("/{id}/search")
