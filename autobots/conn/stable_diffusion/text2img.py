@@ -24,7 +24,7 @@ class YesNo(str, Enum):
 class Text2ImgReqModel(BaseModel):
     key: str = Field(default=SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
                      description="Your API Key used for request authorization.")
-    prompt: str = Field(description="Text prompt with description of the things you want in the image to be generated.")
+    prompt: str = Field(..., description="Text prompt with description of the things you want in the image to be generated.")
     negative_prompt: Optional[str] = Field(default=None, description="Items you don't want in the image.")
     width: int = Field(default=512, ge=0, le=1024, description="Max Height: Width: 1024x1024.")
     height: int = Field(default=512, ge=0, le=1024, description="Max Height: Width: 1024x1024.")
