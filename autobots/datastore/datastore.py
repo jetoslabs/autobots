@@ -2,13 +2,16 @@ import random
 import string
 from typing import List, Dict, Callable, AsyncGenerator
 
+from fastapi import UploadFile
 from pinecone import QueryResult
 from pydantic import BaseModel
 
 from autobots.conn.aws.s3 import S3, get_s3
 from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
 from autobots.core.settings import SettingsProvider
-
+from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
+from autobots.core.log import log
+from autobots.core.settings import get_settings
 from autobots.core.utils import gen_hash
 from autobots.datastore.data_provider import DataProvider
 
@@ -90,6 +93,26 @@ class Datastore:
         async for chunk in DataProvider.create_file_chunks(filename, chunk_func, chunk_token_size):
             await self._put_data(data=chunk)
             await self._put_embedding(data=chunk)
+
+    async def put_files(self, files: List[UploadFile], chunk_size: int = 500):
+        for file in files:
+            log.debug(f"Processing file: {file.filename}")
+            file_chunks: List[str] = await get_unstructured_io().get_file_chunks(file, chunk_size=chunk_size)
+            log.debug(f"Sum of chunks in file: {file.filename} is {len(file_chunks)}")
+            await self._put_file_chunks(file, file_chunks)
+
+    async def _put_file_chunks(self, file: UploadFile, file_chunks: List[str]):
+            loop = 0
+            for chunk in file_chunks:
+                try:
+                    await self._put_data(data=chunk)
+                    await self._put_embedding(data=chunk)
+                    # housekeeping
+                    loop = loop + 1
+                    log.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
+                    log.trace(f"Processed file chunk: {file.filename} - {chunk}")
+                except Exception as e:
+                    log.error(e)
 
     # async def get(self):
     #     """
