@@ -122,13 +122,13 @@ async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProce
     try:
         if response_json["status"] == "error":
             log.error(f"Stable diffusion text2img error: {response_json['message']}")
-            err = Text2ImgResError.model_validate(response_json())
+            err = Text2ImgResError.model_validate(response_json)
             return err
         elif response_json["status"] == "processing":
-            res = Text2ImgResProcessingModel.model_validate(response_json())
+            res = Text2ImgResProcessingModel.model_validate(response_json)
             return res
         else:
-            res = Text2ImgResModel.model_validate(response.json())
+            res = Text2ImgResModel.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
         log.error(f"Stable diffusion text2img validation error for response: {response_json}")
