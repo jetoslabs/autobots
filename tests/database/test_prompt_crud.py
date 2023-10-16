@@ -1,25 +1,17 @@
 import uuid
 
 import pytest
-import pytest_asyncio
 
 from autobots.conn.openai.chat import Message, Role, ChatReq
-from autobots.core.settings import get_settings
 from autobots.core.utils import gen_uuid
 from autobots.database.base import get_db
-# from autobots.database.database_models import UserORM, PromptORM
 from autobots.prompts.prompt_crud import PromptCRUD
 from autobots.prompts.prompt_orm_model import PromptORM
 from autobots.prompts.target_platform import LLMTargetPlatform
 
 
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.asyncio
-async def test_prompt_crud_happy_path(set_settings):
+async def test_prompt_crud_happy_path(set_test_settings):
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
     created_prompt = None
     with next(get_db()) as db:

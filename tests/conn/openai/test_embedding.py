@@ -1,20 +1,11 @@
-
 import pytest
-import pytest_asyncio
 
 from autobots.conn.openai.embedding import EmbeddingRes, EmbeddingReq
 from autobots.conn.openai.openai import get_openai
-from autobots.core.settings import get_settings
-
-
-# Run command `pytest -vv -n 5` from `autobots/tests` folder
-@pytest_asyncio.fixture
-async def set_openai():
-    settings = get_settings(_env_file='.env.local')
 
 
 @pytest.mark.asyncio
-async def test_embedding_happy_path(set_openai):
+async def test_embedding_happy_path(set_test_settings):
     texts = ["Hello", "World"]
     embedding_req = EmbeddingReq(input=texts)
 

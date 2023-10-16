@@ -1,19 +1,11 @@
 import pytest
-import pytest_asyncio
 from pymongo.database import Database
-
-from autobots.core.settings import get_settings
 from autobots.core.utils import gen_random_str
 from autobots.database.mongo_base import get_mongo_db, get_mongo_db_collection
 
 
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.asyncio
-async def test_mongo_base_happy_path(set_settings):
+async def test_mongo_base_happy_path(set_test_settings):
     session: Database = next(get_mongo_db())
     assert session is not None
 
