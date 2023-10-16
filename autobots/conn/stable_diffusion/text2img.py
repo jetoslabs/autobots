@@ -75,8 +75,14 @@ class Text2ImgResMetaData(BaseModel):
     vae: str
 
 
+class Text2ImgResStatus(str, Enum):
+    success = "success"
+    processing = "processing"
+    error = "error"
+
+
 class Text2ImgResModel(BaseModel):
-    status: str
+    status: Text2ImgResStatus
     generationTime: float
     id: int
     output: List[HttpUrl]
@@ -84,7 +90,7 @@ class Text2ImgResModel(BaseModel):
 
 
 class Text2ImgResProcessingModel(BaseModel):
-    status: str
+    status: Text2ImgResStatus
     tip: str
     eta: float
     message: str
@@ -95,7 +101,7 @@ class Text2ImgResProcessingModel(BaseModel):
 
 
 class Text2ImgResError(BaseModel):
-    status: str
+    status: Text2ImgResStatus
     message: str
 
 
