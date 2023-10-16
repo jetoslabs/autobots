@@ -1,21 +1,14 @@
 import uuid
 
 import pytest
-import pytest_asyncio
 
-from autobots.core.settings import get_settings
 from autobots.database.base import get_db
 from autobots.graphs.to_del.graph_orm_model import GraphORM
 from autobots.graphs.to_del.graphs_crud import GraphsCRUD
 
 
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.asyncio
-async def test_graphs_crud_happy_path(set_settings):
+async def test_graphs_crud_happy_path(set_test_settings):
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
 
     name = "test_graphs_crud_happy_path"

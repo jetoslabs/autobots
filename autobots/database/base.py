@@ -4,12 +4,13 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm.session import sessionmaker, Session
 
-from autobots.core.settings import get_settings
+from autobots.core.settings import SettingsProvider
 
-engine = create_engine(get_settings().SQLALCHEMY_DATABASE_URL)
+settings = SettingsProvider.sget()
+engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
 SessionLocal: sessionmaker = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
-metadata = MetaData(schema=get_settings().SQLALCHEMY_DATABASE_SCHEMA)
+metadata = MetaData(schema=settings.SQLALCHEMY_DATABASE_SCHEMA)
 # Creating Base for so Alembic sees only models in this App
 Base = declarative_base(metadata=metadata)
 

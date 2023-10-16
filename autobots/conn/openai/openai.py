@@ -9,12 +9,12 @@ from autobots.conn.openai.chat import ChatReq, ChatRes
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.conn.openai.image_model import ImageReq, ImageRes
 from autobots.core.log import log
-from autobots.core.settings import get_settings, Settings
+from autobots.core.settings import Settings, SettingsProvider
 
 
 class OpenAI:
 
-    def __init__(self, org_id: str = get_settings().OPENAI_ORG_ID, api_key: str = get_settings().OPENAI_API_KEY):
+    def __init__(self, org_id: str, api_key: str):
         # once set, any invocation of openai has state
         # openai here is global
         openai.organization = org_id
@@ -57,5 +57,5 @@ class OpenAI:
 
 
 @lru_cache
-def get_openai(settings: Settings = get_settings()) -> OpenAI:
-    return OpenAI()
+def get_openai(settings: Settings = SettingsProvider.sget()) -> OpenAI:
+    return OpenAI(settings.OPENAI_ORG_ID, settings.OPENAI_API_KEY)

@@ -8,21 +8,23 @@ from starlette.status import HTTP_403_FORBIDDEN
 from autobots.auth.data_models import JwtPayload
 from autobots.conn.supabase.supabase import get_supabase
 from autobots.core.log import log
-from autobots.core.settings import get_settings
+from autobots.core.settings import SettingsProvider
+
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"{get_settings().API_v1}{get_settings().API_AUTH}{get_settings().API_AUTH_TOKEN}",
+    tokenUrl=f"{SettingsProvider.sget().API_v1}{SettingsProvider.sget().API_AUTH}{SettingsProvider.sget().API_AUTH_TOKEN}",
     scheme_name="JWT"
 )
 
 
 def decode_access_token(token: str, audience: str = "authenticated") -> JwtPayload | None:
+    settings = SettingsProvider.sget()
     try:
         # Decoding token independently
         decoded_jwt: dict = jwt.decode(
             token=token,
-            key=get_settings().JWT_SECRET_KEY,
-            algorithms=get_settings().JWT_ALGORITHM,
+            key=settings.JWT_SECRET_KEY,
+            algorithms=settings.JWT_ALGORITHM,
             options=None,
             audience=audience,
             issuer=None,

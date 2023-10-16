@@ -10,18 +10,18 @@ from pinecone import Client, Index, QueryResult
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.conn.openai.openai import OpenAI, get_openai
 from autobots.core.log import log
-from autobots.core.settings import get_settings, Settings
+from autobots.core.settings import Settings, SettingsProvider
 
 
 class Pinecone:
 
     def __init__(
             self,
+            api_key: str,
+            environment: str,
             open_ai: OpenAI = get_openai(),
             index_name: str = "index-1536",
             dimension: int = 1536,
-            api_key: str = get_settings().PINECONE_API_KEY,
-            environment: str = get_settings().PINECONE_ENVIRONMENT
     ):
         if not api_key or not environment:
             return
@@ -95,5 +95,5 @@ class Pinecone:
 
 
 @lru_cache
-def get_pinecone(settings: Settings = get_settings()) -> Pinecone:
-    return Pinecone()
+def get_pinecone(settings: Settings = SettingsProvider.sget()) -> Pinecone:
+    return Pinecone(api_key=settings.PINECONE_API_KEY, environment=settings.PINECONE_ENVIRONMENT)

@@ -1,25 +1,18 @@
 import uuid
 
 import pytest
-import pytest_asyncio
 
 from autobots.conn.openai.chat import Message, ChatReq
-from autobots.core.settings import get_settings
+
 from autobots.core.utils import gen_uuid
 from autobots.database.base import SessionLocal
 from autobots.prompts.prompt_orm_model import PromptORM
-# from autobots.database.database_models import UserORM, PromptORM
 from autobots.prompts.target_platform import LLMTargetPlatform
 from autobots.user.user_orm_model import UserORM
 
 
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.asyncio
-async def test_database_models_happy_path(set_settings):
+async def test_database_models_happy_path(set_test_settings):
     session = SessionLocal()
     try:
         # add user
