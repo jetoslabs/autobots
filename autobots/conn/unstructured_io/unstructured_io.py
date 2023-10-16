@@ -9,7 +9,7 @@ from unstructured_client.models.errors import SDKError
 from unstructured_client.models.operations import PartitionResponse
 
 from autobots.core.log import log
-from autobots.core.settings import Settings, get_settings
+from autobots.core.settings import Settings, SettingsProvider
 
 
 class PartitionResponseElementMetadata(BaseModel):
@@ -85,5 +85,5 @@ class UnstructuredIO:
 
 
 @lru_cache
-def get_unstructured_io(settings: Settings = get_settings()) -> UnstructuredIO:
+def get_unstructured_io(settings: Settings = SettingsProvider.sget()) -> UnstructuredIO:
     return UnstructuredIO(settings.UNSTRUCTURED_API_KEY)

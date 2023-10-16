@@ -11,7 +11,6 @@ from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
 from autobots.core.settings import SettingsProvider
 from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from autobots.core.log import log
-from autobots.core.settings import get_settings
 from autobots.core.utils import gen_hash
 from autobots.datastore.data_provider import DataProvider
 

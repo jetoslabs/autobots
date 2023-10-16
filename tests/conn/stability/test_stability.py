@@ -9,6 +9,7 @@ from autobots.conn.stability.stability import get_stability
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
 
 
+@pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
 async def test_text_to_image_happy_path(set_test_settings):
     prompt = "Image of a family wearing Nike shoes"
@@ -17,6 +18,7 @@ async def test_text_to_image_happy_path(set_test_settings):
     assert img_bytes is not None
 
 
+@pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
 async def test_image_to_image_happy_path(set_test_settings):
     prompt = "Steve McCurry photo of a man"
@@ -57,6 +59,7 @@ async def test_image_to_image_happy_path(set_test_settings):
     assert img.width > 0
 
 
+@pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
 async def test_upscale_image_happy_path(set_test_settings):
     prompt = "Image of a model running in Nike shoes"

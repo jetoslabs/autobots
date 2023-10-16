@@ -37,13 +37,11 @@ class Settings(BaseSettings):
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
-    # OPENAI_ENGINE: str = "gpt-3.5-turbo-16k-0613"  # "gpt-4"
 
     STABILITY_HOST: str = None
     STABILITY_KEY: str = None
 
     UNSPLASH_ACCESS_KEY: str = None
-    # UNSPLASH_SECRET_KEY: str = None
 
     AWS_ACCESS_KEY_ID: str = None
     AWS_SECRET_ACCESS_KEY: str = None
@@ -79,12 +77,18 @@ class Settings(BaseSettings):
 
 
 class SettingsProvider:
+    _env_file: str = None
     _settings: Settings = None
 
     @staticmethod
     @lru_cache
-    def set(_env_file: str = '.env.local') -> None:
-        SettingsProvider._settings = Settings(_env_file=_env_file)
+    def set_env_file(_env_file: str = '.env.local') -> None:
+        SettingsProvider._env_file = _env_file
+
+    @staticmethod
+    @lru_cache
+    def set() -> None:
+        SettingsProvider._settings = Settings(_env_file=SettingsProvider._env_file)
         SettingsProvider.check_for_none(SettingsProvider._settings)
         logger.bind(app="autobots", ALLOWED_ORIGINS=SettingsProvider._settings.ALLOWED_ORIGINS)
 
