@@ -7,6 +7,8 @@ from autobots.conn.stable_diffusion.image_mixer import ImageMixerReqModel
 from autobots.conn.stable_diffusion.stable_diffusion import StableDiffusion
 from autobots.conn.stable_diffusion.text2img import Text2ImgReqModel, Text2ImgResModel, YesNo, \
     Text2ImgResProcessingModel, Text2ImgResStatus
+from autobots.conn.stable_diffusion.text2video import Text2VideoReqModel, Text2VideoResModel, \
+    Text2VideoProcessingResModel
 from autobots.core.settings import SettingsProvider
 
 
@@ -33,6 +35,22 @@ async def test_image_mixer_happy_path(set_test_settings):
     )
     st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
     res: Text2ImgResModel | Text2ImgResProcessingModel = await st.image_mixer(req)
+
+    if res.status == StableDiffusionResStatus.processing.value:
+        time.sleep(res.eta*1.5)
+        fetch_res = await st.fetch_queued_image(res.id)
+        assert fetch_res.status == "success"
+
+    assert (res.status == StableDiffusionResStatus.success.value
+            or res.status == StableDiffusionResStatus.processing.value)
+
+
+@pytest.mark.asyncio
+async def test_text2video_happy_path(set_test_settings):
+    prompt = "Ultra real Sport shoes advertisement"
+    req = Text2VideoReqModel(prompt=prompt)
+    st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
+    res: Text2VideoResModel | Text2VideoProcessingResModel = await st.text2video(req)
 
     if res.status == StableDiffusionResStatus.processing.value:
         time.sleep(res.eta*1.5)
