@@ -6,7 +6,7 @@ import copy
 
 from autobots.conn.unsplash.random_photo import Image
 from autobots.conn.unsplash.search_photo import SearchImageList
-from autobots.core.settings import get_settings, Settings
+from autobots.core.settings import Settings, SettingsProvider
 
 
 class Unsplash:
@@ -16,7 +16,7 @@ class Unsplash:
     RANDOM_PHOTO = {"path": "/photos/random", "method": "GET"}
     SEARCH_PHOTO = {"path": "/search/photos", "method": "GET"}
 
-    def __init__(self, access_key: str = get_settings().UNSPLASH_ACCESS_KEY):
+    def __init__(self, access_key: str):
         self.params = {"client_id": access_key}
         self.headers = {"Accept-Version": Unsplash.ACCEPT_VERSION_HEADER}
 
@@ -43,6 +43,6 @@ class Unsplash:
 
 
 @lru_cache
-def get_unsplash(settings: Settings = get_settings()) -> Unsplash:
-    return Unsplash()
+def get_unsplash(settings: Settings = SettingsProvider.sget()) -> Unsplash:
+    return Unsplash(access_key=settings.UNSPLASH_ACCESS_KEY)
 

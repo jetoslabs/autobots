@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-from autobots.core.settings import Settings, get_settings
+from autobots.core.settings import SettingsProvider, Settings
 
 
 class Selenium:
@@ -54,5 +54,5 @@ class Selenium:
 
 
 @lru_cache
-def get_selenium(settings: Settings = get_settings()) -> Selenium:
+def get_selenium(settings: Settings = SettingsProvider.sget()) -> Selenium:
     return Selenium()

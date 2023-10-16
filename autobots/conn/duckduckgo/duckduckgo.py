@@ -5,7 +5,7 @@ from duckduckgo_search import DDGS
 from pydantic import BaseModel, HttpUrl
 
 from autobots.core.log import log
-from autobots.core.settings import Settings, get_settings
+from autobots.core.settings import Settings, SettingsProvider
 
 
 class SearchRes(BaseModel):
@@ -209,5 +209,5 @@ class DuckDuckGo:
 
 
 @lru_cache
-def get_duckduckgo(settings: Settings = get_settings()) -> DuckDuckGo:
+def get_duckduckgo(settings: Settings = SettingsProvider.sget()) -> DuckDuckGo:
     return DuckDuckGo()

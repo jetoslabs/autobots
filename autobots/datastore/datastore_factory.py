@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from autobots.conn.aws.s3 import S3, get_s3
 from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
-from autobots.core.settings import Settings, get_settings
+from autobots.core.settings import Settings, SettingsProvider
 from autobots.datastore.datastore import Datastore
 
 
@@ -28,5 +28,5 @@ class DatastoreFactory:
 
 
 @lru_cache
-def get_datastore_factory(settings: Settings = get_settings()) -> DatastoreFactory:
+def get_datastore_factory(settings: Settings = SettingsProvider.sget()) -> DatastoreFactory:
     return DatastoreFactory()

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Request, Depends, Form
+from fastapi import APIRouter, Request, Depends
 from gotrue import UserResponse
 from starlette.templating import Jinja2Templates
 
@@ -8,7 +8,7 @@ from autobots.action.action_doc_model import ActionDoc, ActionCreate, ActionUpda
 from autobots.action.user_actions import UserActions
 from autobots.api.ui.ui_most import get_user_from_cookie
 from autobots.conn.openai.chat import ChatReq, Message
-from autobots.core.settings import get_settings
+from autobots.core.settings import SettingsProvider
 from autobots.database.mongo_base import get_mongo_db
 from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="autobots/ui/templates")
 async def page_llm_action_submit(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("llm_action.html",
-                                          {"request": request, "user": user.user, "version": get_settings().VERSION})
+                                          {"request": request, "user": user.user, "version": SettingsProvider.sget().VERSION})
     else:
         return templates.TemplateResponse("index.html", {"request": request})
 
@@ -32,7 +32,7 @@ async def page_llm_action_submit(request: Request, user: UserResponse | None = D
     body = await request.body()
     if user:
         return templates.TemplateResponse("llm_action.html",
-                                          {"request": request, "user": user.user, "version": get_settings().VERSION})
+                                          {"request": request, "user": user.user, "version": SettingsProvider.sget().VERSION})
     else:
         return templates.TemplateResponse("index.html", {"request": request})
 
@@ -41,7 +41,7 @@ async def page_llm_action_submit(request: Request, user: UserResponse | None = D
 async def page_search_action(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     if user:
         return templates.TemplateResponse("search_action.html",
-                                          {"request": request, "user": user.user, "version": get_settings().VERSION})
+                                          {"request": request, "user": user.user, "version": SettingsProvider.sget().VERSION})
     else:
         return templates.TemplateResponse("index.html", {"request": request})
 

@@ -7,7 +7,7 @@ from starlette.responses import JSONResponse
 from autobots.api.v1 import v1
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.fastapi_desc import FastAPIDesc
-from autobots.core.settings import get_settings
+from autobots.core.settings import SettingsProvider
 
 router = APIRouter()
 
@@ -27,9 +27,11 @@ async def open_api_json(user_res: gotrue.UserResponse = Depends(get_user_from_ac
 
 @router.get("/docs")
 async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
-    return get_swagger_ui_html(openapi_url=f"{get_settings().API_v1}/openapi.json", title="docs")
+    settings = SettingsProvider.sget()
+    return get_swagger_ui_html(openapi_url=f"{settings.API_v1}/openapi.json", title="docs")
 
 
 @router.get("/redoc")
 async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
-    return get_redoc_html(openapi_url=f"{get_settings().API_v1}/openapi.json", title="redoc")
+    settings = SettingsProvider.sget()
+    return get_redoc_html(openapi_url=f"{settings.API_v1}/openapi.json", title="redoc")

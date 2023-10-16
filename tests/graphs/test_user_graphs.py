@@ -2,11 +2,9 @@ import uuid
 from typing import Dict, List
 
 import pytest
-import pytest_asyncio
 from sqlalchemy.orm import Session
 
 from autobots.conn.openai.chat import ChatReq, Message, Role
-from autobots.core.settings import get_settings
 from autobots.core.utils import gen_random_str
 from autobots.database.base import get_db
 from autobots.graphs.to_del.graph_orm_model import GraphORM
@@ -17,14 +15,9 @@ from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, Te
 from autobots.user.user_orm_model import UserORM
 
 
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.skip(reason="Moved to to_del folder")
 @pytest.mark.asyncio
-async def test_user_graph_run_happy_path(set_settings):
+async def test_user_graph_run_happy_path(set_test_settings):
     rand: str = gen_random_str()
 
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")

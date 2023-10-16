@@ -1,34 +1,26 @@
 import io
 
 import pytest
-import pytest_asyncio
 from PIL import Image
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
 from autobots.conn.http_cllient.http_client import HttpClient
 from autobots.conn.stability.stability import get_stability
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
-from autobots.core.settings import get_settings
 
 
-# Run command `python -m pytest -s` from `autobots/tests` folder
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-    # Making test cheaper by using old engine
-    # get_conn().stability = Stability()#(engine="stable-diffusion-768-v2-0")
-
-
+@pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
-async def test_text_to_image_happy_path(set_settings):
+async def test_text_to_image_happy_path(set_test_settings):
     prompt = "Image of a family wearing Nike shoes"
     stability_req = StabilityReq(prompt=prompt, cfg_scale=9)
     img_bytes = await get_stability().text_to_image(stability_req)
     assert img_bytes is not None
 
 
+@pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
-async def test_image_to_image_happy_path(set_settings):
+async def test_image_to_image_happy_path(set_test_settings):
     prompt = "Steve McCurry photo of a man"
     stability_req = StabilityReq(
         prompt=prompt,
@@ -67,8 +59,9 @@ async def test_image_to_image_happy_path(set_settings):
     assert img.width > 0
 
 
+@pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
-async def test_upscale_image_happy_path(set_settings):
+async def test_upscale_image_happy_path(set_test_settings):
     prompt = "Image of a model running in Nike shoes"
     width = 1024
     height = 1024

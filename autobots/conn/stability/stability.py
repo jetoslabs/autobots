@@ -9,7 +9,7 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
 from autobots.conn.aws.aws_s3 import get_aws_s3
 from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscaleReq
-from autobots.core.settings import get_settings, Settings
+from autobots.core.settings import Settings, SettingsProvider
 from autobots.core.utils import gen_uuid
 
 
@@ -17,8 +17,8 @@ class Stability:
 
     def __init__(
             self,
-            host: str = get_settings().STABILITY_HOST,
-            key: str = get_settings().STABILITY_KEY,
+            host: str,
+            key: str,
             engine: str = "stable-diffusion-xl-1024-v0-9",  # "stable-diffusion-xl-beta-v2-2-2",
             upscale_engine: str = "stable-diffusion-x4-latent-upscaler",
             verbose: bool = True,
@@ -69,11 +69,12 @@ class Stability:
                     # Save our generated images with their seed number as the filename.
                     img.save(str(artifact.seed) + ".png")
 
-                    s3 = get_aws_s3(get_settings().AWS_S3_BUCKET_REGION, get_settings().AWS_ACCESS_KEY_ID,
-                                    get_settings().AWS_SECRET_ACCESS_KEY, get_settings().AWS_S3_PUBLIC_BUCKET_NAME)
+                    settings = SettingsProvider.sget()
+                    s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
+                                    settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME)
                     added_file_url = await s3.put_file_obj(
                         io.BytesIO(artifact.binary),
-                        f"{get_settings().AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(gen_uuid())}.png"
+                        f"{settings.AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(gen_uuid())}.png"
                     )
 
                     # return artifact.binary
@@ -105,5 +106,5 @@ class Stability:
 
 
 @lru_cache
-def get_stability(settings: Settings = get_settings()) -> Stability:
-    return Stability()
+def get_stability(settings: Settings = SettingsProvider.sget()) -> Stability:
+    return Stability(settings.STABILITY_HOST, settings.STABILITY_KEY)

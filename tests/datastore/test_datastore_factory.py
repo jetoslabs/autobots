@@ -1,17 +1,10 @@
 import pytest
-import pytest_asyncio
 
-from autobots.core.settings import get_settings
-from autobots.datastore.datastore_factory import DatastoreFactory, get_datastore_factory
-
-
-@pytest_asyncio.fixture
-async def set_openai():
-    settings = get_settings(_env_file='.env.local')
+from autobots.datastore.datastore_factory import get_datastore_factory
 
 
 @pytest.mark.asyncio
-async def test_datastore_happy_path(set_openai):
+async def test_datastore_happy_path(set_test_settings):
     str1 = "The truth is one, the wise call it by many names. ― Rig Veda"
     str2 = "One who talks sweet, spend all their days in happiness. – Rig Veda"
     str3 = "One has to be humble if he desires to acquire knowledge. – Rig Veda"

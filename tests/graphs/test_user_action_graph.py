@@ -1,14 +1,12 @@
 import uuid
 
 import pytest
-import pytest_asyncio
 from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_gen_text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
 from autobots.action.user_actions import UserActions
 from autobots.conn.openai.chat import ChatReq, Message, Role
-from autobots.core.settings import get_settings
 from autobots.core.utils import gen_random_str
 from autobots.database.mongo_base import get_mongo_db
 from autobots.graphs.action_graph import ActionGraph
@@ -18,13 +16,8 @@ from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.asyncio
-async def test_user_graph_run_happy_path(set_settings):
+async def test_user_graph_run_happy_path(set_test_settings):
     rand: str = gen_random_str()
 
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")

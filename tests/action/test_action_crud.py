@@ -6,19 +6,12 @@ from autobots.action.action_doc_model import ActionDocCreate, ActionDocFind
 from autobots.action.action_manager import ActionManager
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq, Role, Message
-from autobots.core.settings import get_settings
 from autobots.core.utils import gen_uuid
 from autobots.database.mongo_base import get_mongo_db
 from autobots.prompts.user_prompts import TextObj
 
-
-@pytest_asyncio.fixture
-async def set_settings():
-    settings = get_settings(_env_file='.env.local')
-
-
 @pytest.mark.asyncio
-async def test_action_crud_happy_path(set_settings):
+async def test_action_crud_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)
 
