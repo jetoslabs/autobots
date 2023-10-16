@@ -23,9 +23,11 @@ class FetchQueuedImagesResModel(BaseModel):
 
 
 async def fetch_queued_image(
-        id: str, key: str = SettingsProvider.sget().STABLE_DIFFUSION_API_KEY, max_retry=3
+        id: str,
+        key: str = SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
+        max_retry: int = 4,
+        sleep_time: float = 5.0
 ) -> FetchQueuedImagesResModel | FetchQueuedImagesProcessingResModel:
-
     url = f"https://stablediffusionapi.com/api/v3/fetch/{id}"
 
     payload = json.dumps({
@@ -39,14 +41,12 @@ async def fetch_queued_image(
     response = requests.request("POST", url, headers=headers, data=payload)
 
     response_json = response.json()
-    if response_json["status"] == "failed" and max_retry > 0:
-        time.sleep(7 - max_retry)
-        return await fetch_queued_image(id, key, max_retry - 1)
+    if (response_json["status"] == "failed" or response_json["status"] == "error") and max_retry > 0:
+        time.sleep(sleep_time)
+        return await fetch_queued_image(id, key, max_retry - 1, sleep_time * 1.5)
     elif response_json["status"] == StableDiffusionResStatus.processing.value and max_retry > 0:
-        time.sleep(7 - max_retry)
-        return await fetch_queued_image(id, key, max_retry - 1)
-        # res = FetchQueuedImagesProcessingResModel.model_validate(response_json)
-        # return res
+        time.sleep(sleep_time)
+        return await fetch_queued_image(id, key, max_retry - 1, sleep_time * 1.5)
     elif response_json["status"] == StableDiffusionResStatus.success.value:
         res = FetchQueuedImagesResModel.model_validate(response_json)
         return res
