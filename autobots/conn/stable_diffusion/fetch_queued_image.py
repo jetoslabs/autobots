@@ -23,11 +23,11 @@ class FetchQueuedImagesResModel(BaseModel):
 
 
 async def fetch_queued_image(
-        id: str,
+        id: int,
         key: str = SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
         max_retry: int = 4,
         sleep_time: float = 5.0
-) -> FetchQueuedImagesResModel | FetchQueuedImagesProcessingResModel:
+) -> FetchQueuedImagesResModel | None:
     url = f"https://stablediffusionapi.com/api/v3/fetch/{id}"
 
     payload = json.dumps({

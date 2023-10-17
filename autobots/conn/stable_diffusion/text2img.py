@@ -93,7 +93,7 @@ class Text2ImgResProcessingModel(BaseModel):
     status: Text2ImgResStatus
     tip: str
     eta: float
-    message: str
+    messege: str
     fetch_result: HttpUrl
     id: int
     output: List[HttpUrl]

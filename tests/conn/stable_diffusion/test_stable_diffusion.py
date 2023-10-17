@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus
+from autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus, StableDiffusionRes
 from autobots.conn.stable_diffusion.image_mixer import ImageMixerReqModel
 from autobots.conn.stable_diffusion.stable_diffusion import StableDiffusion
 from autobots.conn.stable_diffusion.text2img import Text2ImgReqModel, Text2ImgResModel, YesNo, \
@@ -17,10 +17,8 @@ async def test_text2img_happy_path(set_test_settings):
     prompt = "Ultra real Sport shoes advertisement"
     req = Text2ImgReqModel(prompt=prompt, self_attestaion=YesNo.no.value, width=512)
     st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
-    res: Text2ImgResModel | Text2ImgResProcessingModel = await st.text2img(req)
-
-    assert (res.status == Text2ImgResStatus.success.value
-            or res.status == Text2ImgResStatus.processing.value)
+    res: StableDiffusionRes = await st.text2img(req)
+    assert (len(res.urls) >= 1 or res.fetch_url is not None)
 
 
 @pytest.mark.asyncio
@@ -34,15 +32,8 @@ async def test_image_mixer_happy_path(set_test_settings):
         width=512
     )
     st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
-    res: Text2ImgResModel | Text2ImgResProcessingModel = await st.image_mixer(req)
-
-    if res.status == StableDiffusionResStatus.processing.value:
-        time.sleep(res.eta*1.5)
-        fetch_res = await st.fetch_queued_image(res.id)
-        assert fetch_res.status == "success"
-
-    assert (res.status == StableDiffusionResStatus.success.value
-            or res.status == StableDiffusionResStatus.processing.value)
+    res: StableDiffusionRes = await st.image_mixer(req)
+    assert (len(res.urls) >= 1 or res.fetch_url is not None)
 
 
 @pytest.mark.asyncio
@@ -50,12 +41,5 @@ async def test_text2video_happy_path(set_test_settings):
     prompt = "Ultra real Sport shoes advertisement"
     req = Text2VideoReqModel(prompt=prompt)
     st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
-    res: Text2VideoResModel | Text2VideoProcessingResModel = await st.text2video(req)
-
-    if res.status == StableDiffusionResStatus.processing.value:
-        time.sleep(res.eta*1.5)
-        fetch_res = await st.fetch_queued_image(res.id)
-        assert fetch_res.status == "success"
-
-    assert (res.status == StableDiffusionResStatus.success.value
-            or res.status == StableDiffusionResStatus.processing.value)
+    res: StableDiffusionRes = await st.text2video(req)
+    assert (len(res.urls) >= 1 or res.fetch_url is not None)

@@ -1,4 +1,7 @@
 from enum import Enum
+from typing import List, Optional
+
+from pydantic import HttpUrl, BaseModel
 
 
 class StableDiffusionResStatus(str, Enum):
@@ -6,3 +9,8 @@ class StableDiffusionResStatus(str, Enum):
     processing = "processing"
     error = "error"
     failed = "failed"
+
+
+class StableDiffusionRes(BaseModel):
+    urls: Optional[List[HttpUrl]]
+    fetch_url: HttpUrl | None = None
