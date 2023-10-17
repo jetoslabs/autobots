@@ -12,7 +12,7 @@ class ActionType(str, Enum):
     text2img_stable_diffusion = "text2img_stable_diffusion"
 
     # img2img
-    img_mixer_stable_diffusion = "img_mixer_stable_diffusion"
+    image_mixer_stable_diffusion = "image_mixer_stable_diffusion"
 
     # text2video
     text2video_stable_diffusion = "text2video_stable_diffusion"

@@ -7,14 +7,14 @@ from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
 
 
 class ActionCreateImgMixerStableDiffusion(ActionCreate):
-    type: ActionType = ActionType.img_mixer_stable_diffusion
+    type: ActionType = ActionType.image_mixer_stable_diffusion
     config: ImageMixerReqModel
     input: ImageMixerReqModel
     output: StableDiffusionRes
 
 
-class ActionImgMixerStableDiffusion(IActionGenImage):
-    type = ActionType.img_mixer_stable_diffusion
+class ActionImageMixerStableDiffusion(IActionGenImage):
+    type = ActionType.image_mixer_stable_diffusion
 
     def __init__(self, action_config: ImageMixerReqModel):
         self.config = action_config
