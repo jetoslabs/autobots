@@ -14,3 +14,8 @@ class StableDiffusionResStatus(str, Enum):
 class StableDiffusionRes(BaseModel):
     urls: Optional[List[HttpUrl]]
     fetch_url: HttpUrl | None = None
+
+
+class YesNo(str, Enum):
+    yes = "yes"
+    no = "no"

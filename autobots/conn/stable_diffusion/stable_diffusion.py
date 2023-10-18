@@ -1,12 +1,16 @@
 from functools import lru_cache
 
 from autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus, StableDiffusionRes
-from autobots.conn.stable_diffusion.fetch_queued_image import fetch_queued_image, FetchQueuedImagesResModel
-from autobots.conn.stable_diffusion.image_mixer import image_mixer, ImageMixerReqModel, ImageMixerResModel, \
+from autobots.conn.stable_diffusion.fetch_queued_image.fetch_queued_image import FetchQueuedImagesResModel, \
+    fetch_queued_image
+from autobots.conn.stable_diffusion.image_mixer.image_mixer import image_mixer
+from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel, ImageMixerResModel, \
     ImageMixerProcessingResModel, ImageMixerResError
-from autobots.conn.stable_diffusion.text2img import text2img, Text2ImgReqModel, Text2ImgResModel, \
+from autobots.conn.stable_diffusion.text2img.text2img import text2img
+from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel, Text2ImgResModel, \
     Text2ImgResProcessingModel, Text2ImgResError
-from autobots.conn.stable_diffusion.text2video import text2video, Text2VideoReqModel, Text2VideoResModel, \
+from autobots.conn.stable_diffusion.text2video.text2video import text2video
+from autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel, Text2VideoResModel, \
     Text2VideoProcessingResModel, Text2VideoResError
 from autobots.core.settings import Settings, SettingsProvider
 

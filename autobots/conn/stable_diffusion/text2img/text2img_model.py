@@ -1,12 +1,10 @@
 from enum import Enum
 from typing import Optional, List
 
-import requests
+from pydantic import BaseModel, Field, HttpUrl
 
-from pydantic import BaseModel, Field, HttpUrl, ValidationError
-
-from autobots.core.log import log
-from autobots.core.settings import SettingsProvider
+from autobots import SettingsProvider
+from autobots.conn.stable_diffusion.common_models import YesNo
 
 
 class NumInferenceSteps(int, Enum):
@@ -14,11 +12,6 @@ class NumInferenceSteps(int, Enum):
     _31 = 31
     _41 = 41
     _51 = 51
-
-
-class YesNo(str, Enum):
-    yes = "yes"
-    no = "no"
 
 
 class Text2ImgReqModel(BaseModel):
@@ -103,32 +96,3 @@ class Text2ImgResProcessingModel(BaseModel):
 class Text2ImgResError(BaseModel):
     status: Text2ImgResStatus
     message: str
-
-
-async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProcessingModel | Text2ImgResError:
-    url = "https://stablediffusionapi.com/api/v3/text2img"
-
-    payload = req.model_dump_json()
-
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("POST", url, headers=headers, data=payload)
-    if response.status_code != 200:
-        log.error(f"Stable diffusion text2img error: {response.status_code}")
-
-    response_json = response.json()
-    try:
-        if response_json["status"] == "error":
-            log.error(f"Stable diffusion text2img error: {response_json['message']}")
-            err = Text2ImgResError.model_validate(response_json)
-            return err
-        elif response_json["status"] == "processing":
-            res = Text2ImgResProcessingModel.model_validate(response_json)
-            return res
-        else:
-            res = Text2ImgResModel.model_validate(response_json)
-            return res
-    except ValidationError or TypeError as e:
-        log.error(f"Stable diffusion text2img validation error for response: {response_json}")
