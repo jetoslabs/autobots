@@ -6,7 +6,7 @@ from autobots.conn.stable_diffusion.image_mixer import ImageMixerReqModel
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
 
 
-class ActionCreateImgMixerStableDiffusion(ActionCreate):
+class ActionCreateImageMixerStableDiffusion(ActionCreate):
     type: ActionType = ActionType.image_mixer_stable_diffusion
     config: ImageMixerReqModel
     input: ImageMixerReqModel
