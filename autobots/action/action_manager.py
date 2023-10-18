@@ -9,10 +9,16 @@ from autobots.action.action_type.action_gen_image_stability_ai_v2 import ActionG
 from autobots.action.action_type.action_gen_text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
 from autobots.action.action_type.action_gen_text_llm_chat_with_vector_search_openai import \
     ActionGenTextLlmChatWithVectorSearchOpenai, ActionCreateGenTextLlmChatWithVectorSearchOpenai
+from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
+    ActionImageMixerStableDiffusion
+from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
 from autobots.conn.stability.stability_data import StabilityReq
+from autobots.conn.stable_diffusion.image_mixer import ImageMixerReqModel
+from autobots.conn.stable_diffusion.text2img import Text2ImgReqModel
+from autobots.conn.stable_diffusion.text2video import Text2VideoReqModel
 from autobots.core.log import log
 from autobots.prompts.user_prompts import TextObj
 
@@ -28,7 +34,11 @@ class ActionManager:
         action_types = [action_type for action_type in ActionType]
         return action_types
 
-    async def run_action(self, action: ActionDoc, action_input: TextObj) -> Any:
+    async def run_action(
+            self,
+            action: ActionDoc,
+            action_input: TextObj | Text2ImgReqModel | ImageMixerReqModel | Text2VideoReqModel
+    ) -> Any:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:
                 return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.config))\
@@ -43,6 +53,15 @@ class ActionManager:
                 return await ActionGenTextLlmChatWithVectorSearchOpenai(
                     ActionCreateGenTextLlmChatWithVectorSearchOpenai.model_validate(action.model_dump())
                 ).run_action(action_input)
+            case ActionType.text2img_stable_diffusion:
+                return await ActionText2ImgStableDiffusion(Text2ImgReqModel.model_validate(action.model_dump())
+                                                           ).run_action(action_input)
+            case ActionType.image_mixer_stable_diffusion:
+                return await ActionImageMixerStableDiffusion(ImageMixerReqModel.model_validate(action.model_dump())
+                                                           ).run_action(action_input)
+            case ActionType.text2video_stable_diffusion:
+                return await ActionText2ImgStableDiffusion(Text2ImgReqModel.model_validate(action.model_dump())
+                                                           ).run_action(action_input)
             case _:
                 log.error("Action Type not found")
                 raise HTTPException(status_code=404, detail="Action Type not found")
