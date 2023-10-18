@@ -3,7 +3,7 @@ from autobots.action.action_type.IActionGenImage import IActionGenImage
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
-from autobots.conn.stable_diffusion.text2img import Text2ImgReqModel
+from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel
 
 
 class ActionCreateText2ImgStableDiffusion(ActionCreate):

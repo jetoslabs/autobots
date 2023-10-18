@@ -2,7 +2,7 @@ from autobots.action.action_doc_model import ActionCreate
 from autobots.action.action_type.IActionGenImage import IActionGenImage
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
-from autobots.conn.stable_diffusion.image_mixer import ImageMixerReqModel
+from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
 
 
