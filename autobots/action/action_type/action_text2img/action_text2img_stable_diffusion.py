@@ -20,6 +20,8 @@ class Text2ImgRunModel(BaseModel):
                                    description="Number of images to be returned in response. The maximum value is 4.")
     webhook: Optional[str] = Field(default=None,
                                    description="Set an URL to get a POST API call once the image generation is complete.")
+    track_id: Optional[str] = Field(default=None,
+                                    description="This ID is returned in the response to the webhook API call. This will be used to identify the webhook request.")
 
 
 class ActionCreateText2ImgStableDiffusion(ActionCreate):
@@ -43,6 +45,7 @@ class ActionText2ImgStableDiffusion(IActionGenImage):
         if action_input.height: self.config.height = action_input.height
         if action_input.samples: self.config.samples = action_input.samples
         if action_input.webhook: self.config.webhook = action_input.webhook
+        if action_input.track_id: self.config.track_id = action_input.track_id
         images = await get_stable_diffusion().text2img(self.config)
         return images
 
