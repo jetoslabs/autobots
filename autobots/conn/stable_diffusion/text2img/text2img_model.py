@@ -29,7 +29,7 @@ class Text2ImgReqModel(BaseModel):
                                   description="A checker for NSFW images. If such an image is detected, it will be replaced by a blank image.")
     enhance_prompt: YesNo = Field(default=YesNo.yes.value,
                                   description="Enhance prompts for better results; default: yes, options: yes/no.")
-    seed: Optional[str] = Field(default=None,
+    seed: Optional[int] = Field(default=None,
                                 description="Seed is used to reproduce results, same seed will give you same image in return again. Pass null for a random number.")
     guidance_scale: float = Field(default=7.5, ge=1, le=20,
                                   description="Scale for classifier-free guidance (minimum: 1; maximum: 20).")
@@ -37,7 +37,7 @@ class Text2ImgReqModel(BaseModel):
                                description="Allow multi lingual prompt to generate images. Use \"no\" for the default English.")
     panorama: YesNo = Field(default=YesNo.no.value,
                             description="Set this parameter to \"yes\" to generate a panorama image.")
-    self_attention: YesNo = Field(default=YesNo.no.value,
+    self_attention: YesNo = Field(default=YesNo.yes.value,
                                   description="If you want a high quality image, set this parameter to \"yes\". In this case the image generation will take more time.")
     upscale: YesNo = Field(default=YesNo.no.value,
                            description="Set this parameter to \"yes\" if you want to upscale the given image resolution two times (2x). If the requested resolution is 512 x 512 px, the generated image will be 1024 x 1024 px.")
