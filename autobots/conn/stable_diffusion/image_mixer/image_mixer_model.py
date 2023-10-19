@@ -13,13 +13,13 @@ class ImageMixerReqModel(BaseModel):
                         description="Text prompt with description of the things you want in the image to be generated")
     negative_prompt: Optional[str] = Field(default=None, description="Items you don't want in the image")
     init_image: str = Field(..., description="comma separated image urls of images to mix")
+    init_image_weights: str = Field(...,
+                                    description="weight of the images being passed separated by comma. Min 0 and Max 1")
     width: int = Field(default=512, ge=1, le=1024, description="Width of the image. Max Height: Width: 1024x1024")
     height: int = Field(default=512, ge=1, le=1024, description="Height of the image. Max Height: Width: 1024x1024")
     steps: int = Field(default=30, ge=1, le=50, description="Number of denoising steps (minimum: 1; maximum: 50)")
     guidance_scale: float = Field(default=10, ge=1, le=20,
                                   description="Scale for classifier-free guidance (minimum: 1; maximum: 20)")
-    init_image_weights: str = Field(...,
-                                            description="weight of the images being passed separated by comma. Min 0 and Max 1")
     seed: Optional[int] = Field(None,
                                 description="Seed is used to reproduce results, same seed will give you same image in return again. Pass null for a random number.")
     samples: int = Field(default=1, ge=1, le=4,

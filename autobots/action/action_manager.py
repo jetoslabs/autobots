@@ -10,7 +10,7 @@ from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_opena
 from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_with_vector_search_openai import \
     ActionGenTextLlmChatWithVectorSearchOpenai, ActionCreateGenTextLlmChatWithVectorSearchOpenai
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
-    ActionImageMixerStableDiffusion
+    ActionImageMixerStableDiffusion, ImageMixerRunModel
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion, \
     Text2ImgRunModel
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
@@ -40,7 +40,7 @@ class ActionManager:
     async def run_action(
             self,
             action: ActionDoc,
-            action_input: TextObj | Text2ImgRunModel | ImageMixerReqModel | Text2VideoRunModel
+            action_input: TextObj | Text2ImgRunModel | ImageMixerRunModel | Text2VideoRunModel
     ) -> Any:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:

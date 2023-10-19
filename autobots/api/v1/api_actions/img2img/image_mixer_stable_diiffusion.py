@@ -6,7 +6,7 @@ from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
-    ActionCreateImageMixerStableDiffusion, ActionImageMixerStableDiffusion
+    ActionCreateImageMixerStableDiffusion, ActionImageMixerStableDiffusion, ImageMixerRunModel
 from autobots.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -38,7 +38,7 @@ async def create_action_image_mixer_stable_diffusion(
 @router.post("/img2img/image_mixer/stable_diffusion/{action_id}/run")
 async def run_action_image_mixer_stable_diffusion(
         action_id: str,
-        action_input: ImageMixerReqModel,
+        action_input: ImageMixerRunModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> StableDiffusionRes:
