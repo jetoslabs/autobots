@@ -1,5 +1,7 @@
 from functools import lru_cache
 
+from fastapi import HTTPException
+
 from autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus, StableDiffusionRes
 from autobots.conn.stable_diffusion.fetch_queued_image.fetch_queued_image import FetchQueuedImagesResModel, \
     fetch_queued_image
@@ -40,6 +42,8 @@ class StableDiffusion:
         elif res.status == StableDiffusionResStatus.processing:
             fetched: StableDiffusionRes = await self.fetch_queued_image(res.id)
             return fetched
+        elif res.status == StableDiffusionResStatus.error:
+            raise HTTPException(503, res.message)
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(res.id))
 
     async def text2video(self, req: Text2VideoReqModel) -> StableDiffusionRes:
@@ -52,6 +56,8 @@ class StableDiffusion:
         elif res.status == StableDiffusionResStatus.processing:
             fetched: StableDiffusionRes = await self.fetch_queued_image(res.id)
             return fetched
+        elif res.status == StableDiffusionResStatus.error:
+            raise HTTPException(503, res.message)
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(res.id))
 
     async def fetch_queued_image(self, id: int) -> StableDiffusionRes:
