@@ -19,11 +19,13 @@ class ActionGenTextLlmChatOpenaiV2(IActionGenText):
     def __init__(self, action_data: ChatReq):
         self.chat_req = action_data
 
-    async def run_action(self, action_input: TextObj) -> Message:
+    async def run_action(self, action_input: TextObj) -> Message | None:
         if action_input and action_input.text != "":
             message = Message(role=Role.user, content=action_input.text)
             self.chat_req.messages = self.chat_req.messages + [message]
         chat_res = await get_openai().chat(chat_req=self.chat_req)
+        if not chat_res:
+            return None
         resp = chat_res.choices[0].message
         return resp
 
