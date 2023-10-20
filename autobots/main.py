@@ -7,10 +7,7 @@ from autobots.api.ui import ui
 from autobots.api.v1 import v1
 from autobots.core.fastapi_desc import FastAPIDesc
 from autobots.core.lifespan import lifespan
-from autobots.core.settings import SettingsProvider
 from autobots.subscription.api_usage import usage_info
-
-SettingsProvider.set()
 
 patch(fastapi=True)
 app = FastAPI(lifespan=lifespan, **FastAPIDesc().model_dump())

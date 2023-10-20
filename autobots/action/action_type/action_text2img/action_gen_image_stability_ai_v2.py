@@ -12,7 +12,7 @@ class ActionCreateGenImageStabilityAi(ActionCreate):
     type: ActionType = ActionType.gen_image_stability_ai
     config: StabilityReq
     input: TextObj = TextObj()
-    output: TextObj = TextObj()
+    output: ImageRes = ImageRes()
 
 
 class ActionGenImageStabilityAiV2(IActionGenImage):

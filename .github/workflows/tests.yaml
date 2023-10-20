@@ -51,6 +51,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
           STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+          STABLE_DIFFUSION_API_KEY: ${{ secrets.STABLE_DIFFUSION_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

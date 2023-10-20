@@ -49,8 +49,8 @@ class ActionCreate(BaseModel):
     user_manual: str = ""
     type: ActionType
     config: Dict[str, Any]
-    input: Dict[str, Any]
-    output: Dict[str, Any]
+    input: Optional[Dict[str, Any]] = None
+    output: Optional[Dict[str, Any]] = None
 
 
 class ActionDocCreate(ActionCreate):

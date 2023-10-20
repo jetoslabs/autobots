@@ -40,6 +40,7 @@ class Settings(BaseSettings):
 
     STABILITY_HOST: str = None
     STABILITY_KEY: str = None
+    STABLE_DIFFUSION_API_KEY: str = None
 
     UNSPLASH_ACCESS_KEY: str = None
 

@@ -56,6 +56,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
           STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+          STABLE_DIFFUSION_API_KEY: ${{ secrets.STABLE_DIFFUSION_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -230,6 +231,7 @@ jobs:
           -e OPENAI_API_KEY=$OPENAI_API_KEY 
           -e STABILITY_HOST=$STABILITY_HOST 
           -e STABILITY_KEY=$STABILITY_KEY 
+          -e STABLE_DIFFUSION_API_KEY=$STABLE_DIFFUSION_API_KEY
           -e UNSPLASH_ACCESS_KEY=$UNSPLASH_ACCESS_KEY 
           -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID 
           -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY 
@@ -256,6 +258,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
           STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+          STABLE_DIFFUSION_API_KEY: ${{ secrets.STABLE_DIFFUSION_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
