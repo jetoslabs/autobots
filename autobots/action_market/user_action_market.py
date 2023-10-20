@@ -71,7 +71,7 @@ class UserActionMarket:
         return resp
 
     @staticmethod
-    async def _mask_config_of_action_market_docs(market_actions: List[ActionMarketDoc]):
+    async def _mask_config_of_action_market_docs(market_actions: List[ActionMarketDoc]) -> List[ActionMarketDoc]:
         for market_action in market_actions:
             market_action.action.config = {}
         return market_actions
