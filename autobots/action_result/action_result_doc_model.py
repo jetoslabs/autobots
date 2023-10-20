@@ -7,7 +7,7 @@ from autobots.action.action_doc_model import ActionDoc
 from autobots.action.action_type.action_types import ActionType
 
 
-class ActionRunLogFind(BaseModel):
+class ActionResultFind(BaseModel):
     """
     Input from User to find action
     """
@@ -19,19 +19,19 @@ class ActionRunLogFind(BaseModel):
     action_type: Optional[ActionType] = None
 
 
-class ActionRunLogDocFind(ActionRunLogFind):
+class ActionResultDocFind(ActionResultFind):
     """
     Add in user id to enforce multi-tenancy
     """
     action_user_id: Optional[str] = None
 
 
-class ActionRunLog(BaseModel):
+class ActionResult(BaseModel):
     action: ActionDoc
 
 
-class ActionRunLogDoc(ActionRunLog):
-    __collection__ = "ActionRunLogs"
+class ActionResultDoc(ActionResult):
+    __collection__ = "ActionResults"
 
     id: str = Field(..., alias='_id')
     created_at: datetime = datetime.now()

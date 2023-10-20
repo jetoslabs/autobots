@@ -6,35 +6,35 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from autobots.action_run_log.action_run_log_doc_model import ActionRunLogDoc, ActionRunLogDocFind, ActionRunLog
+from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, ActionResult
 from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
 
 
-class ActionRunLogCRUD:
+class ActionResultCRUD:
 
     def __init__(self, db: Database = Depends(get_mongo_db)):
-        self.document: Collection = db[ActionRunLogDoc.__collection__]
+        self.document: Collection = db[ActionResultDoc.__collection__]
 
-    async def insert_one(self, action_run_log: ActionRunLog) -> ActionRunLogDoc:
-        insert_result = self.document.insert_one(action_run_log.model_dump())
+    async def insert_one(self, action_result: ActionResult) -> ActionResultDoc:
+        insert_result = self.document.insert_one(action_result.model_dump())
         inserted_action = await self._find_by_object_id(insert_result.inserted_id)
         return inserted_action
 
-    async def _find_by_object_id(self, id: str) -> ActionRunLogDoc:
+    async def _find_by_object_id(self, id: str) -> ActionResultDoc:
         object_id = ObjectId(id)
         doc = self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
-        return ActionRunLogDoc.model_validate(doc)
+        return ActionResultDoc.model_validate(doc)
 
     async def find(
-            self, action_run_log_doc_find: ActionRunLogDocFind, limit: int = 100, offset: int = 0
-    ) -> List[ActionRunLogDoc]:
-        if not action_run_log_doc_find.action_user_id:
-            log.error("action_run_log find issued without specifying user")
+            self, action_result_doc_find: ActionResultDocFind, limit: int = 100, offset: int = 0
+    ) -> List[ActionResultDoc]:
+        if not action_result_doc_find.action_user_id:
+            log.error("action_result find issued without specifying user")
             return []
         find_params = {}
-        for key, value in action_run_log_doc_find.model_dump().items():
+        for key, value in action_result_doc_find.model_dump().items():
             if value:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
@@ -47,7 +47,7 @@ class ActionRunLogCRUD:
             return []
 
         cursor = self.document.find(find_params)
-        action_run_log_docs = []
+        action_result_docs = []
 
         skipped = 0
         filled = 0
@@ -62,17 +62,17 @@ class ActionRunLogCRUD:
             filled = filled + 1
             # Mongo Result field _id has ObjectId, converting it to str for pydantic model
             doc["_id"] = str(doc.get("_id"))
-            action_run_log_doc = ActionRunLogDoc.model_validate(doc)
-            action_run_log_docs.append(action_run_log_doc)
+            action_result_doc = ActionResultDoc.model_validate(doc)
+            action_result_docs.append(action_result_doc)
 
-        return action_run_log_docs
+        return action_result_docs
 
-    async def delete_many(self, action_run_log_doc_find: ActionRunLogDocFind) -> DeleteResult | None:
-        if not action_run_log_doc_find.action_user_id:
-            log.error("action_run_log delete issued without specifying user")
+    async def delete_many(self, action_result_doc_find: ActionResultDocFind) -> DeleteResult | None:
+        if not action_result_doc_find.action_user_id:
+            log.error("action_result delete issued without specifying user")
             return None
         find_params = {}
-        for key, value in action_run_log_doc_find.model_dump().items():
+        for key, value in action_result_doc_find.model_dump().items():
             if value:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)

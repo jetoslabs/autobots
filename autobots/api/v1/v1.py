@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from autobots.api.v1 import api_hello, api_auth, api_prompts, api_graphs, api_actions, api_action_graphs, api_docs, \
-    api_datastore, api_chat, api_agents, api_action_market, api_action_run_log
+    api_datastore, api_chat, api_agents, api_action_market, api_action_results
 from autobots.core.settings import SettingsProvider
 
 settings = SettingsProvider.sget()
@@ -10,7 +10,7 @@ router.include_router(api_hello.router, prefix=settings.API_Hello, tags=["hello"
 router.include_router(api_auth.router, prefix=settings.API_AUTH, tags=["auth"])
 router.include_router(api_actions.router, prefix=settings.API_ACTIONS, tags=["actions"])
 router.include_router(api_action_market.router, prefix=settings.API_ACTION_MARKET, tags=["action_market"])
-router.include_router(api_action_run_log.router, prefix=settings.API_ACTION_RUN_LOGS, tags=["action_run_logs"])
+router.include_router(api_action_results.router, prefix=settings.API_ACTION_RESULTS, tags=["action_results"])
 router.include_router(api_action_graphs.router, prefix=settings.API_ACTION_GRAPHS, tags=["action_graphs"])
 router.include_router(api_datastore.router, prefix=settings.API_DATASTORE, tags=["datastore"])
 router.include_router(api_chat.router, prefix=settings.API_CHAT, tags=["chat"])
