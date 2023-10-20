@@ -67,7 +67,7 @@ class StableDiffusion:
             return result
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(id))
 
-    async def get_fetch_url(self, id: int):
+    def get_fetch_url(self, id: int):
         return f"https://stablediffusionapi.com/api/v3/fetch/{id}"
 
 

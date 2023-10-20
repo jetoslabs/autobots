@@ -35,7 +35,7 @@ async def test_image_mixer_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_text2video_happy_path(set_test_settings):
-    prompt = "Ultra real Sport shoes advertisement"
+    prompt = "Ultra real athlete running in urban environment TV quality"
     req = Text2VideoReqModel(prompt=prompt)
     st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
     res: StableDiffusionRes = await st.text2video(req)

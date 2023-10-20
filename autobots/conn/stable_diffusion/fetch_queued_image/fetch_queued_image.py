@@ -4,6 +4,7 @@ from typing import List
 import requests
 import json
 
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 from autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus
@@ -42,11 +43,10 @@ async def fetch_queued_image(
 
     response_json = response.json()
     if (response_json["status"] == "failed" or response_json["status"] == "error") and max_retry > 0:
-        time.sleep(sleep_time)
-        return await fetch_queued_image(id, key, max_retry - 1, sleep_time * 1.5)
+        raise HTTPException(503, response_json)
     elif response_json["status"] == StableDiffusionResStatus.processing.value and max_retry > 0:
         time.sleep(sleep_time)
-        return await fetch_queued_image(id, key, max_retry - 1, sleep_time * 1.5)
+        return await fetch_queued_image(id, key, max_retry - 1, sleep_time)
     elif response_json["status"] == StableDiffusionResStatus.success.value:
         res = FetchQueuedImagesResModel.model_validate(response_json)
         return res
