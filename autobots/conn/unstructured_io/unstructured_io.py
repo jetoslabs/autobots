@@ -16,7 +16,8 @@ class PartitionResponseElementMetadata(BaseModel):
     filename: Optional[str]
     filetype: Optional[str]
     page_number: Optional[int]
-    links: Optional[List[Any]]
+    languages: Optional[List[str]] = []
+    links: Optional[List[Any]] = None
 
 
 class PartitionResponseElement(BaseModel):
