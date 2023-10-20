@@ -25,7 +25,7 @@ class OpenAI:
         for i in range(max_retry):
             try:
                 log.trace("Starting OpenAI Chat, try: 1")
-                res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.model_dump(), timeout=60)
+                res: OpenAIObject = await openai.ChatCompletion.acreate(**chat_req.model_dump(), timeout=180)
                 log.trace("Completed OpenAI Chat")
                 resp: ChatRes = ChatRes.model_validate(res)
                 return resp
