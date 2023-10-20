@@ -1,5 +1,4 @@
 import pytest
-import pytest_asyncio
 
 from autobots.action.action_crud import ActionCRUD
 from autobots.action.action_doc_model import ActionDocCreate, ActionDocFind

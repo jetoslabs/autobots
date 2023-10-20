@@ -31,7 +31,7 @@ class OpenAI:
                 return resp
             except Exception as e:
                 log.error(e)
-                time.sleep(60)
+                time.sleep(5)
 
     async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes:
         try:
