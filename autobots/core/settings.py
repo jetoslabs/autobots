@@ -65,6 +65,7 @@ class Settings(BaseSettings):
     API_AUTH_TOKEN: str = "/token"
     API_ACTIONS: str = "/actions"
     API_ACTION_MARKET: str = "/action_market"
+    API_ACTION_RESULTS: str = "/action_results"
     API_ACTION_GRAPHS: str = "/action_graphs"
     API_PROMPTS: str = "/prompts"
     API_DATASTORE: str = "/datastore"
