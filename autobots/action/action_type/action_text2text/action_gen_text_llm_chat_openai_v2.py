@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from autobots.action.action_type.IActionGenText import IActionGenText
 from autobots.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
@@ -9,8 +11,8 @@ from autobots.prompts.user_prompts import TextObj
 class ActionCreateGenTextLlmChatOpenai(ActionCreate):
     type: ActionType = ActionType.gen_text_llm_chat_openai
     config: ChatReq
-    input: TextObj = TextObj()
-    output: TextObj = TextObj()
+    input: Optional[TextObj] = None
+    output: Optional[List[TextObj]] = None
 
 
 class ActionGenTextLlmChatOpenaiV2(IActionGenText):
@@ -19,7 +21,7 @@ class ActionGenTextLlmChatOpenaiV2(IActionGenText):
     def __init__(self, action_data: ChatReq):
         self.chat_req = action_data
 
-    async def run_action(self, action_input: TextObj) -> Message | None:
+    async def run_action(self, action_input: TextObj) -> List[TextObj] | None:
         if action_input and action_input.text != "":
             message = Message(role=Role.user, content=action_input.text)
             self.chat_req.messages = self.chat_req.messages + [message]
@@ -27,7 +29,7 @@ class ActionGenTextLlmChatOpenaiV2(IActionGenText):
         if not chat_res:
             return None
         resp = chat_res.choices[0].message
-        return resp
+        return [TextObj(text=resp)]
 
     async def invoke_action(self, input_str: str) -> Message:
         pass
