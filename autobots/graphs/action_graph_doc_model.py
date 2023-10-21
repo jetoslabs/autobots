@@ -12,7 +12,6 @@ class ActionGraphFind(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
-    graph: Optional[Dict[str, List[str]]] = None
     created_at: Optional[datetime] = None
 
 
@@ -27,7 +26,8 @@ class ActionGraphUpdate(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
-    graph: Optional[Dict[str, List[str]]] = None
+    nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",  examples=[{"node1":"action1", "node2":"action2", "node3":"action3"}])
+    graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes", examples=[{"node1":["node2", "node3"], "node2":["node3"]}])
 
 
 class ActionGraphDocUpdate(ActionGraphUpdate):
@@ -42,7 +42,8 @@ class ActionGraphCreate(BaseModel):
     name: str
     version: float = 0
     description: str = ""
-    graph: Dict[str, List[str]]
+    nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",  examples=[{"node1":"action1", "node2":"action2", "node3":"action3"}])
+    graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes", examples=[{"node1":["node2", "node3"], "node2":["node3"]}])
 
 
 class ActionGraphDocCreate(ActionGraphCreate):

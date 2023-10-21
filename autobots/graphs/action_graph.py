@@ -3,7 +3,6 @@ from typing import Dict, List, Set, Any
 from pymongo.database import Database
 
 from autobots.action.user_actions import UserActions
-from autobots.conn.openai.chat import Message
 from autobots.core.log import log
 from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
@@ -35,7 +34,7 @@ class ActionGraph:
         return inverted_map
 
     @staticmethod
-    async def run(user: UserORM, input: TextObj, graph_map: Dict[str, List[str]], db: Database) -> Dict[str, Any]:
+    async def run(user: UserORM, input: TextObj, node_action_map: Dict[str, str], graph_map: Dict[str, List[str]], db: Database) -> Dict[str, Any]:
         total_nodes = await ActionGraph.get_nodes(graph_map)
         inverted_map = await ActionGraph.invert_map(graph_map)
         action_response: Dict[str, Any] = {}
@@ -47,11 +46,11 @@ class ActionGraph:
                         not await ActionGraph.is_work_done(values, action_response):
                     continue
                 if len(values) == 0:
-                    action_result = await user_actions.run_action(node, input, db)
+                    action_result = await user_actions.run_action(node_action_map.get(node), input, db)
                     action_response[node] = action_result
                 else:
                     action_input = await ActionGraph.to_input(values, action_response)
-                    action_result = await user_actions.run_action(node, action_input, db)
+                    action_result = await user_actions.run_action(node_action_map.get(node), action_input, db)
                     action_response[node] = action_result
 
         return action_response
@@ -67,11 +66,14 @@ class ActionGraph:
     async def to_input(values: List[str], action_response: Dict[str, Any]) -> TextObj:
         input_msg = ""
         for value in values:
-            action_output = action_response.get(value)
-            if isinstance(action_output, Message):
-                message = Message.model_validate(action_output)
-                input_msg = input_msg + message.content
+            action_outputs = action_response.get(value)
+            if isinstance(action_outputs, list):
+                for action_output in action_outputs:
+                    if isinstance(action_output, TextObj):
+                        text_obj = TextObj.model_validate(action_output)
+                        input_msg = f"{input_msg}\n{text_obj.text}"
             else:
                 log.warning("Cannot convert to Input")
 
-        return TextObj(input=input_msg)
+        text_obj = TextObj(text=input_msg)
+        return text_obj

@@ -24,9 +24,9 @@ class NewsRes(BaseModel):
 
 
 class AnswerRes(BaseModel):
-    icon: str
+    icon: Optional[str]
     text: str
-    topic: str
+    topic: Optional[str]
     url: HttpUrl
 
 

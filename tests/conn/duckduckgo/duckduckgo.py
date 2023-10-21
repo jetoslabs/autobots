@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo
+from autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
 
 
 @pytest.mark.asyncio
@@ -23,8 +23,9 @@ async def test_news_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_answer_happy_path(set_test_settings):
-    ans_res = await get_duckduckgo().answer("sun")
+    ans_res: List[AnswerRes] = await get_duckduckgo().answer("cricket")
     assert len(ans_res) > 0
+    assert ans_res[0].text
     assert ans_res[0].url
     assert ans_res[0].title
 
