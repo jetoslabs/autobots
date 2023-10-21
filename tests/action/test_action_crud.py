@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 
 from autobots.action.action_crud import ActionCRUD
@@ -20,8 +22,8 @@ async def test_action_crud_happy_path(set_test_settings):
             name="test_action_crud_happy_path",
             type=ActionType.gen_text_llm_chat_openai,
             config=chat_req.model_dump(),
-            input=TextObj().model_dump(),
-            output=TextObj().model_dump(),
+            # input=None,
+            # output=None,
             user_id=gen_uuid().hex
         )
         inserted = await action_crud.insert_one(action_doc_create)
@@ -35,8 +37,10 @@ async def test_action_crud_happy_path(set_test_settings):
         assert action_doc.type == ActionType.gen_text_llm_chat_openai
         user_input = TextObj(input="Blog on San Francisco")
         action_manager = ActionManager()
-        resp = await action_manager.run_action(action_doc, user_input)
-        assert resp.role == Role.assistant
+        resp: List[TextObj] = await action_manager.run_action(action_doc, user_input)
+        assert len(resp) > 0
+        assert resp[0].text != ""
+
 
         delete_result = await action_crud.delete_many(action_find)
         assert delete_result.deleted_count == 1

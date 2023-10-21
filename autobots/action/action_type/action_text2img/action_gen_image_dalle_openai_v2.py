@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from autobots.action.action_type.IActionGenImage import IActionGenImage
 from autobots.action.action_doc_model import ActionCreate
@@ -11,8 +11,8 @@ from autobots.prompts.user_prompts import TextObj
 class ActionCreateGenImageDalleOpenai(ActionCreate):
     type: ActionType = ActionType.gen_image_dalle_openai
     config: ImageReq
-    input: TextObj = TextObj()
-    output: ImageRes = ImageRes()
+    input: Optional[TextObj] = None
+    output: Optional[List[ImageRes]] = None
 
 
 class ActionGenImageDalleOpenAiV2(IActionGenImage):
