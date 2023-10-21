@@ -82,7 +82,7 @@ class ReasonActObserve():
             log.info(f"{response}")
             return f"{response}"
         except Exception as e:
-            log.error(e)
+            log.exception(e)
 
     async def observe(self, action: str) -> str:
         if "search" in action:

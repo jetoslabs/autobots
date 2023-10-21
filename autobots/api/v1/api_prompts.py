@@ -28,10 +28,10 @@ async def create_prompt(
         output = UserPromptCreateOutput.model_validate(prompt_orm)
         return output
     except IntegrityError as ie:
-        log.error(ie)
+        log.exception(ie)
         raise HTTPException(400, "Name and version is not unique")
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 
 

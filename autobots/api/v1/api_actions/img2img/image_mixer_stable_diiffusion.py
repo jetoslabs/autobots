@@ -31,7 +31,7 @@ async def create_action_image_mixer_stable_diffusion(
         )
         return action_doc
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 
 
@@ -51,6 +51,6 @@ async def run_action_image_mixer_stable_diffusion(
         resp = await image_mixer.run_action(action_input)
         return resp
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 

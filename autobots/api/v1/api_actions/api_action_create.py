@@ -33,7 +33,7 @@ async def create_action_gen_text_llm_chat_openai(
         )
         return action_doc
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 
 
@@ -50,7 +50,7 @@ async def create_action_gen_image_dalle_openai(
         )
         return action_doc
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 
 
@@ -67,7 +67,7 @@ async def create_action_gen_image_stability_ai(
         )
         return action_doc
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 
 
@@ -84,5 +84,5 @@ async def create_action_gen_text_llm_chat_with_vector_search_openai(
         )
         return action_doc
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
