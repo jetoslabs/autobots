@@ -64,5 +64,5 @@ class UserActionGraphs:
         action_docs = await ActionGraphCRUD(db).find(action_graph_doc_find)
         if len(action_docs) != 1:
             raise HTTPException(405, "Action Graph cannot be run")
-        resp = await ActionGraph.run(self.user, input, action_docs[0].graph, db)
+        resp = await ActionGraph.run(self.user, input, action_docs[0].nodes, action_docs[0].graph, db)
         return resp
