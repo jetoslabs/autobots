@@ -8,7 +8,7 @@ from pymongo.database import Database
 from pymongo.results import DeleteResult
 
 from autobots.database.mongo_base import get_mongo_db
-from autobots.graphs.action_graph_doc_model import ActionGraphDoc, ActionGraphDocCreate, ActionGraphDocFind, \
+from autobots.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphDocCreate, ActionGraphDocFind, \
     ActionGraphDocUpdate
 
 
