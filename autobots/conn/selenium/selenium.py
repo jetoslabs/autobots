@@ -3,9 +3,9 @@ from functools import lru_cache
 
 from pydantic import HttpUrl
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
 
 from autobots.core.settings import SettingsProvider, Settings
@@ -15,13 +15,13 @@ class Selenium:
 
     def __init__(self, options: Options = Options()):
         # Do not open browser
-        options.add_argument("--no-sandbox")
-        options.add_argument("--headless=new")
+        # options.add_argument("--no-sandbox")
+        options.add_argument("--headless")
+        options.add_argument("--setDefaultBrowser")
+        options.add_argument("--disable-pinch")
 
         # Expensive operation!! so do it once and close resource at the end
-        # WebDriver Chrome
-        # self.driver = webdriver.Chrome(options=options)
-        self.driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
+        self.driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
 
     async def read_url_text(self, url: HttpUrl, xpath: str = "/html/body") -> str:
         # Target URL

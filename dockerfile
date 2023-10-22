@@ -2,6 +2,7 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.10
 
 RUN apt-get upgrade
 RUN apt-get update
+RUN apt-get install firefox-esr -y
 
 RUN pip install poetry
 
