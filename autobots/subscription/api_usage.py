@@ -1,5 +1,6 @@
-from typing import Optional, Dict
+from typing import Optional
 
+from fastapi import HTTPException
 from pydantic import EmailStr, BaseModel, HttpUrl
 from requests import Request
 
@@ -22,7 +23,7 @@ async def usage_info(request: Request, call_next):
             email=jwt_payload.email,
             url=str(request.url)
         )
-        log.bind(**usage.model_dump()).info("API usage")
+        log.bind(**usage.model_dump()).debug("API usage")
     response = await call_next(request)
     return response
 
@@ -41,6 +42,6 @@ async def get_jwt_payload(request: Request) -> Optional[JwtPayload]:
             jwt_payload = decode_access_token(token)
         return jwt_payload
     except Exception as e:
-        log.exception(f"Error while get_jwt_payload, exception: {e}")
-        raise Exception(e)
+        log.exception(f"Error while get_jwt_payload: {e}")
+        raise HTTPException(401, "Invalid authorization code")
 
