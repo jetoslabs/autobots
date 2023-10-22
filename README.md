@@ -1,4 +1,5 @@
 # Autobots
+![CICD](https://github.com/jetoslabs/autobots/actions/workflows/CICD.yaml/badge.svg?branch=main)
 
 ### Description
 
