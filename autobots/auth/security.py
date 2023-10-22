@@ -35,7 +35,7 @@ def decode_access_token(token: str, audience: str = "authenticated") -> JwtPaylo
         # log.debug(token_payload)
         return token_payload
     except Exception as e:
-        log.error(e)
+        log.exception(e)
 
 
 def supabase_decode_access_token(token: str, audience: str = None) -> gotrue.UserResponse:
@@ -53,7 +53,7 @@ def supabase_decode_access_token(token: str, audience: str = None) -> gotrue.Use
         return user_res
 
     except AuthApiError | Exception as e:
-        log.error(e)
+        log.exception(e)
         raise e
 
 
@@ -69,7 +69,7 @@ def get_user_from_creds(token: str = Depends(oauth2_scheme)) -> gotrue.UserRespo
             raise HTTPException(403, "Could not validate credentials")
         return jwt_payload
     except Exception as e:
-        log.error(e)
+        log.exception(e)
 
 
 api_key_query = APIKeyQuery(name="Authorization", auto_error=False)
@@ -91,7 +91,7 @@ def get_user_from_access_token(
             return supabase_decode_access_token(api_key_cookie.split(" ")[1], audience="authenticated")
 
     except Exception as e:
-        log.error(e)
+        log.exception(e)
 
     raise HTTPException(
         status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"

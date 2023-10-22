@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 
+from autobots.core.log import log
+
 router = APIRouter()
 
 

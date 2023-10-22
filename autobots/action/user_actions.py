@@ -27,7 +27,7 @@ class UserActions:
             action_doc = await ActionCRUD(db).insert_one(action_doc_create)
             return action_doc
         except Exception as e:
-            log.error(e)
+            log.exception(e)
         return None
 
     async def list_actions(
@@ -49,7 +49,7 @@ class UserActions:
                 raise HTTPException(500, "Error in finding action")
             return action_docs[0]
         except Exception as e:
-            log.error(e)
+            log.exception(e)
         return None
 
     async def update_action(

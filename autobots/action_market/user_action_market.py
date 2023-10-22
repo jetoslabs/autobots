@@ -25,7 +25,7 @@ class UserActionMarket:
             action_market_doc = await self.action_market_crud.insert_one(action_market_doc_create)
             return action_market_doc
         except Exception as e:
-            log.error(e)
+            log.exception(e)
         return None
 
     async def list_market_actions(
@@ -45,7 +45,7 @@ class UserActionMarket:
             await UserActionMarket._mask_config_of_action_market_docs(action_market_docs)
             return action_market_docs[0]
         except Exception as e:
-            log.error(e)
+            log.exception(e)
         return None
 
     async def update_market_action(
