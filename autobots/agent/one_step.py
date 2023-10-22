@@ -45,7 +45,7 @@ class OneStepAgent:
 
     async def run(self, agent_data: AgentData, loops_allowed=5):
         agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
-        while not await self.is_goal_completed(agent_data) and not loops_allowed < 1:
+        while not await self.is_goal_completed(agent_data) and loops_allowed >= 1:
             loops_allowed = loops_allowed - 1
             log.debug("OneStepAgent run: " + agent_data.context[-1].model_dump_json())
             plan_str: str = await self.plan_for_goal(agent_data)
