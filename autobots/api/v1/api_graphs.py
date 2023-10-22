@@ -31,7 +31,7 @@
 #         log.error(ie)
 #         raise HTTPException(400, "Name and version is not unique")
 #     except Exception as e:
-#         log.error(e)
+#         log.exception(e)s
 #         raise HTTPException(500)
 #
 #

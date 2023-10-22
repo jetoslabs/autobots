@@ -49,7 +49,7 @@ class UserPrompts:
             prompt_orm: PromptORM = await PromptCRUD.create(prompt, db)
             return prompt_orm
         except IntegrityError as ie:
-            log.error(ie.detail)
+            log.exception(ie)
             raise HTTPException(400, "Name and version is not unique")
 
     async def list(

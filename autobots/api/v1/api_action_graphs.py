@@ -27,7 +27,7 @@ async def create_action_graph(
         resp = await UserActionGraphs(user=user_orm).create(action_graph_create, db)
         return resp
     except Exception as e:
-        log.error(e)
+        log.exception(e)
         raise HTTPException(500)
 
 

@@ -25,7 +25,7 @@ class ChatReq(BaseModel):
     top_p: int = 1
     n: int = 1
     stream: bool = False
-    stop: str | List[str] | None = None
+    stop: str | List[str] | None = "stop"
     max_tokens: int = 2000
     presence_penalty: int = 0
     frequency_penalty: int = 0
