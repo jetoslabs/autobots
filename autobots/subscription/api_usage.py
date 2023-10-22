@@ -1,6 +1,5 @@
 from typing import Optional
 
-from fastapi import HTTPException
 from pydantic import EmailStr, BaseModel, HttpUrl
 from requests import Request
 
@@ -24,8 +23,6 @@ async def usage_info(request: Request, call_next):
             url=str(request.url)
         )
         log.bind(**usage.model_dump()).debug("API usage")
-    else:
-        raise HTTPException(401, "Invalid authorization code")
     response = await call_next(request)
     return response
 
