@@ -93,7 +93,7 @@ class OneStepAgent:
                                "Action:\n"
                                "1. Name: LLMChat, Description: Use Large language model to complete text-based tasks, Usage: LLMChat[llm chat input]\n"
                                "2. Name: ReadUrls, Description: Use this browse information on internet, Usage: ReadUrls[comma seperated list of valid urls]\n"
-                               "Only output value of Usage. So examples of correct output are LLMChat[do this do that]"
+                               "Only output value of Usage. So examples of correct output are LLMChat[do this do that] or ReadUrls[https://url]"
                        )
 
         msg1 = Message(role="user", content=f"My goal: {prompt}")
