@@ -45,7 +45,7 @@ class OneStepAgent:
 
     async def run(self, agent_data: AgentData, loops_allowed=5):
         agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
-        while not await self.is_goal_completed(agent_data) and not loops_allowed < 1:
+        while not await self.is_goal_completed(agent_data) and loops_allowed >= 1:
             loops_allowed = loops_allowed - 1
             log.debug("OneStepAgent run: " + agent_data.context[-1].model_dump_json())
             plan_str: str = await self.plan_for_goal(agent_data)
@@ -93,7 +93,7 @@ class OneStepAgent:
                                "Action:\n"
                                "1. Name: LLMChat, Description: Use Large language model to complete text-based tasks, Usage: LLMChat[llm chat input]\n"
                                "2. Name: ReadUrls, Description: Use this browse information on internet, Usage: ReadUrls[comma seperated list of valid urls]\n"
-                               "Only output value of Usage. So examples of correct output are LLMChat[do this do that]"
+                               "Only output value of Usage. So examples of correct output are LLMChat[do this do that] or ReadUrls[https://url]"
                        )
 
         msg1 = Message(role="user", content=f"My goal: {prompt}")
