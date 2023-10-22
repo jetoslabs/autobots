@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import HTTPException
 from pydantic import EmailStr, BaseModel, HttpUrl
 from requests import Request
+from starlette.responses import JSONResponse
 
 from autobots.auth.data_models import JwtPayload
 from autobots.auth.security import decode_access_token
@@ -24,6 +25,8 @@ async def usage_info(request: Request, call_next):
             url=str(request.url)
         )
         log.bind(**usage.model_dump()).debug("API usage")
+    else:
+        raise HTTPException(401, "Invalid authorization code")
     response = await call_next(request)
     return response
 
@@ -43,5 +46,4 @@ async def get_jwt_payload(request: Request) -> Optional[JwtPayload]:
         return jwt_payload
     except Exception as e:
         log.exception(f"Error while get_jwt_payload: {e}")
-        raise HTTPException(401, "Invalid authorization code")
 
