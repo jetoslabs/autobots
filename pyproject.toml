@@ -36,7 +36,6 @@ aiodns = "^3.1.0"
 jinja2 = "^3.1.2"
 networkx = "^3.1"
 unstructured-client = "^0.8.1"
-chromedriver-autoinstaller = "^0.6.2"
 
 [build-system]
 requires = ["poetry-core"]
