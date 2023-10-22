@@ -3,7 +3,6 @@ from typing import Optional
 from fastapi import HTTPException
 from pydantic import EmailStr, BaseModel, HttpUrl
 from requests import Request
-from starlette.responses import JSONResponse
 
 from autobots.auth.data_models import JwtPayload
 from autobots.auth.security import decode_access_token
