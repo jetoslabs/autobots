@@ -100,6 +100,7 @@ class Datastore:
     #         await self._put_data(data=chunk)
     #         await self._put_embedding(data=chunk)
 
+    # TODO: use SpooledTemporaryFile instead of Uploadfile
     async def put_files(self, files: List[UploadFile], chunk_size: int = 500):
         for file in files:
             log.debug(f"Processing file: {file.filename}")
