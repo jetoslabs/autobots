@@ -7,8 +7,6 @@ from sqlalchemy.orm import Session
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.utils import gen_random_str
 from autobots.database.base import get_db
-from autobots.graphs.to_del.graph_orm_model import GraphORM
-from autobots.graphs.to_del.user_graphs import UserGraphCreateInput, UserGraphs
 from autobots.prompts.prompt_orm_model import PromptORM
 from autobots.prompts.target_platform import LLMTargetPlatform
 from autobots.prompts.user_prompts import UserPrompts, UserPromptCreateInput, TextObj
