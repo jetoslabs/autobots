@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
 from autobots.database.base import get_db
+from autobots.datastore.datastore_meta_orm_model import DatastoreMetaORM
 from autobots.datastore.user_datastore import UserDatastore
 from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
@@ -21,7 +22,7 @@ async def create_datastore(
         name: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-):
+) -> DatastoreMetaORM:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).init(name)
@@ -36,7 +37,7 @@ async def list_datastore(
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-):
+) -> List[DatastoreMetaORM]:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).list(db, limit, offset)
@@ -51,7 +52,7 @@ async def get_datastore(
         name: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-):
+) -> DatastoreMetaORM:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).get(name)
@@ -76,7 +77,7 @@ async def store_text(
         return {"done": "ok"}
     except Exception as e:
         log.exception(e)
-        raise HTTPException(500, "unable to get datastore")
+        raise HTTPException(500, "Error while storing text in datastore")
 
 
 @router.post("/{id}/store_file")
@@ -87,10 +88,15 @@ async def upload_files(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
 ):
-    user = UserORM(id=UUID(user_res.user.id))
-    user_datastore = await UserDatastore(user, db).hydrate(id)
-    await user_datastore.put_files(files, chunk_size=chunk_size)
-    return {"done": "ok"}
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        user_datastore = await UserDatastore(user, db).hydrate(id)
+        await user_datastore.put_files(files, chunk_size=chunk_size)
+        return {"done": "ok"}
+    except Exception as e:
+        log.exception(e)
+        raise HTTPException(500, "Error while storing files in datastore")
+
 
 
 @router.post("/{id}/store_urls")
@@ -108,7 +114,7 @@ async def store_urls(
         return {"done": "ok"}
     except Exception as e:
         log.exception(e)
-        raise HTTPException(500, "unable to get datastore")
+        raise HTTPException(500, "Error while storing URLs in datastore")
 
 
 @router.post("/{id}/search")
@@ -126,7 +132,7 @@ async def search(
         return results
     except Exception as e:
         log.exception(e)
-        raise HTTPException(500, "unable to get datastore")
+        raise HTTPException(500, "Error while search in datastore")
 
 
 @router.delete("/{id}")
@@ -141,4 +147,4 @@ async def delete_datastore(
         return user_datastore_meta
     except Exception as e:
         log.exception(e)
-        raise HTTPException(500, "unable to delete datastore")
+        raise HTTPException(500, "Error while deleting datastore")
