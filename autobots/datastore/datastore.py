@@ -4,12 +4,13 @@ from typing import List, Dict, Callable, AsyncGenerator
 
 from fastapi import UploadFile
 from pinecone import QueryResult
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 from autobots.conn.aws.s3 import S3, get_s3
 from autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
+from autobots.conn.selenium.selenium import get_selenium, Selenium
 from autobots.core.settings import SettingsProvider
-from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
+from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io, UnstructuredIO
 from autobots.core.log import log
 from autobots.core.utils import gen_hash
 from autobots.datastore.data_provider import DataProvider
@@ -27,12 +28,18 @@ class Datastore:
     Each datastore will have unique namespace in pinecone
     """
 
-    def __init__(self, s3: S3 = get_s3(), pinecone: Pinecone = get_pinecone()):
+    def __init__(self,
+                 s3: S3 = get_s3(),
+                 pinecone: Pinecone = get_pinecone(),
+                 unstructured: UnstructuredIO = get_unstructured_io(),
+                 # web_scraper: Selenium = get_selenium()
+                 ):
         self.name = None
         self.trace = None
         self.id = None
         self.s3 = s3
         self.pinecone = pinecone
+        self.unstructured = unstructured
 
     def init(self, name: str):
         self.name = name
@@ -82,23 +89,35 @@ class Datastore:
             await self._put_data(data=chunk)
             await self._put_embedding(data=chunk)
 
-    async def put_file(
-            self,
-            filename: str,
-            chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_file_line_by_line,
-            chunk_token_size: int = 512
-    ):
+    # async def put_file(
+    #         self,
+    #         filename: str,
+    #         chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_file_line_by_line,
+    #         chunk_token_size: int = 512
+    # ):
+    #
+    #     async for chunk in DataProvider.create_file_chunks(filename, chunk_func, chunk_token_size):
+    #         await self._put_data(data=chunk)
+    #         await self._put_embedding(data=chunk)
 
-        async for chunk in DataProvider.create_file_chunks(filename, chunk_func, chunk_token_size):
-            await self._put_data(data=chunk)
-            await self._put_embedding(data=chunk)
-
+    # TODO: use SpooledTemporaryFile instead of Uploadfile
     async def put_files(self, files: List[UploadFile], chunk_size: int = 500):
         for file in files:
             log.debug(f"Processing file: {file.filename}")
-            file_chunks: List[str] = await get_unstructured_io().get_file_chunks(file, chunk_size=chunk_size)
+            file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
             log.debug(f"Sum of chunks in file: {file.filename} is {len(file_chunks)}")
             await self._put_file_chunks(file, file_chunks)
+
+    async def put_urls(self,
+                       urls: List[HttpUrl],
+                       chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
+                       chunk_token_size: int = 512
+                       ):
+        web_scraper: Selenium = get_selenium()
+        for url in urls:
+            log.debug(f"Processing URL: {url}")
+            url_data = await web_scraper.read_url_text(url)
+            await self.put_data(url_data, chunk_func, chunk_token_size)
 
     async def _put_file_chunks(self, file: UploadFile, file_chunks: List[str]):
             loop = 0

@@ -44,6 +44,7 @@ async def test_datastore_happy_path(set_test_settings):
         deleted = await datastore.empty_and_close()
 
 
+@pytest.mark.skip(reason="not using put_file anymore, using put_files now")
 @pytest.mark.asyncio
 async def test_put_file_happy_path(set_test_settings):
     filename = "tests/resources/datastore/google.txt"
