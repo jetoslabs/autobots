@@ -40,7 +40,6 @@ class Datastore:
         self.s3 = s3
         self.pinecone = pinecone
         self.unstructured = unstructured
-        self.web_scraper: Selenium = get_selenium()
 
     def init(self, name: str):
         self.name = name
@@ -113,9 +112,10 @@ class Datastore:
                        chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
                        chunk_token_size: int = 512
                        ):
+        web_scraper: Selenium = get_selenium()
         for url in urls:
             log.debug(f"Processing URL: {url}")
-            url_data = await self.web_scraper.read_url_text(url)
+            url_data = await web_scraper.read_url_text(url)
             await self.put_data(url_data, chunk_func, chunk_token_size)
 
     async def _put_file_chunks(self, file: UploadFile, file_chunks: List[str]):
