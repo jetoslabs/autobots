@@ -9,9 +9,9 @@ from autobots.action.user_actions import UserActions
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.utils import gen_random_str
 from autobots.database.mongo_base import get_mongo_db
-from autobots.graphs.action_graph import ActionGraph
-from autobots.graphs.action_graph_doc_model import ActionGraphCreate
-from autobots.graphs.user_action_graph import UserActionGraphs
+from autobots.action_graph.action_graph import ActionGraph
+from autobots.action_graph.action_graph_doc_model import ActionGraphCreate
+from autobots.action_graph.user_action_graph import UserActionGraphs
 from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
@@ -36,16 +36,24 @@ async def test_user_graph_run_happy_path(set_test_settings):
     action_llm_jingle = await create_action_jingle(user_actions, db, rand)
 
     try:
+        node_map = {
+            "n1": str(action_llm_manager.id),
+            "n2": str(action_llm_persona.id),
+            "n3": str(action_llm_product.id),
+            "n4": str(action_llm_creative.id),
+            "n5": str(action_llm_jingle.id)
+
+        }
         # create action graph
         action_graph = {
-            str(action_llm_manager.id): [str(action_llm_persona.id), str(action_llm_product.id)],
-            str(action_llm_persona.id): [str(action_llm_creative.id), str(action_llm_jingle.id)],
-            str(action_llm_product.id): [str(action_llm_creative.id), str(action_llm_jingle.id)]
+            "n1": ["n2", "n3"],
+            "n2": ["n4", "n5"],
+            "n3": ["n4", "n5"]
         }
 
         # run action graph on fly
         user_input = TextObj(input="Campaign for Nike shoes during Diwali Festival")
-        action_graph_response = await ActionGraph.run(user, user_input, action_graph, db)
+        action_graph_response = await ActionGraph.run(user, user_input, node_map, action_graph, db)
         assert len(action_graph_response) > 1
 
         # save action graph

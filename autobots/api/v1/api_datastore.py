@@ -1,8 +1,9 @@
-from typing import Annotated
+from typing import Annotated, List
 from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from pydantic import HttpUrl
 from sqlalchemy.orm import Session
 
 from autobots.auth.security import get_user_from_access_token
@@ -90,6 +91,24 @@ async def upload_files(
     user_datastore = await UserDatastore(user, db).hydrate(id)
     await user_datastore.put_files(files, chunk_size=chunk_size)
     return {"done": "ok"}
+
+
+@router.post("/{id}/store_urls")
+async def store_urls(
+        id: str,
+        urls: List[HttpUrl],
+        chunk_token_size: int = 512,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Session = Depends(get_db)
+):
+    try:
+        user_orm = UserORM(id=UUID(user_res.user.id))
+        user_datastore = await UserDatastore(user_orm, db).hydrate(id)
+        await user_datastore.put_urls(urls=urls, chunk_token_size=chunk_token_size)
+        return {"done": "ok"}
+    except Exception as e:
+        log.exception(e)
+        raise HTTPException(500, "unable to get datastore")
 
 
 @router.post("/{id}/search")
