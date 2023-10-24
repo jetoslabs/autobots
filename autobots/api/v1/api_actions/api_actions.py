@@ -26,13 +26,13 @@ async def get_action_types(
 
 @router.get("/")
 async def list_actions(
-        id: str = None, name: str = None, version: float = None, type: ActionType = None,
+        id: str = None, name: str = None, version: float = None, type: ActionType = None, is_published: bool = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> List[ActionDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_find = ActionFind(id=id, name=name, version=version, type=type)
+    action_find = ActionFind(id=id, name=name, version=version, type=type, is_published=is_published)
     action_docs = await UserActions(user=user_orm).list_actions(action_find, db, limit, offset)
     return action_docs
 
@@ -80,7 +80,7 @@ async def delete_action(
 @router.post("/{id}/run")
 async def run_action(
         id: str,
-        input: TextObj,
+        input: Dict[str, Any],
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> Any:

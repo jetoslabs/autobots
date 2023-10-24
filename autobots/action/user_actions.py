@@ -9,7 +9,6 @@ from autobots.action.action_doc_model import ActionFind, ActionDocFind, ActionDo
 from autobots.action.action_manager import ActionManager
 from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -39,6 +38,21 @@ class UserActions:
         action_docs = await ActionCRUD(db).find(action_doc_find, limit, offset)
         return action_docs
 
+    async def list_market_actions(
+            self, action_find: ActionFind,
+            db: Database = Depends(get_mongo_db),
+            limit: int = 100, offset: int = 0
+    ) -> List[ActionDoc]:
+        # Market actions will have `is_published = True`
+        action_find.is_published = True
+        action_doc_find = ActionDocFind(**action_find.model_dump())
+        action_docs = await ActionCRUD(db).find(action_doc_find, limit, offset)
+        published_actions = []
+        for action_doc in action_docs:
+            action_doc.config = {}
+            published_actions.append(action_doc)
+        return published_actions
+
     async def get_action(
             self, action_id: str, db: Database = Depends(get_mongo_db)
     ) -> ActionDoc | None:
@@ -67,7 +81,7 @@ class UserActions:
         return delete_result.deleted_count
 
     async def run_action(
-            self, action_id: str, input: TextObj, db: Database = Depends(get_mongo_db)
+            self, action_id: str, input: Any, db: Database = Depends(get_mongo_db)
     ) -> Any:
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await ActionCRUD(db).find(action_doc_find)
@@ -77,6 +91,6 @@ class UserActions:
         return resp
 
     @staticmethod
-    async def test_action(action_doc: ActionDoc, input: TextObj) -> Any:
+    async def test_action(action_doc: ActionDoc, input: Any) -> Any:
         resp = await ActionManager().run_action(action_doc, input)
         return resp
