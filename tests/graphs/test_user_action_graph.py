@@ -5,6 +5,7 @@ from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
+from autobots.action.common_action_models import TextObj
 from autobots.action.user_actions import UserActions
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.utils import gen_random_str
@@ -12,7 +13,6 @@ from autobots.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph import ActionGraph
 from autobots.action_graph.action_graph_doc_model import ActionGraphCreate
 from autobots.action_graph.user_action_graph import UserActionGraphs
-from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -25,7 +25,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
 
     db = next(get_mongo_db())
 
-    user_actions = UserActions(user=user)
+    user_actions = UserActions(user=user, db=db)
     user_action_graph = UserActionGraphs(user=user)
 
     # create actions
@@ -75,11 +75,11 @@ async def test_user_graph_run_happy_path(set_test_settings):
 
     finally:
         # cleanup actions
-        await user_actions.delete_action(action_llm_manager.id, db)
-        await user_actions.delete_action(action_llm_persona.id, db)
-        await user_actions.delete_action(action_llm_product.id, db)
-        await user_actions.delete_action(action_llm_creative.id, db)
-        await user_actions.delete_action(action_llm_jingle.id, db)
+        await user_actions.delete_action(action_llm_manager.id)
+        await user_actions.delete_action(action_llm_persona.id)
+        await user_actions.delete_action(action_llm_product.id)
+        await user_actions.delete_action(action_llm_creative.id)
+        await user_actions.delete_action(action_llm_jingle.id)
 
 
 @pytest.mark.asyncio
@@ -92,7 +92,7 @@ async def create_action_persona(user_actions: UserActions, db: Database, rand: s
         )])
     )
     action_doc = await user_actions.create_action(
-        ActionCreate(**action_create.model_dump()), db
+        ActionCreate(**action_create.model_dump())
     )
     return action_doc
 
@@ -107,7 +107,7 @@ async def create_action_manager(user_actions: UserActions, db: Database, rand: s
         )])
     )
     action_doc = await user_actions.create_action(
-        ActionCreate(**action_create.model_dump()), db
+        ActionCreate(**action_create.model_dump())
     )
     return action_doc
 
@@ -122,7 +122,7 @@ async def create_action_product(user_actions: UserActions, db: Database, rand: s
         )])
     )
     action_doc = await user_actions.create_action(
-        ActionCreate(**action_create.model_dump()), db
+        ActionCreate(**action_create.model_dump())
     )
     return action_doc
 
@@ -137,7 +137,7 @@ async def create_action_creative(user_actions: UserActions, db: Database, rand: 
         )])
     )
     action_doc = await user_actions.create_action(
-        ActionCreate(**action_create.model_dump()), db
+        ActionCreate(**action_create.model_dump())
     )
     return action_doc
 
@@ -152,7 +152,7 @@ async def create_action_jingle(user_actions: UserActions, db: Database, rand: st
         )])
     )
     action_doc = await user_actions.create_action(
-        ActionCreate(**action_create.model_dump()), db
+        ActionCreate(**action_create.model_dump())
     )
     return action_doc
 

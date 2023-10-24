@@ -32,7 +32,7 @@ async def list_actions(
 ) -> List[ActionDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_find = ActionFind(id=id, name=name, version=version, type=type, is_published=is_published)
-    action_docs = await UserActions(user=user_orm).list_actions(action_find, db, limit, offset)
+    action_docs = await UserActions(user=user_orm, db=db).list_actions(action_find, limit, offset)
     return action_docs
 
 
@@ -43,7 +43,7 @@ async def get_action(
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActions(user=user_orm).get_action(id, db)
+    action_doc = await UserActions(user=user_orm, db=db).get_action(id)
     return action_doc
 
 
@@ -55,7 +55,7 @@ async def update_action(
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActions(user=user_orm).update_action(id, action_update, db)
+    action_doc = await UserActions(user=user_orm, db=db).update_action(id, action_update)
     return action_doc
 
 
@@ -66,11 +66,11 @@ async def delete_action(
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    user_actions = UserActions(user=user_orm)
-    action_doc = await user_actions.get_action(id, db)
+    user_actions = UserActions(user=user_orm, db=db)
+    action_doc = await user_actions.get_action(id)
     if action_doc is None:
         raise HTTPException(400, "Action not found")
-    deleted_count = await user_actions.delete_action(id, db)
+    deleted_count = await user_actions.delete_action(id)
     if deleted_count != 1:
         raise HTTPException(500, "Error in deleting action")
     return action_doc
@@ -84,6 +84,6 @@ async def run_action(
         db: Database = Depends(get_mongo_db)
 ) -> Any:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserActions(user=user_orm).run_action(id, input, db)
+    resp = await UserActions(user=user_orm, db=db).run_action(id, input)
     return resp
 

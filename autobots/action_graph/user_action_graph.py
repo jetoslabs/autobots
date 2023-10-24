@@ -3,12 +3,13 @@ from typing import List, Any, Dict
 from fastapi import Depends, HTTPException
 from pymongo.database import Database
 
+from autobots.action.common_action_models import TextObj
 from autobots.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph import ActionGraph
 from autobots.action_graph.action_graph_crud import ActionGraphCRUD
 from autobots.action_graph.action_graph_doc_model import ActionGraphCreate, ActionGraphDoc, ActionGraphDocCreate, \
     ActionGraphFind, ActionGraphDocFind, ActionGraphUpdate, ActionGraphDocUpdate
-from autobots.prompts.user_prompts import TextObj
+
 from autobots.user.user_orm_model import UserORM
 
 
