@@ -5,13 +5,13 @@ from pymongo.database import Database
 
 from autobots.action.action_manager import ActionManager
 from autobots.action.action_type.action_types import ActionType
+from autobots.action.common_action_models import TextObj
 from autobots.chat.chat_crud import ChatCRUD
 from autobots.chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
     ChatUpdate
 from autobots.conn.openai.chat import ChatReq, Role, Message
 from autobots.conn.openai.openai import get_openai
 from autobots.core.log import log
-from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 

@@ -16,6 +16,7 @@ from autobots.action.action_type.action_text2img.action_text2img_stable_diffusio
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion, Text2VideoRunModel
 from autobots.action.action_type.action_types import ActionType
+from autobots.action.common_action_models import TextObj
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
 from autobots.conn.stability.stability_data import StabilityReq
@@ -23,7 +24,6 @@ from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMi
 from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel
 from autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel
 from autobots.core.log import log
-from autobots.prompts.user_prompts import TextObj
 
 
 class ActionManager:

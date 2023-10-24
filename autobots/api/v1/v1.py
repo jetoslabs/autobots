@@ -16,8 +16,6 @@ router.include_router(api_action_graphs.router, prefix=settings.API_ACTION_GRAPH
 router.include_router(api_datastore.router, prefix=settings.API_DATASTORE, tags=["datastore"])
 router.include_router(api_chat.router, prefix=settings.API_CHAT, tags=["chat"])
 router.include_router(api_agents.router, prefix=settings.API_AGENTS, tags=["agents"])
-# router.include_router(api_prompts.router, prefix=get_settings().API_PROMPTS, tags=["prompts"])
-# router.include_router(api_graphs.router, prefix=get_settings().API_GRAPHS, tags=["graphs"])
 
 router_docs = APIRouter(prefix=settings.API_v1)
 router.include_router(api_docs.router, prefix="", tags=["docs"])

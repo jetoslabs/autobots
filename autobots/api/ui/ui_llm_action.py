@@ -5,12 +5,12 @@ from gotrue import UserResponse
 from starlette.templating import Jinja2Templates
 
 from autobots.action.action_doc_model import ActionDoc, ActionCreate, ActionUpdate, ActionFind
+from autobots.action.common_action_models import TextObj
 from autobots.action.user_actions import UserActions
 from autobots.api.ui.ui_most import get_user_from_cookie
 from autobots.conn.openai.chat import ChatReq, Message
 from autobots.core.settings import SettingsProvider
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -67,7 +67,7 @@ async def llm_action_submit(
     try:
         action_doc = await LlmActionUtil.get_action_doc(request, user)
         input = await LlmActionUtil.create_input(request)
-        response = await UserActions.test_action(action_doc, input)
+        response = await UserActions.run_action_doc(action_doc, input)
         message = Message.model_validate(response)
         return message.content
     except Exception as e:

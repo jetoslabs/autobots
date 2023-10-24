@@ -2,9 +2,9 @@ from typing import Dict, List, Set, Any
 
 from pymongo.database import Database
 
+from autobots.action.common_action_models import TextObj
 from autobots.action.user_actions import UserActions
 from autobots.core.log import log
-from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
 
 
@@ -39,14 +39,14 @@ class ActionGraph:
         inverted_map = await ActionGraph.invert_map(graph_map)
         action_response: Dict[str, Any] = {}
 
-        user_actions = UserActions(user)
+        user_actions = UserActions(user, db)
         while len(action_response) != len(total_nodes):
             for node, values in inverted_map.items():
                 if await ActionGraph.is_work_done([node], action_response) or \
                         not await ActionGraph.is_work_done(values, action_response):
                     continue
                 if len(values) == 0:
-                    action_result = await user_actions.run_action(node_action_map.get(node), input, db)
+                    action_result = await user_actions.run_action(node_action_map.get(node), input)
                     action_response[node] = action_result
                 else:
                     action_input = await ActionGraph.to_input(values, action_response)

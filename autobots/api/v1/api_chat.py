@@ -5,12 +5,13 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
+from autobots.action.common_action_models import TextObj
 from autobots.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.chat.chat_doc_model import ChatDoc, ChatFind, ChatUpdate, ChatCreate
 from autobots.chat.user_chat import UserChat
 from autobots.database.mongo_base import get_mongo_db
-from autobots.prompts.user_prompts import TextObj
+
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
