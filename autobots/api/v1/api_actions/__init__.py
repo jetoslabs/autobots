@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from autobots.api.v1.api_actions import api_actions, api_action_create
+from autobots.api.v1.api_actions import api_actions, api_action_create, api_actions_market
 from autobots.api.v1.api_actions.stable_diffusion import fetch_stable_diffusion
 from autobots.api.v1.api_actions.text2img import api_actions_text2img_stable_diffusion
 from autobots.api.v1.api_actions.img2img import image_mixer_stable_diiffusion

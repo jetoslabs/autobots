@@ -1,6 +1,17 @@
+import uuid
+from datetime import datetime
+
+from pydantic import BaseModel
 from sqlalchemy import ForeignKey, Column, UUID, String, DateTime, func
 
 from autobots.database.base import Base
+
+
+class DatastoreMetaModel(BaseModel):
+    id: str
+    name: str
+    user_id: uuid.UUID
+    created_at: datetime
 
 
 class DatastoreMetaORM(Base):

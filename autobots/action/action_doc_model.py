@@ -16,6 +16,7 @@ class ActionFind(BaseModel):
     description: Optional[str] = None
     type: Optional[ActionType] = None
     config: Optional[Dict[str, Any]] = None
+    is_published: Optional[bool] = None
     created_at: Optional[datetime] = None
 
 
@@ -32,6 +33,7 @@ class ActionUpdate(BaseModel):
     description: Optional[str] = None
     user_manual: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
+    is_published: Optional[bool] = None
 
 
 class ActionDocUpdate(ActionUpdate):
@@ -51,6 +53,7 @@ class ActionCreate(BaseModel):
     config: Dict[str, Any]
     input: Optional[Dict[str, Any]] = None
     output: Optional[Dict[str, Any]] = None
+    is_published: bool = False
 
 
 class ActionDocCreate(ActionCreate):

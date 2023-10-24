@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
 from autobots.database.base import get_db
-from autobots.datastore.datastore_meta_orm_model import DatastoreMetaORM
+from autobots.datastore.datastore_meta_orm_model import DatastoreMetaModel
 from autobots.datastore.user_datastore import UserDatastore
 from autobots.prompts.user_prompts import TextObj
 from autobots.user.user_orm_model import UserORM
@@ -22,7 +22,7 @@ async def create_datastore(
         name: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-) -> DatastoreMetaORM:
+) -> DatastoreMetaModel:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).init(name)
@@ -37,7 +37,7 @@ async def list_datastore(
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-) -> List[DatastoreMetaORM]:
+) -> List[DatastoreMetaModel]:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).list(db, limit, offset)
@@ -52,7 +52,7 @@ async def get_datastore(
         name: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-) -> DatastoreMetaORM:
+) -> DatastoreMetaModel:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).get(name)
@@ -124,7 +124,7 @@ async def search(
         top_k: int = 10,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-):
+) -> List[str]:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore = await UserDatastore(user_orm, db).hydrate(id)
@@ -140,7 +140,7 @@ async def delete_datastore(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Session = Depends(get_db)
-):
+) -> DatastoreMetaModel:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore_meta = await UserDatastore(user_orm, db).delete(db, id)
