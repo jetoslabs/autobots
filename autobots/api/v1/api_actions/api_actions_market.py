@@ -23,14 +23,8 @@ async def create_market_action(
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    user_actions = UserActions(user_orm, db)
-    action_doc = await user_actions.get_action(id)
-    # Check if action being published is owned by user
-    if not action_doc or not user_res.user.id == action_doc.user_id:
-        raise HTTPException(403, "User dont own this action")
-    # publish action
-    action_update = ActionUpdate(is_published=True)
-    updated_action = await user_actions.update_action(id, action_update)
+    user_market_actions = UserActionsMarket(user_orm, db)
+    updated_action = await user_market_actions.create_market_action(id)
     return updated_action
 
 
@@ -57,14 +51,11 @@ async def get_market_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
-) -> ActionDoc:
+) -> ActionDoc | None:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions_market = UserActionsMarket(user_orm, db)
-    action_find = ActionFind(
-        id=id, is_published=True
-    )
-    action_docs = await user_actions_market.list_market_actions(action_find, 1, 0)
-    return action_docs[0]
+    action_doc = await user_actions_market.get_market_action(id)
+    return action_doc
 
 
 @router.delete("/{id}/market")
@@ -74,15 +65,9 @@ async def delete_market_action(
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    user_actions = UserActions(user_orm, db)
-    action_doc = await user_actions.get_action(id)
-    # Check if action being unpublished is owned by user
-    if not action_doc or not user_res.user.id == action_doc.user_id:
-        raise HTTPException(403, "User dont own this action")
-    # publish action
-    action_update = ActionUpdate(is_published=False)
-    updated_action = await user_actions.update_action(id, action_update)
-    return updated_action
+    user_actions_market = UserActionsMarket(user_orm, db)
+    action_doc = await user_actions_market.delete_market_action(id)
+    return action_doc
 
 
 @router.post("/{id}/market/run")
