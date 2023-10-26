@@ -3,8 +3,8 @@ from typing import List
 from fastapi import HTTPException
 from pymongo.database import Database
 
-from autobots.action_result.action_result_crud import ActionResultCRUD
-from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, ActionResultFind, \
+from autobots.action.action_result.action_result_crud import ActionResultCRUD
+from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, ActionResultFind, \
     ActionResultUpdate, ActionResultDocUpdate, ActionResultDocCreate, ActionResultCreate
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
