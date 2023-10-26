@@ -6,7 +6,7 @@ from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, \
+from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, \
     ActionResultDocCreate, ActionResultDocUpdate
 from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
