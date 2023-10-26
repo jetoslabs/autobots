@@ -24,7 +24,7 @@ class ActionDocFind(ActionFind):
     """
     Add in user id to enforce multi-tenancy
     """
-    user_id: Optional[str] = None
+    user_id: str
 
 
 class ActionUpdate(BaseModel):
