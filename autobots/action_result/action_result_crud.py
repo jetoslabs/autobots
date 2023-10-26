@@ -1,12 +1,13 @@
 from typing import List
 
 from bson import ObjectId
-from fastapi import Depends
-from pymongo.collection import Collection
+from fastapi import Depends, HTTPException
+from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, ActionResult
+from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, \
+    ActionResultDocCreate, ActionResultDocUpdate
 from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db
 
@@ -16,7 +17,7 @@ class ActionResultCRUD:
     def __init__(self, db: Database = Depends(get_mongo_db)):
         self.document: Collection = db[ActionResultDoc.__collection__]
 
-    async def insert_one(self, action_result: ActionResult) -> ActionResultDoc:
+    async def insert_one(self, action_result: ActionResultDocCreate) -> ActionResultDoc:
         insert_result = self.document.insert_one(action_result.model_dump())
         inserted_action = await self._find_by_object_id(insert_result.inserted_id)
         return inserted_action
@@ -85,28 +86,32 @@ class ActionResultCRUD:
         delete_result = self.document.delete_many(find_params)
         return delete_result
 
-    # async def update_one(self, action_doc_update: ActionDocUpdate) -> ActionDoc:
-    #     update_params = {}
-    #     for key, value in action_doc_update.model_dump().items():
-    #         if value:
-    #             if key == "id":
-    #                 update_params["_id"] = ObjectId(value)
-    #             else:
-    #                 update_params[key] = value
-    #     if not update_params["_id"] and not update_params["user_id"]:
-    #         raise HTTPException(405, "Cannot find action to update")
-    #
-    #     updated_action_doc = self.document.find_one_and_update(
-    #         filter={"_id": update_params.get("_id"), "user_id": action_doc_update.user_id},
-    #         update={"$set": update_params},
-    #         return_document=ReturnDocument.AFTER
-    #     )
-    #     if updated_action_doc is None:
-    #         raise HTTPException(405, "Unable to update action")
-    #
-    #     updated_action_doc["_id"] = str(updated_action_doc.get("_id"))
-    #     action = ActionDoc.model_validate(updated_action_doc)
-    #     return action
+    async def update_one(self, action_result_doc_update: ActionResultDocUpdate) -> ActionResultDoc:
+        update_params = {}
+        for key, value in action_result_doc_update.model_dump().items():
+            if value:
+                if key == "id":
+                    update_params["_id"] = ObjectId(value)
+                elif key.startswith("action_"):
+                    nested_key = key.replace("action_", "action.")
+                    update_params[nested_key] = value
+                else:
+                    update_params[key] = value
+
+        if not update_params["_id"] and not update_params["user_id"]:
+            raise HTTPException(405, "Cannot find action result to update")
+
+        updated_action_result_doc = self.document.find_one_and_update(
+            filter={"_id": update_params.get("_id"), "user_id": action_result_doc_update.user_id},
+            update={"$set": update_params},
+            return_document=ReturnDocument.AFTER
+        )
+        if updated_action_result_doc is None:
+            raise HTTPException(405, "Unable to update action result")
+
+        updated_action_result_doc["_id"] = str(updated_action_result_doc.get("_id"))
+        action = ActionResultDoc.model_validate(updated_action_result_doc)
+        return action
 
     # async def upsert(self, ):
     #     pass
