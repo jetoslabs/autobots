@@ -5,7 +5,7 @@ from pymongo.database import Database
 
 from autobots.action_result.action_result_crud import ActionResultCRUD
 from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, ActionResultFind, \
-    ActionResult
+    ActionResultUpdate, ActionResultDocUpdate, ActionResultDocCreate, ActionResultCreate
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
 
@@ -17,9 +17,10 @@ class UserActionResult:
         self.user_id = str(user.id)
         self.action_result_crud = ActionResultCRUD(db)
 
-    async def create_action_result(self, action_result: ActionResult) -> ActionResultDoc | None:
+    async def create_action_result(self, action_result:  ActionResultCreate) -> ActionResultDoc | None:
         try:
-            action_result_doc = await self.action_result_crud.insert_one(action_result)
+            action_result_doc_create = ActionResultDocCreate(user_id=self.user_id, **action_result.model_dump())
+            action_result_doc = await self.action_result_crud.insert_one(action_result_doc_create)
             return action_result_doc
         except Exception as e:
             log.exception(e)
@@ -29,7 +30,7 @@ class UserActionResult:
             self, action_result_find: ActionResultFind,
             limit: int = 100, offset: int = 0
     ) -> List[ActionResultDoc]:
-        action_result_doc_find = ActionResultDocFind(action_user_id=self.user_id, **action_result_find.model_dump())
+        action_result_doc_find = ActionResultDocFind(user_id=self.user_id, **action_result_find.model_dump())
         action_result_docs = await self.action_result_crud.find(action_result_doc_find, limit, offset)
         return action_result_docs
 
@@ -37,7 +38,7 @@ class UserActionResult:
             self, action_result_id: str
     ) -> ActionResultDoc | None:
         try:
-            action_result_doc_find = ActionResultDocFind(action_id=action_result_id, action_user_id=self.user_id)
+            action_result_doc_find = ActionResultDocFind(id=action_result_id, user_id=self.user_id)
             action_result_docs = await self.action_result_crud.find(action_result_doc_find)
             if len(action_result_docs) != 1:
                 raise HTTPException(500, "Error in finding action_result")
@@ -46,16 +47,16 @@ class UserActionResult:
             log.exception(e)
         return None
 
-    # async def update_action(
-    #         self, action_id: str, action_update: ActionUpdate, db: Database = Depends(get_mongo_db)
-    # ) -> ActionDoc:
-    #     action_doc_update = ActionDocUpdate(id=action_id, user_id=self.user_id, **action_update.model_dump())
-    #     action_doc = await ActionCRUD(db).update_one(action_doc_update)
-    #     return action_doc
+    async def update_action_result(
+            self, action_id: str, action_update: ActionResultUpdate
+    ) -> ActionResultDoc:
+        action_result_doc_update = ActionResultDocUpdate(id=action_id, user_id=self.user_id, **action_update.model_dump())
+        action_result_doc = await self.action_result_crud.update_one(action_result_doc_update)
+        return action_result_doc
 
     async def delete_action_result(
-            self, action_id: str
+            self, id: str
     ) -> int:
-        action_result_doc_find = ActionResultDocFind(action_id=action_id, action_user_id=self.user_id)
+        action_result_doc_find = ActionResultDocFind(id=id, user_id=self.user_id)
         delete_result = await self.action_result_crud.delete_many(action_result_doc_find)
         return delete_result.deleted_count
