@@ -14,7 +14,7 @@ from autobots.auth.security import get_user_from_access_token
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel
 from autobots.core.log import log
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()

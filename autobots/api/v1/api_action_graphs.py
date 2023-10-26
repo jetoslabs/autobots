@@ -8,7 +8,7 @@ from pymongo.database import Database
 from autobots.action.action.common_action_models import TextObj
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, ActionGraphFind, ActionGraphUpdate
 from autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
 

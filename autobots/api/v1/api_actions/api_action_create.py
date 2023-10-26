@@ -14,7 +14,7 @@ from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_with_
 from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()

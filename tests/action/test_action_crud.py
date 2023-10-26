@@ -9,7 +9,7 @@ from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import ChatReq, Role, Message
 from autobots.core.utils import gen_uuid
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 
 
 @pytest.mark.asyncio

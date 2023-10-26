@@ -7,7 +7,7 @@ from pymongo.database import Database
 from pymongo.results import DeleteResult
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionDocCreate, ActionDocFind, ActionDocUpdate
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 
 
 class ActionCRUD:

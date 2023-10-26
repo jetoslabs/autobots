@@ -9,7 +9,7 @@ from autobots.action.action.action_doc_model import ActionDoc, ActionFind
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.auth.security import get_user_from_access_token
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
