@@ -4,14 +4,14 @@ import gotrue
 from fastapi import Depends, HTTPException, APIRouter
 from pymongo.database import Database
 
-from autobots.action.action_doc_model import ActionDoc, ActionCreate
+from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_text2img.action_gen_image_dalle_openai_v2 import ActionCreateGenImageDalleOpenai
 from autobots.action.action_type.action_text2img.action_gen_image_stability_ai_v2 import ActionCreateGenImageStabilityAi
 from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_openai_v2 import \
     ActionCreateGenTextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_with_vector_search_openai import \
     ActionCreateGenTextLlmChatWithVectorSearchOpenai
-from autobots.action.user_actions import UserActions
+from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
 from autobots.database.mongo_base import get_mongo_db

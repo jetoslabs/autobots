@@ -5,7 +5,7 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
-from autobots.action.action_doc_model import ActionDoc
+from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultFind, ActionResult
 from autobots.action.action_result.user_action_result import UserActionResult

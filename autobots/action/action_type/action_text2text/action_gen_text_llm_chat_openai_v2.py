@@ -3,9 +3,9 @@ from typing import Optional, List
 from pydantic import ValidationError
 
 from autobots.action.action_type.IActionGenText import IActionGenText
-from autobots.action.action_doc_model import ActionCreate
+from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import Message, ChatReq, Role
 from autobots.conn.openai.openai import get_openai
 from autobots.core.log import log

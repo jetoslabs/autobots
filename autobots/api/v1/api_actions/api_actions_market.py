@@ -2,12 +2,11 @@ from typing import List, Any, Dict
 from uuid import UUID
 
 import gotrue
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pymongo.database import Database
 
-from autobots.action.action_doc_model import ActionUpdate, ActionDoc, ActionFind
+from autobots.action.action.action_doc_model import ActionDoc, ActionFind
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.user_actions import UserActions
 from autobots.action.user_actions_market import UserActionsMarket
 from autobots.auth.security import get_user_from_access_token
 from autobots.database.mongo_base import get_mongo_db

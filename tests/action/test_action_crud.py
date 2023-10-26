@@ -2,11 +2,11 @@ from typing import List
 
 import pytest
 
-from autobots.action.action_crud import ActionCRUD
-from autobots.action.action_doc_model import ActionDocCreate, ActionDocFind
-from autobots.action.action_manager import ActionManager
+from autobots.action.action.action_crud import ActionCRUD
+from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
+from autobots.action.action.action_manager import ActionManager
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import ChatReq, Role, Message
 from autobots.core.utils import gen_uuid
 from autobots.database.mongo_base import get_mongo_db

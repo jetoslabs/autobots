@@ -3,9 +3,9 @@ from typing import List, Dict, Any
 from fastapi import HTTPException
 from pymongo.database import Database
 
-from autobots.action.action_crud import ActionCRUD
-from autobots.action.action_doc_model import ActionFind, ActionDoc, ActionDocFind, ActionUpdate
-from autobots.action.user_actions import UserActions
+from autobots.action.action.action_crud import ActionCRUD
+from autobots.action.action.action_doc_model import ActionFind, ActionDoc, ActionDocFind, ActionUpdate
+from autobots.action.action.user_actions import UserActions
 from autobots.user.user_orm_model import UserORM
 
 

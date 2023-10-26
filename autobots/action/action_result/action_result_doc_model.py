@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import Field, BaseModel
 
-from autobots.action.action_doc_model import ActionDoc
+from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action_type.action_types import ActionType
 
 

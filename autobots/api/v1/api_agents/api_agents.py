@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 
-from autobots.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj
 from autobots.agent.one_step import OneStepAgent, AgentData
 from autobots.agent.reason_act_observe import ReasonActObserve
 from autobots.conn.openai.chat import Message

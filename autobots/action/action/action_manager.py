@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import HTTPException
 
-from autobots.action.action_doc_model import ActionDoc
+from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action_type.action_text2img.action_gen_image_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from autobots.action.action_type.action_text2img.action_gen_image_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
@@ -16,7 +16,7 @@ from autobots.action.action_type.action_text2img.action_text2img_stable_diffusio
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion, Text2VideoRunModel
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
 from autobots.conn.stability.stability_data import StabilityReq
