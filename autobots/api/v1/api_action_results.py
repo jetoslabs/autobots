@@ -7,7 +7,7 @@ from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultFind, ActionResult
+from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultFind, ActionResultCreate
 from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.database.mongo_base import get_mongo_db
@@ -23,7 +23,7 @@ async def create_action_result(
         db: Database = Depends(get_mongo_db)
 ) -> ActionResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_result = ActionResult(action=action_doc)
+    action_result = ActionResultCreate(action=action_doc)
     action_result_doc = await UserActionResult(user_orm, db).create_action_result(action_result)
     return action_result_doc
 
