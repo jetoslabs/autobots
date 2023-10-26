@@ -24,7 +24,7 @@ async def create_chat(
         db: Database = Depends(get_mongo_db)
 ) -> ChatDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActions(user=user_orm).get_action(action_id, db)
+    action_doc = await UserActions(user=user_orm, db=db).get_action(action_id)
     chat_create = ChatCreate(action=action_doc, messages=[])
     chat_doc = await UserChat(user=user_orm, db=db).create_chat(chat_create)
     return chat_doc
