@@ -5,8 +5,8 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
-from autobots.action.common_action_models import TextObj
-from autobots.action.user_actions import UserActions
+from autobots.action.action.common_action_models import TextObj
+from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.chat.chat_doc_model import ChatDoc, ChatFind, ChatUpdate, ChatCreate
 from autobots.chat.user_chat import UserChat

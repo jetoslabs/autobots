@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from autobots.action.action_doc_model import ActionDoc
+from autobots.action.action.action_doc_model import ActionDoc
 from autobots.conn.openai.chat import Message
 
 

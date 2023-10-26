@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import HttpUrl
 from sqlalchemy.orm import Session
 
-from autobots.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
 from autobots.database.base import get_db

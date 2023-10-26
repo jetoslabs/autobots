@@ -3,9 +3,9 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from autobots.action.action_type.IActionVectorSearch import IActionVectorSearch
-from autobots.action.action_doc_model import ActionCreate
+from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import Message, ChatReq, Role
 from autobots.conn.openai.openai import get_openai
 from autobots.datastore.datastore import Datastore

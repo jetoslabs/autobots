@@ -2,8 +2,8 @@ from typing import Dict, List, Set, Any
 
 from pymongo.database import Database
 
-from autobots.action.common_action_models import TextObj
-from autobots.action.user_actions import UserActions
+from autobots.action.action.common_action_models import TextObj
+from autobots.action.action.user_actions import UserActions
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
 

@@ -4,10 +4,10 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
-from autobots.action.action_doc_model import ActionDoc, ActionCreate
+from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionCreateImageMixerStableDiffusion, ActionImageMixerStableDiffusion, ImageMixerRunModel
-from autobots.action.user_actions import UserActions
+from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
