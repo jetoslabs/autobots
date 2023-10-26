@@ -11,8 +11,8 @@ from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.utils import gen_random_str
 from autobots.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph import ActionGraph
-from autobots.action_graph.action_graph_doc_model import ActionGraphCreate
-from autobots.action_graph.user_action_graph import UserActionGraphs
+from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate
+from autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
 from autobots.user.user_orm_model import UserORM
 
 
