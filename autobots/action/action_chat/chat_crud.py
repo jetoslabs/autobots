@@ -6,7 +6,7 @@ from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from autobots.chat.chat_doc_model import ChatDoc, ChatDocCreate, ChatDocFind, ChatDocUpdate
+from autobots.action.action_chat.chat_doc_model import ChatDoc, ChatDocCreate, ChatDocFind, ChatDocUpdate
 from autobots.conn.openai.chat import Message
 from autobots.core.database.mongo_base import get_mongo_db
 

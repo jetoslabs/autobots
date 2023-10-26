@@ -6,8 +6,8 @@ from pymongo.database import Database
 from autobots.action.action.action_manager import ActionManager
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
-from autobots.chat.chat_crud import ChatCRUD
-from autobots.chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
+from autobots.action.action_chat.chat_crud import ChatCRUD
+from autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
     ChatUpdate
 from autobots.conn.openai.chat import ChatReq, Role, Message
 from autobots.conn.openai.openai import get_openai
