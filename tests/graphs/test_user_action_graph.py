@@ -9,7 +9,7 @@ from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.utils import gen_random_str
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph import ActionGraph
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate
 from autobots.action_graph.action_graph.user_action_graph import UserActionGraphs

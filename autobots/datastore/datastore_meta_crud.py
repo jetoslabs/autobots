@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy import UUID
 from sqlalchemy.orm.session import Session
 
-from autobots.database.base import get_db, SessionLocal
+from autobots.core.database.base import get_db
 from autobots.datastore.datastore_meta_orm_model import DatastoreMetaORM
 
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy import ForeignKey, Column, UUID, String, DateTime, func
 
-from autobots.database.base import Base
+from autobots.core.database.base import Base
 
 
 class DatastoreMetaModel(BaseModel):

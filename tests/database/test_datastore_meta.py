@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from autobots.database.base import SessionLocal
+from autobots.core.database.base import SessionLocal
 from autobots.datastore.datastore_meta_orm_model import DatastoreMetaORM
 
 

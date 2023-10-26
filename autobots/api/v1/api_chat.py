@@ -10,7 +10,7 @@ from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
 from autobots.action.action_chat.chat_doc_model import ChatDoc, ChatFind, ChatUpdate, ChatCreate
 from autobots.action.action_chat.user_chat import UserChat
-from autobots.database.mongo_base import get_mongo_db
+from autobots.core.database.mongo_base import get_mongo_db
 
 from autobots.user.user_orm_model import UserORM
 
