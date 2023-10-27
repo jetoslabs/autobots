@@ -5,7 +5,7 @@ from pymongo.database import Database
 
 from autobots.action_result.action_result_crud import ActionResultCRUD
 from autobots.action_result.action_result_doc_model import ActionResultDoc, ActionResultDocFind, ActionResultFind, \
-    ActionResult
+    ActionResult, ActionResultDocUpdate
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
 
@@ -37,7 +37,7 @@ class UserActionResult:
             self, action_result_id: str
     ) -> ActionResultDoc | None:
         try:
-            action_result_doc_find = ActionResultDocFind(action_id=action_result_id, action_user_id=self.user_id)
+            action_result_doc_find = ActionResultDocFind(id=action_result_id, action_user_id=self.user_id)
             action_result_docs = await self.action_result_crud.find(action_result_doc_find)
             if len(action_result_docs) != 1:
                 raise HTTPException(500, "Error in finding action_result")
@@ -46,12 +46,12 @@ class UserActionResult:
             log.exception(e)
         return None
 
-    # async def update_action(
-    #         self, action_id: str, action_update: ActionUpdate, db: Database = Depends(get_mongo_db)
-    # ) -> ActionDoc:
-    #     action_doc_update = ActionDocUpdate(id=action_id, user_id=self.user_id, **action_update.model_dump())
-    #     action_doc = await ActionCRUD(db).update_one(action_doc_update)
-    #     return action_doc
+    async def update_action_result(
+            self, action_id: str, action_update: ActionResult
+    ) -> ActionResultDoc:
+        action_doc_update = ActionResultDocUpdate(id=action_id, user_id=self.user_id, **action_update.model_dump())
+        action_doc = await self.action_result_crud.update_one(action_doc_update)
+        return action_doc
 
     async def delete_action_result(
             self, action_id: str

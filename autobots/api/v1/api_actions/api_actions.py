@@ -2,13 +2,15 @@ from typing import List, Any
 from uuid import UUID
 
 import gotrue
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate
 from autobots.action.action_manager import ActionManager
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.user_actions import UserActions
+from autobots.action_result.action_result_doc_model import ActionResult
+from autobots.action_result.user_action_result import UserActionResult
 from autobots.auth.security import get_user_from_access_token
 from autobots.database.mongo_base import get_mongo_db
 from autobots.prompts.user_prompts import TextObj
@@ -87,4 +89,25 @@ async def run_action(
     user_orm = UserORM(id=UUID(user_res.user.id))
     resp = await UserActions(user=user_orm).run_action(id, input, db)
     return resp
+
+
+@router.post("/{id}/async/run")
+async def run_action(
+        id: str,
+        input: TextObj,
+        background_tasks: BackgroundTasks,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> Any:
+    user_orm = UserORM(id=UUID(user_res.user.id))
+    user_action = UserActions(user=user_orm)
+    action_doc = await user_action.get_action(id, db)
+
+    user_action_result = UserActionResult(user_orm, db)
+    action_doc.input = input
+    action_result = ActionResult(action=action_doc)
+    action_result_doc = await user_action_result.create_action_result(action_result)
+
+    background_tasks.add_task(user_action.run_action_in_background, id, input, user_action_result, action_result_doc, db)
+    return action_result_doc.id
 
