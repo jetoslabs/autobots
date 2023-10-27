@@ -1,6 +1,8 @@
 from typing import List, Any
 
+import requests
 from fastapi import Depends, HTTPException
+from pydantic import HttpUrl
 from pymongo.database import Database
 
 from autobots.action.action_crud import ActionCRUD
@@ -84,7 +86,8 @@ class UserActions:
             input: TextObj,
             user_action_result: UserActionResult,
             action_result_doc: ActionResultDoc,
-            db: Database = Depends(get_mongo_db)
+            db: Database = Depends(get_mongo_db),
+            webhook: HttpUrl = None,
     ) -> None:
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await ActionCRUD(db).find(action_doc_find)
@@ -97,6 +100,10 @@ class UserActions:
         action_result_update = ActionResult(action=action_result_doc.action)
         action_result_doc = await user_action_result.update_action_result(action_result_doc.id, action_result_update)
         log.info(action_result_doc)
+        if webhook:
+            with requests.Session() as session:
+                session.post(url=webhook, json=action_result_doc.model_dump_json())
+
 
     @staticmethod
     async def test_action(action_doc: ActionDoc, input: TextObj) -> Any:

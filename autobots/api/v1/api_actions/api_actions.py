@@ -3,6 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from pydantic import HttpUrl
 from pymongo.database import Database
 
 from autobots.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate
@@ -91,7 +92,7 @@ async def run_action(
     return resp
 
 
-@router.post("/{id}/async/run")
+@router.post("/{id}/run/async")
 async def run_action(
         id: str,
         input: TextObj,
@@ -108,6 +109,27 @@ async def run_action(
     action_result = ActionResult(action=action_doc)
     action_result_doc = await user_action_result.create_action_result(action_result)
 
-    background_tasks.add_task(user_action.run_action_in_background, id, input, user_action_result, action_result_doc, db)
+    background_tasks.add_task(user_action.run_action_in_background, id, input, user_action_result, action_result_doc, db, None)
     return action_result_doc.id
 
+
+@router.post("/{id}/run/webhook")
+async def run_action(
+        id: str,
+        input: TextObj,
+        background_tasks: BackgroundTasks,
+        webhook: HttpUrl = None,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> Any:
+    user_orm = UserORM(id=UUID(user_res.user.id))
+    user_action = UserActions(user=user_orm)
+    action_doc = await user_action.get_action(id, db)
+
+    user_action_result = UserActionResult(user_orm, db)
+    action_doc.input = input
+    action_result = ActionResult(action=action_doc)
+    action_result_doc = await user_action_result.create_action_result(action_result)
+
+    background_tasks.add_task(user_action.run_action_in_background, id, input, user_action_result, action_result_doc, db, webhook)
+    return action_result_doc.id
