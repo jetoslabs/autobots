@@ -30,6 +30,10 @@ class ActionResult(BaseModel):
     action: ActionDoc
 
 
+class ActionResultDocUpdate(ActionResult):
+    id: str
+
+
 class ActionResultDoc(ActionResult):
     __collection__ = "ActionResults"
 

@@ -50,7 +50,7 @@ class ActionCreate(BaseModel):
     type: ActionType
     config: Dict[str, Any]
     input: Optional[Dict[str, Any]] = None
-    output: Optional[Dict[str, Any]] = None
+    output: Optional[Any] = None
 
 
 class ActionDocCreate(ActionCreate):
