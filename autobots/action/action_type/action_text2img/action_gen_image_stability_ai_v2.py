@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from autobots.action.action_type.IActionGenImage import IActionGenImage
+from autobots.action.action_type.abc.IActionGenImage import IActionGenImage
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj

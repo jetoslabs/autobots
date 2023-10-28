@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from autobots.action.action.action_doc_model import ActionCreate
-from autobots.action.action_type.IActionGenImage import IActionGenImage
+from autobots.action.action_type.abc.IActionGenImage import IActionGenImage
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
