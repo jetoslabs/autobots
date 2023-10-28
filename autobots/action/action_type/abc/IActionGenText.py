@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Any
 
-from autobots.action.IAction import IAction
+from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import Message
 

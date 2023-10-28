@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from pydantic import ValidationError
 
-from autobots.action.action_type.IActionGenText import IActionGenText
+from autobots.action.action_type.abc.IActionGenText import IActionGenText
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from autobots.action.action_type.IActionVectorSearch import IActionVectorSearch
+from autobots.action.action_type.abc.IActionVectorSearch import IActionVectorSearch
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
