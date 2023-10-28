@@ -23,8 +23,8 @@ class UserActionResult:
             action_result_doc = await self.action_result_crud.insert_one(action_result_doc_create)
             return action_result_doc
         except Exception as e:
-            log.exception(e)
-        return None
+            log.error(e)
+            raise e
 
     async def list_action_result(
             self, action_result_find: ActionResultFind,
@@ -48,11 +48,15 @@ class UserActionResult:
         return None
 
     async def update_action_result(
-            self, action_id: str, action_update: ActionResultUpdate
+            self, action_result_id: str, action_update: ActionResultUpdate
     ) -> ActionResultDoc:
-        action_result_doc_update = ActionResultDocUpdate(id=action_id, user_id=self.user_id, **action_update.model_dump())
-        action_result_doc = await self.action_result_crud.update_one(action_result_doc_update)
-        return action_result_doc
+        try:
+            action_result_doc_update = ActionResultDocUpdate(id=action_result_id, user_id=self.user_id, **action_update.model_dump())
+            action_result_doc = await self.action_result_crud.update_one(action_result_doc_update)
+            return action_result_doc
+        except Exception as e:
+            log.error(e)
+            raise e
 
     async def delete_action_result(
             self, id: str
