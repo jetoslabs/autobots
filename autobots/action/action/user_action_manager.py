@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Any
+from typing import Any, Dict
 
 from fastapi import HTTPException
 
@@ -26,7 +26,7 @@ from autobots.conn.stable_diffusion.text2video.text2video_model import Text2Vide
 from autobots.core.log import log
 
 
-class ActionManager:
+class UserActionManager:
 
     def __init__(self):
         pass
@@ -40,7 +40,7 @@ class ActionManager:
     async def run_action(
             self,
             action: ActionDoc,
-            action_input: TextObj | Text2ImgRunModel | ImageMixerRunModel | Text2VideoRunModel
+            action_input: Dict[str, Any] | TextObj | Text2ImgRunModel | ImageMixerRunModel | Text2VideoRunModel
     ) -> Any:
         match action.type:
             case ActionType.gen_text_llm_chat_openai:
