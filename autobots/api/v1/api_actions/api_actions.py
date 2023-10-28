@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate
-from autobots.action.action.action_manager import ActionManager
+from autobots.action.action.user_action_manager import UserActionManager
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
@@ -20,7 +20,7 @@ router = APIRouter()
 async def get_action_types(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token)
 ) -> List[str]:
-    return ActionManager.get_action_types()
+    return UserActionManager.get_action_types()
 
 
 @router.get("/")

@@ -4,7 +4,7 @@ import pytest
 
 from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
-from autobots.action.action.action_manager import ActionManager
+from autobots.action.action.user_action_manager import UserActionManager
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.chat import ChatReq, Role, Message
@@ -37,7 +37,7 @@ async def test_action_crud_happy_path(set_test_settings):
 
         assert action_doc.type == ActionType.gen_text_llm_chat_openai
         user_input = TextObj(input="Blog on San Francisco")
-        action_manager = ActionManager()
+        action_manager = UserActionManager()
         resp: List[TextObj] = await action_manager.run_action(action_doc, user_input)
         assert len(resp) > 0
         assert resp[0].text != ""

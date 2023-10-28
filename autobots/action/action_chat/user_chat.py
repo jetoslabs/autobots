@@ -3,7 +3,7 @@ from typing import List
 from fastapi import HTTPException
 from pymongo.database import Database
 
-from autobots.action.action.action_manager import ActionManager
+from autobots.action.action.user_action_manager import UserActionManager
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_chat.chat_crud import ChatCRUD
@@ -75,7 +75,7 @@ class UserChat():
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
 
-        resp_message = await ActionManager().run_action(chat_doc.action, input)
+        resp_message = await UserActionManager().run_action(chat_doc.action, input)
         chat_doc.messages = (chat_doc.messages +
                              [Message(role=Role.user, content=input.text), resp_message])
         if chat_doc.title == UserChat.DEFAULT_TITLE:
