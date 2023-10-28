@@ -17,7 +17,7 @@ class ActionCreateGenTextLlmChatOpenai(ActionCreate):
     input: Optional[TextObj] = None
     output: Optional[List[TextObj]] = None
 
-
+#TODO: change output from List to Obj
 class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, List[TextObj]]):
     type = ActionType.gen_text_llm_chat_openai
 
