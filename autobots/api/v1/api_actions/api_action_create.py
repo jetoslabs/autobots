@@ -5,11 +5,11 @@ from fastapi import Depends, HTTPException, APIRouter
 from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
-from autobots.action.action_type.action_text2img.action_gen_image_dalle_openai_v2 import ActionCreateGenImageDalleOpenai
-from autobots.action.action_type.action_text2img.action_gen_image_stability_ai_v2 import ActionCreateGenImageStabilityAi
-from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_openai_v2 import \
+from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionCreateGenImageDalleOpenai
+from autobots.action.action_type.action_text2img.action_txt2img_stability_ai_v2 import ActionCreateGenImageStabilityAi
+from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionCreateGenTextLlmChatOpenai
-from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_with_vector_search_openai import \
+from autobots.action.action_type.action_text2text.action_text2text_RAG import \
     ActionCreateGenTextLlmChatWithVectorSearchOpenai
 from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
@@ -28,8 +28,8 @@ async def create_action_gen_text_llm_chat_openai(
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action_doc = await UserActions(user_orm).create_action(
-            ActionCreate(**action_create.model_dump()), db
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
         )
         return action_doc
     except Exception as e:
@@ -45,8 +45,8 @@ async def create_action_gen_image_dalle_openai(
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action_doc = await UserActions(user_orm).create_action(
-            ActionCreate(**action_create.model_dump()), db
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
         )
         return action_doc
     except Exception as e:
@@ -62,8 +62,8 @@ async def create_action_gen_image_stability_ai(
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action_doc = await UserActions(user_orm).create_action(
-            ActionCreate(**action_create.model_dump()), db
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
         )
         return action_doc
     except Exception as e:
@@ -79,8 +79,8 @@ async def create_action_gen_text_llm_chat_with_vector_search_openai(
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action_doc = await UserActions(user_orm).create_action(
-            ActionCreate(**action_create.model_dump()), db
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
         )
         return action_doc
     except Exception as e:
