@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from autobots.action.action.action_doc_model import ActionCreate
-from autobots.action.action_type.abc.IActionGenImage import IActionGenImage
+from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
@@ -31,11 +31,11 @@ class ActionCreateText2ImgStableDiffusion(ActionCreate):
     output: Optional[StableDiffusionRes] = None
 
 
-class ActionText2ImgStableDiffusion(IActionGenImage):
+class ActionText2ImgStableDiffusion(IAction[Text2ImgReqModel, Text2ImgRunModel, StableDiffusionRes]):
     type = ActionType.text2img_stable_diffusion
 
-    def __init__(self, action_data: Text2ImgReqModel):
-        self.config = action_data
+    def __init__(self, action_config: Text2ImgReqModel):
+        self.config = action_config
 
     async def run_action(self, action_input: Text2ImgRunModel) -> StableDiffusionRes:
         if action_input.prompt: self.config.prompt = f"{self.config.prompt}\n{action_input.prompt}"
