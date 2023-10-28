@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from autobots.action.action_type.abc.IActionVectorSearch import IActionVectorSearch
+from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
@@ -23,15 +23,15 @@ class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
     config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
 
 
-class ActionGenTextLlmChatWithVectorSearchOpenai(IActionVectorSearch):
+class ActionGenTextLlmChatWithVectorSearchOpenai(IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenai, TextObj, List[TextObj]]):
     """
     Vector search and add it to chat prompt as context
     """
     type = ActionType.gen_text_llm_chat_with_vector_search_openai
 
-    def __init__(self, action_data: ActionCreateGenTextLlmChatWithVectorSearchOpenai):
-        self.action_data = action_data
-        self.datastore = Datastore().hydrate(datastore_id=action_data.config.datastore_id)
+    def __init__(self, action_config: ActionCreateGenTextLlmChatWithVectorSearchOpenai):
+        self.action_data = action_config
+        self.datastore = Datastore().hydrate(datastore_id=action_config.config.datastore_id)
 
     async def run_action(self, action_input: TextObj) -> List[TextObj] | None:
         # vector search

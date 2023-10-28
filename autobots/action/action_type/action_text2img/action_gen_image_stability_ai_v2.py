@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-from autobots.action.action_type.abc.IActionGenImage import IActionGenImage
 from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.image_model import ImageRes
@@ -15,11 +15,12 @@ class ActionCreateGenImageStabilityAi(ActionCreate):
     output: Optional[List[ImageRes]] = None
 
 
-class ActionGenImageStabilityAiV2(IActionGenImage):
+#TODO: change output from List to Obj
+class ActionGenImageStabilityAiV2(IAction[StabilityReq, TextObj, List[ImageRes]]):
     type = ActionType.gen_image_stability_ai
 
-    def __init__(self, action_data: StabilityReq):
-        self.stability_req = action_data
+    def __init__(self, action_config: StabilityReq):
+        self.stability_req = action_config
 
     async def run_action(self, action_input: TextObj) -> List[ImageRes]:
         self.stability_req.prompt = f"{self.stability_req.prompt}\n{action_input.text}"

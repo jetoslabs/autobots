@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action_type.abc.IActionGenImage import IActionGenImage
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -26,7 +27,7 @@ class ActionCreateText2VideoStableDiffusion(ActionCreate):
     output: Optional[StableDiffusionRes] = None
 
 
-class ActionText2VideoStableDiffusion(IActionGenImage):
+class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunModel, StableDiffusionRes]):
     type = ActionType.text2video_stable_diffusion
 
     def __init__(self, action_config: Text2VideoReqModel):

@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from pydantic import ValidationError
 
-from autobots.action.action_type.abc.IActionGenText import IActionGenText
+from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
@@ -18,11 +18,11 @@ class ActionCreateGenTextLlmChatOpenai(ActionCreate):
     output: Optional[List[TextObj]] = None
 
 
-class ActionGenTextLlmChatOpenaiV2(IActionGenText):
+class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, List[TextObj]]):
     type = ActionType.gen_text_llm_chat_openai
 
-    def __init__(self, action_data: ChatReq):
-        self.chat_req = action_data
+    def __init__(self, action_config: ChatReq):
+        self.chat_req = action_config
 
     async def run_action(self, action_input: TextObj) -> List[TextObj] | None:
         try:
