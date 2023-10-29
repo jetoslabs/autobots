@@ -21,7 +21,7 @@ async def test_action_crud_happy_path(set_test_settings):
         chat_req = ChatReq(messages=[Message(role=Role.user, content="You are an expert blogger")])
         action_doc_create = ActionDocCreate(
             name="test_action_crud_happy_path",
-            type=ActionType.gen_text_llm_chat_openai,
+            type=ActionType.text2text_llm_chat_openai,
             config=chat_req.model_dump(),
             # input=None,
             # output=None,
@@ -35,7 +35,7 @@ async def test_action_crud_happy_path(set_test_settings):
         assert len(action_docs) == 1
         action_doc = action_docs.pop()
 
-        assert action_doc.type == ActionType.gen_text_llm_chat_openai
+        assert action_doc.type == ActionType.text2text_llm_chat_openai
         user_input = TextObj(input="Blog on San Francisco")
         action_manager = UserActionManager()
         resp: List[TextObj] = await action_manager.run_action(action_doc, user_input)
