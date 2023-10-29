@@ -6,7 +6,7 @@ from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionCreateGenImageDalleOpenai
-from autobots.action.action_type.action_text2img.action_txt2img_stability_ai_v2 import ActionCreateGenImageStabilityAi
+from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionCreateGenImageStabilityAi
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionCreateGenTextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
