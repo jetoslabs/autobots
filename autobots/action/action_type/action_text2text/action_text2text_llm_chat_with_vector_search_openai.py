@@ -22,8 +22,10 @@ class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
     type: ActionType = ActionType.gen_text_llm_chat_with_vector_search_openai
     config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
 
-#TODO: change output from List to Obj
-class ActionGenTextLlmChatWithVectorSearchOpenai(IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenai, TextObj, List[TextObj]]):
+
+# TODO: change output from List to Obj
+class ActionGenTextLlmChatWithVectorSearchOpenai(
+    IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenai, TextObj, List[TextObj]]):
     """
     Vector search and add it to chat prompt as context
     """
