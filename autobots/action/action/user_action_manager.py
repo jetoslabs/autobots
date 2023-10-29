@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
-from autobots.action.action_type.action_text2img.action_txt2img_stability_ai_v2 import ActionGenImageStabilityAiV2
+from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionGenTextLlmChatWithVectorSearchOpenai, ActionCreateGenTextLlmChatWithVectorSearchOpenai
@@ -44,16 +44,16 @@ class UserActionManager:
             action_input: Dict[str, Any] | TextObj | Text2ImgRunModel | ImageMixerRunModel | Text2VideoRunModel
     ) -> Any:
         match action.type:
-            case ActionType.gen_text_llm_chat_openai:
+            case ActionType.text2text_llm_chat_openai:
                 return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.config))\
                     .run_action(action_input)
-            case ActionType.gen_image_dalle_openai:
+            case ActionType.text2img_dalle_openai:
                 return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.config))\
                     .run_action(action_input)
-            case ActionType.gen_image_stability_ai:
+            case ActionType.text2img_stability_ai:
                 return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.config))\
                     .run_action(action_input)
-            case ActionType.gen_text_llm_chat_with_vector_search_openai:
+            case ActionType.text2text_llm_chat_with_vector_search_openai:
                 return await ActionGenTextLlmChatWithVectorSearchOpenai(
                     ActionCreateGenTextLlmChatWithVectorSearchOpenai.model_validate(action.model_dump())
                 ).run_action(action_input)
