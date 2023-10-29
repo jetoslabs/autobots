@@ -4,7 +4,7 @@ import pytest
 from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
-from autobots.action.action_type.action_text2text.action_gen_text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
+from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.conn.openai.chat import ChatReq, Message, Role

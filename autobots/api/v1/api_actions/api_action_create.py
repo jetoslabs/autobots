@@ -9,7 +9,7 @@ from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2
 from autobots.action.action_type.action_text2img.action_txt2img_stability_ai_v2 import ActionCreateGenImageStabilityAi
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionCreateGenTextLlmChatOpenai
-from autobots.action.action_type.action_text2text.action_text2text_RAG import \
+from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionCreateGenTextLlmChatWithVectorSearchOpenai
 from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
