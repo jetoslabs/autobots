@@ -9,14 +9,14 @@ from autobots.conn.openai.openai import get_openai
 
 
 class ActionCreateGenImageDalleOpenai(ActionCreate):
-    type: ActionType = ActionType.gen_image_dalle_openai
+    type: ActionType = ActionType.text2img_dalle_openai
     config: ImageReq
     input: Optional[TextObj] = None
     output: Optional[List[ImageRes]] = None
 
 #TODO: change output from List to Obj
 class ActionGenImageDalleOpenAiV2(IAction[ImageReq, TextObj, List[ImageRes]]):
-    type = ActionType.gen_image_dalle_openai
+    type = ActionType.text2img_dalle_openai
 
     def __init__(self, action_config: ImageReq):
         self.image_req = action_config

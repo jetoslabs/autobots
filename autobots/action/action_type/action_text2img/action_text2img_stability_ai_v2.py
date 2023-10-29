@@ -9,7 +9,7 @@ from autobots.conn.stability.stability import get_stability
 from autobots.conn.stability.stability_data import StabilityReq
 
 class ActionCreateGenImageStabilityAi(ActionCreate):
-    type: ActionType = ActionType.gen_image_stability_ai
+    type: ActionType = ActionType.text2img_stability_ai
     config: StabilityReq
     input: Optional[TextObj] = None
     output: Optional[List[ImageRes]] = None
@@ -17,7 +17,7 @@ class ActionCreateGenImageStabilityAi(ActionCreate):
 
 #TODO: change output from List to Obj
 class ActionGenImageStabilityAiV2(IAction[StabilityReq, TextObj, List[ImageRes]]):
-    type = ActionType.gen_image_stability_ai
+    type = ActionType.text2img_stability_ai
 
     def __init__(self, action_config: StabilityReq):
         self.stability_req = action_config

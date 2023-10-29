@@ -27,8 +27,8 @@ class UserChat():
         self.chat_crud = ChatCRUD(db)
 
     async def create_chat(self, chat_create: ChatCreate, title: str = DEFAULT_TITLE) -> ChatDoc | None:
-        if not chat_create.action.type == ActionType.gen_text_llm_chat_openai and \
-                not chat_create.action.type == ActionType.gen_text_llm_chat_with_vector_search_openai:
+        if not chat_create.action.type == ActionType.text2text_llm_chat_openai and \
+                not chat_create.action.type == ActionType.text2text_llm_chat_with_vector_search_openai:
             raise HTTPException(400, "Action is not available for chat")
         try:
             chat_doc_create = ChatDocCreate(user_id=self.user_id, title=title, **chat_create.model_dump(by_alias=True))
