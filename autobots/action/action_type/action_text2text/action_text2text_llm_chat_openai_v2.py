@@ -12,14 +12,14 @@ from autobots.core.log import log
 
 
 class ActionCreateGenTextLlmChatOpenai(ActionCreate):
-    type: ActionType = ActionType.gen_text_llm_chat_openai
+    type: ActionType = ActionType.text2text_llm_chat_openai
     config: ChatReq
     input: Optional[TextObj] = None
     output: Optional[List[TextObj]] = None
 
 #TODO: change output from List to Obj
 class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, List[TextObj]]):
-    type = ActionType.gen_text_llm_chat_openai
+    type = ActionType.text2text_llm_chat_openai
 
     def __init__(self, action_config: ChatReq):
         self.chat_req = action_config

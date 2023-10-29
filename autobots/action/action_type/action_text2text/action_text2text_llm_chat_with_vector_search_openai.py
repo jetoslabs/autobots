@@ -19,7 +19,7 @@ class ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput(BaseModel):
 
 
 class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
-    type: ActionType = ActionType.gen_text_llm_chat_with_vector_search_openai
+    type: ActionType = ActionType.text2text_llm_chat_with_vector_search_openai
     config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
 
 
@@ -29,7 +29,7 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
     """
     Vector search and add it to chat prompt as context
     """
-    type = ActionType.gen_text_llm_chat_with_vector_search_openai
+    type = ActionType.text2text_llm_chat_with_vector_search_openai
 
     def __init__(self, action_config: ActionCreateGenTextLlmChatWithVectorSearchOpenai):
         self.action_data = action_config
