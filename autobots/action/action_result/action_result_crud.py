@@ -69,7 +69,7 @@ class ActionResultCRUD:
         return action_result_docs
 
     async def delete_many(self, action_result_doc_find: ActionResultDocFind) -> DeleteResult | None:
-        if not action_result_doc_find.action_user_id:
+        if not action_result_doc_find.user_id:
             log.error("action_result delete issued without specifying user")
             return None
         find_params = {}
