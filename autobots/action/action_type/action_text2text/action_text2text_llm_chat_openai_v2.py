@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 
 from pydantic import ValidationError
 
@@ -22,15 +22,15 @@ class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, TextObjs]):
     type = ActionType.text2text_llm_chat_openai
 
     def __init__(self, action_config: ChatReq):
-        self.chat_req = action_config
+        super().__init__(action_config)
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             if action_input and action_input.text != "":
                 message = Message(role=Role.user, content=action_input.text)
-                self.chat_req.messages = self.chat_req.messages + [message]
-            chat_res = await get_openai().chat(chat_req=self.chat_req)
+                self.action_config.messages = self.action_config.messages + [message]
+            chat_res = await get_openai().chat(chat_req=self.action_config)
             if not chat_res:
                 return text_objs
             # resp = Message.model_validate(chat_res.choices[0].message)
