@@ -17,7 +17,7 @@ from autobots.action.action_type.action_text2img.action_text2img_stable_diffusio
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion, Text2VideoRunModel
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.image_model import ImageReq
 from autobots.conn.stability.stability_data import StabilityReq
@@ -42,7 +42,7 @@ class UserActionManager:
             self,
             action: ActionDoc,
             action_input: Dict[str, Any] | TextObj | Text2ImgRunModel | ImageMixerRunModel | Text2VideoRunModel
-    ) -> Any:
+    ) -> Any | TextObjs:
         match action.type:
             case ActionType.text2text_llm_chat_openai:
                 return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.config))\
