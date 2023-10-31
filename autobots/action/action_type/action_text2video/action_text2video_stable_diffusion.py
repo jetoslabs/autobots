@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.abc.IAction import IAction
-from autobots.action.action_type.abc.IActionGenImage import IActionGenImage
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
@@ -31,14 +30,14 @@ class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunM
     type = ActionType.text2video_stable_diffusion
 
     def __init__(self, action_config: Text2VideoReqModel):
-        self.config = action_config
+        super().__init__(action_config)
 
     async def run_action(self, action_input: Text2VideoRunModel) -> StableDiffusionRes:
-        if action_input.prompt: self.config.prompt = f"{self.config.prompt}\n{action_input.prompt}"
-        if action_input.negative_prompt: self.config.negative_prompt = f"{self.config.negative_prompt}\n{action_input.negative_prompt}"
-        if action_input.scheduler: self.config.scheduler = action_input.scheduler
-        if action_input.seconds: self.config.seconds = action_input.seconds
-        video = await get_stable_diffusion().text2video(self.config)
+        if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
+        if action_input.negative_prompt: self.action_config.negative_prompt = f"{self.action_config.negative_prompt}\n{action_input.negative_prompt}"
+        if action_input.scheduler: self.action_config.scheduler = action_input.scheduler
+        if action_input.seconds: self.action_config.seconds = action_input.seconds
+        video = await get_stable_diffusion().text2video(self.action_config)
         return video
 
     async def invoke_action(self, input_str: str) -> StableDiffusionRes:
