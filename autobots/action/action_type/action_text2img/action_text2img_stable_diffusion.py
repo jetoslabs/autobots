@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from pydantic import BaseModel, Field
 
-from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
+from autobots.action.action.common_action_models import ImagesRes
 from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -36,6 +37,12 @@ class ActionText2ImgStableDiffusion(IAction[Text2ImgReqModel, Text2ImgRunModel, 
 
     def __init__(self, action_config: Text2ImgReqModel):
         super().__init__(action_config)
+
+    @staticmethod
+    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> StableDiffusionRes:
+        action = ActionText2ImgStableDiffusion(Text2ImgReqModel.model_validate(action_doc.config))
+        action_output = await action.run_action(Text2ImgRunModel.model_validate(action_input_dict))
+        return action_output
 
     async def run_action(self, action_input: Text2ImgRunModel) -> StableDiffusionRes:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"

@@ -20,7 +20,7 @@ class IAction(Generic[ActionConfigType, ActionInputType, ActionOutputType]):
         self.action_config = action_config
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]):
+    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> ActionOutputType:
         raise NotImplementedError
 
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType:
