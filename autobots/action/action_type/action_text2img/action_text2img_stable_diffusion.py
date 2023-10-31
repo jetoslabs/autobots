@@ -35,18 +35,18 @@ class ActionText2ImgStableDiffusion(IAction[Text2ImgReqModel, Text2ImgRunModel, 
     type = ActionType.text2img_stable_diffusion
 
     def __init__(self, action_config: Text2ImgReqModel):
-        self.config = action_config
+        super().__init__(action_config)
 
     async def run_action(self, action_input: Text2ImgRunModel) -> StableDiffusionRes:
-        if action_input.prompt: self.config.prompt = f"{self.config.prompt}\n{action_input.prompt}"
+        if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
         if action_input.negative_prompt:
-            self.config.negative_prompt = f"{self.config.negative_prompt}\n{action_input.negative_prompt}"
-        if action_input.width: self.config.width = action_input.width
-        if action_input.height: self.config.height = action_input.height
-        if action_input.samples: self.config.samples = action_input.samples
-        if action_input.webhook: self.config.webhook = action_input.webhook
-        if action_input.track_id: self.config.track_id = action_input.track_id
-        images = await get_stable_diffusion().text2img(self.config)
+            self.action_config.negative_prompt = f"{self.action_config.negative_prompt}\n{action_input.negative_prompt}"
+        if action_input.width: self.action_config.width = action_input.width
+        if action_input.height: self.action_config.height = action_input.height
+        if action_input.samples: self.action_config.samples = action_input.samples
+        if action_input.webhook: self.action_config.webhook = action_input.webhook
+        if action_input.track_id: self.action_config.track_id = action_input.track_id
+        images = await get_stable_diffusion().text2img(self.action_config)
         return images
 
     async def invoke_action(self, input_str: str) -> StableDiffusionRes:
