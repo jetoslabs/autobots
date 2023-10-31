@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from pydantic import BaseModel, Field
 
-from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from autobots.action.action_type.abc.IAction import IAction
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -31,6 +31,12 @@ class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunM
 
     def __init__(self, action_config: Text2VideoReqModel):
         super().__init__(action_config)
+
+    @staticmethod
+    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> StableDiffusionRes:
+        action = ActionText2VideoStableDiffusion(Text2VideoReqModel.model_validate(action_doc.config))
+        action_output = await action.run_action(Text2VideoRunModel.model_validate(action_input_dict))
+        return action_output
 
     async def run_action(self, action_input: Text2VideoRunModel) -> StableDiffusionRes:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
