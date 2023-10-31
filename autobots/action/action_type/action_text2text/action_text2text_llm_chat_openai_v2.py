@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, Dict, Any, Type
 
 from pydantic import ValidationError
 
 from autobots.action.action_type.abc.IAction import IAction
-from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.conn.openai.chat import Message, ChatReq, Role
@@ -23,6 +23,12 @@ class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, TextObjs]):
 
     def __init__(self, action_config: ChatReq):
         super().__init__(action_config)
+
+    @staticmethod
+    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> TextObjs:
+        action = ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action_doc.config))
+        action_output = await action.run_action(TextObj.model_validate(action_input_dict))
+        return action_output
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
