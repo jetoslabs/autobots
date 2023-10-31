@@ -42,11 +42,13 @@ async def test_action_mock_happy_path(set_test_settings):
 
         assert action_doc.type == ActionType.text2text_llm_chat_openai
 
+        action_input = TextObj(text="okok")
         ma = MockAction(TextObj.model_validate(action_doc.config))
         action_result_doc = await ma.run_action_in_background(
             action_doc,
+            action_input,
             user_action_result,
-            TextObj(text="okok")
+            None
         )
     except Exception as e:
         assert e is None
@@ -87,11 +89,13 @@ async def test_action_llm_chat_happy_path(set_test_settings):
 
         assert action_doc.type == ActionType.text2text_llm_chat_openai
 
+        action_input = TextObj(text="okok")
         lm = ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action_doc.config))
         action_result_doc = await lm.run_action_in_background(
             action_doc,
+            action_input,
             user_action_result,
-            TextObj(text="okok")
+            None
         )
 
     except Exception as e:

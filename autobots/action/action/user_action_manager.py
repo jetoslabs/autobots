@@ -1,10 +1,13 @@
 from functools import lru_cache
 from typing import Any, Dict
 
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 
 from autobots.action.action.action_doc_model import ActionDoc
-from autobots.action.action_type.abc.IAction import IAction
+from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
+    ActionResultStatus
+from autobots.action.action_result.user_action_result import UserActionResult
+from autobots.action.action_type.abc.IAction import IAction, ActionInputType
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import ActionGenTextLlmChatOpenaiV2
@@ -41,31 +44,81 @@ class UserActionManager:
     async def run_action(
             self,
             action: ActionDoc,
-            action_input: Dict[str, Any] | TextObj | Text2ImgRunModel | ImageMixerRunModel | Text2VideoRunModel
+            action_input: Dict[str, Any]
     ) -> Any | TextObjs:
         match action.type:
             case ActionType.text2text_llm_chat_openai:
-                return await ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action.config))\
-                    .run_action(action_input)
+                return await ActionGenTextLlmChatOpenaiV2.run_action_doc(action, action_input)
             case ActionType.text2img_dalle_openai:
                 return await ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action.config))\
-                    .run_action(action_input)
+                    .run_action(await ActionGenImageDalleOpenAiV2.action_input_dict_to_type(action_input))
             case ActionType.text2img_stability_ai:
                 return await ActionGenImageStabilityAiV2(StabilityReq.model_validate(action.config))\
-                    .run_action(action_input)
+                    .run_action(await ActionGenImageStabilityAiV2.action_input_dict_to_type(action_input))
             case ActionType.text2text_llm_chat_with_vector_search_openai:
                 return await ActionGenTextLlmChatWithVectorSearchOpenai(
                     ActionCreateGenTextLlmChatWithVectorSearchOpenai.model_validate(action.model_dump())
-                ).run_action(action_input)
+                ).run_action(await ActionGenTextLlmChatWithVectorSearchOpenai.action_input_dict_to_type(action_input))
             case ActionType.text2img_stable_diffusion:
                 return await ActionText2ImgStableDiffusion(Text2ImgReqModel.model_validate(action.model_dump())
-                                                           ).run_action(action_input)
+                                                           ).run_action(await ActionText2ImgStableDiffusion.action_input_dict_to_type(action_input))
             case ActionType.image_mixer_stable_diffusion:
                 return await ActionImageMixerStableDiffusion(ImageMixerReqModel.model_validate(action.model_dump())
-                                                           ).run_action(action_input)
+                                                           ).run_action(await ActionImageMixerStableDiffusion.action_input_dict_to_type(action_input))
             case ActionType.text2video_stable_diffusion:
                 return await ActionText2VideoStableDiffusion(Text2VideoReqModel.model_validate(action.model_dump())
-                                                           ).run_action(action_input)
+                                                           ).run_action(await ActionText2VideoStableDiffusion.action_input_dict_to_type(action_input))
             case _:
                 log.error("Action Type not found")
                 raise HTTPException(status_code=404, detail="Action Type not found")
+
+    async def get_action(self, action_doc: ActionDoc) -> IAction:
+        match action_doc.type:
+            case ActionType.text2text_llm_chat_openai:
+                return ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action_doc.config))
+            case ActionType.text2img_dalle_openai:
+                return ActionGenImageDalleOpenAiV2(ImageReq.model_validate(action_doc.config))
+            case ActionType.text2img_stability_ai:
+                return ActionGenImageStabilityAiV2(StabilityReq.model_validate(action_doc.config))
+            case ActionType.text2text_llm_chat_with_vector_search_openai:
+                return ActionGenTextLlmChatWithVectorSearchOpenai(ActionCreateGenTextLlmChatWithVectorSearchOpenai.model_validate(action_doc.model_dump()))
+            case ActionType.text2img_stable_diffusion:
+                return ActionText2ImgStableDiffusion(Text2ImgReqModel.model_validate(action_doc.model_dump()))
+            case ActionType.image_mixer_stable_diffusion:
+                return ActionImageMixerStableDiffusion(ImageMixerReqModel.model_validate(action_doc.model_dump()))
+            case ActionType.text2video_stable_diffusion:
+                return ActionText2VideoStableDiffusion(Text2VideoReqModel.model_validate(action_doc.model_dump()))
+            case _:
+                log.error("Action Type not found")
+                raise HTTPException(status_code=404, detail="Action Type not found")
+
+    async def get_action_input(self, action_doc: ActionDoc, action_input: Dict[str, Any]) -> ActionInputType:
+        match action_doc.type:
+            case ActionType.text2text_llm_chat_openai:
+                return await ActionGenTextLlmChatOpenaiV2.action_input_dict_to_type(action_input)
+            case ActionType.text2img_dalle_openai:
+                return await ActionGenImageDalleOpenAiV2.action_input_dict_to_type(action_input)
+            case ActionType.text2img_stability_ai:
+                return await ActionGenImageStabilityAiV2.action_input_dict_to_type(action_input)
+            case ActionType.text2text_llm_chat_with_vector_search_openai:
+                return await ActionGenTextLlmChatWithVectorSearchOpenai.action_input_dict_to_type(action_input)
+            case ActionType.text2img_stable_diffusion:
+                return await ActionText2ImgStableDiffusion.action_input_dict_to_type(action_input)
+            case ActionType.image_mixer_stable_diffusion:
+                return await ActionImageMixerStableDiffusion.action_input_dict_to_type(action_input)
+            case ActionType.text2video_stable_diffusion:
+                return await ActionText2VideoStableDiffusion.action_input_dict_to_type(action_input)
+            case _:
+                log.error("Action Type not found")
+                raise HTTPException(status_code=404, detail="Action Type not found")
+
+    async def run_action_in_background(
+            self,
+            action_doc: ActionDoc,
+            action_input: Dict[str, Any],
+            user_action_result: UserActionResult,
+            background_tasks: BackgroundTasks
+    ) -> ActionResultDoc:
+        action: IAction = await self.get_action(action_doc)
+        action_input = await self.get_action_input(action_doc, action_input)
+        return await action.run_action_in_background(action_doc, action_input, user_action_result, background_tasks)
