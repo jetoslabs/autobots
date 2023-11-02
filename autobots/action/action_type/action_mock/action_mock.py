@@ -1,20 +1,25 @@
-from typing import Dict, Any
+from typing import Dict, Any, Type
 
-from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action.common_action_models import TextObj
-from autobots.action.action_type.abc.IAction import IAction
+from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
 
 
 class MockAction(IAction[TextObj, TextObj, TextObj]):
 
-    def __init__(self, action_config: TextObj):
-        super().__init__(action_config)
+    @staticmethod
+    def get_config_type() -> Type[ActionConfigType]:
+        return TextObj
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> TextObj:
-        action = MockAction(TextObj.model_validate(action_doc.config))
-        action_output = await action.run_action(TextObj.model_validate(action_input_dict))
-        return action_output
+    def get_input_type() -> Type[ActionInputType]:
+        return TextObj
+
+    @staticmethod
+    def get_output_type() -> Type[ActionOutputType]:
+        return TextObj
+
+    def __init__(self, action_config: TextObj):
+        super().__init__(action_config)
 
     async def run_action(self, action_input: TextObj) -> TextObj:
         output = TextObj(

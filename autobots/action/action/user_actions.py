@@ -6,7 +6,7 @@ from pymongo.database import Database
 from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
     ActionUpdate, ActionDocUpdate
-from autobots.action.action.user_action_manager import UserActionManager
+from autobots.action.action_type.action_factory import ActionFactory
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
 
@@ -71,10 +71,10 @@ class UserActions:
         action_docs = await self.action_crud.find(action_doc_find)
         if len(action_docs) != 1:
             raise HTTPException(405, "Action cannot be run")
-        resp = await UserActionManager().run_action(action_docs[0], input)
+        resp = await ActionFactory().run_action(action_docs[0], input)
         return resp
 
     @staticmethod
     async def run_action_doc(action_doc: ActionDoc, input: Any) -> Any:
-        resp = await UserActionManager().run_action(action_doc, input)
+        resp = await ActionFactory().run_action(action_doc, input)
         return resp

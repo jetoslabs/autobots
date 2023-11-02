@@ -5,14 +5,10 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from pymongo.database import Database
 
-from autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate, ActionDocFind
-from autobots.action.action.common_action_models import TextObj
-from autobots.action.action.user_action_manager import UserActionManager
+from autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate
 from autobots.action.action_result.action_result_doc_model import ActionResultDoc
 from autobots.action.action_result.user_action_result import UserActionResult
-from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import ImageMixerRunModel
-from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import Text2ImgRunModel
-from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import Text2VideoRunModel
+from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
@@ -26,7 +22,7 @@ router = APIRouter()
 async def get_action_types(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token)
 ) -> List[str]:
-    return UserActionManager.get_action_types()
+    return ActionFactory.get_action_types()
 
 
 @router.get("/")
@@ -106,6 +102,6 @@ async def async_run_action(
     user_actions = UserActions(user_orm, db)
     action_doc = await user_actions.get_action(id)
     user_action_result = UserActionResult(user_orm, db)
-    action_result_doc = await UserActionManager().run_action_in_background(action_doc, input, user_action_result, background_tasks)
+    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result, background_tasks)
     return action_result_doc
 

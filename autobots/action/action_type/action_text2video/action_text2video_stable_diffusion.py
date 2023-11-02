@@ -1,9 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Type
 
 from pydantic import BaseModel, Field
 
 from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
-from autobots.action.action_type.abc.IAction import IAction
+from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
@@ -29,14 +29,20 @@ class ActionCreateText2VideoStableDiffusion(ActionCreate):
 class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunModel, StableDiffusionRes]):
     type = ActionType.text2video_stable_diffusion
 
-    def __init__(self, action_config: Text2VideoReqModel):
-        super().__init__(action_config)
+    @staticmethod
+    def get_config_type() -> Type[ActionConfigType]:
+        return Text2VideoReqModel
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> StableDiffusionRes:
-        action = ActionText2VideoStableDiffusion(Text2VideoReqModel.model_validate(action_doc.config))
-        action_output = await action.run_action(Text2VideoRunModel.model_validate(action_input_dict))
-        return action_output
+    def get_input_type() -> Type[ActionInputType]:
+        return Text2VideoRunModel
+
+    @staticmethod
+    def get_output_type() -> Type[ActionOutputType]:
+        return StableDiffusionRes
+
+    def __init__(self, action_config: Text2VideoReqModel):
+        super().__init__(action_config)
 
     async def run_action(self, action_input: Text2VideoRunModel) -> StableDiffusionRes:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
@@ -45,10 +51,3 @@ class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunM
         if action_input.seconds: self.action_config.seconds = action_input.seconds
         video = await get_stable_diffusion().text2video(self.action_config)
         return video
-
-    async def invoke_action(self, input_str: str) -> StableDiffusionRes:
-        pass
-
-    @staticmethod
-    async def instruction() -> str:
-        pass

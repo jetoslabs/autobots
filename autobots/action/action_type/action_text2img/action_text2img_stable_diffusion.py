@@ -1,10 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Type
 
 from pydantic import BaseModel, Field
 
-from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
-from autobots.action.action.common_action_models import ImagesRes
-from autobots.action.action_type.abc.IAction import IAction
+from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
@@ -35,14 +34,20 @@ class ActionCreateText2ImgStableDiffusion(ActionCreate):
 class ActionText2ImgStableDiffusion(IAction[Text2ImgReqModel, Text2ImgRunModel, StableDiffusionRes]):
     type = ActionType.text2img_stable_diffusion
 
-    def __init__(self, action_config: Text2ImgReqModel):
-        super().__init__(action_config)
+    @staticmethod
+    def get_config_type() -> Type[ActionConfigType]:
+        return Text2ImgReqModel
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> StableDiffusionRes:
-        action = ActionText2ImgStableDiffusion(Text2ImgReqModel.model_validate(action_doc.config))
-        action_output = await action.run_action(Text2ImgRunModel.model_validate(action_input_dict))
-        return action_output
+    def get_input_type() -> Type[ActionInputType]:
+        return Text2ImgRunModel
+
+    @staticmethod
+    def get_output_type() -> Type[ActionOutputType]:
+        return StableDiffusionRes
+
+    def __init__(self, action_config: Text2ImgReqModel):
+        super().__init__(action_config)
 
     async def run_action(self, action_input: Text2ImgRunModel) -> StableDiffusionRes:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
@@ -55,10 +60,3 @@ class ActionText2ImgStableDiffusion(IAction[Text2ImgReqModel, Text2ImgRunModel, 
         if action_input.track_id: self.action_config.track_id = action_input.track_id
         images = await get_stable_diffusion().text2img(self.action_config)
         return images
-
-    async def invoke_action(self, input_str: str) -> StableDiffusionRes:
-        pass
-
-    @staticmethod
-    async def instruction() -> str:
-        pass

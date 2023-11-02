@@ -1,9 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Type
 
 from pydantic import Field, BaseModel
 
-from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
-from autobots.action.action_type.abc.IAction import IAction
+from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
@@ -39,15 +39,20 @@ class ActionCreateImageMixerStableDiffusion(ActionCreate):
 class ActionImageMixerStableDiffusion(IAction[ImageMixerReqModel, ImageMixerRunModel, StableDiffusionRes]):
     type = ActionType.image_mixer_stable_diffusion
 
-    def __init__(self, action_config: ImageMixerReqModel):
-        super().__init__(action_config)
+    @staticmethod
+    def get_config_type() -> Type[ActionConfigType]:
+        return ImageMixerReqModel
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> StableDiffusionRes:
-        action = ActionImageMixerStableDiffusion(
-            ImageMixerReqModel.model_validate(action_doc.config))
-        action_output = await action.run_action(ImageMixerRunModel.model_validate(action_input_dict))
-        return action_output
+    def get_input_type() -> Type[ActionInputType]:
+        return ImageMixerRunModel
+
+    @staticmethod
+    def get_output_type() -> Type[ActionOutputType]:
+        return StableDiffusionRes
+
+    def __init__(self, action_config: ImageMixerReqModel):
+        super().__init__(action_config)
 
     async def run_action(self, action_input: ImageMixerRunModel) -> StableDiffusionRes:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
@@ -62,10 +67,3 @@ class ActionImageMixerStableDiffusion(IAction[ImageMixerReqModel, ImageMixerRunM
         if action_input.track_id: self.action_config.track_id = action_input.track_id
         images = await get_stable_diffusion().image_mixer(self.action_config)
         return images
-
-    async def invoke_action(self, input_str: str) -> StableDiffusionRes:
-        pass
-
-    @staticmethod
-    async def instruction() -> str:
-        pass
