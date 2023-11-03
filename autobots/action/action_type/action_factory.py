@@ -29,7 +29,7 @@ class ActionFactory:
     @staticmethod
     @lru_cache
     def get_action_types() -> List[str]:
-        action_types = [action_type for action_type in ActionType]
+        action_types = [action_type for action_type in ActionType if not action_type.lower().startswith("mock")]
         return action_types
 
     async def run_action(self, action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
