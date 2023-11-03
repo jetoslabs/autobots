@@ -1,13 +1,10 @@
-from typing import TypeVar, Generic, List
+from typing import TypeVar, Generic, List, Type
 
 from bson import ObjectId
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from pydantic import BaseModel
 from pymongo.collection import Collection, ReturnDocument
-from pymongo.database import Database
 from pymongo.results import DeleteResult
-
-from autobots.core.database.mongo_base import get_mongo_db
 
 DocType = TypeVar("DocType", bound=BaseModel)
 DocCreateType = TypeVar("DocCreateType", bound=BaseModel)
@@ -17,8 +14,9 @@ DocUpdateType = TypeVar("DocUpdateType", bound=BaseModel)
 
 class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
 
-    def __init__(self, db: Database = Depends(get_mongo_db)):
-        self.document: Collection = db[DocType.__collection__]
+    def __init__(self, doc_model: Type[DocType], collection: Collection):
+        self.doc_model = doc_model
+        self.document: Collection = collection  # db[DocType.__collection__]
 
     async def insert_one(self, create_doc: DocCreateType) -> DocType:
         insert_result = self.document.insert_one(create_doc.model_dump())
@@ -29,7 +27,7 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         object_id = ObjectId(id)
         doc = self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
-        return DocType.model_validate(doc)
+        return self.doc_model.model_validate(doc)
 
     async def find(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> List[DocType]:
         find_params = {}
@@ -58,7 +56,7 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
             filled = filled + 1
             # Mongo Result field _id has ObjectId, converting it to str for pydantic model
             doc["_id"] = str(doc.get("_id"))
-            doc_type = DocType.model_validate(doc)
+            doc_type = self.doc_model.model_validate(doc)
             docs.append(doc_type)
 
         return docs
@@ -95,8 +93,8 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         if updated_action_doc is None:
             raise HTTPException(405, "Unable to update doc")
 
-        updated_action_doc.__dict__["_id"] = str(updated_action_doc.get("_id"))
-        doc_type = DocType.model_validate(updated_action_doc)
+        updated_action_doc["_id"] = str(updated_action_doc.get("_id"))
+        doc_type = self.doc_model.model_validate(updated_action_doc)
         return doc_type
 
 

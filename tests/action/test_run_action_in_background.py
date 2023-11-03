@@ -4,9 +4,7 @@ from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_result.user_action_result import UserActionResult
-from autobots.action.action_type.action_mock.action_mock import MockAction
-from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
-    ActionGenTextLlmChatOpenaiV2
+from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.chat import ChatReq, Message, Role
 from autobots.core.database.mongo_base import get_mongo_db
@@ -26,7 +24,7 @@ async def test_action_mock_happy_path(set_test_settings):
     try:
         action_doc_create = ActionDocCreate(
             name=action_name,
-            type=ActionType.text2text_llm_chat_openai,
+            type=ActionType.mock_action,
             config=TextObj(text="mock_action").model_dump(),
             # input=None,
             # output=None,
@@ -40,16 +38,14 @@ async def test_action_mock_happy_path(set_test_settings):
         assert len(action_docs) == 1
         action_doc = action_docs.pop()
 
-        assert action_doc.type == ActionType.text2text_llm_chat_openai
-
         action_input = TextObj(text="okok")
-        ma = MockAction(TextObj.model_validate(action_doc.config))
-        action_result_doc = await ma.run_action_in_background(
+
+        action_result_doc = await ActionFactory().run_action_in_background(
             action_doc,
-            action_input,
-            user_action_result,
-            None
+            action_input.model_dump(),
+            user_action_result
         )
+
     except Exception as e:
         assert e is None
     finally:
@@ -87,15 +83,12 @@ async def test_action_llm_chat_happy_path(set_test_settings):
         assert len(action_docs) == 1
         action_doc = action_docs.pop()
 
-        assert action_doc.type == ActionType.text2text_llm_chat_openai
-
         action_input = TextObj(text="okok")
-        lm = ActionGenTextLlmChatOpenaiV2(ChatReq.model_validate(action_doc.config))
-        action_result_doc = await lm.run_action_in_background(
+
+        action_result_doc = await ActionFactory().run_action_in_background(
             action_doc,
-            action_input,
-            user_action_result,
-            None
+            action_input.model_dump(),
+            user_action_result
         )
 
     except Exception as e:
