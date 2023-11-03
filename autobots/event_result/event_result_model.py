@@ -20,10 +20,10 @@ class EventResultStatus(str, Enum):
 
 
 class EventResultFind(BaseModel):
-    id: Optional[str]
-    type: Optional[EventType]
-    status: Optional[EventResultStatus]
-    is_saved: Optional[bool]
+    id: Optional[str] = None
+    type: Optional[EventType] = None
+    status: Optional[EventResultStatus] = None
+    is_saved: Optional[bool] = None
 
 
 class EventResultDocFind(EventResultFind):
@@ -31,11 +31,11 @@ class EventResultDocFind(EventResultFind):
 
 
 class EventResultUpdate(BaseModel):
-    type: Optional[EventType]
-    status: Optional[EventResultStatus]
-    error: Optional[TextObj]
-    is_saved: Optional[bool]
-    result: Optional[Dict[str, Any]]
+    type: Optional[EventType] = None
+    status: Optional[EventResultStatus] = None
+    error_message: Optional[TextObj] = None
+    is_saved: Optional[bool] = None
+    result: Optional[Dict[str, Any]] = None
 
 
 class EventResultDocUpdate(EventResultUpdate):
@@ -47,7 +47,7 @@ class EventResultDocUpdate(EventResultUpdate):
 class EventResultCreate(BaseModel):
     type: EventType
     status: EventResultStatus
-    error: TextObj
+    error_message: Optional[TextObj] = None
     is_saved: bool = False
     result: Dict[str, Any] = {}
 

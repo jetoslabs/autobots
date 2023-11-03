@@ -4,11 +4,12 @@ from typing import List, Any, Dict
 from fastapi import HTTPException, BackgroundTasks
 
 from autobots.action.action.action_doc_model import ActionDoc
-from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
-    ActionResultStatus, ActionResultUpdate
+from autobots.action.action.common_action_models import TextObj
+from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, ActionResultUpdate
 from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
+from autobots.action.action_type.action_mock.action_mock import MockAction
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
@@ -20,6 +21,7 @@ from autobots.action.action_type.action_text2video.action_text2video_stable_diff
     ActionText2VideoStableDiffusion
 from autobots.action.action_type.action_types import ActionType
 from autobots.core.log import log
+from autobots.event_result.event_result_model import EventResultStatus
 
 
 class ActionFactory:
@@ -67,6 +69,11 @@ class ActionFactory:
                 input = ActionText2VideoStableDiffusion.get_input_type().model_validate(action_input_dict)
                 return await ActionText2VideoStableDiffusion(config).run_action(input)
 
+            case ActionType.mock_action:
+                config = MockAction.get_config_type().model_validate(action_doc.config)
+                input = MockAction.get_input_type().model_validate(action_doc.input)
+                return await MockAction(config).run_action(input)
+
             case _:
                 log.error("Action Type not found")
                 raise HTTPException(status_code=404, detail="Action Type not found")
@@ -81,7 +88,7 @@ class ActionFactory:
         # Create initial Action Result
         action_doc.input = action_input_dict
         action_result_create: ActionResultCreate = ActionResultCreate(
-            status=ActionResultStatus.processing, action=action_doc, is_saved=False
+            status=EventResultStatus.processing, result=action_doc, is_saved=False
         )
         action_result_doc = await user_action_result.create_action_result(action_result_create)
         # Run Action in background and update the Action Result with Output
@@ -92,7 +99,7 @@ class ActionFactory:
             )
         else:
             # For testing
-            action_result_doc = await self._run_action_as_background_task(
+            await self._run_action_as_background_task(
                 action_input_dict, action_result_doc, user_action_result
             )
         return action_result_doc
@@ -105,20 +112,22 @@ class ActionFactory:
     ) -> None:
         try:
             # Run the action
-            result = await self.run_action(action_result_doc.action, action_input_dict)
+            result = await self.run_action(action_result_doc.result, action_input_dict)
             # Action is a success
-            action_result_doc.status = ActionResultStatus.success
-            action_result_doc.action.output = result
+            action_result_doc.status = EventResultStatus.success
+            action_result_doc.result.output = result
             log.bind(action_result_doc=action_result_doc).info("Action run success")
         except Exception as e:
             # Action resulted in an error
-            action_result_doc.status = ActionResultStatus.error
+            action_result_doc.status = EventResultStatus.error
+            action_result_doc.error_message = TextObj(text="Action run error")
             log.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
         finally:
             # Finally persist the Action Result
+            action_result_update = ActionResultUpdate(**action_result_doc.model_dump())
             action_result_doc = await user_action_result.update_action_result(
                 action_result_doc.id,
-                ActionResultUpdate(**action_result_doc.model_dump())
+                action_result_update
             )
             log.bind(action_result_doc=action_result_doc).info("Action Result updated")
 

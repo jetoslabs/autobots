@@ -7,10 +7,11 @@ from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultFind, ActionResultCreate
+from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate
 from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.database.mongo_base import get_mongo_db
+from autobots.event_result.event_result_model import EventResultFind, EventResultStatus
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -23,7 +24,7 @@ async def create_action_result(
         db: Database = Depends(get_mongo_db)
 ) -> ActionResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_result = ActionResultCreate(action=action_doc)
+    action_result = ActionResultCreate(status=EventResultStatus.processing, result=action_doc)
     action_result_doc = await UserActionResult(user_orm, db).create_action_result(action_result)
     return action_result_doc
 
@@ -38,7 +39,7 @@ async def list_action_result(
 ) -> List[ActionResultDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_result = UserActionResult(user_orm, db)
-    action_result_find = ActionResultFind(
+    action_result_find = EventResultFind(
         id=id, action_id=action_id, action_name=action_name,
         action_version=action_version, action_type=action_type
     )
