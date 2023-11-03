@@ -3,6 +3,9 @@ from typing import Dict, List, Optional
 
 from pydantic import Field, BaseModel
 
+from autobots.action.action.action_doc_model import ActionDoc
+from autobots.action.action.common_action_models import TextObj
+
 
 class ActionGraphFind(BaseModel):
     """
@@ -12,27 +15,31 @@ class ActionGraphFind(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
-    created_at: Optional[datetime] = None
 
 
 class ActionGraphDocFind(ActionGraphFind):
     """
     Add in user id to enforce multi-tenancy
     """
-    user_id: Optional[str] = None
+    user_id: str
 
 
 class ActionGraphUpdate(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
-    nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",  examples=[{"node1":"action1", "node2":"action2", "node3":"action3"}])
-    graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes", examples=[{"node1":["node2", "node3"], "node2":["node3"]}])
+    nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",
+                                            examples=[{"node1": "action1", "node2": "action2", "node3": "action3"}])
+    graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes",
+                                                  examples=[{"node1": ["node2", "node3"], "node2": ["node3"]}])
+    input: Optional[TextObj] = None
+    output: Optional[Dict[str, ActionDoc]] = None
 
 
 class ActionGraphDocUpdate(ActionGraphUpdate):
     id: str
     user_id: str
+    updated_at: datetime = datetime.now()
 
 
 class ActionGraphCreate(BaseModel):
@@ -42,8 +49,12 @@ class ActionGraphCreate(BaseModel):
     name: str
     version: float = 0
     description: str = ""
-    nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",  examples=[{"node1":"action1", "node2":"action2", "node3":"action3"}])
-    graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes", examples=[{"node1":["node2", "node3"], "node2":["node3"]}])
+    nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",
+                                            examples=[{"node1": "action1", "node2": "action2", "node3": "action3"}])
+    graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes",
+                                                  examples=[{"node1": ["node2", "node3"], "node2": ["node3"]}])
+    input: Optional[TextObj] = None
+    output: Optional[Dict[str, ActionDoc]] = None
 
 
 class ActionGraphDocCreate(ActionGraphCreate):
@@ -52,10 +63,10 @@ class ActionGraphDocCreate(ActionGraphCreate):
     """
     user_id: str
     created_at: datetime = datetime.now()
+    updated_at: datetime = datetime.now()
 
 
 class ActionGraphDoc(ActionGraphDocCreate):
     __collection__ = "ActionGraphs"
 
     id: str = Field(..., alias='_id')
-
