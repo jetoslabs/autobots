@@ -74,10 +74,16 @@ class UserChat():
             raise HTTPException(404, "Chat not found")
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
-
-        resp_message = await ActionManager().run_action(chat_doc.action, input)
-        chat_doc.messages = (chat_doc.messages +
-                             [Message(role=Role.user, content=input.text), resp_message])
+        # will be changed
+        resp_messages_list = await ActionManager().run_action(chat_doc.action, input)
+        assistant_messages = []
+        for resp_message in resp_messages_list:
+            text_obj = TextObj.model_validate(resp_message)
+            message = Message(role=Role.assistant, content=text_obj.text)
+            assistant_messages.append(message)
+        ##
+        new_messages = [Message(role=Role.user, content=input.text), *assistant_messages]
+        chat_doc.messages = chat_doc.messages + new_messages
         if chat_doc.title == UserChat.DEFAULT_TITLE:
             chat_doc.title = await self._gen_title(chat_doc)
         updated_chat_doc = await self.update_chat(chat_id, ChatUpdate(**chat_doc.model_dump()))
