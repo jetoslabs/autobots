@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
 from autobots.action.user_actions import UserActions
+from autobots.action_market.user_action_market import UserActionMarket
 from autobots.auth.security import get_user_from_access_token
 from autobots.chat.chat_doc_model import ChatDoc, ChatFind, ChatUpdate, ChatCreate
 from autobots.chat.user_chat import UserChat
@@ -23,7 +24,17 @@ async def create_chat(
         db: Database = Depends(get_mongo_db)
 ) -> ChatDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
+    # Check in action collection otherwise check in Market collection
     action_doc = await UserActions(user=user_orm).get_action(action_id, db)
+    if not action_doc:
+        action_market_doc = await UserActionMarket(user_orm, db).get_market_action(action_id)
+        # Getting action doc from Action collection as we need values of action_config for chat to work
+        action_publisher_user_orm = UserORM(id=UUID(action_market_doc.action.user_id))
+        real_action_id = action_market_doc.action.id
+        action_doc = await UserActions(user=action_publisher_user_orm).get_action(real_action_id, db)
+        # action_doc = action_market_doc.action
+    if not action_doc:
+        raise HTTPException(404, "Action not found")
     chat_create = ChatCreate(action=action_doc, messages=[])
     chat_doc = await UserChat(user=user_orm, db=db).create_chat(chat_create)
     return chat_doc
