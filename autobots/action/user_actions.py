@@ -101,8 +101,13 @@ class UserActions:
         action_result_doc = await user_action_result.update_action_result(action_result_doc.id, action_result_update)
         log.info(action_result_doc)
         if webhook:
-            with requests.Session() as session:
-                session.post(url=webhook, json=action_result_doc.model_dump_json())
+            try:
+                with requests.Session() as session:
+                    session.post(url=webhook, json=action_result_doc.model_dump_json(), timeout=5)
+            except Exception as e:
+                # Acceptable as we dont want to wait for webhook response
+                pass
+
 
 
     @staticmethod
