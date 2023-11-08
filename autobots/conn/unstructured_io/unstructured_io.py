@@ -30,12 +30,8 @@ class PartitionResponseElement(BaseModel):
 class UnstructuredIO:
 
     def __init__(self, unstructured_api_key: str):
-        # Note - in an upcoming release, the Security object is removed
-        # You'll pass the api key directly
         self.client = UnstructuredClient(
-            security=shared.Security(
-                api_key_auth=unstructured_api_key,
-            ),
+            api_key_auth=unstructured_api_key,
         )
 
     async def _build_PartitionParameters(self, file: UploadFile, chunk_size: int = 500) -> shared.PartitionParameters:
