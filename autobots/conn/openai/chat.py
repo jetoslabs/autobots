@@ -1,9 +1,13 @@
 from enum import Enum
-from typing import List
+from typing import List, Union, Literal, Optional, Dict
 
+import httpx
+from openai._types import Headers, Query, Body
+from openai.types.chat import ChatCompletionMessageParam, completion_create_params, ChatCompletionToolChoiceOptionParam, \
+    ChatCompletionToolParam
 from pydantic import BaseModel
 
-from autobots.core.config import OpenaiEngine, get_config
+# from autobots.core.config import OpenaiEngine, get_config
 
 
 class Role(str, Enum):
@@ -18,19 +22,46 @@ class Message(BaseModel):
 
 
 class ChatReq(BaseModel):
-    # model: str = get_settings().OPENAI_ENGINE  # "gpt-4"
-    model: OpenaiEngine = get_config().OPENAI_ENGINE.gpt_3_5
-    messages: List[Message]
-    temperature: float = 0.8
-    top_p: int = 1
-    n: int = 1
-    stream: bool = False
-    stop: str | List[str] | None = "stop"
-    max_tokens: int = 2000
-    presence_penalty: int = 0
-    frequency_penalty: int = 0
-    # logit_bias: str | None = None
+    messages: List[ChatCompletionMessageParam]
+    model: Union[
+        str,
+        Literal[
+            "gpt-4",
+            "gpt-4-0314",
+            "gpt-4-0613",
+            "gpt-4-32k",
+            "gpt-4-32k-0314",
+            "gpt-4-32k-0613",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-16k",
+            "gpt-3.5-turbo-0301",
+            "gpt-3.5-turbo-0613",
+            "gpt-3.5-turbo-16k-0613",
+        ],
+    ]
+    frequency_penalty: Optional[float] = 0.0
+    # # function_call: completion_create_params.FunctionCall = None,
+    # functions: List[completion_create_params.Function] = [],
+    # logit_bias: Optional[Dict[str, int]] = None
+    max_tokens: Optional[int] = 2000
+    n: Optional[int] = 1
+    presence_penalty: Optional[float] = 0.0
+    # response_format: completion_create_params.ResponseFormat = None
+    seed: Optional[int] = 0
+    stop: Union[Optional[str], List[str]] = "stop"
+    stream: Optional[Literal[False]] | Literal[True] = False
+    temperature: Optional[float] = 0.8
+    # tool_choice: ChatCompletionToolChoiceOptionParam = "auto"
+    # tools: List[ChatCompletionToolParam] = None
+    top_p: Optional[float] = 1
     user: str = ""
+    # # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+    # # The extra values given here take precedence over values defined on the client or passed to this method.
+    # extra_headers: Headers | None = None
+    # extra_query: Query | None = None
+    # extra_body: Body | None = None
+    # timeout: float | httpx.Timeout | None = None
+
 
 
 class Choice(BaseModel):
