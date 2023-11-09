@@ -9,16 +9,15 @@ from autobots.api.v1.api_actions.text2video import api_actions_text2video_stable
 
 router = APIRouter()
 
-router.include_router(api_actions.router)
+router.include_router(api_actions.router, tags=["actions"])
 # router.include_router(api_action_create.router)
 # text2text
-router.include_router(text2text.router)
+router.include_router(text2text.router, tags=["actions/text2text"])
 # text2img
-router.include_router(api_actions_text2img_openai.router)
-router.include_router(api_actions_text2img_stable_diffusion.router)
-router.include_router(api_actions_text2img_stability_ai.router)
+router.include_router(api_actions_text2img_openai.router, tags=["actions/text2img"])
+router.include_router(api_actions_text2img_stable_diffusion.router, tags=["actions/text2img"])
+router.include_router(api_actions_text2img_stability_ai.router, tags=["actions/text2img"])
 # img2img
-router.include_router(image_mixer_stable_diffusion.router)
+router.include_router(image_mixer_stable_diffusion.router, tags=["actions/img2img"])
 # text2video
-router.include_router(api_actions_text2video_stable_diffusion.router)
-router.include_router(fetch_stable_diffusion.router)
+router.include_router(api_actions_text2video_stable_diffusion.router, tags=["actions/text2video"])
