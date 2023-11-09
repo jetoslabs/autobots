@@ -11,7 +11,7 @@ from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffus
     ActionImageMixerStableDiffusion
 from autobots.action.action_type.action_mock.action_mock import MockAction
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
-from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
+# from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionGenTextLlmChatOpenaiV2
@@ -44,10 +44,10 @@ class ActionFactory:
                 input = ActionGenImageDalleOpenAiV2.get_input_type().model_validate(action_input_dict)
                 return await ActionGenImageDalleOpenAiV2(config).run_action(input)
 
-            case ActionType.text2img_stability_ai:
-                config = ActionGenImageStabilityAiV2.get_config_type().model_validate(action_doc.config)
-                input = ActionGenImageStabilityAiV2.get_input_type().model_validate(action_input_dict)
-                return await ActionGenImageStabilityAiV2(config).run_action(input)
+            # case ActionType.text2img_stability_ai:
+            #     config = ActionGenImageStabilityAiV2.get_config_type().model_validate(action_doc.config)
+            #     input = ActionGenImageStabilityAiV2.get_input_type().model_validate(action_input_dict)
+            #     return await ActionGenImageStabilityAiV2(config).run_action(input)
 
             case ActionType.text2text_llm_chat_with_vector_search_openai:
                 config = ActionGenTextLlmChatWithVectorSearchOpenai.get_config_type().model_validate(action_doc.config)
