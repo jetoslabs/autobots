@@ -7,7 +7,7 @@ from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj
 from autobots.conn.openai.image_model import ImageReq
-from autobots.conn.openai.openai import get_openai
+from autobots.conn.openai.openai_client import get_openai
 
 
 class ActionCreateGenImageDalleOpenai(ActionCreate):
