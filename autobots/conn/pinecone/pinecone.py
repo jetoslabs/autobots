@@ -8,7 +8,7 @@ from pinecone import Client, Index, QueryResult
 # from pinecone.core.grpc.protos.vector_service_pb2 import DeleteResponse
 
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
-from autobots.conn.openai.openai import OpenAI, get_openai
+from autobots.conn.openai.openai_client import OpenAI, get_openai
 from autobots.core.log import log
 from autobots.core.settings import Settings, SettingsProvider
 

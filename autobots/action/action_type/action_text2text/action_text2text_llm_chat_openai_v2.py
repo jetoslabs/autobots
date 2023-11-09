@@ -7,7 +7,7 @@ from autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.conn.openai.chat import Message, ChatReq, Role
-from autobots.conn.openai.openai import get_openai
+from autobots.conn.openai.openai_client import get_openai
 from autobots.core.log import log
 
 

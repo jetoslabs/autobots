@@ -3,7 +3,7 @@ from typing import List, Dict
 from pydantic import BaseModel, HttpUrl
 
 from autobots.conn.openai.chat import ChatReq, Message, Role
-from autobots.conn.openai.openai import get_openai
+from autobots.conn.openai.openai_client import get_openai
 from autobots.conn.selenium.selenium import get_selenium
 from autobots.core.log import log
 

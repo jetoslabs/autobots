@@ -2,7 +2,7 @@ from typing import List
 
 from autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from autobots.conn.openai.chat import Message, Role, ChatRes, ChatReq
-from autobots.conn.openai.openai import get_openai
+from autobots.conn.openai.openai_client import get_openai
 from autobots.core.log import log
 
 Task_Prefix = "Task: "
