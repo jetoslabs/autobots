@@ -86,7 +86,7 @@ async def run_action(
         db: Database = Depends(get_mongo_db)
 ) -> Any:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserActions(user=user_orm, db=db).run_action(id, input)
+    resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input)
     return resp
 
 
