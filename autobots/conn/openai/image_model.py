@@ -39,7 +39,7 @@ class ImageReq(BaseModel):
     # timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
 
 
-class ImageRes(BaseModel):
-    url: Optional[str] = None
-    b64_json: Optional[str] = None
+# class ImageRes(BaseModel):
+#     url: Optional[str] = None
+#     b64_json: Optional[str] = None
 

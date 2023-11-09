@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from autobots.conn.openai.image_model import ImageRes
+# from autobots.conn.openai.image_model import ImageRes
 
 
 class TextObj(BaseModel):
@@ -13,5 +13,5 @@ class TextObjs(BaseModel):
     texts: List[TextObj] = []
 
 
-class ImagesRes(BaseModel):
-    images: List[ImageRes] = []
+# class ImagesResponse(BaseModel):
+#     images: List[ImageRes] = []
