@@ -20,15 +20,15 @@ class ActionGenImageStabilityAiV2(IAction[StabilityReq, TextObj, ImagesRes]):
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        pass
+        return StabilityReq
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        pass
+        return TextObj
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        pass
+        return ImagesRes
 
     def __init__(self, action_config: StabilityReq):
         super().__init__(action_config)
