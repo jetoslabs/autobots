@@ -8,7 +8,20 @@ from openai.types.chat import ChatCompletionMessageParam, completion_create_para
 from pydantic import BaseModel
 
 # from autobots.core.config import OpenaiEngine, get_config
-
+# class GPTModel(str, Enum):
+#     gpt_4_1106_preview="gpt-4-1106-preview"
+#     gpt_4_vision_preview="gpt-4-vision-preview"
+#     gpt_4="gpt-4"
+#     gpt_4_0314="gpt-4-0314"
+#     gpt_4_0613="gpt-4-0613"
+#     gpt_4_32k="gpt-4-32k"
+#     gpt_4_32k_0314="gpt-4-32k-0314"
+#     gpt_4_32k_0613="gpt-4-32k-0613"
+#     gpt_3_5_turbo="gpt-3.5-turbo"
+#     gpt_3_5_turbo_16k="gpt-3.5-turbo-16k"
+#     gpt_3_5_turbo_0301="gpt-3.5-turbo-0301"
+#     gpt_3_5_turbo_0613="gpt-3.5-turbo-0613"
+#     gpt_3_5_turbo_16k_0613="gpt-3.5-turbo-16k-0613"
 
 class Role(str, Enum):
     system = "system"
@@ -23,22 +36,21 @@ class Message(BaseModel):
 
 class ChatReq(BaseModel):
     messages: List[ChatCompletionMessageParam]
-    model: Union[
-        str,
-        Literal[
-            "gpt-4",
-            "gpt-4-0314",
-            "gpt-4-0613",
-            "gpt-4-32k",
-            "gpt-4-32k-0314",
-            "gpt-4-32k-0613",
-            "gpt-3.5-turbo",
-            "gpt-3.5-turbo-16k",
-            "gpt-3.5-turbo-0301",
-            "gpt-3.5-turbo-0613",
-            "gpt-3.5-turbo-16k-0613",
-        ],
-    ]
+    model: Literal[
+        "gpt-4-1106-preview",
+        "gpt-4-vision-preview",
+        "gpt-4",
+        "gpt-4-0314",
+        "gpt-4-0613",
+        "gpt-4-32k",
+        "gpt-4-32k-0314",
+        "gpt-4-32k-0613",
+        "gpt-3.5-turbo",
+        "gpt-3.5-turbo-16k",
+        "gpt-3.5-turbo-0301",
+        "gpt-3.5-turbo-0613",
+        "gpt-3.5-turbo-16k-0613",
+    ] = "gpt-3.5-turbo-16k-0613"
     frequency_penalty: Optional[float] = 0.0
     # # function_call: completion_create_params.FunctionCall = None,
     # functions: List[completion_create_params.Function] = [],
