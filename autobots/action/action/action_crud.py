@@ -8,6 +8,7 @@ from pymongo.results import DeleteResult
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionDocCreate, ActionDocFind, ActionDocUpdate
 from autobots.core.database.mongo_base import get_mongo_db
+from autobots.core.log import log
 
 
 class ActionCRUD:
@@ -49,18 +50,22 @@ class ActionCRUD:
         skipped = 0
         filled = 0
         for doc in cursor:
-            # skipping records
-            if skipped < offset * limit:
-                skipped = skipped + 1
-                continue
-            # break if limit reached
-            if filled >= limit:
-                break
-            filled = filled + 1
-            # Mongo Result field _id has ObjectId, converting it to str for pydantic model
-            doc["_id"] = str(doc.get("_id"))
-            action_doc = ActionDoc.model_validate(doc)
-            action_docs.append(action_doc)
+            action_doc = None
+            try:
+                # skipping records
+                if skipped < offset * limit:
+                    skipped = skipped + 1
+                    continue
+                # break if limit reached
+                if filled >= limit:
+                    break
+                filled = filled + 1
+                # Mongo Result field _id has ObjectId, converting it to str for pydantic model
+                doc["_id"] = str(doc.get("_id"))
+                action_doc = ActionDoc.model_validate(doc)
+                action_docs.append(action_doc)
+            except Exception as e:
+                log.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
 
         return action_docs
 
