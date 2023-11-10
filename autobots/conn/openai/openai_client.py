@@ -2,12 +2,14 @@ import time
 from functools import lru_cache
 
 from openai import AsyncOpenAI, AsyncStream
+from openai._base_client import HttpxBinaryResponseContent
 from openai.types import CreateEmbeddingResponse, ImagesResponse
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 from autobots.conn.openai.chat import ChatReq
 from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
 from autobots.conn.openai.image_model import ImageReq
+from autobots.conn.openai.speech_model import SpeechReq
 from autobots.core.log import log
 from autobots.core.settings import Settings, SettingsProvider
 
@@ -48,7 +50,7 @@ class OpenAI:
             log.trace("Starting OpenAI Embedding")
             res: CreateEmbeddingResponse = await self.client.embeddings.create(**embedding_req.model_dump())
             log.trace("Completed OpenAI Embedding")
-            resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
+            resp: EmbeddingRes = EmbeddingRes(**res.model_dump())
             return resp
         except Exception as e:
             log.exception(e)
@@ -58,6 +60,15 @@ class OpenAI:
             log.trace("Starting OpenAI create image")
             res: ImagesResponse = await self.client.images.generate(**image_req.model_dump())
             log.trace("Completed OpenAI create image")
+            return res
+        except Exception as e:
+            log.exception(e)
+
+    async def speech(self, speech_req: SpeechReq) -> HttpxBinaryResponseContent | None:
+        try:
+            log.trace("Starting OpenAI create speech")
+            res = await self.client.audio.speech.create(**speech_req.model_dump())
+            log.trace("Completed OpenAI create speech")
             return res
         except Exception as e:
             log.exception(e)
