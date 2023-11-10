@@ -10,6 +10,7 @@ from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from autobots.action.action_type.action_mock.action_mock import MockAction
+from autobots.action.action_type.action_text2audio.action_text2audio_openai import ActionText2AudioOpenai
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 # from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
@@ -68,6 +69,11 @@ class ActionFactory:
                 config = ActionText2VideoStableDiffusion.get_config_type().model_validate(action_doc.config)
                 input = ActionText2VideoStableDiffusion.get_input_type().model_validate(action_input_dict)
                 return await ActionText2VideoStableDiffusion(config).run_action(input)
+
+            case ActionType.text2audio_openai:
+                config = ActionText2AudioOpenai.get_config_type().model_validate(action_doc.config)
+                input = ActionText2AudioOpenai.get_input_type().model_validate(action_input_dict)
+                return await ActionText2AudioOpenai(config).run_action(input)
 
             case ActionType.mock_action:
                 config = MockAction.get_config_type().model_validate(action_doc.config)

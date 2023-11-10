@@ -1,7 +1,7 @@
 import io
 from typing import Type
 
-from pydantic import HttpUrl, ValidationError
+from pydantic import HttpUrl, ValidationError, BaseModel
 
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
@@ -13,7 +13,11 @@ from autobots.core.log import log
 from autobots.core.utils import gen_hash
 
 
-class ActionText2AudioOpenai(IAction[SpeechReq, TextObj, HttpUrl]):
+class AudioRes(BaseModel):
+    url: str
+
+
+class ActionText2AudioOpenai(IAction[SpeechReq, TextObj, AudioRes]):
     type = ActionType.text2text_llm_chat_openai
 
     @staticmethod
@@ -26,12 +30,12 @@ class ActionText2AudioOpenai(IAction[SpeechReq, TextObj, HttpUrl]):
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        return HttpUrl
+        return AudioRes
 
     def __init__(self, action_config: SpeechReq):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: TextObj) -> HttpUrl | None:
+    async def run_action(self, action_input: TextObj) -> AudioRes | None:
         try:
             if action_input and action_input.text != "":
                 input = f"{self.action_config.input} {action_input.text}"
@@ -43,7 +47,8 @@ class ActionText2AudioOpenai(IAction[SpeechReq, TextObj, HttpUrl]):
                 io.BytesIO(httpx_binary_response.content),
                 f"{gen_hash(self.action_config.input)}.{self.action_config.response_format}"
             )
-            return HttpUrl(url)
+            http_url = HttpUrl(url)
+            return AudioRes(url=str(http_url))
         except ValidationError as e:
             log.exception(e)
         except Exception as e:
