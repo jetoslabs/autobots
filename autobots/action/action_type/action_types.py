@@ -17,6 +17,9 @@ class ActionType(str, Enum):
     # text2video
     text2video_stable_diffusion = "text2video_stable_diffusion"
 
+    # text2audio
+    text2audio_openai = "text2audio_openai"
+
     # mock
     mock_action = "mock_action"
 
