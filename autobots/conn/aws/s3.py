@@ -11,7 +11,7 @@ from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 from autobots.core.log import log
 from autobots.core.settings import Settings, SettingsProvider
 
-
+# TODO: deprecate
 class S3:
 
     def __init__(self, region_name: str, aws_access_key_id: str, aws_secret_access_key: str, bucket_name: str):

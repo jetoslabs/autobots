@@ -117,7 +117,7 @@ def get_aws_s3(
     )
 
 @lru_cache
-def get_private_s3(settings: Settings = SettingsProvider.sget()) -> AwsS3:
+def get_public_s3(settings: Settings = SettingsProvider.sget()) -> AwsS3:
     s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
                     settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME)
     return s3
