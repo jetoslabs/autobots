@@ -10,7 +10,7 @@ from autobots.conn.openai.speech_model import SpeechReq
 @pytest.mark.asyncio
 async def test_chat_happy_path(set_test_settings):
     params = SpeechReq(
-        input=f"Hello! I am Autobots X. I am here to assist you. Today is {datetime.datetime.now().date()}. "
+        input=f"Hello! I am Autobot X. I am here to assist you. Today is {datetime.datetime.now().strftime('%B %d, %Y')}."
     )
 
     resp:  HttpxBinaryResponseContent = await get_openai().speech(speech_req=params)
