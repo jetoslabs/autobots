@@ -9,7 +9,7 @@ class TranscriptionReq(BaseModel):
     # file: FileTypes
     model: Literal["whisper-1"] = "whisper-1"
     language: str = "en"
-    prompt: str = "",
+    prompt: str = ""
     response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] = "json"
     temperature: float = 0.2
     # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
