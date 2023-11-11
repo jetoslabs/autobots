@@ -22,6 +22,7 @@ class ActionType(str, Enum):
 
     # audio2text
     audio2text_openai = "audio2text_openai"
+    audio2text_translation_openai = "audio2text_translation_openai"
 
     # mock
     mock_action = "mock_action"

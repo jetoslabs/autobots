@@ -8,6 +8,8 @@ from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, ActionResultUpdate
 from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.action.action_type.action_audio2text.action_audio2text_openai import ActionAudio2TextOpenai
+from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
+    ActionAudio2TextTranslationOpenai
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from autobots.action.action_type.action_mock.action_mock import MockAction
@@ -80,6 +82,11 @@ class ActionFactory:
                 config = ActionAudio2TextOpenai.get_config_type().model_validate(action_doc.config)
                 input = ActionAudio2TextOpenai.get_input_type().model_validate(action_input_dict)
                 return await ActionAudio2TextOpenai(config).run_action(input)
+
+            case ActionType.audio2text_translation_openai:
+                config = ActionAudio2TextTranslationOpenai.get_config_type().model_validate(action_doc.config)
+                input = ActionAudio2TextTranslationOpenai.get_input_type().model_validate(action_input_dict)
+                return await ActionAudio2TextTranslationOpenai(config).run_action(input)
 
             case ActionType.mock_action:
                 config = MockAction.get_config_type().model_validate(action_doc.config)
