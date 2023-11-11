@@ -18,7 +18,7 @@ class AudioRes(BaseModel):
 
 
 class ActionText2AudioOpenai(IAction[SpeechReq, TextObj, AudioRes]):
-    type = ActionType.text2text_llm_chat_openai
+    type = ActionType.text2audio_openai
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
