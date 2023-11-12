@@ -13,7 +13,7 @@ from autobots.action.action_type.action_audio2text.action_audio2text_translation
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from autobots.action.action_type.action_mock.action_mock import MockAction
-from autobots.action.action_type.action_text2audio.action_text2audio_openai import ActionText2AudioOpenai
+from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 # from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
@@ -73,10 +73,10 @@ class ActionFactory:
                 input = ActionText2VideoStableDiffusion.get_input_type().model_validate(action_input_dict)
                 return await ActionText2VideoStableDiffusion(config).run_action(input)
 
-            case ActionType.text2audio_openai:
-                config = ActionText2AudioOpenai.get_config_type().model_validate(action_doc.config)
-                input = ActionText2AudioOpenai.get_input_type().model_validate(action_input_dict)
-                return await ActionText2AudioOpenai(config).run_action(input)
+            case ActionType.text2audio_speech_openai:
+                config = ActionText2AudioSpeechOpenai.get_config_type().model_validate(action_doc.config)
+                input = ActionText2AudioSpeechOpenai.get_input_type().model_validate(action_input_dict)
+                return await ActionText2AudioSpeechOpenai(config).run_action(input)
 
             case ActionType.audio2text_transcription_openai:
                 config = ActionAudio2TextTranscriptionOpenai.get_config_type().model_validate(action_doc.config)

@@ -18,7 +18,7 @@ class ActionType(str, Enum):
     text2video_stable_diffusion = "text2video_stable_diffusion"
 
     # text2audio
-    text2audio_openai = "text2audio_openai"
+    text2audio_speech_openai = "text2audio_openai"
 
     # audio2text
     audio2text_transcription_openai = "audio2text_transcription_openai"

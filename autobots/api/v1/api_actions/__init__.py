@@ -4,7 +4,7 @@ from autobots.api.v1.api_actions import api_actions, api_action_create, api_acti
 from autobots.api.v1.api_actions.audio2text import api_actions_audio2text_transcription_openai, \
     api_actions_audio2text_translation_openai
 from autobots.api.v1.api_actions.stable_diffusion import fetch_stable_diffusion
-from autobots.api.v1.api_actions.text2audio import api_actions_text2audio_openai
+from autobots.api.v1.api_actions.text2audio import api_actions_text2audio_speech_openai
 from autobots.api.v1.api_actions.text2img import api_actions_text2img_stable_diffusion, api_actions_text2img_openai, api_actions_text2img_stability_ai
 from autobots.api.v1.api_actions.img2img import image_mixer_stable_diffusion
 from autobots.api.v1.api_actions.text2text import api_actions_text2text
@@ -25,7 +25,7 @@ router.include_router(image_mixer_stable_diffusion.router, tags=["actions/img2im
 # text2video
 router.include_router(api_actions_text2video_stable_diffusion.router, tags=["actions/text2video"])
 # text2audio
-router.include_router(api_actions_text2audio_openai.router, tags=["actions/text2audio"])
+router.include_router(api_actions_text2audio_speech_openai.router, tags=["actions/text2audio"])
 # audio2text
 router.include_router(api_actions_audio2text_transcription_openai.router, tags=["actions/audio2text"])
 router.include_router(api_actions_audio2text_translation_openai.router, tags=["actions/audio2text"])

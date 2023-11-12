@@ -9,7 +9,7 @@ from pymongo.database import Database
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
-from autobots.action.action_type.action_text2audio.action_text2audio_openai import AudioRes
+from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import AudioRes
 from autobots.action.action_type.action_types import ActionType
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.openai.speech_model import SpeechReq
@@ -20,16 +20,16 @@ from autobots.user.user_orm_model import UserORM
 router = APIRouter()
 
 
-class ActionCreateText2AudioOpenai(ActionCreate):
-    type: ActionType = ActionType.text2audio_openai
+class ActionCreateText2AudioSpeechOpenai(ActionCreate):
+    type: ActionType = ActionType.text2audio_speech_openai
     config: SpeechReq
     input: Optional[TextObj] = None
     output: Optional[AudioRes] = None
 
 
-@router.post("/text2audio/openai")
-async def create_action_text2audio_openai(
-        action_create: ActionCreateText2AudioOpenai,
+@router.post("/text2audio/speech_openai")
+async def create_action_text2audio_speech_openai(
+        action_create: ActionCreateText2AudioSpeechOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
