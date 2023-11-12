@@ -19,7 +19,7 @@ from autobots.user.user_orm_model import UserORM
 router = APIRouter()
 
 
-@router.post("/text2img/dalle/openai")
+@router.post("/text2img/dalle_openai")
 async def create_text2img_dalle_openai(
         action_create: ActionCreateGenImageDalleOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),

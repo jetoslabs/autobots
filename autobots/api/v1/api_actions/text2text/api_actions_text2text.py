@@ -18,7 +18,7 @@ from autobots.user.user_orm_model import UserORM
 router = APIRouter()
 
 
-@router.post("/text2text/llm_chat/openai")
+@router.post("/text2text/llm_chat_openai")
 async def create_action_gen_text_llm_chat_openai(
         action_create: ActionCreateGenTextLlmChatOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),

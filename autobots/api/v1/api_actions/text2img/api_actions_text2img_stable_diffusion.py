@@ -28,8 +28,8 @@ async def create_action_text2img_stable_diffusion(
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         action_create = ActionCreateText2ImgStableDiffusion(**action.model_dump())
-        action_doc = await UserActions(user_orm).create_action(
-            ActionCreate(**action_create.model_dump()), db
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
         )
         return action_doc
     except Exception as e:
@@ -46,7 +46,7 @@ async def run_action_text2img_stable_diffusion(
 ) -> StableDiffusionRes:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action = await UserActions(user=user_orm).get_action(action_id, db)
+        action = await UserActions(user=user_orm, db=db).get_action(action_id)
         text2img = ActionText2ImgStableDiffusion(
             Text2ImgReqModel.model_validate(action.config)
         )
