@@ -6,7 +6,7 @@ from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, A
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
-from autobots.conn.openai.chat import Message, ChatReq, Role
+from autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
 from autobots.conn.openai.openai_client import get_openai
 from autobots.datastore.datastore import Datastore
 
@@ -58,7 +58,7 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
         # LM chat
         message = Message(role=Role.user, content=f"{context}Question: {action_input.text}")
         self.action_config.input.messages = self.action_config.config.chat_req.messages + [message]
-        chat_res = await get_openai().chat(chat_req=self.action_config.config.chat_req)
+        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.config.chat_req)
         for choice in chat_res.choices:
             text_objs.texts.append(TextObj(text=choice.message.content))
         return text_objs

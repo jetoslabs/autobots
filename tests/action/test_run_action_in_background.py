@@ -6,7 +6,7 @@ from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
-from autobots.conn.openai.chat import ChatReq, Message, Role
+from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.core.utils import gen_uuid
 from autobots.user.user_orm_model import UserORM

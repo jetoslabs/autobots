@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from pydantic import BaseModel, HttpUrl
 
-from autobots.conn.openai.chat import ChatReq, Message, Role
+from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
 from autobots.conn.openai.openai_client import get_openai
 from autobots.conn.selenium.selenium import get_selenium
 from autobots.core.log import log
@@ -65,9 +65,9 @@ class OneStepAgent:
                     )
         ]
         chat_req = ChatReq(messages=messages)
-        chat_res_1 = await get_openai().chat(chat_req=chat_req)
+        chat_res_1 = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp_1 = chat_res_1.choices[0].message
-        chat_res_2 = await get_openai().chat(chat_req=chat_req)
+        chat_res_2 = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp_2 = chat_res_2.choices[0].message
 
         completed = "yes" in resp_1.content.lower() and "yes" in resp_2.content.lower()
@@ -82,7 +82,7 @@ class OneStepAgent:
     async def generate_prompt_for_goal(self, agent_data) -> str:
         msg1 = Message(role="user", content=f"My goal: {agent_data.context[-1].content}")
         chat_req = ChatReq(messages=prompt_generator_messages + [msg1])  # + agent_data.context)
-        chat_res = await get_openai().chat(chat_req=chat_req)
+        chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content
 
@@ -99,7 +99,7 @@ class OneStepAgent:
         msg1 = Message(role="user", content=f"My goal: {prompt}")
         chat_req = ChatReq(messages=[msg0, msg1])
 
-        chat_res = await get_openai().chat(chat_req=chat_req)
+        chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content
 
@@ -119,7 +119,7 @@ class OneStepAgent:
             chat_req: ChatReq = ChatReq(messages=[Message(role=Role.user, content=next_action_input)])
             # llm_chat_data = LLMChatData(chat_req=chat_req)
             # await LLMChat().run(action_data=llm_chat_data)
-            chat_res = await get_openai().chat(chat_req=chat_req)
+            chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
             resp = chat_res.choices[0].message
 
             agent_data.context.append(
@@ -141,6 +141,6 @@ class OneStepAgent:
     async def plan_for_goal(self, agent_data):
         msg1 = Message(role="user", content=f"My goal: {agent_data.goal}")
         chat_req = ChatReq(messages=[tot_message, msg1])
-        chat_res = await get_openai().chat(chat_req=chat_req)
+        chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content

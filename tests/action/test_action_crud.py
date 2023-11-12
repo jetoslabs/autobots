@@ -7,7 +7,7 @@ from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFi
 from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
-from autobots.conn.openai.chat import ChatReq, Role, Message
+from autobots.conn.openai.openai_chat.chat_model import ChatReq, Role, Message
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
 

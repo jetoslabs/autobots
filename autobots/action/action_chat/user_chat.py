@@ -9,7 +9,7 @@ from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_chat.chat_crud import ChatCRUD
 from autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
     ChatUpdate
-from autobots.conn.openai.chat import ChatReq, Role, Message
+from autobots.conn.openai.openai_chat.chat_model import ChatReq, Role, Message
 from autobots.conn.openai.openai_client import get_openai
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
