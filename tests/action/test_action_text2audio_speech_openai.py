@@ -4,7 +4,7 @@ import pytest
 
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
-from autobots.conn.openai.speech_model import SpeechReq
+from autobots.conn.openai.openai_audio.speech_model import SpeechReq
 
 
 @pytest.mark.asyncio

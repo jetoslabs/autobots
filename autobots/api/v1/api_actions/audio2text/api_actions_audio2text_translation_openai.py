@@ -11,7 +11,7 @@ from autobots.action.action.user_actions import UserActions
 from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import AudioRes
 from autobots.action.action_type.action_types import ActionType
 from autobots.auth.security import get_user_from_access_token
-from autobots.conn.openai.translation_model import TranslationReq
+from autobots.conn.openai.openai_audio.translation_model import TranslationReq
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
 
