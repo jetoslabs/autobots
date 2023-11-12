@@ -12,7 +12,7 @@ from autobots.action.action.user_actions import UserActions
 from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import AudioRes
 from autobots.action.action_type.action_types import ActionType
 from autobots.auth.security import get_user_from_access_token
-from autobots.conn.openai.speech_model import SpeechReq
+from autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM

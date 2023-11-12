@@ -6,7 +6,7 @@ from pydantic import BaseModel, HttpUrl, ValidationError
 from autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.openai_client import get_openai
-from autobots.conn.openai.translation_model import TranslationReq
+from autobots.conn.openai.openai_audio.translation_model import TranslationReq
 from autobots.core.log import log
 
 
@@ -39,7 +39,7 @@ class ActionAudio2TextTranslationOpenai(IAction[TranslationReq, AudioRes, Transl
             if action_input.url is not None:
                 self.action_config.file_url = HttpUrl(action_input.url)
 
-            translation = await get_openai().translation(self.action_config)
+            translation = await get_openai().openai_audio.translation(self.action_config)
             return translation
         except ValidationError as e:
             log.exception(e)

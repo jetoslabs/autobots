@@ -8,7 +8,7 @@ from autobots.action.action_type.abc.IAction import IAction, ActionConfigType, A
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.aws.aws_s3 import get_public_s3
 from autobots.conn.openai.openai_client import get_openai
-from autobots.conn.openai.speech_model import SpeechReq
+from autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from autobots.core.log import log
 from autobots.core.utils import gen_hash
 
@@ -40,7 +40,7 @@ class ActionText2AudioSpeechOpenai(IAction[SpeechReq, TextObj, AudioRes]):
             if action_input and action_input.text != "":
                 input = f"{self.action_config.input} {action_input.text}"
                 self.action_config.input = input
-            httpx_binary_response = await get_openai().speech(speech_req=self.action_config)
+            httpx_binary_response = await get_openai().openai_audio.speech(speech_req=self.action_config)
             if not httpx_binary_response or not httpx_binary_response.content:
                 return None
             url = await get_public_s3().put_file_obj(

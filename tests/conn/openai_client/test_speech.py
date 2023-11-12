@@ -6,7 +6,7 @@ from openai._base_client import HttpxBinaryResponseContent
 
 from autobots.conn.aws.aws_s3 import get_public_s3
 from autobots.conn.openai.openai_client import get_openai
-from autobots.conn.openai.speech_model import SpeechReq
+from autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from autobots.core.utils import gen_hash
 
 
@@ -16,7 +16,7 @@ async def test_speech_happy_path(set_test_settings):
     params = SpeechReq(
         input=input
     )
-    resp:  HttpxBinaryResponseContent = await get_openai().speech(speech_req=params)
+    resp:  HttpxBinaryResponseContent = await get_openai().openai_audio.speech(speech_req=params)
     assert resp is not None
 
     url = await get_public_s3().put_file_obj(
