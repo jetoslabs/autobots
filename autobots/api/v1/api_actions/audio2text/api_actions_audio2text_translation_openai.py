@@ -25,7 +25,7 @@ class ActionCreateAudio2TextTranslationOpenai(ActionCreate):
     output: Optional[Translation] = None
 
 
-@router.post("/audio2text/translation/openai")
+@router.post("/audio2text/translation_openai")
 async def create_action_audio2text_translation_openai(
         action_create: ActionCreateAudio2TextTranslationOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),

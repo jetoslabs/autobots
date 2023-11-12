@@ -18,7 +18,7 @@ from autobots.user.user_orm_model import UserORM
 router = APIRouter()
 
 
-@router.post("/img2img/image_mixer/stable_diffusion")
+@router.post("/img2img/image_mixer_stable_diffusion")
 async def create_action_image_mixer_stable_diffusion(
         action_create: ActionCreateImageMixerStableDiffusion,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
