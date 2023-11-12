@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from autobots.action.action.action_doc_model import ActionDoc
-from autobots.conn.openai.chat import Message
+from autobots.conn.openai.openai_chat.chat_model import Message
 
 
 class ChatFind(BaseModel):

@@ -8,7 +8,7 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_open
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
-from autobots.conn.openai.chat import ChatReq, Message, Role
+from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
 from autobots.core.utils import gen_random_str
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate

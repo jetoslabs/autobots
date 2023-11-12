@@ -1,7 +1,7 @@
 from typing import List
 
 from autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
-from autobots.conn.openai.chat import Message, Role, ChatRes, ChatReq
+from autobots.conn.openai.openai_chat.chat_model import Message, Role, ChatRes, ChatReq
 from autobots.conn.openai.openai_client import get_openai
 from autobots.core.log import log
 
@@ -68,7 +68,7 @@ class ReasonActObserve():
     async def think(self, messages: List[Message]) -> str:
         req_message = messages + [Message(role=Role.user, content="Now Think. Respond in maximum of 500 words")]
         chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-        resp: ChatRes = await get_openai().chat(chat_req)
+        resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
         response = resp.choices[0].message.content
         log.info(f"{Thought_Prefix}{response}")
         return f"{response}"
@@ -77,7 +77,7 @@ class ReasonActObserve():
         try:
             req_message = messages + [Message(role=Role.user, content="Based on above thought, Now Select one Action and one action only")]
             chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-            resp: ChatRes = await get_openai().chat(chat_req)
+            resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
             response = resp.choices[0].message.content
             log.info(f"{response}")
             return f"{response}"

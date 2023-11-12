@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from autobots.action.action.common_action_models import TextObj
 from autobots.agent.one_step import OneStepAgent, AgentData
 from autobots.agent.reason_act_observe import ReasonActObserve
-from autobots.conn.openai.chat import Message
+from autobots.conn.openai.openai_chat.chat_model import Message
 
 router = APIRouter()
 
