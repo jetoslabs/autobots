@@ -11,7 +11,7 @@ from autobots.action.action.user_actions import UserActions
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionCreateGenImageDalleOpenai, \
     ActionGenImageDalleOpenAiV2
 from autobots.auth.security import get_user_from_access_token
-from autobots.conn.openai.image_model import ImageReq
+from autobots.conn.openai.openai_images.image_model import ImageReq
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.core.log import log
 from autobots.user.user_orm_model import UserORM
