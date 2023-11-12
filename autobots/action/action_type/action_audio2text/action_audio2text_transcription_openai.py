@@ -14,8 +14,8 @@ class AudioRes(BaseModel):
     url: str
 
 
-class ActionAudio2TextOpenai(IAction[TranscriptionReq, AudioRes, Transcription]):
-    type = ActionType.audio2text_openai
+class ActionAudio2TextTranscriptionOpenai(IAction[TranscriptionReq, AudioRes, Transcription]):
+    type = ActionType.audio2text_transcription_openai
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

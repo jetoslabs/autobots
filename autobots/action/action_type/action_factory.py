@@ -7,7 +7,7 @@ from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, ActionResultUpdate
 from autobots.action.action_result.user_action_result import UserActionResult
-from autobots.action.action_type.action_audio2text.action_audio2text_openai import ActionAudio2TextOpenai
+from autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import ActionAudio2TextTranscriptionOpenai
 from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
     ActionAudio2TextTranslationOpenai
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
@@ -78,10 +78,10 @@ class ActionFactory:
                 input = ActionText2AudioOpenai.get_input_type().model_validate(action_input_dict)
                 return await ActionText2AudioOpenai(config).run_action(input)
 
-            case ActionType.audio2text_openai:
-                config = ActionAudio2TextOpenai.get_config_type().model_validate(action_doc.config)
-                input = ActionAudio2TextOpenai.get_input_type().model_validate(action_input_dict)
-                return await ActionAudio2TextOpenai(config).run_action(input)
+            case ActionType.audio2text_transcription_openai:
+                config = ActionAudio2TextTranscriptionOpenai.get_config_type().model_validate(action_doc.config)
+                input = ActionAudio2TextTranscriptionOpenai.get_input_type().model_validate(action_input_dict)
+                return await ActionAudio2TextTranscriptionOpenai(config).run_action(input)
 
             case ActionType.audio2text_translation_openai:
                 config = ActionAudio2TextTranslationOpenai.get_config_type().model_validate(action_doc.config)
