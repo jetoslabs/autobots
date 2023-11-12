@@ -7,7 +7,7 @@ from pinecone import Client, Index, QueryResult
 # from pinecone import QueryResponse, FetchResponse, ScoredVector
 # from pinecone.core.grpc.protos.vector_service_pb2 import DeleteResponse
 
-from autobots.conn.openai.embedding import EmbeddingReq, EmbeddingRes
+from autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingReq, EmbeddingRes
 from autobots.conn.openai.openai_client import OpenAI, get_openai
 from autobots.core.log import log
 from autobots.core.settings import Settings, SettingsProvider
@@ -45,7 +45,7 @@ class Pinecone:
     async def upsert_data(self, vector_id: str, data: str, metadata: dict, namespace: str = "default"):
         upserted = []
         embedding_req = EmbeddingReq(input=data)
-        embedding_res: EmbeddingRes = await self.open_ai.embedding(embedding_req)
+        embedding_res: EmbeddingRes = await self.open_ai.openai_embeddings.embeddings(embedding_req)
         for embedding_data in embedding_res.data:
             # vector = (Vector_ID, Dense_vector_values, Vector_metadata)
             vector = (vector_id, embedding_data.embedding, metadata)
@@ -62,7 +62,7 @@ class Pinecone:
             include_metadata: bool = True,
     ) -> List[QueryResult]:
         embedding_req = EmbeddingReq(input=data)
-        embedding_res: EmbeddingRes = await self.open_ai.embedding(embedding_req)
+        embedding_res: EmbeddingRes = await self.open_ai.openai_embeddings.embeddings(embedding_req)
         try:
             for embedding_data in embedding_res.data:
                 res: List[QueryResult] = self.index.query(
