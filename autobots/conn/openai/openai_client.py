@@ -7,7 +7,7 @@ from httpx import URL
 from openai import AsyncOpenAI, AsyncStream
 from openai._base_client import HttpxBinaryResponseContent
 from openai.types import CreateEmbeddingResponse, ImagesResponse
-from openai.types.audio import Transcription
+from openai.types.audio import Transcription, Translation
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 from pydantic import HttpUrl
 
@@ -109,7 +109,7 @@ class OpenAI:
             # delete the file
             os.remove(full_path_name)
 
-    async def translation(self, translation_req: TranslationReq) ->  Translation | None:
+    async def translation(self, translation_req: TranslationReq) -> Translation | None:
         # create new single directory
         path = "./to_del"
         if not os.path.exists(path):
