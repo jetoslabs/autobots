@@ -11,7 +11,7 @@ from autobots.auth.data_models import BearerAccessToken
 from autobots.auth.security import get_user_from_access_token, get_user_from_creds
 from autobots.core.settings import SettingsProvider
 
-router = APIRouter()
+router = APIRouter(prefix=SettingsProvider.sget().API_AUTH, tags=[SettingsProvider.sget().API_AUTH])
 
 
 @router.post("/")

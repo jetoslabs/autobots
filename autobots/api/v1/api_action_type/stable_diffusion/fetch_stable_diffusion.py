@@ -6,7 +6,7 @@ from autobots.auth.security import get_user_from_access_token
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.stable_diffusion import StableDiffusion
 
-router = APIRouter()
+router = APIRouter(tags=["action_results/stable_diffusion"])
 
 
 @router.post("/fetch/stable_diffusion")

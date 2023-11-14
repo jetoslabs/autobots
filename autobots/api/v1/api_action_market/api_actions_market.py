@@ -5,6 +5,7 @@ import gotrue
 from fastapi import APIRouter, Depends
 from pymongo.database import Database
 
+from autobots import SettingsProvider
 from autobots.action.action.action_doc_model import ActionDoc, ActionFind
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action_market.user_actions_market import UserActionsMarket
@@ -12,7 +13,7 @@ from autobots.auth.security import get_user_from_access_token
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
 
-router = APIRouter()
+router = APIRouter(prefix=SettingsProvider.sget().API_ACTIONS_MARKET, tags=[SettingsProvider.sget().API_ACTIONS_MARKET])
 
 
 @router.post("/{id}/market/")

@@ -5,6 +5,7 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
+from autobots import SettingsProvider
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.auth.security import get_user_from_access_token
@@ -14,7 +15,7 @@ from autobots.core.database.mongo_base import get_mongo_db
 
 from autobots.user.user_orm_model import UserORM
 
-router = APIRouter()
+router = APIRouter(prefix=SettingsProvider.sget().API_ACTION_CHATS, tags=[SettingsProvider.sget().API_ACTION_CHATS])
 
 
 @router.post("/")
