@@ -8,7 +8,7 @@ from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionCreateText2VideoStableDiffusion, ActionText2VideoStableDiffusion, Text2VideoRunModel
 from autobots.action.action.user_actions import UserActions
-from autobots.api.v1.api_actions.text2video.api_actions_text2video_stable_diffusion_model import \
+from autobots.api.v1.api_action_type.text2video.api_actions_text2video_stable_diffusion_model import \
     ActionCreateAPIModelText2VideoStableDiffusion
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes

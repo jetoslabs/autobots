@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from autobots.api.v1.api_actions.api_action_model import ActionCreateAPIModel
+from autobots.api.v1.api_action.api_action_model import ActionCreateAPIModel
 from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel
 
 

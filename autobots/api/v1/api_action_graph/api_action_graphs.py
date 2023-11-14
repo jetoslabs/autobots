@@ -5,6 +5,7 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from pymongo.database import Database
 
+from autobots import SettingsProvider
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc
@@ -17,7 +18,7 @@ from autobots.action_graph.action_graph.user_action_graph import UserActionGraph
 
 from autobots.user.user_orm_model import UserORM
 
-router = APIRouter()
+router = APIRouter(prefix=SettingsProvider.sget().API_ACTION_GRAPHS, tags=[SettingsProvider.sget().API_ACTION_GRAPHS])
 
 
 @router.post("/")
