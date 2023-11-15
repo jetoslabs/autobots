@@ -4,6 +4,7 @@ import pytest
 from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
+from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import ActionCreateGenTextLlmChatOpenai
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
@@ -27,6 +28,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
     db = next(get_mongo_db())
 
     user_actions = UserActions(user=user, db=db)
+    user_action_market = UserActionsMarket(user, db)
     user_action_graph = UserActionGraphs(user=user, db=db)
     user_action_graph_result = UserActionGraphResult(user, db)
 
@@ -65,6 +67,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
         user_input = TextObj(text="Campaign for Nike shoes during Diwali Festival")
         action_graph_result_doc = await user_action_graph.run_in_background(
             user_actions,
+            user_action_market,
             user_action_graph_result,
             action_graph_doc.id,
             user_input,

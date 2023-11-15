@@ -1,10 +1,11 @@
 from typing import Dict, List, Set, Any
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks, HTTPException
 
 from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.action.action.user_actions import UserActions
+from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
     ActionGraphResultCreate, ActionGraphResultUpdate
@@ -15,41 +16,12 @@ from autobots.event_result.event_result_model import EventResultStatus
 
 class ActionGraph:
 
-    # @staticmethod
-    # async def run(user: UserORM, input: TextObj, node_action_map: Dict[str, str], graph_map: Dict[str, List[str]],
-    #               db: Database) -> Dict[str, Any]:
-    #     total_nodes = await ActionGraph.get_nodes(graph_map)
-    #     inverted_map = await ActionGraph.invert_map(graph_map)
-    #     action_response: Dict[str, Any] = {}
-    #
-    #     user_actions = UserActions(user, db)
-    #     while len(action_response) != len(total_nodes):
-    #         for node, values in inverted_map.items():
-    #             if await ActionGraph.is_work_done([node], action_response) or \
-    #                     not await ActionGraph.is_work_done(values, action_response):
-    #                 continue
-    #             if len(values) == 0:
-    #                 action_result = await user_actions.run_action(node_action_map.get(node), input.model_dump())
-    #                 action_response[node] = action_result
-    #             else:
-    #                 action_input = await ActionGraph.to_input(values, action_response)
-    #                 action_result = await user_actions.run_action(node_action_map.get(node), action_input.model_dump())
-    #                 action_response[node] = action_result
-    #
-    #     return action_response
-
     @staticmethod
     async def run_in_background(
-            # user: UserORM,
-            # input: TextObj,
-            # node_action_map: Dict[str, str],
-            # graph_map: Dict[str, List[str]],
-            # db: Database,
-            # user_action_graph_result: UserActionGraphResult,
-            # background_tasks: BackgroundTasks,
             action_graph_doc: ActionGraphDoc,
             action_graph_input_dict: Dict[str, Any],
             user_actions: UserActions,
+            user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
             background_tasks: BackgroundTasks = None
     ) -> ActionGraphResultDoc | None:
@@ -65,6 +37,7 @@ class ActionGraph:
             background_tasks.add_task(
                 ActionGraph._run_as_background_task,
                 user_actions,
+                user_actions_market,
                 action_graph_input_dict,
                 action_graph_result_doc,
                 user_action_graph_result
@@ -72,6 +45,7 @@ class ActionGraph:
         else:
             action_graph_result_doc = await ActionGraph._run_as_background_task(
                 user_actions,
+                user_actions_market,
                 action_graph_input_dict,
                 action_graph_result_doc,
                 user_action_graph_result
@@ -82,6 +56,7 @@ class ActionGraph:
     @staticmethod
     async def _run_as_background_task(
             user_actions: UserActions,
+            user_actions_market: UserActionsMarket,
             action_graph_input_dict: Dict[str, Any],
             action_graph_result_doc: ActionGraphResultDoc,
             user_action_graph_result: UserActionGraphResult
@@ -101,11 +76,23 @@ class ActionGraph:
                             not await ActionGraph.is_work_done(values, action_response):
                         continue
                     if len(values) == 0:
-                        action_result = await user_actions.run_action_v1(node_action_map.get(node), action_graph_input.model_dump())
+                        action_result = await ActionGraph.run_action(
+                            user_actions,
+                            user_actions_market,
+                            node_action_map.get(node),
+                            action_graph_input
+                        )
+                        # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_graph_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
                         action_input = await ActionGraph.to_input(values, action_response)
-                        action_result = await user_actions.run_action_v1(node_action_map.get(node), action_input.model_dump())
+                        action_result = await ActionGraph.run_action(
+                            user_actions,
+                            user_actions_market,
+                            node_action_map.get(node),
+                            action_input
+                        )
+                        # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
 
                     # Update action result graph
@@ -138,6 +125,26 @@ class ActionGraph:
             )
         log.info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
+
+    @staticmethod
+    async def run_action(
+            user_actions: UserActions,
+            user_action_market: UserActionsMarket,
+            action_id: str,
+            action_graph_input: TextObj
+    ):
+        exception = None
+        try:
+            action_result = await user_actions.run_action_v1(action_id, action_graph_input.model_dump())
+            return action_result
+        except HTTPException as e:
+            exception = e
+        try:
+            action_result = await user_action_market.run_market_action(action_id, action_graph_input.model_dump())
+            return action_result
+        except Exception as e:
+            raise HTTPException(405, f"{exception.detail} and {e}")
+
 
 
     @staticmethod

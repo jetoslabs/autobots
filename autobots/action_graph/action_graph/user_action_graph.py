@@ -5,6 +5,7 @@ from pymongo.database import Database
 
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
+from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.action_graph.action_graph.action_graph import ActionGraph
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
@@ -77,6 +78,7 @@ class UserActionGraphs:
     async def run_in_background(
             self,
             user_actions: UserActions,
+            user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
             action_graph_id: str,
             input: TextObj,
@@ -90,6 +92,7 @@ class UserActionGraphs:
             action_graph_doc=action_graph_doc,
             action_graph_input_dict=input.model_dump(),
             user_actions=user_actions,
+            user_actions_market=user_actions_market,
             user_action_graph_result=user_action_graph_result,
             background_tasks=background_tasks
         )

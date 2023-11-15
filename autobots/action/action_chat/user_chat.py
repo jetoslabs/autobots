@@ -102,7 +102,7 @@ class UserChat():
                     break
 
             title_gen_message = Message(role=Role.user, content=title_gen_content+action_content+conversation_content)
-            chat_res = await get_openai().chat(ChatReq(messages=[title_gen_message], max_token=25))
+            chat_res = await get_openai().openai_chat.chat(ChatReq(messages=[title_gen_message], max_token=25))
             return chat_res.choices[0].message.content
         except Exception as e:
             log.exception(e)
