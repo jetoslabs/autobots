@@ -78,9 +78,9 @@ api_key_cookie = APIKeyCookie(name="Authorization", auto_error=False)
 
 
 def get_user_from_access_token(
-        api_key_query: str = Security(api_key_query),
-        api_key_header: str = Security(api_key_header),
-        api_key_cookie: str = Security(api_key_cookie),
+        api_key_query: str | None = Security(api_key_query),
+        api_key_header: str | None = Security(api_key_header),
+        api_key_cookie: str | None = Security(api_key_cookie),
 ) -> gotrue.UserResponse:
     try:
         if api_key_query:

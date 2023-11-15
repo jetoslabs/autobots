@@ -80,7 +80,7 @@ class UserActions:
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await self.action_crud.find(action_doc_find)
         if len(action_docs) != 1:
-            raise HTTPException(405, "Action cannot be run")
+            raise HTTPException(405, "Action not found")
         action_doc = action_docs[0]
         action_doc.input = input
         resp = await ActionFactory().run_action(action_doc, input)

@@ -8,6 +8,7 @@ from pymongo.database import Database
 from autobots import SettingsProvider
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
+from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from autobots.auth.security import get_user_from_access_token
@@ -111,13 +112,14 @@ async def async_run_action_graph(
 ) -> ActionGraphResultDoc | None:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)
+    user_actions_market = UserActionsMarket(user_orm, db)
     user_action_graph_result = UserActionGraphResult(user_orm, db)
     resp = await UserActionGraphs(user=user_orm, db=db).run_in_background(
         user_actions,
+        user_actions_market,
         user_action_graph_result,
         id,
         input,
         background_tasks
     )
     return resp
-

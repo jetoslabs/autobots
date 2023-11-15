@@ -26,8 +26,8 @@ async def create_action_image_mixer_stable_diffusion(
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action_doc = await UserActions(user_orm).create_action(
-            ActionCreate(**action_create.model_dump()), db
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
         )
         return action_doc
     except Exception as e:
@@ -44,7 +44,7 @@ async def run_action_image_mixer_stable_diffusion(
 ) -> StableDiffusionRes:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action = await UserActions(user=user_orm).get_action(action_id, db)
+        action = await UserActions(user=user_orm, db=db).get_action(action_id)
         image_mixer = ActionImageMixerStableDiffusion(
             ImageMixerReqModel.model_validate(action.model_dump())
         )
