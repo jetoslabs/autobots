@@ -10,6 +10,7 @@ from autobots.action_graph.action_graph.action_graph_doc_model import ActionGrap
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
     ActionGraphResultCreate, ActionGraphResultUpdate
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
+from autobots.api.webhook import Webhook
 from autobots.core.log import log
 from autobots.event_result.event_result_model import EventResultStatus
 
@@ -23,7 +24,8 @@ class ActionGraph:
             user_actions: UserActions,
             user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
-            background_tasks: BackgroundTasks = None
+            background_tasks: BackgroundTasks = None,
+            webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
         # Create initial Action Graph Result
         action_graph_doc.input = action_graph_input_dict
@@ -32,6 +34,8 @@ class ActionGraph:
             status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
         )
         action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
+        if webhook:
+            await webhook.send(action_graph_result_doc.model_dump())
 
         if background_tasks:
             background_tasks.add_task(
@@ -40,7 +44,8 @@ class ActionGraph:
                 user_actions_market,
                 action_graph_input_dict,
                 action_graph_result_doc,
-                user_action_graph_result
+                user_action_graph_result,
+                webhook
             )
         else:
             action_graph_result_doc = await ActionGraph._run_as_background_task(
@@ -48,7 +53,8 @@ class ActionGraph:
                 user_actions_market,
                 action_graph_input_dict,
                 action_graph_result_doc,
-                user_action_graph_result
+                user_action_graph_result,
+                webhook
             )
 
         return action_graph_result_doc
@@ -59,7 +65,8 @@ class ActionGraph:
             user_actions_market: UserActionsMarket,
             action_graph_input_dict: Dict[str, Any],
             action_graph_result_doc: ActionGraphResultDoc,
-            user_action_graph_result: UserActionGraphResult
+            user_action_graph_result: UserActionGraphResult,
+            webhook: Webhook | None = None
     ):
         graph_map = action_graph_result_doc.result.graph
         node_action_map = action_graph_result_doc.result.nodes
@@ -76,6 +83,7 @@ class ActionGraph:
                             not await ActionGraph.is_work_done(values, action_response):
                         continue
                     if len(values) == 0:
+                        # Run action with no dependency
                         action_result = await ActionGraph.run_action(
                             user_actions,
                             user_actions_market,
@@ -85,6 +93,7 @@ class ActionGraph:
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_graph_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
+                        # Run action with at least 1 dependency
                         action_input = await ActionGraph.to_input(values, action_response)
                         action_result = await ActionGraph.run_action(
                             user_actions,
@@ -104,6 +113,8 @@ class ActionGraph:
                         action_graph_result_doc.id,
                         action_graph_result_update
                     )
+                    if webhook:
+                        await webhook.send(action_graph_result_doc.model_dump())
 
             # Update action result graph as success
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
@@ -113,6 +124,8 @@ class ActionGraph:
                 action_graph_result_doc.id,
                 action_graph_result_update
             )
+            if webhook:
+                await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
             log.error("Error while graph run")
             # Update action result graph as error
@@ -123,6 +136,8 @@ class ActionGraph:
                 action_graph_result_doc.id,
                 action_graph_result_update
             )
+            if webhook:
+                await webhook.send(action_graph_result_doc.model_dump())
         log.info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
 

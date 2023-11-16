@@ -11,6 +11,7 @@ from autobots.action.action.user_actions import UserActions
 from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
+from autobots.api.webhook import Webhook
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.log import log
 from autobots.core.database.mongo_base import get_mongo_db
@@ -107,6 +108,7 @@ async def async_run_action_graph(
         id: str,
         input: TextObj,
         background_tasks: BackgroundTasks,
+        webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc | None:
@@ -120,6 +122,7 @@ async def async_run_action_graph(
         user_action_graph_result,
         id,
         input,
-        background_tasks
+        background_tasks,
+        webhook
     )
     return resp
