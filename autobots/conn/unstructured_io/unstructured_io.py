@@ -69,6 +69,8 @@ class UnstructuredIO:
                 elements.append(element)
             except ValidationError as e:
                 log.exception(e)
+            except Exception as e:
+                log.exception(e)
         return elements
 
     async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:
