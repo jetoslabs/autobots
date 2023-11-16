@@ -18,16 +18,16 @@ from autobots.user.user_orm_model import UserORM
 router = APIRouter(prefix=SettingsProvider.sget().API_ACTION_RESULTS, tags=[SettingsProvider.sget().API_ACTION_RESULTS])
 
 
-@router.post("/")
-async def create_action_result(
-        action_doc: ActionDoc,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
-) -> ActionResultDoc:
-    user_orm = UserORM(id=UUID(user_res.user.id))
-    action_result = ActionResultCreate(status=EventResultStatus.processing, result=action_doc)
-    action_result_doc = await UserActionResult(user_orm, db).create_action_result(action_result)
-    return action_result_doc
+# @router.post("/")
+# async def create_action_result(
+#         action_doc: ActionDoc,
+#         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+#         db: Database = Depends(get_mongo_db)
+# ) -> ActionResultDoc:
+#     user_orm = UserORM(id=UUID(user_res.user.id))
+#     action_result = ActionResultCreate(status=EventResultStatus.processing, result=action_doc)
+#     action_result_doc = await UserActionResult(user_orm, db).create_action_result(action_result)
+#     return action_result_doc
 
 
 @router.get("/")

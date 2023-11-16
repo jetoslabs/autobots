@@ -9,6 +9,7 @@ from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.action_graph.action_graph.action_graph import ActionGraph
 from autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
+from autobots.api.webhook import Webhook
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph.action_graph_crud import ActionGraphCRUD
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate, ActionGraphDoc, \
@@ -82,7 +83,8 @@ class UserActionGraphs:
             user_action_graph_result: UserActionGraphResult,
             action_graph_id: str,
             input: TextObj,
-            background_tasks: BackgroundTasks = None
+            background_tasks: BackgroundTasks = None,
+            webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
         action_graph_doc = await self.get(action_graph_id, self.db)
         if not action_graph_doc:
@@ -94,6 +96,7 @@ class UserActionGraphs:
             user_actions=user_actions,
             user_actions_market=user_actions_market,
             user_action_graph_result=user_action_graph_result,
-            background_tasks=background_tasks
+            background_tasks=background_tasks,
+            webhook=webhook
         )
         return resp
