@@ -24,6 +24,7 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
 from autobots.action.action_type.action_types import ActionType
+from autobots.api.webhook import Webhook
 from autobots.core.log import log
 from autobots.event_result.event_result_model import EventResultStatus
 
@@ -102,7 +103,8 @@ class ActionFactory:
             action_doc: ActionDoc,
             action_input_dict: Dict[str, Any],
             user_action_result: UserActionResult,
-            background_tasks: BackgroundTasks = None
+            background_tasks: BackgroundTasks = None,
+            webhook: Webhook | None = None,
     ) -> ActionResultDoc | None:
         # Create initial Action Result
         action_doc.input = action_input_dict
@@ -114,12 +116,12 @@ class ActionFactory:
         if background_tasks:
             # Run in background
             background_tasks.add_task(
-                self._run_action_as_background_task, action_input_dict, action_result_doc, user_action_result
+                self._run_action_as_background_task, action_input_dict, action_result_doc, user_action_result, webhook
             )
         else:
             # For testing
             await self._run_action_as_background_task(
-                action_input_dict, action_result_doc, user_action_result
+                action_input_dict, action_result_doc, user_action_result, webhook
             )
         return action_result_doc
 
@@ -127,7 +129,8 @@ class ActionFactory:
             self,
             action_input_dict: Dict[str, Any],
             action_result_doc: ActionResultDoc,
-            user_action_result: UserActionResult
+            user_action_result: UserActionResult,
+            webhook: Webhook | None = None,
     ) -> None:
         try:
             # Run the action
@@ -149,6 +152,9 @@ class ActionFactory:
                 action_result_update
             )
             log.bind(action_result_doc=action_result_doc).info("Action Result updated")
+            # Send webhook
+            if webhook:
+                await webhook.send(action_result_doc.model_dump())
 
 
 

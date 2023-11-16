@@ -12,6 +12,7 @@ from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.user_actions import UserActions
+from autobots.api.webhook import Webhook
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.user.user_orm_model import UserORM
@@ -96,6 +97,7 @@ async def async_run_action(
         id: str,
         input: Dict[str, Any],
         background_tasks: BackgroundTasks,
+        webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db),
 ) -> ActionResultDoc:
@@ -103,6 +105,6 @@ async def async_run_action(
     user_actions = UserActions(user_orm, db)
     action_doc = await user_actions.get_action(id)
     user_action_result = UserActionResult(user_orm, db)
-    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result, background_tasks)
+    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result, background_tasks, webhook)
     return action_result_doc
 
