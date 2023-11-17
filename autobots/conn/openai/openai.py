@@ -30,7 +30,7 @@ class OpenAI:
                 resp: ChatRes = ChatRes.model_validate(res)
                 return resp
             except Exception as e:
-                log.exception(e)
+                log.exception(str(e))
                 time.sleep(5)
 
     async def embedding(self, embedding_req: EmbeddingReq) -> EmbeddingRes | None:
@@ -41,7 +41,7 @@ class OpenAI:
             resp: EmbeddingRes = EmbeddingRes(**res.to_dict())
             return resp
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
 
     async def create_image(self, image_req: ImageReq) -> List[ImageRes]:
         try:
@@ -53,7 +53,7 @@ class OpenAI:
                 images = images + [ImageRes.model_validate(data)]
             return images
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
 
 
 @lru_cache
