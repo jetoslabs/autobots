@@ -15,15 +15,16 @@ def setup_logger():
     if settings.ENV == get_config().APP_ENV.prod:
         logger.add(sys.stdout,
                    level=get_config().LOG_LEVEL.debug,
-                   # colorize=True,
-                   serialize=True)
+                   serialize=True,
+                   enqueue=True)
     # dev mode
     elif settings.ENV == get_config().APP_ENV.dev:
         logger.add(sys.stdout,
                    level=get_config().LOG_LEVEL.debug,
                    format="<green>{time:YYYY-MM-DD at HH:mm:ss}</green> | <level>{level}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <yellow>{message}</yellow> - <level>{extra}</level>",
                    colorize=True,
-                   serialize=False)
+                   serialize=False,
+                   enqueue=True)
 
 
 log = loguru.logger.bind(app="autobots")
