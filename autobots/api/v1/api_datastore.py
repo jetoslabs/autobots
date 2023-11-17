@@ -27,7 +27,7 @@ async def create_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).init(name)
         return user_datastore_meta
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to create datastore")
 
 
@@ -42,7 +42,7 @@ async def list_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).list(db, limit, offset)
         return user_datastore_meta
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to list datastore")
 
 
@@ -57,7 +57,7 @@ async def get_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).get(name)
         return user_datastore_meta
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to get datastore")
 
 
@@ -75,7 +75,7 @@ async def store_text(
         await user_datastore.put_data(data=text.text, chunk_token_size=chunk_token_size)
         return {"done": "ok"}
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to get datastore")
 
 
@@ -107,7 +107,7 @@ async def store_urls(
         await user_datastore.put_urls(urls=urls, chunk_token_size=chunk_token_size)
         return {"done": "ok"}
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to get datastore")
 
 
@@ -125,7 +125,7 @@ async def search(
         results = await user_datastore.search(query=query.text, top_k=top_k)
         return results
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to get datastore")
 
 
@@ -140,5 +140,5 @@ async def delete_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).delete(db, id)
         return user_datastore_meta
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500, "unable to delete datastore")

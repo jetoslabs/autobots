@@ -59,7 +59,7 @@ class UnstructuredIO:
         try:
             res: PartitionResponse = self.client.general.partition(req)
         except SDKError as e:
-            log.exception(e)
+            log.exception(str(e))
         if not res or res.status_code != 200:
             log.error(f"Error in extracting data from file {file.filename}")
         return res
@@ -72,7 +72,7 @@ class UnstructuredIO:
                 element = PartitionResponseElement.model_validate(element_dict)
                 elements.append(element)
             except ValidationError as e:
-                log.exception(e)
+                log.exception(str(e))
         return elements
 
     async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:

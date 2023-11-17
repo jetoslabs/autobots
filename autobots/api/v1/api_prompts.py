@@ -31,7 +31,7 @@ async def create_prompt(
         log.exception(ie)
         raise HTTPException(400, "Name and version is not unique")
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500)
 
 
