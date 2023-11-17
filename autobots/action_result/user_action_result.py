@@ -22,7 +22,7 @@ class UserActionResult:
             action_result_doc = await self.action_result_crud.insert_one(action_result)
             return action_result_doc
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         return None
 
     async def list_action_result(
@@ -43,7 +43,7 @@ class UserActionResult:
                 raise HTTPException(500, "Error in finding action_result")
             return action_result_docs[0]
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         return None
 
     async def update_action_result(

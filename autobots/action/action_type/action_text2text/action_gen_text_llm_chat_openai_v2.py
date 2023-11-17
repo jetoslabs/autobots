@@ -35,7 +35,7 @@ class ActionGenTextLlmChatOpenaiV2(IActionGenText):
             resp = Message.model_validate(chat_res.choices[0].message)
             return [TextObj(text=resp.content)]
         except ValidationError as e:
-            log.exception(e)
+            log.exception(str(e))
 
     async def invoke_action(self, input_str: str) -> Message:
         pass
