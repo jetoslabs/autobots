@@ -14,7 +14,7 @@ class Usage(BaseModel):
     url: HttpUrl
 
 
-async def usage_info(request: Request, call_next):
+async def usage_info_dispatch(request: Request, call_next):
     jwt_payload = await get_jwt_payload(request)
     if jwt_payload:
         usage = Usage(

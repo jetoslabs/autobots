@@ -7,7 +7,7 @@ from autobots.api.ui import ui
 from autobots.api.v1 import v1
 from autobots.core.fastapi_desc import FastAPIDesc
 from autobots.core.lifespan import lifespan
-from autobots.subscription.api_usage import usage_info
+from autobots.subscription.api_usage_dispatch import usage_info_dispatch
 
 patch(fastapi=True)
 app = FastAPI(lifespan=lifespan, **FastAPIDesc().model_dump())
@@ -19,7 +19,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(BaseHTTPMiddleware, dispatch=usage_info)
+app.add_middleware(BaseHTTPMiddleware, dispatch=usage_info_dispatch)
 
 
 app.include_router(v1.router)
