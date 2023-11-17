@@ -85,7 +85,7 @@ class UserChat():
 
     async def _gen_title(self, chat_doc: ChatDoc) -> str:
         try:
-            title_gen_content = "Act as expert title generator. Generate very short title for the following conversation:\n"
+            title_gen_content = "Act as expert title generator. Generate very short text title for the following conversation:\n"
 
             action_content = ""
             for message_dict in chat_doc.action.config.get("messages"):
@@ -103,7 +103,8 @@ class UserChat():
 
             title_gen_message = Message(role=Role.user, content=title_gen_content+action_content+conversation_content)
             chat_res = await get_openai().openai_chat.chat(ChatReq(messages=[title_gen_message], max_token=25))
-            return chat_res.choices[0].message.content
+            title = f"{chat_doc.action.name}-{chat_res.choices[0].message.content}"
+            return title
         except Exception as e:
             log.exception(e)
         return UserChat.DEFAULT_TITLE
