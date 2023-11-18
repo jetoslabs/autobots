@@ -53,7 +53,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         return None
 
     async def update_action_result(

@@ -40,5 +40,5 @@ async def create_action_text2audio_speech_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500)

@@ -27,5 +27,5 @@ router = APIRouter()
 #         )
 #         return action_doc
 #     except Exception as e:
-#         log.exception(e)
+#         log.exception(str(e))
 #         raise HTTPException(500)

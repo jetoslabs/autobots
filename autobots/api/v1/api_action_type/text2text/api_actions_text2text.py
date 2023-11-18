@@ -31,7 +31,7 @@ async def create_action_gen_text_llm_chat_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500)
 
 
@@ -48,5 +48,5 @@ async def create_action_gen_text_llm_chat_with_vector_search_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500)

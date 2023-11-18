@@ -75,7 +75,7 @@ class Pinecone:
                 )
                 return res
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
 
     async def fetch(self, vector_ids: List[str], namespace: str = "default") -> dict:
         fetch_res = self.index.fetch(ids=vector_ids, namespace=namespace)

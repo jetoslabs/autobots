@@ -53,7 +53,7 @@ class UserActionGraphResult:
             action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
             return action_graph_result_doc
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         return None
 
     async def update_action_graph_result(

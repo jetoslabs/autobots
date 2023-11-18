@@ -24,7 +24,7 @@ class OpenaiChat:
                 else:
                     return res
             except Exception as e:
-                log.exception(e)
+                log.exception(str(e))
                 time.sleep(5)
 
     async def yield_chat_chunks(self, chat_res: AsyncStream[ChatCompletionChunk]) -> ChatCompletionChunk | None:
@@ -32,4 +32,4 @@ class OpenaiChat:
             async for part in chat_res:
                 yield part
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))

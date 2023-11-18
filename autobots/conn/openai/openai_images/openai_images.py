@@ -17,4 +17,4 @@ class OpenaiImages():
             log.trace("Completed OpenAI create image")
             return res
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
