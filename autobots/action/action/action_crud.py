@@ -8,7 +8,7 @@ from pymongo.results import DeleteResult
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionDocCreate, ActionDocFind, ActionDocUpdate
 from autobots.core.database.mongo_base import get_mongo_db
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 
 class ActionCRUD:
@@ -65,7 +65,7 @@ class ActionCRUD:
                 action_doc = ActionDoc.model_validate(doc)
                 action_docs.append(action_doc)
             except Exception as e:
-                log.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                Log.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
 
         return action_docs
 

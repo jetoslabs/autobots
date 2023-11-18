@@ -7,7 +7,7 @@ from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
     ActionUpdate, ActionDocUpdate
 from autobots.action.action_type.action_factory import ActionFactory
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
 
@@ -26,7 +26,7 @@ class UserActions:
             action_doc = await self.action_crud.insert_one(action_doc_create)
             return action_doc
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         return None
 
     async def list_actions(
@@ -47,7 +47,7 @@ class UserActions:
                 raise HTTPException(500, "Error in finding action")
             return action_docs[0]
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         return None
 
     async def update_action(

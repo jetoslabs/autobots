@@ -8,7 +8,7 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
 
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import SettingsProvider, Settings
 
 
@@ -25,7 +25,7 @@ class Selenium:
         self.driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
 
     async def read_url_text(self, url: HttpUrl, xpath: str = "/html/body") -> str:
-        log.bind(url=url).debug("Reading url")
+        Log.bind(url=url).debug("Reading url")
         # Target URL
         self.driver.get(url.unicode_string())
         # To load entire webpage
@@ -36,7 +36,7 @@ class Selenium:
         return text
 
     async def read_url(self, url: HttpUrl, ) -> str:
-        log.bind(url=url).debug("Reading url")
+        Log.bind(url=url).debug("Reading url")
         # Target URL
         self.driver.get(url.unicode_string())
         # To load entire webpage

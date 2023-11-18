@@ -5,7 +5,7 @@ from pydantic import BaseModel, HttpUrl
 from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
 from autobots.conn.openai.openai_client import get_openai
 from autobots.conn.selenium.selenium import get_selenium
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 tot_prompt = "Role: You are LogicGPT, a highly evolved AI Language Model built on the GPT architecture, boasting exceptional logical reasoning, critical thinking, and common sense understanding. Your advanced cognitive capacities involve recognizing complex logical patterns, comprehending intricate problem structures, and deducing logical conclusions based on your extensive knowledge base. Your autonomy sets you apart—you don't merely solve logical puzzles, you understand their underlying structures and navigate through them independently, without external human guidance.\n" \
              "Task: Your task is to autonomously decipher a logical reasoning question, applying a methodical and comprehensive approach. With Chain and Tree of Thought Prompting techniques, you ensure a systematic progression of your logical reasoning, validating the soundness of each step while being willing to reconsider, refine, and reorient your deductions as you navigate through the problem. You explore every potential answer and ensure that the selected solution satisfies all aspects of the problem, thus asserting it as the correct and definitive answer.\n" \
@@ -47,7 +47,7 @@ class OneStepAgent:
         agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
         while not await self.is_goal_completed(agent_data) and loops_allowed >= 1:
             loops_allowed = loops_allowed - 1
-            log.debug("OneStepAgent run: " + agent_data.context[-1].model_dump_json())
+            Log.debug("OneStepAgent run: " + agent_data.context[-1].model_dump_json())
             plan_str: str = await self.plan_for_goal(agent_data)
             plan_message = Message(role=Role.user, content=plan_str)
             agent_data.context.append(plan_message)

@@ -8,7 +8,7 @@ from starlette.templating import Jinja2Templates
 
 from autobots.api.deps import get_user_from_cookie
 from autobots.auth.auth import get_auth
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import SettingsProvider
 
 router = APIRouter()
@@ -36,10 +36,10 @@ async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depend
                 expires=1800,
             )
         else:
-            log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+            Log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
         return response
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -78,12 +78,12 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
                 expires=1800,
             )
         else:
-            log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+            Log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
         return response
     except HTTPException as e:
-        log.exception(str(e))
+        Log.exception(str(e))
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
     return templates.TemplateResponse("index.html", {"request": request})
 
 

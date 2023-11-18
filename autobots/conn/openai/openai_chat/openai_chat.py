@@ -4,7 +4,7 @@ from openai import AsyncOpenAI, AsyncStream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 from autobots.conn.openai.openai_chat.chat_model import ChatReq
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 
 class OpenaiChat:
@@ -16,15 +16,15 @@ class OpenaiChat:
         max_retry = 3
         for i in range(max_retry):
             try:
-                log.trace("Starting OpenAI Chat, try: 1")
+                Log.trace("Starting OpenAI Chat, try: 1")
                 res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(), timeout=180)
-                log.trace("Completed OpenAI Chat")
+                Log.trace("Completed OpenAI Chat")
                 if isinstance(res, AsyncStream):
                     return self.yield_chat_chunks(res)
                 else:
                     return res
             except Exception as e:
-                log.exception(str(e))
+                Log.exception(str(e))
                 time.sleep(5)
 
     async def yield_chat_chunks(self, chat_res: AsyncStream[ChatCompletionChunk]) -> ChatCompletionChunk | None:
@@ -32,4 +32,4 @@ class OpenaiChat:
             async for part in chat_res:
                 yield part
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))

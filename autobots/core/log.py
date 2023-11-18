@@ -27,7 +27,7 @@ def setup_logger():
                    enqueue=True)
 
 
-log = loguru.logger.bind(app="autobots")
+# log = loguru.logger.bind(app="autobots")
 # setup_logger()
 
 

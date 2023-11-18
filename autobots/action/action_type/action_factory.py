@@ -25,7 +25,7 @@ from autobots.action.action_type.action_text2video.action_text2video_stable_diff
     ActionText2VideoStableDiffusion
 from autobots.action.action_type.action_types import ActionType
 from autobots.api.webhook import Webhook
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.event_result.event_result_model import EventResultStatus
 
 
@@ -95,7 +95,7 @@ class ActionFactory:
                 return await MockAction(config).run_action(input)
 
             case _:
-                log.error("Action Type not found")
+                Log.error("Action Type not found")
                 raise HTTPException(status_code=404, detail="Action Type not found")
 
     async def run_action_in_background(
@@ -138,12 +138,12 @@ class ActionFactory:
             # Action is a success
             action_result_doc.status = EventResultStatus.success
             action_result_doc.result.output = result
-            log.bind(action_result_doc=action_result_doc).info("Action run success")
+            Log.bind(action_result_doc=action_result_doc).info("Action run success")
         except Exception as e:
             # Action resulted in an error
             action_result_doc.status = EventResultStatus.error
             action_result_doc.error_message = TextObj(text="Action run error")
-            log.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
+            Log.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
         finally:
             # Finally persist the Action Result
             action_result_update = ActionResultUpdate(**action_result_doc.model_dump())
@@ -151,7 +151,7 @@ class ActionFactory:
                 action_result_doc.id,
                 action_result_update
             )
-            log.bind(action_result_doc=action_result_doc).info("Action Result updated")
+            Log.bind(action_result_doc=action_result_doc).info("Action Result updated")
             # Send webhook
             if webhook:
                 await webhook.send(action_result_doc.model_dump())

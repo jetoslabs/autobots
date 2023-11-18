@@ -13,10 +13,10 @@ from autobots.action_graph.action_graph_result.action_graph_result_model_doc imp
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from autobots.api.webhook import Webhook
 from autobots.auth.security import get_user_from_access_token
-from autobots.core.log import log
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, ActionGraphFind, ActionGraphUpdate
 from autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
+from autobots.core.logging.log import Log
 
 from autobots.user.user_orm_model import UserORM
 
@@ -34,7 +34,7 @@ async def create_action_graph(
         resp = await UserActionGraphs(user=user_orm, db=db).create(action_graph_create, db)
         return resp
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)
 
 

@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from httpx import Timeout
 from openai import AsyncOpenAI
 
 from autobots.conn.openai.openai_audio.openai_audio import OpenaiAudio
@@ -12,8 +13,12 @@ from autobots.core.settings import Settings, SettingsProvider
 
 class OpenAI:
 
-    def __init__(self, org_id: str, api_key: str):
-        self.client = AsyncOpenAI(api_key=api_key,organization=org_id,timeout=180)
+    def __init__(self, *,
+                 api_key: str | None = None,
+                 organization: str | None = None,
+                 timeout:  float | Timeout | None = None
+                 ):
+        self.client = AsyncOpenAI(api_key=api_key,organization=organization,timeout=timeout)
         self.openai_audio = OpenaiAudio(self.client)
         self.openai_chat = OpenaiChat(self.client)
         self.openai_embeddings = OpenaiEmbeddings(self.client)
@@ -23,4 +28,8 @@ class OpenAI:
 
 @lru_cache
 def get_openai(settings: Settings = SettingsProvider.sget()) -> OpenAI:
-    return OpenAI(settings.OPENAI_ORG_ID, settings.OPENAI_API_KEY)
+    return OpenAI(
+        api_key=settings.OPENAI_API_KEY,
+        organization=settings.OPENAI_ORG_ID,
+        timeout=180.0
+    )

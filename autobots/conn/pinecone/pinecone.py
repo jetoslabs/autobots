@@ -9,7 +9,7 @@ from pinecone import Client, Index, QueryResult
 
 from autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingReq, EmbeddingRes
 from autobots.conn.openai.openai_client import OpenAI, get_openai
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
 
@@ -75,7 +75,7 @@ class Pinecone:
                 )
                 return res
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def fetch(self, vector_ids: List[str], namespace: str = "default") -> dict:
         fetch_res = self.index.fetch(ids=vector_ids, namespace=namespace)

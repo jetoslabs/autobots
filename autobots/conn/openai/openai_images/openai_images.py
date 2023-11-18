@@ -2,7 +2,7 @@ from openai import AsyncOpenAI
 from openai.types import ImagesResponse
 
 from autobots.conn.openai.openai_images.image_model import ImageReq
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 
 class OpenaiImages():
@@ -12,9 +12,9 @@ class OpenaiImages():
 
     async def create_image(self, image_req: ImageReq) -> ImagesResponse | None:
         try:
-            log.trace("Starting OpenAI create image")
+            Log.trace("Starting OpenAI create image")
             res: ImagesResponse = await self.client.images.generate(**image_req.model_dump())
-            log.trace("Completed OpenAI create image")
+            Log.trace("Completed OpenAI create image")
             return res
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
