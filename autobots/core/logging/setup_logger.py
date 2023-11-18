@@ -1,6 +1,5 @@
 import sys
 
-import loguru
 from loguru import logger
 
 from autobots.core.config import get_config
@@ -28,10 +27,3 @@ def setup_logger():
 
 
 # log = loguru.logger.bind(app="autobots")
-# setup_logger()
-
-
-# async def generate_trace_id() -> uuid.UUID:
-#     # This function (uuid4) guarantees the random no. and doesn’t compromise with privacy.
-#     trace_id: uuid.UUID = uuid.uuid4()
-#     return trace_id
