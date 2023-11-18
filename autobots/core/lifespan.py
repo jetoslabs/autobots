@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from autobots.core.log import setup_logger
+from autobots.core.logging.setup_logger import setup_logger
 from autobots.core.database.mongo_base import close_mongo_client
 from autobots.core.logging.log import Log
 
