@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Any
 
 import loguru
 
@@ -7,35 +7,43 @@ from autobots.core.logging.app_code import AppCode
 
 class Log:
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.logger = loguru.logger.bind(app="autobots")
-        self.logger.bind(**kwargs)
 
-    def bind(self, **kwargs):
+    def bind(self, **kwargs) -> loguru.Logger:
         return self.logger.bind(**kwargs)
 
-    def with_app_code(self, app_code: AppCode):
+    def with_app_code(self, app_code: AppCode) -> loguru.Logger:
         return self.logger.bind(app_code=app_code.value)
 
-    async def info(self, msg: str):
-        self.logger.info(msg)
+    def info(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.info(__message, *args, **kwargs)
 
-    async def debug(self, msg: str):
-        self.logger.debug(msg)
+    def debug(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.debug(__message, *args, **kwargs)
 
-    async def warning(self, msg: str):
-        self.logger.warning(msg)
+    def warning(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.warning(__message, *args, **kwargs)
 
-    async def error(self, msg: str):
-        self.logger.error(msg)
+    def error(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.error(__message, *args, **kwargs)
 
-    async def exception(self, msg: str):
-        self.logger.exception(msg)
+    def exception(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.exception(__message, *args, **kwargs)
 
-    async def critical(self, msg: str):
-        self.logger.critical(msg)
+    def critical(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.critical(__message, *args, **kwargs)
 
-    async def log(self, level: Literal["INFO", "DEBUG", "WARNING", "ERROR", "EXCEPTION", "CRITICAL"], msg: str):
-        self.logger.log(level, msg)
+    def trace(self, __message: str, *args: Any, **kwargs: Any):
+        self.logger.trace(__message, *args, **kwargs)
+
+    def log(
+            self,
+            __level: Literal["INFO", "DEBUG", "WARNING", "ERROR", "EXCEPTION", "CRITICAL"],
+            __message: str,
+            *args: Any,
+            **kwargs: Any
+    ):
+        self.logger.log(__level, __message, *args, **kwargs)
 
 
