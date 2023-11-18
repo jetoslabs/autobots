@@ -5,7 +5,7 @@ from requests import Request
 
 from autobots.auth.data_models import JwtPayload
 from autobots.auth.security import decode_access_token
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 
 class Usage(BaseModel):
@@ -22,7 +22,7 @@ async def usage_info_dispatch(request: Request, call_next):
             email=jwt_payload.email,
             url=str(request.url)
         )
-        log.bind(**usage.model_dump()).debug("API usage")
+        Log.bind(**usage.model_dump()).debug("API usage")
     response = await call_next(request)
     return response
 
@@ -41,5 +41,5 @@ async def get_jwt_payload(request: Request) -> Optional[JwtPayload]:
             jwt_payload = decode_access_token(token)
         return jwt_payload
     except Exception as e:
-        log.exception(f"Error while get_jwt_payload: {e}")
+        Log.exception(f"Error while get_jwt_payload: {e}")
 

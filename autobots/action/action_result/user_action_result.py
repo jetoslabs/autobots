@@ -5,7 +5,7 @@ from pymongo.database import Database
 
 from autobots.action.action_result.action_result_doc_model import ActionResultDoc, \
     ActionResultUpdate, ActionResultCreate
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.event_result.event_result_crud import EventResultCRUD
 from autobots.event_result.event_result_model import EventResultDocCreate, EventResultFind, EventResultDocFind, \
     EventResultDocUpdate
@@ -26,7 +26,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            log.error(e)
+            Log.exception(str(e))
             raise e
 
     async def list_action_result(
@@ -53,7 +53,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         return None
 
     async def update_action_result(
@@ -65,7 +65,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            log.error(e)
+            Log.exception(str(e))
             raise e
 
     async def delete_action_result(

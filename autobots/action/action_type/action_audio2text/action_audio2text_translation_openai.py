@@ -7,7 +7,7 @@ from autobots.action.action_type.abc.IAction import IAction, ActionConfigType, A
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.openai.openai_client import get_openai
 from autobots.conn.openai.openai_audio.translation_model import TranslationReq
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 
 class AudioRes(BaseModel):
@@ -42,6 +42,6 @@ class ActionAudio2TextTranslationOpenai(IAction[TranslationReq, AudioRes, Transl
             translation = await get_openai().openai_audio.translation(self.action_config)
             return translation
         except ValidationError as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))

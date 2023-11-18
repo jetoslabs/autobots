@@ -12,8 +12,8 @@ from autobots.api.v1.api_action_type.text2img.api_actions_text2img_stable_diffus
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel
-from autobots.core.log import log
 from autobots.core.database.mongo_base import get_mongo_db
+from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -33,7 +33,7 @@ async def create_action_text2img_stable_diffusion(
         )
         return action_doc
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)
 
 
@@ -53,5 +53,5 @@ async def run_action_text2img_stable_diffusion(
         resp = await text2img.run_action(action_input)
         return resp
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)

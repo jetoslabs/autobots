@@ -3,7 +3,7 @@ from typing import List
 from autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from autobots.conn.openai.openai_chat.chat_model import Message, Role, ChatRes, ChatReq
 from autobots.conn.openai.openai_client import get_openai
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 Task_Prefix = "Task: "
 Thought_Prefix = "Thought: "
@@ -48,7 +48,7 @@ class ReasonActObserve():
         messages = self.setup_messages + [Message(role=Role.user, content=f"{Task_Prefix}{user_goal}")]
 
         is_finish = False
-        log.info(f"Task stared: {user_goal}")
+        Log.info(f"Task stared: {user_goal}")
         while not is_finish:
             thought = await self.think(messages)
             messages = messages + [Message(role=Role.assistant, content=thought)]
@@ -62,7 +62,7 @@ class ReasonActObserve():
 
             if "finish[" in action:
                 is_finish = True
-                log.info(f"Task: {user_goal}\nResult: {action}")
+                Log.info(f"Task: {user_goal}\nResult: {action}")
         return messages
 
     async def think(self, messages: List[Message]) -> str:
@@ -70,7 +70,7 @@ class ReasonActObserve():
         chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
         resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
         response = resp.choices[0].message.content
-        log.info(f"{Thought_Prefix}{response}")
+        Log.info(f"{Thought_Prefix}{response}")
         return f"{response}"
 
     async def act(self, messages: List[Message]) -> str:
@@ -79,10 +79,10 @@ class ReasonActObserve():
             chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
             resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
             response = resp.choices[0].message.content
-            log.info(f"{response}")
+            Log.info(f"{response}")
             return f"{response}"
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def observe(self, action: str) -> str:
         if "search" in action:
@@ -92,7 +92,7 @@ class ReasonActObserve():
             for search in search_res:
                 res = res + f"{search.title}: {search.body}\n"
             res = Observe_Prefix + res
-            log.info(f"{Observe_Prefix}{res}")
+            Log.info(f"{Observe_Prefix}{res}")
             return res
 
         elif "news" in action:
@@ -102,5 +102,5 @@ class ReasonActObserve():
             for search in search_res:
                 res = res + f"{search.title}: {search.body} - source({search.source})\n"
             res = Observe_Prefix + res
-            log.info(f"{Observe_Prefix}{res}")
+            Log.info(f"{Observe_Prefix}{res}")
             return res

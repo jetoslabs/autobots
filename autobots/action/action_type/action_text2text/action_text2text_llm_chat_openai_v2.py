@@ -8,7 +8,7 @@ from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
 from autobots.conn.openai.openai_client import get_openai
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 
 
 class ActionCreateGenTextLlmChatOpenai(ActionCreate):
@@ -50,4 +50,4 @@ class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, TextObjs]):
                 text_objs.texts.append(TextObj(text=choice.message.content))
             return text_objs
         except ValidationError as e:
-            log.exception(str(e))
+            Log.exception(str(e))

@@ -11,7 +11,7 @@ from autobots.action_graph.action_graph_result.action_graph_result_model_doc imp
     ActionGraphResultCreate, ActionGraphResultUpdate
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from autobots.api.webhook import Webhook
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.event_result.event_result_model import EventResultStatus
 
 
@@ -127,7 +127,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            log.error("Error while graph run")
+            Log.error("Error while graph run")
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
                 status=EventResultStatus.error
@@ -138,7 +138,7 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        log.info("Completed Action Graph _run_as_background_task")
+        Log.info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
 
     @staticmethod
@@ -204,7 +204,7 @@ class ActionGraph:
                         text_obj = TextObj.model_validate(action_output)
                         input_msg = f"{input_msg}\n{text_obj.text}"
             else:
-                log.warning("Cannot convert to Input")
+                Log.warning("Cannot convert to Input")
 
         text_obj = TextObj(text=input_msg)
         return text_obj

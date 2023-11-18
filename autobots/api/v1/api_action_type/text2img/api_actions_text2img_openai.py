@@ -13,7 +13,7 @@ from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.openai.openai_images.image_model import ImageReq
 from autobots.core.database.mongo_base import get_mongo_db
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -32,7 +32,7 @@ async def create_text2img_dalle_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)
 
 
@@ -52,5 +52,5 @@ async def run_text2img_dalle_openai(
         resp = await text2img.run_action(action_input)
         return resp
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)

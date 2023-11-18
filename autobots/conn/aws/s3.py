@@ -8,7 +8,7 @@ from mypy_boto3_s3 import S3ServiceResource
 from mypy_boto3_s3.service_resource import ObjectSummary
 from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
 # TODO: deprecate
@@ -29,7 +29,7 @@ class S3:
             self.bucket.upload_fileobj(file_obj, filename)
             return len(data)
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         return -1
 
     async def get(self, filename: str) -> str:
@@ -39,7 +39,7 @@ class S3:
             res_data = res_bytes.getvalue().decode('utf-8')
             return res_data
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def delete(self, filename: str) -> list[DeletedObjectTypeDef]:
         try:
@@ -52,7 +52,7 @@ class S3:
             })
             return delete_res["Deleted"]
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def list(self, prefix: str, limit: int = 300) -> List[ObjectSummary]:
         s3_objects = []

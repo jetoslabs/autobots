@@ -9,7 +9,7 @@ from autobots.action.action_type.action_types import ActionType
 from autobots.conn.aws.aws_s3 import get_public_s3
 from autobots.conn.openai.openai_client import get_openai
 from autobots.conn.openai.openai_audio.speech_model import SpeechReq
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.utils import gen_hash
 
 
@@ -50,6 +50,6 @@ class ActionText2AudioSpeechOpenai(IAction[SpeechReq, TextObj, AudioRes]):
             http_url = HttpUrl(url)
             return AudioRes(url=str(http_url))
         except ValidationError as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))

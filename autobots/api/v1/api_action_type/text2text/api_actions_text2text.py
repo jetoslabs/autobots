@@ -12,7 +12,7 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with
     ActionCreateGenTextLlmChatWithVectorSearchOpenai
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.database.mongo_base import get_mongo_db
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -31,7 +31,7 @@ async def create_action_gen_text_llm_chat_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)
 
 
@@ -48,5 +48,5 @@ async def create_action_gen_text_llm_chat_with_vector_search_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)

@@ -13,7 +13,7 @@ from autobots.action.action_type.action_types import ActionType
 from autobots.auth.security import get_user_from_access_token
 from autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
 from autobots.core.database.mongo_base import get_mongo_db
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -39,5 +39,5 @@ async def create_action_audio2text_transcription_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(str(e))
+        Log.exception(str(e))
         raise HTTPException(500)
