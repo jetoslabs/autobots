@@ -25,7 +25,7 @@ class OpenaiAudio():
             log.trace("Completed OpenAI create speech")
             return res
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
 
     async def transcription(self, transcription_req: TranscriptionReq) -> Transcription | None:
         # create new single directory
@@ -52,7 +52,7 @@ class OpenaiAudio():
                 log.trace("Completed OpenAI create transcription")
             return res
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         finally:
             # delete the file
             os.remove(full_path_name)
@@ -82,7 +82,7 @@ class OpenaiAudio():
                 log.trace("Completed OpenAI create translation")
             return res
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         finally:
             # delete the file
             os.remove(full_path_name)

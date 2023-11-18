@@ -32,7 +32,7 @@ async def create_text2img_dalle_openai(
         )
         return action_doc
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500)
 
 
@@ -52,5 +52,5 @@ async def run_text2img_dalle_openai(
         resp = await text2img.run_action(action_input)
         return resp
     except Exception as e:
-        log.exception(e)
+        log.exception(str(e))
         raise HTTPException(500)

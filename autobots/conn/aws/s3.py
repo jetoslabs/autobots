@@ -29,7 +29,7 @@ class S3:
             self.bucket.upload_fileobj(file_obj, filename)
             return len(data)
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
         return -1
 
     async def get(self, filename: str) -> str:
@@ -39,7 +39,7 @@ class S3:
             res_data = res_bytes.getvalue().decode('utf-8')
             return res_data
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
 
     async def delete(self, filename: str) -> list[DeletedObjectTypeDef]:
         try:
@@ -52,7 +52,7 @@ class S3:
             })
             return delete_res["Deleted"]
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
 
     async def list(self, prefix: str, limit: int = 300) -> List[ObjectSummary]:
         s3_objects = []

@@ -42,6 +42,6 @@ class ActionAudio2TextTranscriptionOpenai(IAction[TranscriptionReq, AudioRes, Tr
             transcription = await get_openai().openai_audio.transcription(self.action_config)
             return transcription
         except ValidationError as e:
-            log.exception(e)
+            log.exception(str(e))
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))

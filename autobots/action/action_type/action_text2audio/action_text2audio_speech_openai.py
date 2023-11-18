@@ -50,6 +50,6 @@ class ActionText2AudioSpeechOpenai(IAction[SpeechReq, TextObj, AudioRes]):
             http_url = HttpUrl(url)
             return AudioRes(url=str(http_url))
         except ValidationError as e:
-            log.exception(e)
+            log.exception(str(e))
         except Exception as e:
-            log.exception(e)
+            log.exception(str(e))
