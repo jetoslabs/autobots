@@ -1,4 +1,5 @@
 import pytest
+from openai.types.chat import ChatCompletionUserMessageParam
 
 from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
@@ -6,7 +7,7 @@ from autobots.action.action.common_action_models import TextObj
 from autobots.action.action_result.user_action_result import UserActionResult
 from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
-from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
+from autobots.conn.openai.openai_chat.chat_model import ChatReq
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.core.utils import gen_uuid
 from autobots.user.user_orm_model import UserORM
@@ -66,7 +67,7 @@ async def test_action_llm_chat_happy_path(set_test_settings):
     action_name = "test_action_llm_chat_happy_path"
 
     try:
-        chat_req = ChatReq(messages=[Message(role=Role.user, content="You are an expert blogger")])
+        chat_req = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content="You are an expert blogger")])
         action_doc_create = ActionDocCreate(
             name=action_name,
             type=ActionType.text2text_llm_chat_openai,
