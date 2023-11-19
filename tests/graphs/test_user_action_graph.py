@@ -1,6 +1,7 @@
 import uuid
 
 import pytest
+from openai.types.chat import ChatCompletionUserMessageParam
 from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
@@ -9,7 +10,7 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_open
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
-from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
+from autobots.conn.openai.openai_chat.chat_model import ChatReq
 from autobots.core.utils import gen_random_str
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate
@@ -111,8 +112,8 @@ async def test_user_graph_run_happy_path(set_test_settings):
 async def create_action_persona(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="persona_" + rand,
-        config=ChatReq(messages=[Message(
-            role=Role.user,
+        config=ChatReq(messages=[ChatCompletionUserMessageParam(
+            role="user",
             content="Generate personas for Marketing this product"
         )])
     )
@@ -126,8 +127,8 @@ async def create_action_persona(user_actions: UserActions, db: Database, rand: s
 async def create_action_manager(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="manager_" + rand,
-        config=ChatReq(messages=[Message(
-            role=Role.user,
+        config=ChatReq(messages=[ChatCompletionUserMessageParam(
+            role="user",
             content="Act as market manager, create input for department"
         )])
     )
@@ -141,8 +142,8 @@ async def create_action_manager(user_actions: UserActions, db: Database, rand: s
 async def create_action_product(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="market researcher_" + rand,
-        config=ChatReq(messages=[Message(
-            role=Role.user,
+        config=ChatReq(messages=[ChatCompletionUserMessageParam(
+            role="user",
             content="Act as product researcher, create research report for the product"
         )])
     )
@@ -156,8 +157,8 @@ async def create_action_product(user_actions: UserActions, db: Database, rand: s
 async def create_action_creative(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="creative_" + rand,
-        config=ChatReq(messages=[Message(
-            role=Role.user,
+        config=ChatReq(messages=[ChatCompletionUserMessageParam(
+            role="user",
             content="Act as a creative editor, generate text creative"
         )])
     )
@@ -171,8 +172,8 @@ async def create_action_creative(user_actions: UserActions, db: Database, rand: 
 async def create_action_jingle(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="jingle_" + rand,
-        config=ChatReq(messages=[Message(
-            role=Role.user,
+        config=ChatReq(messages=[ChatCompletionUserMessageParam(
+            role="user",
             content="Act as a creative editor, generate jingle for marketing"
         )])
     )
