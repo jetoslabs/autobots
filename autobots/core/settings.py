@@ -1,31 +1,36 @@
 from functools import lru_cache
-from typing import List
+from typing import List, Literal
 
 from jose.constants import ALGORITHMS
 from loguru import logger
 from pydantic_settings import BaseSettings
 
-from autobots.core.config import get_config
+# from autobots.core.config import get_config
+
+
+def get_env_suffix(ENV):
+    return f"_{ENV}" if ENV != "prod" else ""
 
 
 class Settings(BaseSettings):
-    ENV: str = get_config().APP_ENV.prod
+    ENV: Literal["dev", "qa", "stage", "prod"] | str = "local"
 
     # value from github deployment action (CICD)
     VERSION: str = "local"
 
-    APP_HOST: str = "0.0.0.0"
-    APP_PORT: int = 8000
-    APP_RELOAD: bool = True
-    APP_LOG_LEVEL: str = "debug"
-    APP_WORKERS: int = 1
+    # APP_HOST: str = "0.0.0.0"
+    # APP_PORT: int = 8000
+    # APP_RELOAD: bool = True
+    # APP_LOG_LEVEL: str = "debug"
+    # APP_WORKERS: int = 1
 
-    COOKIE_DOMAIN: str = "127.0.0.1"
+    COOKIE_DOMAIN: str = "localhost"
     ALLOW_ORIGINS: str = "http://localhost:3000"
     ALLOWED_ORIGINS: List[str] = ALLOW_ORIGINS.split(",")
 
     SQLALCHEMY_DATABASE_URL: str = None
-    SQLALCHEMY_DATABASE_SCHEMA: str = "backend"
+    SQLALCHEMY_DATABASE_SCHEMA: str = "autobots"
+    SQLALCHEMY_DATABASE_SCHEMA = SQLALCHEMY_DATABASE_SCHEMA + get_env_suffix(ENV)
 
     SUPABASE_URL: str = None
     SUPABASE_ANON_KEY: str = None
@@ -34,7 +39,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = ALGORITHMS.HS256
 
     MONGO_CONN: str = None
-    MONGO_DATABASE: str = "backend"
+    MONGO_DATABASE: str = "autobots"
+    MONGO_DATABASE = MONGO_DATABASE + get_env_suffix(ENV)
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
@@ -47,10 +53,12 @@ class Settings(BaseSettings):
 
     AWS_ACCESS_KEY_ID: str = None
     AWS_SECRET_ACCESS_KEY: str = None
-    AWS_S3_BUCKET_NAME: str = None
+    AWS_S3_BUCKET_NAME: str = "autobots"
+    AWS_S3_BUCKET_NAME = AWS_S3_BUCKET_NAME + get_env_suffix(ENV)
     AWS_S3_BUCKET_REGION: str = None
 
-    AWS_S3_PUBLIC_BUCKET_NAME: str = None
+    AWS_S3_PUBLIC_BUCKET_NAME: str = "autobots-public"
+    AWS_S3_PUBLIC_BUCKET_NAME = AWS_S3_PUBLIC_BUCKET_NAME + get_env_suffix(ENV)
     AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: str = None
 
     PINECONE_ENVIRONMENT: str = None
@@ -110,4 +118,3 @@ class SettingsProvider:
         for field in settings.__dict__.keys():
             if settings.__dict__[field] is None:
                 logger.warning(f"Field: {field} is not set")
-
