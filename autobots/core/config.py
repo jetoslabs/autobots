@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 class AppEnv(str, Enum):
     dev = "dev"
+    qa = "qa"
+    stage = "stage"
     prod = "prod"
 
 
