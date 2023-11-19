@@ -1,6 +1,7 @@
 import uuid
 
 import pytest
+from openai.types.chat import ChatCompletionUserMessageParam
 
 from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
@@ -21,7 +22,7 @@ async def test_action_crud_happy_path(set_test_settings):
     user = UserORM(id=user_id)
 
     try:
-        chat_req = ChatReq(messages=[Message(role=Role.user, content="You are an expert blogger")])
+        chat_req = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content="You are an expert blogger")])
         action_doc_create = ActionDocCreate(
             name="test_action_crud_happy_path",
             type=ActionType.text2text_llm_chat_openai,

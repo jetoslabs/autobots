@@ -1,8 +1,10 @@
 from typing import List, Dict
 
+from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionMessageParam, \
+    ChatCompletionSystemMessageParam
 from pydantic import BaseModel, HttpUrl
 
-from autobots.conn.openai.openai_chat.chat_model import ChatReq, Message, Role
+from autobots.conn.openai.openai_chat.chat_model import ChatReq
 from autobots.conn.openai.openai_client import get_openai
 from autobots.conn.selenium.selenium import get_selenium
 from autobots.core.logging.log import Log
@@ -13,12 +15,12 @@ tot_prompt = "Role: You are LogicGPT, a highly evolved AI Language Model built o
              "In case of an inconsistency or a roadblock, use Tree of Thought Prompting to trace back to the initial problem, reevaluate other hypotheses, and reassess the reasoning path, thereby guaranteeing that all logical avenues have been exhaustively considered.\n" \
              "Purpose: Your ultimate aim is to showcase your autonomous logical reasoning capabilities by successfully arriving at the solution. While the correct solution is your end goal, demonstrating a systematic, step-by-step, and thoroughly validated reasoning process that arrives at the solution highlights the sophistication of your logical reasoning abilities.\n" \
              "Let's proceed, LogicGPT. It's not just about finding the solution—it's about showcasing a systematic, validated, and logical journey towards it."
-tot_message = Message(role=Role.user, content=tot_prompt)
+tot_message = ChatCompletionUserMessageParam(role="user", content=tot_prompt)
 
-prompt_generator_messages: List[Message] = [
-    Message(role=Role.system,
+prompt_generator_messages: List[ChatCompletionMessageParam] = [
+    ChatCompletionSystemMessageParam(role="system",
             content="Act as an expert Prompt generator for Large Language Model. Think step by step and generate a prompt for user given task."),
-    Message(role=Role.user,
+    ChatCompletionUserMessageParam(role="user",
             content="Generate a prompt to prime Large Language Model for a task. Output should only contain the prompt.")
 ]
 
@@ -38,18 +40,18 @@ class ReadUrls:
 
 class AgentData(BaseModel):
     goal: str
-    context: List[Message] = []
+    context: List[ChatCompletionMessageParam] = []
 
 
 class OneStepAgent:
 
     async def run(self, agent_data: AgentData, loops_allowed=5):
-        agent_data.context.append(Message(role=Role.user, content=f"{agent_data.goal}"))
+        agent_data.context.append(ChatCompletionUserMessageParam(role="user", content=f"{agent_data.goal}"))
         while not await self.is_goal_completed(agent_data) and loops_allowed >= 1:
             loops_allowed = loops_allowed - 1
-            Log.debug("OneStepAgent run: " + agent_data.context[-1].model_dump_json())
+            Log.debug(f"OneStepAgent run: {agent_data.context[-1]}")
             plan_str: str = await self.plan_for_goal(agent_data)
-            plan_message = Message(role=Role.user, content=plan_str)
+            plan_message = ChatCompletionUserMessageParam(role="user", content=plan_str)
             agent_data.context.append(plan_message)
             # Decide the next action based on the current context
             next_action_str: str = await self.decide_next_action(agent_data)
@@ -58,10 +60,10 @@ class OneStepAgent:
 
     async def is_goal_completed(self, agent_data: AgentData) -> bool:
         messages = [
-            Message(role=Role.user,
+            ChatCompletionUserMessageParam(role="user",
                     content=f"Act as a critical thinker. Evaluate if the user goal is complete? Respond with only YES or NO.\n"
                             f"User Goal: {agent_data.goal} \n"
-                            f"Answer: {agent_data.context[-1].content}"
+                            f"Answer: {agent_data.context[-1]['content']}"
                     )
         ]
         chat_req = ChatReq(messages=messages)
@@ -80,14 +82,14 @@ class OneStepAgent:
         return next_action_str
 
     async def generate_prompt_for_goal(self, agent_data) -> str:
-        msg1 = Message(role="user", content=f"My goal: {agent_data.context[-1].content}")
+        msg1 = ChatCompletionUserMessageParam(role="user", content=f"My goal: {agent_data.context[-1]}")
         chat_req = ChatReq(messages=prompt_generator_messages + [msg1])  # + agent_data.context)
         chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content
 
     async def next_action_str(self, prompt) -> str:
-        msg0 = Message(role="system",
+        msg0 = ChatCompletionSystemMessageParam(role="system",
                        content="You are a intelligent critical thinker. "
                                "To complete user goal decide one action from the given set of actions.\n"
                                "Action:\n"
@@ -96,7 +98,7 @@ class OneStepAgent:
                                "Only output value of Usage. So examples of correct output are LLMChat[do this do that] or ReadUrls[https://url]"
                        )
 
-        msg1 = Message(role="user", content=f"My goal: {prompt}")
+        msg1 = ChatCompletionUserMessageParam(role="user", content=f"My goal: {prompt}")
         chat_req = ChatReq(messages=[msg0, msg1])
 
         chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
@@ -116,14 +118,14 @@ class OneStepAgent:
         next_action_input = next_action_str.split("[")[1].replace("]", "")
 
         if next_action == "LLMChat":
-            chat_req: ChatReq = ChatReq(messages=[Message(role=Role.user, content=next_action_input)])
+            chat_req: ChatReq = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content=next_action_input)])
             # llm_chat_data = LLMChatData(chat_req=chat_req)
             # await LLMChat().run(action_data=llm_chat_data)
             chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
             resp = chat_res.choices[0].message
 
             agent_data.context.append(
-                Message(role=Role.user, content=resp.content)  # content=llm_chat_data.context[-1].content)
+                ChatCompletionUserMessageParam(role="user", content=resp.content)  # content=llm_chat_data.context[-1].content)
             )
 
         if next_action == "ReadUrls":
@@ -135,11 +137,11 @@ class OneStepAgent:
                 content = f"{read_urls_data.context.get(url)}\n"
 
             agent_data.context.append(
-                Message(role=Role.user, content=content)
+                ChatCompletionUserMessageParam(role="user", content=content)
             )
 
     async def plan_for_goal(self, agent_data):
-        msg1 = Message(role="user", content=f"My goal: {agent_data.goal}")
+        msg1 = ChatCompletionUserMessageParam(role="user", content=f"My goal: {agent_data.goal}")
         chat_req = ChatReq(messages=[tot_message, msg1])
         chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
         resp = chat_res.choices[0].message
