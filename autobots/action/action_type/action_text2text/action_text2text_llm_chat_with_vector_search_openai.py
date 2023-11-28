@@ -24,7 +24,7 @@ class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
 
 
 class ActionGenTextLlmChatWithVectorSearchOpenai(
-    IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenai, TextObj, TextObjs]):
+    IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput, TextObj, TextObjs]):
     """
     Vector search and add it to chat prompt as context
     """
@@ -32,7 +32,7 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        return ActionCreateGenTextLlmChatWithVectorSearchOpenai
+        return ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
@@ -42,9 +42,9 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ActionCreateGenTextLlmChatWithVectorSearchOpenai):
+    def __init__(self, action_config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput):
         super().__init__(action_config)
-        self.datastore = Datastore().hydrate(datastore_id=action_config.config.datastore_id)
+        self.datastore = Datastore().hydrate(datastore_id=action_config.datastore_id)
 
     async def run_action(self, action_input: TextObj) -> TextObjs | None:
         text_objs = TextObjs(texts=[])
@@ -57,8 +57,10 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
             context = f"{context}{result}\n"
         # LM chat
         message = Message(role=Role.user, content=f"{context}Question: {action_input.text}")
-        self.action_config.input.messages = self.action_config.config.chat_req.messages + [message]
-        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.config.chat_req)
+        if self.action_config.input is None:
+            self.action_config.input = TextObj(text="")
+        self.action_config.input.text = f"{self.action_config.chat_req.messages[0]['content']}\n{message.content}"
+        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.chat_req)
         for choice in chat_res.choices:
             text_objs.texts.append(TextObj(text=choice.message.content))
         return text_objs
