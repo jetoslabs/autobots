@@ -13,7 +13,7 @@ def get_env_suffix(ENV):
 
 
 class Settings(BaseSettings):
-    ENV: Literal["dev", "qa", "stage", "prod"] | str = "local"
+    ENV: Literal["local", "dev", "qa", "stage", "prod"] | str = "local"
 
     # value from github deployment action (CICD)
     VERSION: str = "local"
@@ -28,19 +28,17 @@ class Settings(BaseSettings):
     ALLOW_ORIGINS: str = "http://localhost:3000"
     ALLOWED_ORIGINS: List[str] = ALLOW_ORIGINS.split(",")
 
-    SQLALCHEMY_DATABASE_URL: str = None
-    SQLALCHEMY_DATABASE_SCHEMA: str = "autobots"
-    SQLALCHEMY_DATABASE_SCHEMA = SQLALCHEMY_DATABASE_SCHEMA + get_env_suffix(ENV)
+    SQLALCHEMY_DATABASE_URL: str
+    SQLALCHEMY_DATABASE_SCHEMA: str
 
-    SUPABASE_URL: str = None
-    SUPABASE_ANON_KEY: str = None
+    SUPABASE_URL: str
+    SUPABASE_ANON_KEY: str
 
-    JWT_SECRET_KEY: str = None
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = ALGORITHMS.HS256
 
-    MONGO_CONN: str = None
-    MONGO_DATABASE: str = "autobots"
-    MONGO_DATABASE = MONGO_DATABASE + get_env_suffix(ENV)
+    MONGO_CONN: str
+    MONGO_DATABASE: str
 
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
@@ -51,15 +49,13 @@ class Settings(BaseSettings):
 
     UNSPLASH_ACCESS_KEY: str = None
 
-    AWS_ACCESS_KEY_ID: str = None
-    AWS_SECRET_ACCESS_KEY: str = None
-    AWS_S3_BUCKET_NAME: str = "autobots"
-    AWS_S3_BUCKET_NAME = AWS_S3_BUCKET_NAME + get_env_suffix(ENV)
-    AWS_S3_BUCKET_REGION: str = None
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_S3_BUCKET_NAME: str
+    AWS_S3_BUCKET_REGION: str
 
-    AWS_S3_PUBLIC_BUCKET_NAME: str = "autobots-public"
-    AWS_S3_PUBLIC_BUCKET_NAME = AWS_S3_PUBLIC_BUCKET_NAME + get_env_suffix(ENV)
-    AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: str = None
+    AWS_S3_PUBLIC_BUCKET_NAME: str
+    AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: str
 
     PINECONE_ENVIRONMENT: str = None
     PINECONE_API_KEY: str = None
@@ -101,7 +97,7 @@ class SettingsProvider:
     def set() -> None:
         SettingsProvider._settings = Settings(_env_file=SettingsProvider._env_file)
         SettingsProvider.check_for_none(SettingsProvider._settings)
-        logger.bind(app="autobots", ALLOWED_ORIGINS=SettingsProvider._settings.ALLOWED_ORIGINS)
+        logger.debug(f"Allowed origins: {SettingsProvider._settings.ALLOWED_ORIGINS}")
 
     @staticmethod
     async def get() -> Settings:
