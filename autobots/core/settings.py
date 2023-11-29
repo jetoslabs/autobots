@@ -8,12 +8,12 @@ from pydantic_settings import BaseSettings
 # from autobots.core.config import get_config
 
 
-def get_env_suffix(ENV):
-    return f"_{ENV}" if ENV != "prod" else ""
+# def get_env_suffix(ENV):
+#     return f"_{ENV}" if ENV != "prod" else ""
 
 
 class Settings(BaseSettings):
-    ENV: Literal["local", "dev", "qa", "stage", "prod"] | str = "local"
+    ENV: Literal["local", "test", "dev", "qa", "stage", "prod"] | str = "local"
 
     # value from github deployment action (CICD)
     VERSION: str = "local"
