@@ -82,7 +82,7 @@ class OpenaiAudio():
                 Log.trace("Completed OpenAI create translation")
             return res
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
         finally:
             # delete the file
             os.remove(full_path_name)
