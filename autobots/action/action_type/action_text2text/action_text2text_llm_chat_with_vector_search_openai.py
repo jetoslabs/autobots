@@ -57,10 +57,10 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
             context = f"{context}{result}\n"
         # LM chat
         message = Message(role=Role.user, content=f"{context}Question: {action_input.text}")
-        if self.action_config.input is None:
-            self.action_config.input = TextObj(text="")
-        self.action_config.input.text = f"{self.action_config.chat_req.messages[0]['content']}\n{message.content}"
-        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.chat_req)
+        self.action_config.config.chat_req.messages = self.action_config.config.chat_req.messages + [message]
+        self.action_config.input = action_input
+        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.config.chat_req)
+        action_results = TextObjs()
         for choice in chat_res.choices:
-            text_objs.texts.append(TextObj(text=choice.message.content))
-        return text_objs
+            action_results.texts.append(TextObj(text=choice.message.content))
+        return action_results
