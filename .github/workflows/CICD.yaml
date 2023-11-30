@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Tests
         uses: ./.github/actions/tests.yaml
-#
+
 #  build:
 #    needs: [tests]
 #    if: ${{ github.ref == 'refs/heads/main' }}
