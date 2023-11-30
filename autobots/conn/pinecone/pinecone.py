@@ -43,14 +43,17 @@ class Pinecone:
         return index
 
     async def upsert_data(self, vector_id: str, data: str, metadata: dict, namespace: str = "default"):
-        upserted = []
-        embedding_req = EmbeddingReq(input=data)
-        embedding_res: EmbeddingRes = await self.open_ai.openai_embeddings.embeddings(embedding_req)
-        for embedding_data in embedding_res.data:
-            # vector = (Vector_ID, Dense_vector_values, Vector_metadata)
-            vector = (vector_id, embedding_data.embedding, metadata)
-            upsert_res = self.index.upsert(vectors=[vector], namespace=namespace)
-            upserted.append(upsert_res)
+        try:
+            upserted = []
+            embedding_req = EmbeddingReq(input=data)
+            embedding_res: EmbeddingRes = await self.open_ai.openai_embeddings.embeddings(embedding_req)
+            for embedding_data in embedding_res.data:
+                # vector = (Vector_ID, Dense_vector_values, Vector_metadata)
+                vector = (vector_id, embedding_data.embedding, metadata)
+                upsert_res = self.index.upsert(vectors=[vector], namespace=namespace)
+                upserted.append(upsert_res)
+        except Exception as e:
+            Log.exception(str(e))
 
     async def query(
             self,
