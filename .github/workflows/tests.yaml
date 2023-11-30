@@ -1,13 +1,6 @@
 name: Continuous Tests
 
 on:
-  push:
-    branches:
-      - '*'
-      - '!main'
-  pull_request:
-    branches:
-      - '*'
   workflow_dispatch:
   workflow_call:
 

@@ -18,8 +18,6 @@ env:
 jobs:
 
   build:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    needs: [tests]
     runs-on: ubuntu-latest
 
     steps:
