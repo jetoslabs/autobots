@@ -22,11 +22,7 @@ env:
 jobs:
 
   tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Tests
-        uses: ./.github/actions/tests.yaml
+    uses: ./.github/workflows/tests.yaml
 
 #  build:
 #    needs: [tests]
