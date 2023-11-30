@@ -36,7 +36,7 @@ async def create_text2img_dalle_openai(
         raise HTTPException(500)
 
 
-@router.post("/text2img/dalle/openai/{action_id}/run")
+@router.post("/text2img/dalle_openai/{action_id}/run")
 async def run_text2img_dalle_openai(
         action_id: str,
         action_input: TextObj,
