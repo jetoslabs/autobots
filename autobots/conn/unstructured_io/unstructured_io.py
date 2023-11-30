@@ -8,7 +8,7 @@ from unstructured_client.models import shared
 from unstructured_client.models.errors import SDKError
 from unstructured_client.models.operations import PartitionResponse
 
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
 
@@ -30,12 +30,8 @@ class PartitionResponseElement(BaseModel):
 class UnstructuredIO:
 
     def __init__(self, unstructured_api_key: str):
-        # Note - in an upcoming release, the Security object is removed
-        # You'll pass the api key directly
         self.client = UnstructuredClient(
-            security=shared.Security(
-                api_key_auth=unstructured_api_key,
-            ),
+            api_key_auth=unstructured_api_key,
         )
 
     async def _build_PartitionParameters(self, file: UploadFile, chunk_size: int = 500) -> shared.PartitionParameters:
@@ -59,9 +55,9 @@ class UnstructuredIO:
         try:
             res: PartitionResponse = self.client.general.partition(req)
         except SDKError as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         if not res or res.status_code != 200:
-            log.error(f"Error in extracting data from file {file.filename}")
+            Log.error(f"Error in extracting data from file {file.filename}")
         return res
         # res_str = ("\n\n".join([str(el) for el in res.elements]))
 
@@ -72,7 +68,9 @@ class UnstructuredIO:
                 element = PartitionResponseElement.model_validate(element_dict)
                 elements.append(element)
             except ValidationError as e:
-                log.exception(str(e))
+                Log.exception(str(e))
+            except Exception as e:
+                Log.exception(str(e))
         return elements
 
     async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:

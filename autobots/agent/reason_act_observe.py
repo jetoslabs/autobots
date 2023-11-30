@@ -1,9 +1,12 @@
 from typing import List
 
+from openai.types.chat import ChatCompletionMessageParam, ChatCompletionSystemMessageParam, \
+    ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam
+
 from autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
-from autobots.conn.openai.chat import Message, Role, ChatRes, ChatReq
-from autobots.conn.openai.openai import get_openai
-from autobots.core.log import log
+from autobots.conn.openai.openai_chat.chat_model import ChatRes, ChatReq
+from autobots.conn.openai.openai_client import get_openai
+from autobots.core.logging.log import Log
 
 Task_Prefix = "Task: "
 Thought_Prefix = "Thought: "
@@ -33,56 +36,56 @@ class ReasonActObserve():
         observation_example_1 = f"{Observe_Prefix}Arsenal Football Club is an English professional football club based in Islington, London. Arsenal play in the Premier League, the top flight of English football."
         thought_goal_example_2 = f"{Thought_Prefix}Arsenal Football Club is based in Islington, London"
         action_example_2 = f"finish[Islington, London]"
-        self.setup_messages: List[Message] = [
-            Message(role=Role.system, content=f"{base_prompt}\n\n{thought_prompt}\n{act_prompt}\n{observe_prompt}")
+        self.setup_messages: List[ChatCompletionMessageParam] = [
+            ChatCompletionSystemMessageParam(role="system", content=f"{base_prompt}\n\n{thought_prompt}\n{act_prompt}\n{observe_prompt}")
         ] + [
-            Message(role=Role.user, content=user_goal_example),
-            Message(role=Role.assistant, content=thought_goal_example_1),
-            Message(role=Role.assistant, content=action_example_1),
-            Message(role=Role.system, content=observation_example_1),
-            Message(role=Role.assistant, content=thought_goal_example_2),
-            Message(role=Role.assistant, content=action_example_2)
+            ChatCompletionUserMessageParam(role="user", content=user_goal_example),
+            ChatCompletionAssistantMessageParam(role="assistant", content=thought_goal_example_1),
+            ChatCompletionAssistantMessageParam(role="assistant", content=action_example_1),
+            ChatCompletionSystemMessageParam(role="system", content=observation_example_1),
+            ChatCompletionAssistantMessageParam(role="assistant", content=thought_goal_example_2),
+            ChatCompletionAssistantMessageParam(role="assistant", content=action_example_2)
         ]
 
-    async def do_task(self, user_goal: str) -> List[Message]:
-        messages = self.setup_messages + [Message(role=Role.user, content=f"{Task_Prefix}{user_goal}")]
+    async def do_task(self, user_goal: str) -> List[ChatCompletionMessageParam]:
+        messages = self.setup_messages + [ChatCompletionUserMessageParam(role="user", content=f"{Task_Prefix}{user_goal}")]
 
         is_finish = False
-        log.info(f"Task stared: {user_goal}")
+        Log.info(f"Task stared: {user_goal}")
         while not is_finish:
             thought = await self.think(messages)
-            messages = messages + [Message(role=Role.assistant, content=thought)]
+            messages = messages + [ChatCompletionAssistantMessageParam(role="assistant", content=thought)]
 
             action = await self.act(messages)
-            messages = messages + [Message(role=Role.assistant, content=action)]
+            messages = messages + [ChatCompletionAssistantMessageParam(role="assistant", content=action)]
 
             observation = await self.observe(action=action)
             if observation:
-                messages = messages + [Message(role=Role.system, content=observation)]
+                messages = messages + [ChatCompletionSystemMessageParam(role="system", content=observation)]
 
             if "finish[" in action:
                 is_finish = True
-                log.info(f"Task: {user_goal}\nResult: {action}")
+                Log.info(f"Task: {user_goal}\nResult: {action}")
         return messages
 
-    async def think(self, messages: List[Message]) -> str:
-        req_message = messages + [Message(role=Role.user, content="Now Think. Respond in maximum of 500 words")]
+    async def think(self, messages: List[ChatCompletionMessageParam]) -> str:
+        req_message = messages + [ChatCompletionUserMessageParam(role="user", content="Now Think. Respond in maximum of 500 words")]
         chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-        resp: ChatRes = await get_openai().chat(chat_req)
+        resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
         response = resp.choices[0].message.content
-        log.info(f"{Thought_Prefix}{response}")
+        Log.info(f"{Thought_Prefix}{response}")
         return f"{response}"
 
-    async def act(self, messages: List[Message]) -> str:
+    async def act(self, messages: List[ChatCompletionMessageParam]) -> str:
         try:
-            req_message = messages + [Message(role=Role.user, content="Based on above thought, Now Select one Action and one action only")]
+            req_message = messages + [ChatCompletionUserMessageParam(role="user", content="Based on above thought, Now Select one Action and one action only")]
             chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-            resp: ChatRes = await get_openai().chat(chat_req)
+            resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
             response = resp.choices[0].message.content
-            log.info(f"{response}")
+            Log.info(f"{response}")
             return f"{response}"
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def observe(self, action: str) -> str:
         if "search" in action:
@@ -92,7 +95,7 @@ class ReasonActObserve():
             for search in search_res:
                 res = res + f"{search.title}: {search.body}\n"
             res = Observe_Prefix + res
-            log.info(f"{Observe_Prefix}{res}")
+            Log.info(f"{Observe_Prefix}{res}")
             return res
 
         elif "news" in action:
@@ -102,5 +105,5 @@ class ReasonActObserve():
             for search in search_res:
                 res = res + f"{search.title}: {search.body} - source({search.source})\n"
             res = Observe_Prefix + res
-            log.info(f"{Observe_Prefix}{res}")
+            Log.info(f"{Observe_Prefix}{res}")
             return res

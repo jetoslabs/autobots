@@ -4,7 +4,7 @@ from typing import List, Optional
 from duckduckgo_search import DDGS
 from pydantic import BaseModel, HttpUrl
 
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
 
@@ -93,7 +93,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = SearchRes(**r)
                 search_res.append(res)
-                log.trace(f"Search for {text}: {r}")
+                Log.trace(f"Search for {text}: {r}")
         return search_res
 
     async def news(self, keywords: str, num_results: int = 3) -> List[NewsRes]:
@@ -106,7 +106,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = NewsRes(**r)
                 news_res.append(res)
-                log.trace(f"News for {keywords}: {r}")
+                Log.trace(f"News for {keywords}: {r}")
         return news_res
 
     async def answer(self, keywords: str, num_results: int = 3) -> List[AnswerRes]:
@@ -119,7 +119,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = AnswerRes(**r)
                 answer_res.append(res)
-                log.trace(f"Answer for {keywords}: {r}")
+                Log.trace(f"Answer for {keywords}: {r}")
         return answer_res
 
     async def search_images(self, keywords: str, num_results: int = 3) -> List[ImageRes]:
@@ -142,7 +142,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = ImageRes(**r)
                 images.append(res)
-                log.trace(f"Image for {keywords}: {r}")
+                Log.trace(f"Image for {keywords}: {r}")
         return images
 
     async def search_videos(self, keywords: str, num_results: int = 3) -> List[VideoRes]:
@@ -163,7 +163,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = VideoRes(**r)
                 videos.append(res)
-                log.trace(f"Video for {keywords}: {r}")
+                Log.trace(f"Video for {keywords}: {r}")
         return videos
 
     async def search_map(
@@ -182,7 +182,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = MapRes(**r)
                 maps.append(res)
-                log.trace(f"Map search for {keywords}: {r}")
+                Log.trace(f"Map search for {keywords}: {r}")
         return maps
 
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
@@ -191,7 +191,7 @@ class DuckDuckGo:
             r = ddgs.translate(keywords, to=to)
             res = TranslateRes(**r)
             translated = res
-            log.trace(f"Translated for {keywords}: {r}")
+            Log.trace(f"Translated for {keywords}: {r}")
         return translated
 
     async def suggestions(self, keywords: str, num_results: int = 30):
@@ -204,7 +204,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = SuggestionRes(**r)
                 suggestions.append(res)
-                log.trace(f"Suggestion for {keywords}: {r}")
+                Log.trace(f"Suggestion for {keywords}: {r}")
         return suggestions
 
 

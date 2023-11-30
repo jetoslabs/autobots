@@ -6,8 +6,6 @@
 #
 # from autobots.core.utils import gen_uuid
 # from autobots.database.base import SessionLocal
-# from autobots.prompts.prompt_orm_model import PromptORM
-# from autobots.prompts.target_platform import LLMTargetPlatform
 # from autobots.user.user_orm_model import UserORM
 #
 #

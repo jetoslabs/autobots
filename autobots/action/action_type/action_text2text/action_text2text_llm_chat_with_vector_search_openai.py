@@ -1,0 +1,66 @@
+from typing import Optional, Type
+
+from pydantic import BaseModel
+
+from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from autobots.action.action.action_doc_model import ActionCreate
+from autobots.action.action_type.action_types import ActionType
+from autobots.action.action.common_action_models import TextObj, TextObjs
+from autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
+from autobots.conn.openai.openai_client import get_openai
+from autobots.datastore.datastore import Datastore
+
+
+class ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput(BaseModel):
+    datastore_id: str
+    chat_req: ChatReq
+    input: Optional[TextObj] = None
+    output: Optional[TextObjs] = None
+
+
+class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
+    type: ActionType = ActionType.text2text_llm_chat_with_vector_search_openai
+    config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
+
+
+class ActionGenTextLlmChatWithVectorSearchOpenai(
+    IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput, TextObj, TextObjs]):
+    """
+    Vector search and add it to chat prompt as context
+    """
+    type = ActionType.text2text_llm_chat_with_vector_search_openai
+
+    @staticmethod
+    def get_config_type() -> Type[ActionConfigType]:
+        return ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
+
+    @staticmethod
+    def get_input_type() -> Type[ActionInputType]:
+        return TextObj
+
+    @staticmethod
+    def get_output_type() -> Type[ActionOutputType]:
+        return TextObjs
+
+    def __init__(self, action_config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput):
+        super().__init__(action_config)
+        self.datastore = Datastore().hydrate(datastore_id=action_config.datastore_id)
+
+    async def run_action(self, action_input: TextObj) -> TextObjs | None:
+        text_objs = TextObjs(texts=[])
+        # vector search
+        search_results = await self.datastore.search(action_input.text, top_k=3)
+        if len(search_results) == 0:
+            return None
+        context = "Only use relevant context to give response. If the context is insufficient say \"Cannot answer from given context\"\nContext: \n"
+        for result in search_results:
+            context = f"{context}{result}\n"
+        # LM chat
+        message = Message(role=Role.user, content=f"{context}Question: {action_input.text}")
+        self.action_config.config.chat_req.messages = self.action_config.config.chat_req.messages + [message]
+        self.action_config.input = action_input
+        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.config.chat_req)
+        action_results = TextObjs()
+        for choice in chat_res.choices:
+            action_results.texts.append(TextObj(text=choice.message.content))
+        return action_results

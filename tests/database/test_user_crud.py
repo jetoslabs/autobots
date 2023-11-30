@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from autobots.database.base import get_db
+from autobots.core.database.base import get_db
 from autobots.user.user_crud import UserCRUD
 from autobots.user.user_orm_model import UserORM
 
