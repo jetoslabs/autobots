@@ -22,14 +22,18 @@ env:
 jobs:
 
   tests:
-    uses: ./.github/actions/tests.yaml
-
-  build:
-    needs: [tests]
-    if: ${{ github.ref == 'refs/heads/main' }}
-    uses: ./.github/actions/build.yaml
-
-  deploy:
-    needs: [build]
-    if: ${{ github.ref == 'refs/heads/main' }}
-    uses: ./.github/actions/deployment-dev.yaml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tests
+        uses: ./.github/actions/tests.yaml
+#
+#  build:
+#    needs: [tests]
+#    if: ${{ github.ref == 'refs/heads/main' }}
+#    uses: ./.github/actions/build.yaml
+#
+#  deploy:
+#    needs: [build]
+#    if: ${{ github.ref == 'refs/heads/main' }}
+#    uses: ./.github/actions/deployment-dev.yaml
