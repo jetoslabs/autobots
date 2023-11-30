@@ -22,14 +22,14 @@ env:
 jobs:
 
   tests:
-    uses: ./.github/actions/tests.yaml
+    uses: ./.github/workflows/tests.yaml
 
-  build:
-    needs: [tests]
-    if: ${{ github.ref == 'refs/heads/main' }}
-    uses: ./.github/actions/build.yaml
-
-  deploy:
-    needs: [build]
-    if: ${{ github.ref == 'refs/heads/main' }}
-    uses: ./.github/actions/deployment-dev.yaml
+#  build:
+#    needs: [tests]
+#    if: ${{ github.ref == 'refs/heads/main' }}
+#    uses: ./.github/actions/build.yaml
+#
+#  deploy:
+#    needs: [build]
+#    if: ${{ github.ref == 'refs/heads/main' }}
+#    uses: ./.github/actions/deployment-dev.yaml
