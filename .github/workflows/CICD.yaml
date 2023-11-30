@@ -25,11 +25,11 @@ jobs:
     uses: ./.github/actions/tests.yaml
 
   build:
-    if: ${{ github.ref == 'refs/heads/main' }}
     needs: [tests]
+    if: ${{ github.ref == 'refs/heads/main' }}
     uses: ./.github/actions/build.yaml
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/main' }}
     needs: [build]
+    if: ${{ github.ref == 'refs/heads/main' }}
     uses: ./.github/actions/deployment-dev.yaml
