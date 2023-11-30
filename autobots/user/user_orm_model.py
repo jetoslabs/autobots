@@ -1,6 +1,6 @@
 from sqlalchemy import Column, UUID, DateTime, func
 
-from autobots.database.base import Base
+from autobots.core.database.base import Base
 
 
 class UserORM(Base):

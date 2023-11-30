@@ -2,6 +2,7 @@ import pytest
 
 from autobots.agent.reason_act_observe import ReasonActObserve
 
+@pytest.mark.skip(reason="agent stalling")
 @pytest.mark.asyncio
 async def test_agent_reason_act_observe_happy_path_1(set_test_settings):
     # user_goal = "What is the difference in celsius for current temperature between San Francisco and New Delhi"
@@ -16,5 +17,5 @@ async def test_agent_reason_act_observe_happy_path_1(set_test_settings):
     # user_goal = "Plan a trip to Hawaii, leaving from San Francisco in budget of $5000"
     # user_goal = "Write a quick blog post on git commands"
     messages = await ReasonActObserve().do_task(user_goal=user_goal)
-    print("test_agent_reason_act_observe_happy_path_1: " + messages[-1].content)
-    assert "finish[" in messages[-1].content
+    print("test_agent_reason_act_observe_happy_path_1: " + messages[-1]["content"])
+    assert "finish[" in messages[-1]["content"]

@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 
-from autobots.database.base import get_db
+from autobots.core.database.base import get_db
 from autobots.user.user_orm_model import UserORM
 
 

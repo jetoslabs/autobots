@@ -2,16 +2,16 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from autobots.core.log import log, setup_logger
-from autobots.core.settings import SettingsProvider
-from autobots.database.mongo_base import close_mongo_client
+from autobots.core.logging.setup_logger import setup_logger
+from autobots.core.database.mongo_base import close_mongo_client
+from autobots.core.logging.log import Log
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logger()
-    log.info("starting server")
+    Log.info("starting server")
     yield
-    log.info("Clean up and release the resources")
+    Log.info("Clean up and release the resources")
     close_mongo_client()
-    log.info("stopping server")
+    Log.info("stopping server")

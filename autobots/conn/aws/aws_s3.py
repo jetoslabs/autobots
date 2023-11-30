@@ -9,7 +9,7 @@ from mypy_boto3_s3.service_resource import ObjectSummary
 from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 from pydantic import HttpUrl
 
-from autobots.core.log import log
+from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
 
@@ -39,7 +39,7 @@ class AwsS3:
             self.bucket.upload_fileobj(file_obj, object_path)
             return len(data)
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         return -1
 
     async def put_file_obj(self, file_obj: BytesIO, filename: str) -> HttpUrl:
@@ -48,10 +48,10 @@ class AwsS3:
             length = len(file_obj.getvalue())
             self.bucket.upload_fileobj(file_obj, object_path)
             object_url = await self.get_object_url(object_path)
-            log.debug(f"File written to s3, filename: {object_url}, size: {length}")
+            Log.debug(f"File written to s3, filename: {object_url}, size: {length}")
             return object_url
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
         return ""
 
     async def get(self, filename: str) -> str:
@@ -62,7 +62,7 @@ class AwsS3:
             res_data = res_bytes.getvalue().decode('utf-8')
             return res_data
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def delete(self, filename: str) -> list[DeletedObjectTypeDef]:
         object_path = self.object_prefix + filename
@@ -76,7 +76,7 @@ class AwsS3:
             })
             return delete_res["Deleted"]
         except Exception as e:
-            log.exception(str(e))
+            Log.exception(str(e))
 
     async def list(self, prefix: str, limit: int = 300) -> List[ObjectSummary]:
         prefix = self.object_prefix + prefix
@@ -117,7 +117,7 @@ def get_aws_s3(
     )
 
 @lru_cache
-def get_private_s3(settings: Settings = SettingsProvider.sget()) -> AwsS3:
+def get_public_s3(settings: Settings = SettingsProvider.sget()) -> AwsS3:
     s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
                     settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME)
     return s3
