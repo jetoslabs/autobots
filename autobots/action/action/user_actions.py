@@ -26,7 +26,7 @@ class UserActions:
             action_doc = await self.action_crud.insert_one(action_doc_create)
             return action_doc
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
         return None
 
     async def list_actions(
@@ -47,7 +47,7 @@ class UserActions:
                 raise HTTPException(500, "Error in finding action")
             return action_docs[0]
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
         return None
 
     async def update_action(
