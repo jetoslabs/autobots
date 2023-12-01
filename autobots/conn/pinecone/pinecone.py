@@ -53,7 +53,7 @@ class Pinecone:
                 upsert_res = self.index.upsert(vectors=[vector], namespace=namespace)
                 upserted.append(upsert_res)
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
 
     async def query(
             self,
@@ -78,7 +78,7 @@ class Pinecone:
                 )
                 return res
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
 
     async def fetch(self, vector_ids: List[str], namespace: str = "default") -> dict:
         fetch_res = self.index.fetch(ids=vector_ids, namespace=namespace)

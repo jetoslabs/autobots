@@ -18,4 +18,4 @@ class OpenaiEmbeddings():
             resp: EmbeddingRes = EmbeddingRes(**res.model_dump())
             return resp
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))

@@ -41,5 +41,5 @@ async def get_jwt_payload(request: Request) -> Optional[JwtPayload]:
             jwt_payload = decode_access_token(token)
         return jwt_payload
     except Exception as e:
-        Log.exception(f"Error while get_jwt_payload: {e}")
+        Log.error(f"Error while get_jwt_payload: {e}")
 

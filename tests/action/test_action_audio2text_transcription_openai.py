@@ -5,6 +5,7 @@ from autobots.conn.openai.openai_audio.transcription_model import TranscriptionR
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_action_audio2text_transcription_openai_happy_path(set_test_settings):
     config = TranscriptionReq()
     input = AudioRes(url="https://cdn.openai.com/API/docs/audio/alloy.wav")

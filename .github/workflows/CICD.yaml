@@ -3,33 +3,37 @@ name: CICD
 on:
   push:
     branches:
-      - 'main'
+      - '*'
+#      - 'main'
     tags:
       - '*'
   workflow_dispatch:
 
-env:
-  IMAGE_TAG: ${{ github.ref_name }}
-  # Datadog Environment
-  DD_ENV: ${{ github.ref_name }}
-  # Datadog Version
-  DD_VERSION: ${{ github.ref_name }}-${{ github.run_number }}
-  # DO CI
-  DO_CI: ${{ github.ref == 'refs/heads/main' && true || false }}
-  # DO CD
-  DO_CD: ${{ github.ref == 'refs/heads/main' && true || false }}
+#env:
+#  IMAGE_TAG: ${{ github.ref_name }}
+#  # Datadog Environment
+#  DD_ENV: ${{ github.ref_name }}
+#  # Datadog Version
+#  DD_VERSION: ${{ github.ref_name }}-${{ github.run_number }}
+#  # DO CI
+#  DO_CI: ${{ github.ref == 'refs/heads/main' && true || false }}
+#  # DO CD
+#  DO_CD: ${{ github.ref == 'refs/heads/main' && true || false }}
 
 jobs:
 
   tests:
     uses: ./.github/workflows/tests.yaml
+    secrets: inherit
 
-#  build:
-#    needs: [tests]
-#    if: ${{ github.ref == 'refs/heads/main' }}
-#    uses: ./.github/actions/build.yaml
-#
-#  deploy:
-#    needs: [build]
-#    if: ${{ github.ref == 'refs/heads/main' }}
-#    uses: ./.github/actions/deployment-dev.yaml
+  build:
+    needs: [tests]
+    if: ${{ github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/build.yaml
+    secrets: inherit
+
+  deploy:
+    needs: [build]
+    if: ${{ github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/deployment-dev.yaml
+    secrets: inherit

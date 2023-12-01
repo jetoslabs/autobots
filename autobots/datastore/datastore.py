@@ -130,7 +130,7 @@ class Datastore:
                     Log.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
                     Log.trace(f"Processed file chunk: {file.filename} - {chunk}")
                 except Exception as e:
-                    Log.exception(str(e))
+                    Log.error(str(e))
 
     # async def get(self):
     #     """
