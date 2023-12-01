@@ -5,6 +5,7 @@ from autobots.conn.openai.openai_client import get_openai
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_embedding_happy_path(set_test_settings):
     texts = ["Hello", "World"]
     embedding_req = EmbeddingReq(input=texts)
