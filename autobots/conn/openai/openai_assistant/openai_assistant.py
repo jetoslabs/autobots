@@ -14,10 +14,10 @@ class OpenaiAssistant():
         try:
             return await self.client.beta.assistants.create(**assistant_create.model_dump(exclude_none=True))
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
 
     async def create(self, assistant_create: AssistantCreate) -> Assistant | None:
         try:
             return await self.client.beta.assistants.create(**assistant_create.model_dump(exclude_none=True))
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))

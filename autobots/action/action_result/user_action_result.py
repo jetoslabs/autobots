@@ -26,7 +26,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
             raise e
 
     async def list_action_result(
@@ -53,7 +53,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
         return None
 
     async def update_action_result(
@@ -65,7 +65,7 @@ class UserActionResult:
             action_result_doc = ActionResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            Log.exception(str(e))
+            Log.error(str(e))
             raise e
 
     async def delete_action_result(
