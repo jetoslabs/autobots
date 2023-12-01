@@ -26,7 +26,7 @@ jobs:
           chmod 600 lightsail.pem
           echo "cat lightsail.pem" && cat lightsail.pem
         env:
-          LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_SSH_KEY }}
+          LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_AUTOBOTS_SSH_KEY }}
 
       - name: SSH and create docker network
         if: always()
@@ -34,8 +34,8 @@ jobs:
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker network ls|grep autobots-network > /dev/null || docker network create autobots-network
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
 
       - name: SSH and Remove Running container and image Datadog Agent
         if: always()
@@ -53,8 +53,8 @@ jobs:
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker images
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
 
       - name: SSH and Run Docker image Datadog agent
         if: always()
@@ -82,8 +82,8 @@ jobs:
           -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro 
           gcr.io/datadoghq/agent:latest
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: ${{ secrets.DD_SITE }}
 
@@ -93,8 +93,8 @@ jobs:
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker login registry.gitlab.com -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
           GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
 
@@ -114,8 +114,8 @@ jobs:
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker images
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
 
       - name: SSH and Pull Docker image
         if: always()
@@ -123,8 +123,8 @@ jobs:
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 \
             docker pull registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
 
       - name: SSH and Run Docker image
         if: always()
@@ -161,8 +161,8 @@ jobs:
           -e UNSTRUCTURED_API_KEY=$UNSTRUCTURED_API_KEY
           registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
-          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_USERNAME }}
-          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_DEV_IP }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
+          LIGHTSAIL_IP: ${{ secrets.LIGHTSAIL_AUTOBOTS_IP }}
           ENV: ${{ secrets.ENV }}
           COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
           ALLOW_ORIGINS: ${{ secrets.ALLOW_ORIGINS }}
