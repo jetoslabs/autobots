@@ -39,7 +39,7 @@ async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depend
             Log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
         return response
     except Exception as e:
-        Log.exception(str(e))
+        Log.error(str(e))
         return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -81,9 +81,9 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
             Log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
         return response
     except HTTPException as e:
-        Log.exception(str(e))
+        Log.error(str(e))
     except Exception as e:
-        Log.exception(str(e))
+        Log.error(str(e))
     return templates.TemplateResponse("index.html", {"request": request})
 
 

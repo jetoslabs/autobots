@@ -50,4 +50,4 @@ class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, TextObjs]):
                 text_objs.texts.append(TextObj(text=choice.message.content))
             return text_objs
         except ValidationError as e:
-            Log.exception(str(e))
+            Log.error(str(e))

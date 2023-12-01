@@ -33,7 +33,7 @@ async def create_action_text2img_stable_diffusion(
         )
         return action_doc
     except Exception as e:
-        Log.exception(str(e))
+        Log.error(str(e))
         raise HTTPException(500)
 
 
@@ -53,5 +53,5 @@ async def run_action_text2img_stable_diffusion(
         resp = await text2img.run_action(action_input)
         return resp
     except Exception as e:
-        Log.exception(str(e))
+        Log.error(str(e))
         raise HTTPException(500)

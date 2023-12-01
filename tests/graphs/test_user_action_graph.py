@@ -20,6 +20,7 @@ from autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_user_graph_run_happy_path(set_test_settings):
     rand: str = gen_random_str()
 
@@ -109,6 +110,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def create_action_persona(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="persona_" + rand,
@@ -124,6 +126,7 @@ async def create_action_persona(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def create_action_manager(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="manager_" + rand,
@@ -139,6 +142,7 @@ async def create_action_manager(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def create_action_product(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="market researcher_" + rand,
@@ -154,6 +158,7 @@ async def create_action_product(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def create_action_creative(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="creative_" + rand,
@@ -169,6 +174,7 @@ async def create_action_creative(user_actions: UserActions, db: Database, rand: 
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def create_action_jingle(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateGenTextLlmChatOpenai(
         name="jingle_" + rand,

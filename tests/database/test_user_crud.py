@@ -8,6 +8,7 @@ from autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_user_crud_happy_path(set_test_settings):
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")
     try:

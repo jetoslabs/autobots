@@ -39,5 +39,5 @@ async def create_action_audio2text_translation_openai(
         )
         return action_doc
     except Exception as e:
-        Log.exception(str(e))
+        Log.error(str(e))
         raise HTTPException(500)

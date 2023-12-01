@@ -14,6 +14,7 @@ from autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_action_mock_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)
@@ -58,6 +59,7 @@ async def test_action_mock_happy_path(set_test_settings):
         assert deleted.deleted_count == 1
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_action_llm_chat_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)
