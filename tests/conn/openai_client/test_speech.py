@@ -11,6 +11,7 @@ from autobots.core.utils import gen_hash
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_speech_happy_path(set_test_settings):
     input = f"Hello! I am Autobot X. I am here to assist you. Today is {datetime.datetime.now().strftime('%B %d, %Y')}."
     params = SpeechReq(

@@ -11,6 +11,7 @@ from autobots.conn.stability.stability_data import StabilityReq, StabilityUpscal
 
 @pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_text_to_image_happy_path(set_test_settings):
     prompt = "Image of a family wearing Nike shoes"
     stability_req = StabilityReq(prompt=prompt, cfg_scale=9)
@@ -20,6 +21,7 @@ async def test_text_to_image_happy_path(set_test_settings):
 
 @pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_image_to_image_happy_path(set_test_settings):
     prompt = "Steve McCurry photo of a man"
     stability_req = StabilityReq(
@@ -61,6 +63,7 @@ async def test_image_to_image_happy_path(set_test_settings):
 
 @pytest.mark.skip(reason="Going to be removed")
 @pytest.mark.asyncio
+@pytest.mark.timeout(180)
 async def test_upscale_image_happy_path(set_test_settings):
     prompt = "Image of a model running in Nike shoes"
     width = 1024

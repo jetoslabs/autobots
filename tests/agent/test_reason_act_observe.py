@@ -2,7 +2,9 @@ import pytest
 
 from autobots.agent.reason_act_observe import ReasonActObserve
 
+
 @pytest.mark.skip(reason="agent stalling")
+@pytest.mark.timeout(180)
 @pytest.mark.asyncio
 async def test_agent_reason_act_observe_happy_path_1(set_test_settings):
     # user_goal = "What is the difference in celsius for current temperature between San Francisco and New Delhi"
