@@ -30,8 +30,10 @@ jobs:
     needs: [tests]
     if: ${{ github.ref == 'refs/heads/main' }}
     uses: ./.github/workflows/build.yaml
+    secrets: inherit
 
   deploy:
     needs: [build]
     if: ${{ github.ref == 'refs/heads/main' }}
     uses: ./.github/workflows/deployment-dev.yaml
+    secrets: inherit
