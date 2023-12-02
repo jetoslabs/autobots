@@ -6,7 +6,6 @@ from autobots.conn.openai.openai_client import get_openai
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_chat_happy_path(set_test_settings):
     msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
     msg1 = ChatCompletionUserMessageParam(role="user", content="Most famous Mechanics law")
@@ -19,7 +18,6 @@ async def test_chat_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_chat_stream_happy_path(set_test_settings):
     msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
     msg1 = ChatCompletionUserMessageParam(role="user", content="Most famous Mechanics law")

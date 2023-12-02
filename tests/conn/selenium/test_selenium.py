@@ -7,7 +7,6 @@ from autobots.conn.selenium.selenium import get_selenium
 # TODO: Make Selenium work, currently unable to install chromedriver in image
 # @pytest.mark.skip(reason="Selenium driver not working")
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_read_url_text_happy_path(set_test_settings):
     url_text = await get_selenium().read_url_text(HttpUrl("https://google.com"))
     assert "Gmail" in url_text
@@ -16,7 +15,6 @@ async def test_read_url_text_happy_path(set_test_settings):
 # TODO: Make Selenium work, currently unable to install chromedriver in image
 # @pytest.mark.skip(reason="Selenium driver not working")
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_read_url_happy_path(set_test_settings):
     html = await get_selenium().read_url(HttpUrl("https://google.com"))
     assert "Google" in html
