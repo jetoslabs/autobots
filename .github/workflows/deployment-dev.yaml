@@ -134,6 +134,7 @@ jobs:
           --net-alias autobots 
           --network autobots-network 
           -e ENV=$ENV
+          -e DD_ENV=${DD_ENV} 
           -e VERSION=${DD_VERSION}
           -e COOKIE_DOMAIN=$COOKIE_DOMAIN 
           -e ALLOW_ORIGINS=$ALLOW_ORIGINS 
