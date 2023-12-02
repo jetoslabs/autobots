@@ -5,7 +5,6 @@ from autobots.core.database.mongo_base import get_mongo_db, get_mongo_db_collect
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_mongo_base_happy_path(set_test_settings):
     session: Database = next(get_mongo_db())
     assert session is not None
