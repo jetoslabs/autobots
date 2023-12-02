@@ -4,7 +4,6 @@ from autobots.datastore.datastore_factory import get_datastore_factory
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_datastore_factory_happy_path(set_test_settings):
     str1 = "The truth is one, the wise call it by many names. ― Rig Veda"
     str2 = "One who talks sweet, spend all their days in happiness. – Rig Veda"

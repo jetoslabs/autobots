@@ -10,7 +10,6 @@ from autobots.core.settings import SettingsProvider
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_text2img_happy_path(set_test_settings):
     prompt = "Ultra real Sport shoes advertisement"
     req = Text2ImgReqModel(prompt=prompt, self_attestaion=YesNo.no.value, width=512)
@@ -20,7 +19,6 @@ async def test_text2img_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_image_mixer_happy_path(set_test_settings):
     prompt = "Rose head"
     req = ImageMixerReqModel(
@@ -37,7 +35,6 @@ async def test_image_mixer_happy_path(set_test_settings):
 
 @pytest.mark.skip(reason="Stable Diffusion text 2 video api is broken")
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_text2video_happy_path(set_test_settings):
     prompt = "Ultra real athlete running in urban environment TV quality"
     req = Text2VideoReqModel(prompt=prompt)

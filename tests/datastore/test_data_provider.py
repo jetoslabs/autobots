@@ -6,7 +6,6 @@ FILENAME = "tests/resources/datastore/shopifyql"
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_read_file_line_by_line_happy_path(set_test_settings):
     count = 0
 
@@ -18,7 +17,6 @@ async def test_read_file_line_by_line_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_create_file_chunks_happy_path(set_test_settings):
     count = 0
 

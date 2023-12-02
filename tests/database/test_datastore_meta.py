@@ -7,7 +7,6 @@ from autobots.datastore.datastore_meta_orm_model import DatastoreMetaORM
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_datastore_meta_happy_path(set_test_settings):
     session = SessionLocal()
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d37")

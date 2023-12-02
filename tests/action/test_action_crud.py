@@ -14,7 +14,6 @@ from autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_action_crud_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)

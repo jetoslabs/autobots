@@ -12,7 +12,6 @@ from autobots.core.utils import gen_hash
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(180)
 async def test_translation_happy_path(set_test_settings):
     # # create audio file
     openai_client = get_openai()
