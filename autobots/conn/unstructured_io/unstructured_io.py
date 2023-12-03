@@ -56,6 +56,8 @@ class UnstructuredIO:
             res: PartitionResponse = self.client.general.partition(req)
         except SDKError as e:
             Log.error(str(e))
+        except Exception as e:
+            Log.error(str(e))
         if not res or res.status_code != 200:
             Log.error(f"Error in extracting data from file {file.filename}")
         return res
