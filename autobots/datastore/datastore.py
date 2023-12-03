@@ -1,3 +1,4 @@
+import os
 import random
 import string
 from typing import List, Dict, Callable, AsyncGenerator
@@ -12,7 +13,7 @@ from autobots.conn.selenium.selenium import get_selenium, Selenium
 from autobots.core.logging.log import Log
 from autobots.core.settings import SettingsProvider
 from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io, UnstructuredIO
-from autobots.core.utils import gen_hash
+from autobots.core.utils import gen_hash, gen_random_str
 from autobots.datastore.data_provider import DataProvider
 
 
@@ -89,23 +90,11 @@ class Datastore:
             await self._put_data(data=chunk)
             await self._put_embedding(data=chunk)
 
-    # async def put_file(
-    #         self,
-    #         filename: str,
-    #         chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_file_line_by_line,
-    #         chunk_token_size: int = 512
-    # ):
-    #
-    #     async for chunk in DataProvider.create_file_chunks(filename, chunk_func, chunk_token_size):
-    #         await self._put_data(data=chunk)
-    #         await self._put_embedding(data=chunk)
-
-    # TODO: use SpooledTemporaryFile instead of Uploadfile
     async def put_files(self, files: List[UploadFile], chunk_size: int = 500):
         for file in files:
             Log.debug(f"Processing file: {file.filename}")
             file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
-            Log.debug(f"Sum of chunks in file: {file.filename} is {len(file_chunks)}")
+            Log.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
             await self._put_file_chunks(file, file_chunks)
 
     async def put_urls(self,
@@ -113,24 +102,45 @@ class Datastore:
                        chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
                        chunk_token_size: int = 512
                        ):
+        # create new temp directory
+        path = "./to_del"
+        if not os.path.exists(path):
+            os.mkdir(path)
         web_scraper: Selenium = get_selenium()
+        # fetch html for each url
         for url in urls:
-            Log.debug(f"Processing URL: {url}")
-            url_data = await web_scraper.read_url_text(url)
-            await self.put_data(url_data, chunk_func, chunk_token_size)
+            # build filename
+            full_path_name = f"{path}/{url.path.replace('/', '_')}_{gen_random_str(5)}.html"
+            try:
+                Log.debug(f"Processing URL: {url}")
+                # web scrape html data
+                html_data = await web_scraper.read_url(url)
+                # write html to file
+                with open(full_path_name, "w+b") as file:
+                    # Write str to file
+                    file.write(bytes(html_data, encoding='utf-8'))
+                # put file in datastore
+                with open(full_path_name, "rb") as file:
+                    await self.put_files(files=[UploadFile(filename=full_path_name, file=file)],
+                                         chunk_size=chunk_token_size)
+            except Exception as e:
+                Log.error(str(e))
+            finally:
+                # delete file
+                os.remove(full_path_name)
 
     async def _put_file_chunks(self, file: UploadFile, file_chunks: List[str]):
-            loop = 0
-            for chunk in file_chunks:
-                try:
-                    await self._put_data(data=chunk)
-                    await self._put_embedding(data=chunk)
-                    # housekeeping
-                    loop = loop + 1
-                    Log.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
-                    Log.trace(f"Processed file chunk: {file.filename} - {chunk}")
-                except Exception as e:
-                    Log.error(str(e))
+        loop = 0
+        for chunk in file_chunks:
+            try:
+                await self._put_data(data=chunk)
+                await self._put_embedding(data=chunk)
+                # housekeeping
+                loop = loop + 1
+                Log.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
+                Log.trace(f"Processed file chunk: {file.filename} - {chunk}")
+            except Exception as e:
+                Log.error(str(e))
 
     # async def get(self):
     #     """
