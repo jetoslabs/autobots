@@ -35,7 +35,7 @@ pymongo = "^4.4.1"
 aiodns = "^3.1.0"
 jinja2 = "^3.1.2"
 networkx = "^3.1"
-unstructured-client = "^0.12.2"
+unstructured-client = "^0.14.3"
 webdriver-manager = "^4.0.1"
 pytest-timeout = "^2.2.0"
 
