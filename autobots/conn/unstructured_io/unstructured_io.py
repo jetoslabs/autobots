@@ -37,9 +37,9 @@ class UnstructuredIO:
     async def _build_PartitionParameters(self, file: UploadFile, chunk_size: int = 500) -> shared.PartitionParameters:
         req = shared.PartitionParameters(
             # Note that this currently only supports a single file
-            files=shared.PartitionParametersFiles(
+            files=shared.Files(
                 content=await file.read(),
-                files=file.filename,
+                file_name=file.filename,
             ),
             # Other partition params
             chunking_strategy="by_title",
