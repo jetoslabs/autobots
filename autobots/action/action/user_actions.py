@@ -88,6 +88,8 @@ class UserActions:
         return action_doc
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, input: Any) -> Any:
+    async def run_action_doc(action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
+        action_doc.input = input
         resp = await ActionFactory().run_action(action_doc, input)
-        return resp
+        action_doc.output = resp
+        return action_doc
