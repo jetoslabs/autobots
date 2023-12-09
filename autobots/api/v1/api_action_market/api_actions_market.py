@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends
 from pymongo.database import Database
 
 from autobots import SettingsProvider
-from autobots.action.action.action_doc_model import ActionDoc, ActionFind
+from autobots.action.action.action_doc_model import ActionDoc
+from autobots.action.action_market.action_market_model import ActionMarketFind
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action_market.user_actions_market import UserActionsMarket
 from autobots.auth.security import get_user_from_access_token
@@ -38,11 +39,11 @@ async def list_market_actions(
 ) -> List[ActionDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_actions = UserActionsMarket(user_orm, db)
-    action_find = ActionFind(
-        id=id, user_id=user_id, name=name,
+    action_market_find = ActionMarketFind(
+        id=id, name=name,
         version=version, type=type, is_published=True
     )
-    action_docs = await user_market_actions.list_market_actions(action_find, limit, offset)
+    action_docs = await user_market_actions.list_market_actions(action_market_find, limit, offset)
     return action_docs
 
 
@@ -76,7 +77,7 @@ async def run_market_action(
         input: Dict[str, Any],
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
-) -> Any:
+) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_action = UserActionsMarket(user_orm, db)
     resp = await user_market_action.run_market_action(id, input)

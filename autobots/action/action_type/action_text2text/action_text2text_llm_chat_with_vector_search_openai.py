@@ -11,20 +11,20 @@ from autobots.conn.openai.openai_client import get_openai
 from autobots.datastore.datastore import Datastore
 
 
-class ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput(BaseModel):
+class ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig(BaseModel):
     datastore_id: str
     chat_req: ChatReq
     input: Optional[TextObj] = None
     output: Optional[TextObjs] = None
 
 
-class ActionCreateGenTextLlmChatWithVectorSearchOpenai(ActionCreate):
+class ActionCreateText2TextLlmChatWithVectorSearchOpenai(ActionCreate):
     type: ActionType = ActionType.text2text_llm_chat_with_vector_search_openai
-    config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
+    config: ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig
 
 
-class ActionGenTextLlmChatWithVectorSearchOpenai(
-    IAction[ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput, TextObj, TextObjs]):
+class ActionText2TextLlmChatWithVectorSearchOpenai(
+    IAction[ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig, TextObj, TextObjs]):
     """
     Vector search and add it to chat prompt as context
     """
@@ -32,7 +32,7 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        return ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput
+        return ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
@@ -42,7 +42,7 @@ class ActionGenTextLlmChatWithVectorSearchOpenai(
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ActionCreateGenTextLlmChatWithVectorSearchOpenaiInput):
+    def __init__(self, action_config: ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig):
         super().__init__(action_config)
         self.datastore = Datastore().hydrate(datastore_id=action_config.datastore_id)
 

@@ -18,9 +18,9 @@ from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2
 # from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
-    ActionGenTextLlmChatOpenaiV2
+    ActionText2TextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
-    ActionGenTextLlmChatWithVectorSearchOpenai
+    ActionText2TextLlmChatWithVectorSearchOpenai
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
 from autobots.action.action_type.action_types import ActionType
@@ -40,9 +40,9 @@ class ActionFactory:
     async def run_action(self, action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
         match action_doc.type:
             case ActionType.text2text_llm_chat_openai:
-                config = ActionGenTextLlmChatOpenaiV2.get_config_type().model_validate(action_doc.config)
-                input = ActionGenTextLlmChatOpenaiV2.get_input_type().model_validate(action_input_dict)
-                return await ActionGenTextLlmChatOpenaiV2(config).run_action(input)
+                config = ActionText2TextLlmChatOpenai.get_config_type().model_validate(action_doc.config)
+                input = ActionText2TextLlmChatOpenai.get_input_type().model_validate(action_input_dict)
+                return await ActionText2TextLlmChatOpenai(config).run_action(input)
 
             case ActionType.text2img_dalle_openai:
                 config = ActionGenImageDalleOpenAiV2.get_config_type().model_validate(action_doc.config)
@@ -55,9 +55,9 @@ class ActionFactory:
             #     return await ActionGenImageStabilityAiV2(config).run_action(input)
 
             case ActionType.text2text_llm_chat_with_vector_search_openai:
-                config = ActionGenTextLlmChatWithVectorSearchOpenai.get_config_type().model_validate(action_doc.config)
-                input = ActionGenTextLlmChatWithVectorSearchOpenai.get_input_type().model_validate(action_input_dict)
-                return await ActionGenTextLlmChatWithVectorSearchOpenai(config).run_action(input)
+                config = ActionText2TextLlmChatWithVectorSearchOpenai.get_config_type().model_validate(action_doc.config)
+                input = ActionText2TextLlmChatWithVectorSearchOpenai.get_input_type().model_validate(action_input_dict)
+                return await ActionText2TextLlmChatWithVectorSearchOpenai(config).run_action(input)
 
             case ActionType.text2img_stable_diffusion:
                 config = ActionText2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)

@@ -11,14 +11,14 @@ from autobots.conn.openai.openai_client import get_openai
 from autobots.core.logging.log import Log
 
 
-class ActionCreateGenTextLlmChatOpenai(ActionCreate):
+class ActionCreateText2TextLlmChatOpenai(ActionCreate):
     type: ActionType = ActionType.text2text_llm_chat_openai
     config: ChatReq
     input: Optional[TextObj] = None
     output: Optional[TextObjs] = None
 
 
-class ActionGenTextLlmChatOpenaiV2(IAction[ChatReq, TextObj, TextObjs]):
+class ActionText2TextLlmChatOpenai(IAction[ChatReq, TextObj, TextObjs]):
     type = ActionType.text2text_llm_chat_openai
 
     @staticmethod
