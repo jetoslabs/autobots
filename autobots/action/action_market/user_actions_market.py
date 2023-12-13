@@ -58,7 +58,7 @@ class UserActionsMarket:
         """
         action_doc = await self._user_actions.get_action(id)
         # Check if action being published is owned by user
-        if not action_doc or not self.user.user.id == action_doc.user_id:
+        if not action_doc or not self.user_id == action_doc.user_id:
             raise HTTPException(403, "User dont own this action")
         # unpublish action
         action_update = ActionUpdate(is_published=False)
