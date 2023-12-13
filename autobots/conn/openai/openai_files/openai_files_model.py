@@ -15,6 +15,9 @@ class FileCreate(OpenaiExtraValues):
               str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None, Mapping[str, str]]
     purpose: Literal["fine-tune", "assistants"]
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class FileDelete(OpenaiExtraValues):
     file_id: str
