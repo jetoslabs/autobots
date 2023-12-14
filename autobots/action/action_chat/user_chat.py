@@ -1,11 +1,12 @@
 from typing import List
 
 from fastapi import HTTPException
+from openai.types.chat import ChatCompletionUserMessageParam
 from pymongo.database import Database
 
 from autobots.action.action_type.action_factory import ActionFactory
 from autobots.action.action_type.action_types import ActionType
-from autobots.action.action.common_action_models import TextObj
+from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.action.action_chat.chat_crud import ChatCRUD
 from autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
     ChatUpdate
@@ -75,9 +76,17 @@ class UserChat():
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
 
-        resp_message = await ActionFactory().run_action(chat_doc.action, input.model_dump())
-        chat_doc.messages = (chat_doc.messages +
-                             [Message(role=Role.user, content=input.text), resp_message])
+        resp_text_objs: TextObjs = await ActionFactory().run_action(chat_doc.action, input.model_dump())
+
+        messages = []
+        input_message = Message(role=Role.user, content=input.text)
+        messages.append(input_message)
+        for resp_text_obj in resp_text_objs.texts:
+            text_obj = TextObj.model_validate(resp_text_obj)
+            message = Message(role="user", content=text_obj.text)
+            messages.append(message)
+
+        chat_doc.messages = (chat_doc.messages + messages)
         if chat_doc.title == UserChat.DEFAULT_TITLE:
             chat_doc.title = await self._gen_title(chat_doc)
         updated_chat_doc = await self.update_chat(chat_id, ChatUpdate(**chat_doc.model_dump()))
@@ -101,7 +110,10 @@ class UserChat():
                 if i >= 2:
                     break
 
-            title_gen_message = Message(role=Role.user, content=title_gen_content+action_content+conversation_content)
+            title_gen_message = ChatCompletionUserMessageParam(
+                role=Role.user.value,
+                content=title_gen_content+action_content+conversation_content
+            )
             chat_res = await get_openai().openai_chat.chat(ChatReq(messages=[title_gen_message], max_token=25))
             title = f"{chat_doc.action.name}-{chat_res.choices[0].message.content}"
             return title
