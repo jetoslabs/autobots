@@ -32,7 +32,7 @@ class ChatCRUD:
     ) -> List[ChatDoc]:
         find_params = {}
         for key, value in chat_doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -64,7 +64,7 @@ class ChatCRUD:
     async def delete_many(self, chat: ChatDocFind) -> DeleteResult:
         find_params = {}
         for key, value in chat.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -76,7 +76,7 @@ class ChatCRUD:
     async def update_one(self, chat_doc_update: ChatDocUpdate) -> ChatDoc:
         update_params = {}
         for key, value in chat_doc_update.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     update_params["_id"] = ObjectId(value)
                 else:

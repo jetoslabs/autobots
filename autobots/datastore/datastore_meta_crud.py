@@ -38,7 +38,7 @@ class DatastoreMetaCRUD:
     ) -> List[DatastoreMetaDoc]:
         find_params = {}
         for key, value in datastore_meta_doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -74,7 +74,7 @@ class DatastoreMetaCRUD:
     async def delete_many(self, datastore_meta_doc_find: DatastoreMetaDocFind) -> DeleteResult:
         find_params = {}
         for key, value in datastore_meta_doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -93,7 +93,7 @@ class DatastoreMetaCRUD:
     async def update_one(self, datastore_meta_doc_update: DatastoreMetaDocUpdate) -> DatastoreMetaDoc:
         update_params = {}
         for key, value in datastore_meta_doc_update.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     update_params["_id"] = ObjectId(value)
                 else:

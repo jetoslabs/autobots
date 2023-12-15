@@ -32,7 +32,7 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
     async def find(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> List[DocType]:
         find_params = {}
         for key, value in doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -64,7 +64,7 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
     async def delete_many(self, doc_find: DocFindType) -> DeleteResult:
         find_params = {}
         for key, value in doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -79,7 +79,7 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
 
         update_params = {}
         for key, value in doc_update.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     update_params["_id"] = ObjectId(value)
                 else:

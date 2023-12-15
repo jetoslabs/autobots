@@ -21,7 +21,7 @@ class ActionMarketCRUD:
     ) -> List[ActionDoc]:
         find_params = {}
         for key, value in action_market_doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
