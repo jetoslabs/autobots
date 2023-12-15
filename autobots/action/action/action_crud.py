@@ -36,7 +36,7 @@ class ActionCRUD:
     ) -> List[ActionDoc]:
         find_params = {}
         for key, value in action_doc_find.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -72,7 +72,7 @@ class ActionCRUD:
     async def delete_many(self, action: ActionDocFind) -> DeleteResult:
         find_params = {}
         for key, value in action.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     find_params["_id"] = ObjectId(value)
                 else:
@@ -84,7 +84,7 @@ class ActionCRUD:
     async def update_one(self, action_doc_update: ActionDocUpdate) -> ActionDoc:
         update_params = {}
         for key, value in action_doc_update.model_dump().items():
-            if value:
+            if value is not None:
                 if key == "id":
                     update_params["_id"] = ObjectId(value)
                 else:
