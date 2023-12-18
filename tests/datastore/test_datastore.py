@@ -2,6 +2,9 @@ from typing import List
 
 import pytest
 
+from autobots.conn.aws.s3 import get_s3
+from autobots.conn.pinecone.pinecone import get_pinecone
+from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from autobots.datastore.datastore import Datastore
 
 
@@ -11,7 +14,11 @@ async def test_datastore_happy_path(set_test_settings):
     str2 = "San Francisco, officially the City and County of San Francisco, is a commercial, financial, and cultural center of Northern California. The city proper is the fourth most populous in California, with 808,437 residents as of 2022, and covers a land area of 46.9 square miles (121 square kilometers), at the end of the San Francisco Peninsula, making it the second most densely populated large U.S. city after New York City and the fifth-most densely populated U.S. county, behind only four of the five New York City boroughs. Among the 91 U.S. cities proper with over 250,000 residents, San Francisco was ranked first by per capita income and sixth by aggregate income as of 2021. Colloquial nicknames for San Francisco include Frisco, San Fran, The City, and SF."
     query = "Indian cities"
 
-    datastore = Datastore().init(name="teststore")
+    s3 = get_s3()
+    pinecone = get_pinecone()
+    unstructured = get_unstructured_io()
+
+    datastore = Datastore(s3, pinecone, unstructured).init(name="teststore")
     # connect between data in s3 and embedding in pinecone depends on this!
     assert datastore._get_s3_basepath() == datastore._get_pinecone_namespace()
 
@@ -27,7 +34,7 @@ async def test_datastore_happy_path(set_test_settings):
         assert result[1] == str2
 
         # testing hydrated datastore
-        hydrated_datastore = Datastore().hydrate(datastore_id=datastore.id)
+        hydrated_datastore = Datastore(s3, pinecone, unstructured).hydrate(datastore_id=datastore.id)
         assert hydrated_datastore.id == datastore.id
         assert hydrated_datastore.trace == datastore.trace
         assert hydrated_datastore.name == datastore.name
@@ -50,7 +57,10 @@ async def test_put_file_happy_path(set_test_settings):
     filename = "tests/resources/datastore/google.txt"
     query = "How to make search engine large scale"
 
-    datastore = Datastore().init(name="teststore")
+    s3 = get_s3()
+    pinecone = get_pinecone()
+    unstructured = get_unstructured_io()
+    datastore = Datastore(s3, pinecone, unstructured).init(name="teststore")
 
     try:
         await datastore.put_file(filename)
