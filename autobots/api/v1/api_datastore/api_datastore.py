@@ -2,16 +2,18 @@ from typing import Annotated, List
 from uuid import UUID
 
 import gotrue
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from pydantic import HttpUrl
 from pymongo.database import Database
 
 from autobots import SettingsProvider
 from autobots.action.action.common_action_models import TextObj
+from autobots.api.webhook import Webhook
 from autobots.auth.security import get_user_from_access_token
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.core.logging.log import Log
 from autobots.datastore.datastore_meta_doc_model import DatastoreMetaDoc
+from autobots.datastore.datastore_result.datastore_result_doc_model import DatastoreResultDoc
 from autobots.datastore.user_datastore import UserDatastore
 from autobots.user.user_orm_model import UserORM
 
@@ -154,3 +156,102 @@ async def delete_datastore(
     except Exception as e:
         Log.error(str(e))
         raise HTTPException(500, "Error while deleting datastore")
+
+
+@router.post("/{id}/store_data/async")
+async def store_data_async(
+        background_tasks: BackgroundTasks,
+        datastore_id: str,
+        text: TextObj,
+        webhook: Webhook | None = None,
+        chunk_size: int = 500,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> DatastoreResultDoc | None:
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        user_datastore = UserDatastore(user, db)
+        datastore_result_doc = await user_datastore.put_resource_async(
+            datastore_id,
+            text.text,
+            None,
+            None,
+            chunk_size,
+            background_tasks,
+            webhook
+        )
+        return datastore_result_doc
+    except Exception as e:
+        Log.error(str(e))
+        raise HTTPException(500, "Error while storing data in datastore")
+
+
+@router.post("/{id}/store_files/async")
+async def store_files_async(
+        background_tasks: BackgroundTasks,
+        datastore_id: str,
+        files: Annotated[list[UploadFile], File(description="Multiple files as UploadFile")],
+        webhook: Webhook | None = None,
+        chunk_size: int = 500,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> DatastoreResultDoc | None:
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        user_datastore = UserDatastore(user, db)
+        datastore_result_doc = await user_datastore.put_resource_async(
+            datastore_id,
+            None,
+            files,
+            None,
+            chunk_size,
+            background_tasks,
+            webhook
+        )
+        return datastore_result_doc
+    except Exception as e:
+        Log.error(str(e))
+        raise HTTPException(500, "Error while storing files in datastore")
+
+
+@router.post("/{id}/store_urls/async")
+async def store_urls_async(
+        background_tasks: BackgroundTasks,
+        datastore_id: str,
+        urls: List[HttpUrl],
+        webhook: Webhook | None = None,
+        chunk_size: int = 500,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> DatastoreResultDoc | None:
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        user_datastore = UserDatastore(user, db)
+        datastore_result_doc = await user_datastore.put_resource_async(
+            datastore_id,
+            None,
+            None,
+            urls,
+            chunk_size,
+            background_tasks,
+            webhook
+        )
+        return datastore_result_doc
+    except Exception as e:
+        Log.error(str(e))
+        raise HTTPException(500, "Error while storing urls in datastore")
+
+
+@router.get("/result/{datastore_put_result_id}")
+async def get_datastore_put_result(
+        datastore_put_result_id: str,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+):
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        user_datastore = UserDatastore(user, db)
+        return await user_datastore.get_datastore_put_result(datastore_put_result_id)
+    except Exception as e:
+        Log.error(str(e))
+        raise HTTPException(500, "Internal server error")
