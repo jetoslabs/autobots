@@ -185,6 +185,7 @@ async def store_data_async(
         Log.error(str(e))
         raise HTTPException(500, "Error while storing data in datastore")
 
+
 @router.post("/{id}/store_files/async")
 async def store_files_async(
         background_tasks: BackgroundTasks,
@@ -239,3 +240,18 @@ async def store_urls_async(
     except Exception as e:
         Log.error(str(e))
         raise HTTPException(500, "Error while storing urls in datastore")
+
+
+@router.get("/result/{datastore_put_result_id}")
+async def get_datastore_put_result(
+        datastore_put_result_id: str,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+):
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        user_datastore = UserDatastore(user, db)
+        return await user_datastore.get_datastore_put_result(datastore_put_result_id)
+    except Exception as e:
+        Log.error(str(e))
+        raise HTTPException(500, "Internal server error")
