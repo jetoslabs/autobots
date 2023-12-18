@@ -164,3 +164,6 @@ class UserDatastore():
         if webhook:
             await webhook.send(datastore_result_doc.model_dump())
         return datastore_result_doc
+
+    async def get_datastore_put_result(self, datastore_put_result_id: str) -> DatastoreResultDoc | None:
+        return await self.user_datastore_result.get_datastore_result(datastore_put_result_id)
