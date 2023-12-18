@@ -46,7 +46,7 @@ class UnstructuredIO:
             combine_under_n_chars=chunk_size,
             pdf_infer_table_structure=True,
             hi_res_model_name=None,
-            strategy="fast",
+            strategy="auto",
         )
         return req
 
