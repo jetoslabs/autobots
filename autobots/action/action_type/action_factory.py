@@ -21,6 +21,8 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_open
     ActionText2TextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
+from autobots.action.action_type.action_text2text.action_text2text_read_url import ActionText2TextReadUrl
+from autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
 from autobots.action.action_type.action_types import ActionType
@@ -58,6 +60,18 @@ class ActionFactory:
                 config = ActionText2TextLlmChatWithVectorSearchOpenai.get_config_type().model_validate(action_doc.config)
                 input = ActionText2TextLlmChatWithVectorSearchOpenai.get_input_type().model_validate(action_input_dict)
                 return await ActionText2TextLlmChatWithVectorSearchOpenai(config).run_action(input)
+
+            case ActionType.text2text_read_url:
+                config = ActionText2TextReadUrl.get_config_type().model_validate(
+                    action_doc.config)
+                input = ActionText2TextReadUrl.get_input_type().model_validate(action_input_dict)
+                return await ActionText2TextReadUrl(config).run_action(input)
+
+            case ActionType.text2text_search_web:
+                config = ActionText2TextSearchWeb.get_config_type().model_validate(
+                    action_doc.config)
+                input = ActionText2TextSearchWeb.get_input_type().model_validate(action_input_dict)
+                return await ActionText2TextSearchWeb(config).run_action(input)
 
             case ActionType.text2img_stable_diffusion:
                 config = ActionText2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)
