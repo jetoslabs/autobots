@@ -39,7 +39,8 @@ class ActionText2TextSearchWeb(IAction[SearchWebConfig, TextObj, TextObjs]):
             browse_input = f"{self.action_config.text} {action_input.text}"
             search_res = await duckduckgo.search_text(browse_input, self.action_config.num_results)
             for search in search_res:
-                text_objs.texts.append(TextObj(text=search.model_dump_json()))
+                text = f"title: {search.title}\nbody: {search.body}\nhref: {search.href}"
+                text_objs.texts.append(TextObj(text=text))
             return text_objs
         except ValidationError as e:
             Log.error(str(e))
