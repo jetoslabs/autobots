@@ -1,6 +1,6 @@
 from typing import Type
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, HttpUrl
 
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
@@ -11,6 +11,7 @@ from autobots.core.logging.log import Log
 
 class ReadUrlConfig(BaseModel):
     xpath: str = "/html/body"
+    attribute: str = ""
 
 
 class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):
@@ -35,12 +36,19 @@ class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):
         text_objs = TextObjs(texts=[])
         try:
             selenium = get_selenium()
-            if self.action_config.xpath == "":
-                out = await selenium.read_url(action_input.text)
-                text_objs.texts.append(TextObj(text=out))
-            elif self.action_config.xpath != "":
-                out = await selenium.read_url_text(action_input.text, self.action_config.xpath)
-                text_objs.texts.append(TextObj(text=out))
+            out = await selenium.read_url_v1(
+                HttpUrl(action_input.text),
+                self.action_config.xpath,
+                self.action_config.attribute
+            )
+            text_objs.texts.append(TextObj(text=out))
+
+            # if self.action_config.xpath == "":
+            #     out = await selenium.read_url(HttpUrl(action_input.text))
+            #     text_objs.texts.append(TextObj(text=out))
+            # elif self.action_config.xpath != "":
+            #     out = await selenium.read_url_text(HttpUrl(action_input.text), self.action_config.xpath)
+            #     text_objs.texts.append(TextObj(text=out))
             return text_objs
         except ValidationError as e:
             Log.error(str(e))
