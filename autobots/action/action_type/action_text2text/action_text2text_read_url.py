@@ -42,13 +42,6 @@ class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):
                 self.action_config.attribute
             )
             text_objs.texts.append(TextObj(text=out))
-
-            # if self.action_config.xpath == "":
-            #     out = await selenium.read_url(HttpUrl(action_input.text))
-            #     text_objs.texts.append(TextObj(text=out))
-            # elif self.action_config.xpath != "":
-            #     out = await selenium.read_url_text(HttpUrl(action_input.text), self.action_config.xpath)
-            #     text_objs.texts.append(TextObj(text=out))
             return text_objs
         except ValidationError as e:
             Log.error(str(e))
