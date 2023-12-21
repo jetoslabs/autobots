@@ -8,3 +8,6 @@ class OpenaiExtraValues(BaseModel):
     extra_query: Mapping[str, object] | None = None
     extra_body: object | None = None
     timeout: float | None = None
+
+    class Config:
+        arbitrary_types_allowed = True
