@@ -1,7 +1,11 @@
 from enum import Enum
-from typing import Optional, Literal
+from pathlib import Path
+from typing import Optional, Literal, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
+from pydantic_core import Url
+
+from autobots.conn.openai.openai_common_models import OpenaiExtraValues
 
 
 class ImageSize(str, Enum):
@@ -43,3 +47,21 @@ class ImageReq(BaseModel):
 #     url: Optional[str] = None
 #     b64_json: Optional[str] = None
 
+class ImageEdit(OpenaiExtraValues):
+    image: Url | Path | bytes
+    prompt: str
+    mask: Path | Url | bytes | None = None
+    model: Union[str, Literal["dall-e-2"], None] = None
+    n: Optional[int] = 1
+    response_format: Optional[Literal["url", "b64_json"]] | None = None
+    size: Optional[Literal["256x256", "512x512", "1024x1024"]] = None
+    user: str | None = None
+
+
+class ImageCreateVariation(OpenaiExtraValues):
+    image: Url | Path | bytes
+    model: Union[str, Literal["dall-e-2"], None] = None
+    n: Optional[int] | None = None
+    response_format: Optional[Literal["url", "b64_json"]] | None = None
+    size: Optional[Literal["256x256", "512x512", "1024x1024"]] = None
+    user: str | None = None
