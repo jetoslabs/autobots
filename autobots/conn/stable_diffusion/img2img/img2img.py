@@ -12,6 +12,7 @@ async def sd_img2img(req: SDImg2ImgReqModel, max_retry=3) -> SDImg2ImgResError |
     url = "https://stablediffusionapi.com/api/v3/img2img"
 
     payload = req.model_dump_json()
+
     headers = {
         'Content-Type': 'application/json'
     }
