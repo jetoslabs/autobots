@@ -13,6 +13,7 @@ from autobots.action.action_type.action_audio2text.action_audio2text_translation
 from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
+from autobots.action.action_type.action_img2img.action_img2img_stable_diffusion import ActionImg2ImgStableDiffusion
 from autobots.action.action_type.action_img2img.action_img2img_variation_openai import ActionImg2ImgVariationOpenai
 from autobots.action.action_type.action_mock.action_mock import MockAction
 from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
@@ -79,6 +80,11 @@ class ActionFactory:
                 config = ActionText2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)
                 input = ActionText2ImgStableDiffusion.get_input_type().model_validate(action_input_dict)
                 return await ActionText2ImgStableDiffusion(config).run_action(input)
+
+            case ActionType.img2img_stable_diffusion:
+                config = ActionImg2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)
+                input = ActionImg2ImgStableDiffusion.get_input_type().model_validate(action_input_dict)
+                return await ActionImg2ImgStableDiffusion(config).run_action(input)
 
             case ActionType.image_mixer_stable_diffusion:
                 config = ActionImageMixerStableDiffusion.get_config_type().model_validate(action_doc.config)
