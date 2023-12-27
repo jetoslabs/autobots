@@ -6,8 +6,11 @@ from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, A
 from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
+from autobots.conn.aws.s3 import get_s3
 from autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
 from autobots.conn.openai.openai_client import get_openai
+from autobots.conn.pinecone.pinecone import get_pinecone
+from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from autobots.datastore.datastore import Datastore
 
 
@@ -44,7 +47,13 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
 
     def __init__(self, action_config: ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig):
         super().__init__(action_config)
-        self.datastore = Datastore().hydrate(datastore_id=action_config.datastore_id)
+        self.datastore = Datastore(
+            s3=get_s3(),
+            pinecone=get_pinecone(),
+            unstructured=get_unstructured_io()
+        ).hydrate(
+            datastore_id=action_config.datastore_id
+        )
 
     async def run_action(self, action_input: TextObj) -> TextObjs | None:
         text_objs = TextObjs(texts=[])
