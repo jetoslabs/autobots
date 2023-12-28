@@ -20,6 +20,8 @@ from autobots.action.action_type.action_text2audio.action_text2audio_speech_open
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 # from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
+from autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
+    ActionText2TextIOMapper
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionText2TextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
@@ -75,6 +77,12 @@ class ActionFactory:
                     action_doc.config)
                 input = ActionText2TextSearchWeb.get_input_type().model_validate(action_input_dict)
                 return await ActionText2TextSearchWeb(config).run_action(input)
+
+            case ActionType.text2text_io_mapper:
+                config = ActionText2TextIOMapper.get_config_type().model_validate(
+                    action_doc.config)
+                input = ActionText2TextIOMapper.get_input_type().model_validate(action_input_dict)
+                return await ActionText2TextIOMapper(config).run_action(input)
 
             case ActionType.text2img_stable_diffusion:
                 config = ActionText2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)
