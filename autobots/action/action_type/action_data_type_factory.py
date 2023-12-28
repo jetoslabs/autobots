@@ -13,6 +13,8 @@ from autobots.action.action_type.action_img2img.action_img2img_variation_openai 
 from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
+from autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
+    ActionText2TextIOMapper
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionText2TextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
@@ -30,6 +32,7 @@ ACTION_MAP = {
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
+    ActionType.text2text_io_mapper: ActionText2TextIOMapper,
     # text2img
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,
     ActionType.text2img_stable_diffusion: ActionText2ImgStableDiffusion,
