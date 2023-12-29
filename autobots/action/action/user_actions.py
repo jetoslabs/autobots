@@ -71,7 +71,7 @@ class UserActions:
         action_docs = await self.action_crud.find(action_doc_find)
         if len(action_docs) != 1:
             raise HTTPException(405, "Action cannot be run")
-        resp = await ActionFactory().run_action(action_docs[0], input)
+        resp = await ActionFactory.run_action(action_docs[0], input)
         return resp
 
     async def run_action_v1(
@@ -83,13 +83,13 @@ class UserActions:
             raise HTTPException(405, "Action not found")
         action_doc = action_docs[0]
         action_doc.input = input
-        resp = await ActionFactory().run_action(action_doc, input)
+        resp = await ActionFactory.run_action(action_doc, input)
         action_doc.output = resp
         return action_doc
 
     @staticmethod
     async def run_action_doc(action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
         action_doc.input = input
-        resp = await ActionFactory().run_action(action_doc, input)
+        resp = await ActionFactory.run_action(action_doc, input)
         action_doc.output = resp
         return action_doc

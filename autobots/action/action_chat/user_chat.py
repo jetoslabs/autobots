@@ -76,7 +76,7 @@ class UserChat():
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
 
-        resp_text_objs: TextObjs = await ActionFactory().run_action(chat_doc.action, input.model_dump())
+        resp_text_objs: TextObjs = await ActionFactory.run_action(chat_doc.action, input.model_dump())
 
         messages = []
         input_message = Message(role=Role.user, content=input.text)

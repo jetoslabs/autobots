@@ -35,6 +35,23 @@ class Selenium:
         text: str = self.driver.find_element(By.XPATH, xpath).text
         return text
 
+    async def read_url_v1(self, url: HttpUrl, xpath: str = "/html/body", attribute: str = "") -> str:
+        Log.bind(url=url).debug("Reading url")
+        # Target URL
+        self.driver.get(url.unicode_string())
+        # To load entire webpage
+        time.sleep(5)
+
+        resp = ""
+        if xpath and attribute:
+            resp = self.driver.find_element(By.XPATH, xpath).get_attribute(attribute)
+        elif xpath and not attribute:
+            resp = self.driver.find_element(By.XPATH, xpath).text
+        else:
+            resp: str = self.driver.page_source
+
+        return resp
+
     async def read_url(self, url: HttpUrl, ) -> str:
         Log.bind(url=url).debug("Reading url")
         # Target URL

@@ -6,10 +6,10 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from pymongo.database import Database
 
 from autobots import SettingsProvider
-from autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate
+from autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate, ActionCreate
 from autobots.action.action_result.action_result_doc_model import ActionResultDoc
 from autobots.action.action_result.user_action_result import UserActionResult
-from autobots.action.action_type.action_factory import ActionFactory
+from autobots.action.action_type.action_factory import ActionFactory, ActionDataTypes
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.user_actions import UserActions
 from autobots.api.webhook import Webhook
@@ -25,6 +25,26 @@ async def get_action_types(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token)
 ) -> List[str]:
     return ActionFactory.get_action_types()
+
+
+@router.get("_types/{action_type}", response_model=Any)
+async def get_action_type_objects(
+        action_type: ActionType,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+) -> ActionDataTypes:
+    data_types = await ActionFactory.get_data_types(action_type)
+    return data_types
+
+
+@router.post("/")
+async def create_action(
+        action_create: ActionCreate,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> ActionDoc:
+    user_orm = UserORM(id=UUID(user_res.user.id))
+    action_doc = await UserActions(user=user_orm, db=db).create_action(action_create)
+    return action_doc
 
 
 @router.get("/")
