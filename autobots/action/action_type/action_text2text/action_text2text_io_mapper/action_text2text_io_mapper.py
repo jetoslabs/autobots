@@ -33,8 +33,8 @@ class ActionText2TextIOMapper(IAction[IOMapperConfig, IOMapperInput, TextObjs]):
 
     async def run_action(self, action_input: IOMapperInput) -> TextObjs | None:
         if action_input.input_action_output:
-            self.action_config.input_action_output = action_input.input_action_output
+            self.action_config.prev_action_output = action_input.input_action_output
         if action_input.input_action_type:
-            self.action_config.input_action_type = action_input.input_action_type
+            self.action_config.prev_action_type = action_input.input_action_type
         resp = await IOMapper().map_to_output(self.action_config)
         return resp
