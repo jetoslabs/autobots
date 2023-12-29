@@ -8,6 +8,9 @@ from autobots.conn.stable_diffusion.fetch_queued_image.fetch_queued_image import
 from autobots.conn.stable_diffusion.image_mixer.image_mixer import image_mixer
 from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel, ImageMixerResModel, \
     ImageMixerProcessingResModel, ImageMixerResError
+from autobots.conn.stable_diffusion.img2img.img2img import sd_img2img
+from autobots.conn.stable_diffusion.img2img.img2img_model import SDImg2ImgReqModel, SDImg2ImgResError, \
+    SDImg2ImgProcessingModel, SDImg2ImgResModel
 from autobots.conn.stable_diffusion.text2img.text2img import text2img
 from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel, Text2ImgResModel, \
     Text2ImgResProcessingModel, Text2ImgResError
@@ -45,6 +48,19 @@ class StableDiffusion:
         elif res.status == StableDiffusionResStatus.error:
             raise HTTPException(503, res.message)
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(res.id))
+
+    async def img2img(self, req: SDImg2ImgReqModel) -> StableDiffusionRes:
+        req.key = self.api_key
+        res: SDImg2ImgResError | SDImg2ImgProcessingModel | SDImg2ImgResModel = await sd_img2img(req)
+        if res.status == StableDiffusionResStatus.success:
+            result = StableDiffusionRes(urls=res.output)
+            return result
+        elif res.status == StableDiffusionResStatus.processing:
+            fetched: StableDiffusionRes = await self.fetch_queued_image(res.id)
+            return fetched
+        elif res.status == StableDiffusionResStatus.error:
+            raise HTTPException(503, res.message)
+        return StableDiffusionRes(url=[], fetch_url=self.get_fetch_url(res.id))
 
     async def text2video(self, req: Text2VideoReqModel) -> StableDiffusionRes:
         req.key = self.api_key
