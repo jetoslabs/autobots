@@ -6,6 +6,7 @@ from openai.types.chat import ChatCompletionUserMessageParam
 from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
 from autobots.action.action_type.action_factory import ActionFactory
+from autobots.action.action_type.action_map import ACTION_MAP
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.conn.openai.openai_chat.chat_model import ChatReq, Role, Message
@@ -40,9 +41,13 @@ async def test_action_crud_happy_path(set_test_settings):
         action_doc = action_docs.pop()
 
         assert action_doc.type == ActionType.text2text_llm_chat_openai
-        user_input = TextObj(input="Blog on San Francisco")
+        user_input = TextObj(text="Blog on San Francisco")
         action_factory = ActionFactory()
-        resp: TextObjs = await action_factory.run_action(action_doc, user_input.model_dump())
+        # resp: TextObjs = await action_factory.run_action(action_doc, user_input.model_dump())
+        # assert len(resp.texts) > 0
+        # assert resp.texts[0] != ""
+        resp_raw: dict = await action_factory.run_action(action_doc, user_input.model_dump())
+        resp = ACTION_MAP.get(ActionType.text2text_llm_chat_openai).get_output_type().model_validate(resp_raw)
         assert len(resp.texts) > 0
         assert resp.texts[0] != ""
 

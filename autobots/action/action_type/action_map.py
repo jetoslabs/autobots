@@ -1,7 +1,3 @@
-from typing import Dict, Any
-
-from pydantic import BaseModel
-
 from autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import \
     ActionAudio2TextTranscriptionOpenai
 from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
@@ -24,7 +20,6 @@ from autobots.action.action_type.action_text2text.action_text2text_search_web im
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
 from autobots.action.action_type.action_types import ActionType
-from autobots.core.logging.log import Log
 
 ACTION_MAP = {
     # text2text
@@ -50,36 +45,3 @@ ACTION_MAP = {
     # mock
     # ActionType.mock_action: "mock_action"
 }
-
-
-class ActionDataTypes(BaseModel):
-    type: ActionType
-    config: Dict[str, Any] | None = None
-    input: Dict[str, Any] | None = None
-    output: Dict[str, Any] | None = None
-
-
-class ActionDataTypeFactory():
-
-    @staticmethod
-    async def get_data_types(
-            action_type: ActionType,
-            is_get_config: bool = True,
-            is_get_input: bool = True,
-            is_get_output: bool = True
-    ) -> ActionDataTypes:
-        try:
-            action_data_types = ActionDataTypes(type=action_type)
-            action = ACTION_MAP.get(action_type)
-            if action:
-                if is_get_config:
-                    action_data_types.config = action.get_config_type().model_json_schema()
-                if is_get_input:
-                    action_data_types.input = action.get_input_type().model_json_schema()
-                if is_get_output:
-                    action_data_types.output = action.get_output_type().model_json_schema()
-            return action_data_types
-        except Exception as e:
-            Log.error(f"ActionType does not exist {action_type}, error: {str(e)}")
-            raise
-
