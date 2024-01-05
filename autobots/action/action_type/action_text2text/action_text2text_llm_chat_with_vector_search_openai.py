@@ -1,5 +1,6 @@
 from typing import Optional, Type
 
+from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import BaseModel
 
 from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
@@ -65,10 +66,10 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
         for result in search_results:
             context = f"{context}{result}\n"
         # LM chat
-        message = Message(role=Role.user, content=f"{context}Question: {action_input.text}")
-        self.action_config.config.chat_req.messages = self.action_config.config.chat_req.messages + [message]
+        message = ChatCompletionUserMessageParam(role=Role.user.value, content=f"{context}Question: {action_input.text}")
+        self.action_config.chat_req.messages = self.action_config.chat_req.messages + [message]
         self.action_config.input = action_input
-        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.config.chat_req)
+        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.chat_req)
         action_results = TextObjs()
         for choice in chat_res.choices:
             action_results.texts.append(TextObj(text=choice.message.content))
