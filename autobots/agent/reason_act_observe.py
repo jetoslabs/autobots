@@ -93,7 +93,7 @@ class ReasonActObserve():
             search_for = action.split("[")[1].replace("]", "")
             search_res = await get_duckduckgo().search_text(search_for, num_results=3)
             for search in search_res:
-                res = res + f"{search.title}: {search.body}\n"
+                res = res + f"Title:{search.title}, Excerpt: {search.body}, URL: {search.href}\n"
             res = Observe_Prefix + res
             Log.info(f"{Observe_Prefix}{res}")
             return res
