@@ -1,0 +1,50 @@
+{
+  "name": "test graph",
+  "nodes": {
+    "1702836730903": {
+      "id": "1702836730903",
+      "position": {
+        "x": 288,
+        "y": 203
+      },
+      "type": "default",
+      "data": {
+        "label": "japanese house",
+        "actionId": "653083c0d03b31f12e161e57"
+      }
+    },
+    "1702836732368": {
+      "id": "1702836732368",
+      "position": {
+        "x": 462,
+        "y": 177.25
+      },
+      "type": "default",
+      "data": {
+        "label": "harry test",
+        "actionId": "657eb5189af51afc8a14d257"
+      }
+    },
+    "1702836733903": {
+      "id": "1702836733903",
+      "position": {
+        "x": 375,
+        "y": 90.25
+      },
+      "type": "default",
+      "data": {
+        "label": "japanese house",
+        "actionId": "653083c0d03b31f12e161e57"
+      }
+    }
+  },
+  "graph": {
+    "1702836733903": [
+      "1702836730903",
+      "1702836732368"
+    ],
+    "1702836732368": [
+      "1702836730903"
+    ]
+  }
+}
