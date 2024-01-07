@@ -7,6 +7,23 @@ from autobots.action.action.action_doc_model import ActionDoc
 from autobots.action.action.common_action_models import TextObj
 
 
+class Position(BaseModel):
+    x: int
+    y: int
+
+
+class NodeData(BaseModel):
+    label: str
+    actionId: str
+
+
+class Node(BaseModel):
+    id: str
+    position: Position
+    type: str
+    data: NodeData
+
+
 class ActionGraphFind(BaseModel):
     """
     Input from User to find action_graph
@@ -30,6 +47,8 @@ class ActionGraphUpdate(BaseModel):
     description: Optional[str] = None
     nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",
                                             examples=[{"node1": "action1", "node2": "action2", "node3": "action3"}])
+    node_details: Dict[str, Node] | None = Field(None, description="map of nodeId to Node",
+                                                 examples=[{"node1": {"id": "node1", "position": {"x": 288, "y": 203}, "type": "default", "data": {"label": "action1_name_version", "actionId": "action1"}}}])
     graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes",
                                                   examples=[{"node1": ["node2", "node3"], "node2": ["node3"]}])
     input: Optional[TextObj] = None
@@ -51,6 +70,8 @@ class ActionGraphCreate(BaseModel):
     description: str = ""
     nodes: Optional[Dict[str, str]] = Field(None, description="map of node to action",
                                             examples=[{"node1": "action1", "node2": "action2", "node3": "action3"}])
+    node_details: Dict[str, Node] | None = Field(None, description="map of nodeId to Node",
+                                                 examples=[{"node1": {"id": "node1", "position": {"x": 288, "y": 203},"type": "default","data": {"label": "action1_name_version","actionId": "action1"}}}])
     graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes",
                                                   examples=[{"node1": ["node2", "node3"], "node2": ["node3"]}])
     input: Optional[TextObj] = None
