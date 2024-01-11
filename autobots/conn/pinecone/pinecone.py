@@ -26,7 +26,7 @@ class Pinecone:
         if not api_key or not environment:
             return
         self.open_ai = open_ai
-        self.pinecone = Client(api_key=api_key, region=environment)
+        self.pinecone = Client(api_key=api_key, region=environment, project_id="fa82a0e")
         self.index_name = index_name
         self.dimension = dimension
         self.index = self.create_index()
