@@ -38,7 +38,7 @@ class Selenium:
             time.sleep(5)
 
             # whole body text
-            text: str = self.driver.find_element(By.XPATH, xpath).text
+            text: str = driver.find_element(By.XPATH, xpath).text
             return text
 
     async def read_url_v1(self, url: HttpUrl, xpath: str = "/html/body", attribute: str = "") -> str:
