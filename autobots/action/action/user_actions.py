@@ -22,9 +22,13 @@ class UserActions:
             self, action_create: ActionCreate
     ) -> ActionDoc | None:
         try:
+            # TODO: exclude_none=True
             action_doc_create = ActionDocCreate(user_id=self.user_id, **action_create.model_dump())
             action_doc = await self.action_crud.insert_one(action_doc_create)
             return action_doc
+        except HTTPException as e:
+            Log.error(str(e))
+            raise
         except Exception as e:
             Log.error(str(e))
         return None
