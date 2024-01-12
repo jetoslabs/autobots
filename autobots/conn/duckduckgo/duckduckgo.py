@@ -1,9 +1,10 @@
 from functools import lru_cache
-from typing import List, Optional
+from typing import List, Optional, Iterator
 
 from duckduckgo_search import DDGS
 from pydantic import BaseModel, HttpUrl
 
+from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams
 from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
@@ -83,30 +84,31 @@ class SuggestionRes(BaseModel):
 
 class DuckDuckGo:
 
-    async def search_text(self, text: str, num_results: int = 3) -> List[SearchRes]:
+    async def search_text(self, search_params: SearchTextParams) -> List[SearchRes]:
         search_res = []
         with DDGS() as ddgs:
-            num = 1
-            for r in ddgs.text(text):
-                if num > num_results:
-                    break
-                num = num + 1
+            # num = 1
+            search_iter: Iterator[dict[str, str | None]] = ddgs.text(**search_params.model_dump(exclude_none=True))
+            for r in search_iter:
+                # if num > search_params.max_results:
+                #     break
+                # num = num + 1
                 res = SearchRes(**r)
                 search_res.append(res)
-                Log.trace(f"Search for {text}: {r}")
+                Log.trace(f"Search for {search_params.keywords}: {r}")
         return search_res
 
-    async def news(self, keywords: str, num_results: int = 3) -> List[NewsRes]:
+    async def news(self, search_params: SearchTextParams) -> List[NewsRes]:
         news_res = []
         with DDGS() as ddgs:
-            num = 1
-            for r in ddgs.news(keywords):
-                if num > num_results:
-                    break
-                num = num + 1
+            # num = 1
+            for r in ddgs.news(**search_params.model_dump(exclude_none=True)):
+                # if num > num_results:
+                #     break
+                # num = num + 1
                 res = NewsRes(**r)
                 news_res.append(res)
-                Log.trace(f"News for {keywords}: {r}")
+        Log.trace(f"News for {search_params.keywords}: {news_res}")
         return news_res
 
     async def answer(self, keywords: str, num_results: int = 3) -> List[AnswerRes]:
@@ -174,9 +176,18 @@ class DuckDuckGo:
         maps = []
         num = 1
         with DDGS() as ddgs:
-            for r in ddgs.maps(keywords, place=place, street=street, city=city, county=county, state=state,
-                               country=country, postalcode=postalcode, latitude=latitude, longitude=longitude,
-                               radius=radius):
+            for r in ddgs.maps(
+                    keywords,
+                    place=place,
+                    street=street,
+                    city=city,
+                    county=county,
+                    state=state,
+                    country=country,
+                    postalcode=postalcode,
+                    latitude=latitude,
+                    longitude=longitude,
+                    radius=radius):
                 if num > num_results:
                     break
                 num = num + 1

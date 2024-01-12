@@ -91,9 +91,11 @@ async def create_action_text2text_search_web(
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         action_doc = await UserActions(user_orm, db).create_action(
-            ActionCreate(**action_create.model_dump())
+            ActionCreate(**action_create.model_dump(exclude_none=True))
         )
         return action_doc
+    except HTTPException as e:
+        raise
     except Exception as e:
         Log.error(str(e))
         raise HTTPException(500)
