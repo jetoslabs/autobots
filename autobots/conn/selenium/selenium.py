@@ -35,16 +35,18 @@ class Selenium:
         self.driver.close()
         self.driver.quit()
 
+    # Not working yet
     async def refresh_driver_on_resource_overload(self):
-        # gives a single float value
-        cpu_percent = psutil.cpu_percent()
-        # percentage of used RAM
-        used_ram_percent = psutil.virtual_memory().percent
-        if cpu_percent >= 100 or used_ram_percent >= 60:
-            Log.info("Refreshing web_driver on resource overload")
-            # replace with new driver
-            self.close_webdriver()
-            self.driver = self.get_webdriver()
+        # # gives a single float value
+        # cpu_percent = psutil.cpu_percent()
+        # # percentage of used RAM
+        # used_ram_percent = psutil.virtual_memory().percent
+        # if cpu_percent >= 100 or used_ram_percent >= 60:
+        #     Log.info("Refreshing web_driver on resource overload")
+        #     # replace with new driver
+        #     self.close_webdriver()
+        #     self.driver = self.get_webdriver()
+        pass
 
     async def read_url_text(self, url: HttpUrl, xpath: str = "/html/body") -> str:
         await self.refresh_driver_on_resource_overload()
