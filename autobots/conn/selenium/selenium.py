@@ -2,7 +2,7 @@ import time
 from functools import lru_cache
 from typing import List
 
-import psutil
+# import psutil
 from pydantic import HttpUrl
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
