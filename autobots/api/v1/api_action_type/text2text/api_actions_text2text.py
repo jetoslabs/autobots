@@ -11,6 +11,7 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_open
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionCreateText2TextLlmChatWithVectorSearchOpenai
 from autobots.action.action_type.action_text2text.action_text2text_read_url import ReadUrlConfig
+from autobots.action.action_type.action_text2text.action_text2text_search_map import SearchMapsConfig
 from autobots.action.action_type.action_text2text.action_text2text_search_web import SearchWebConfig
 from autobots.action.action_type.action_types import ActionType
 from autobots.auth.security import get_user_from_access_token
@@ -91,9 +92,35 @@ async def create_action_text2text_search_web(
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         action_doc = await UserActions(user_orm, db).create_action(
-            ActionCreate(**action_create.model_dump())
+            ActionCreate(**action_create.model_dump(exclude_none=True))
         )
         return action_doc
+    except HTTPException as e:
+        raise
+    except Exception as e:
+        Log.error(str(e))
+        raise HTTPException(500)
+
+
+class ActionCreateText2TextSearchMaps(ActionCreate):
+    type: ActionType = ActionType.text2text_search_maps
+    config: SearchMapsConfig
+
+
+@router.post("/text2text/search_maps")
+async def create_action_text2text_search_maps(
+        action_create: ActionCreateText2TextSearchMaps,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> ActionDoc:
+    try:
+        user_orm = UserORM(id=UUID(user_res.user.id))
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump(exclude_none=True))
+        )
+        return action_doc
+    except HTTPException as e:
+        raise
     except Exception as e:
         Log.error(str(e))
         raise HTTPException(500)
