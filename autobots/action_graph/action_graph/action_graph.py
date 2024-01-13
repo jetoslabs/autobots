@@ -198,13 +198,22 @@ class ActionGraph:
         for value in values:
             action_doc = action_response.get(value)
             action_outputs = action_doc.output
-            if isinstance(action_outputs, TextObjs):
+            try:
+                # check if action_output is TextObjs
+                action_outputs = TextObjs.model_validate(action_outputs)
                 for action_output in action_outputs.texts:
-                    if isinstance(action_output, TextObj):
-                        text_obj = TextObj.model_validate(action_output)
-                        input_msg = f"{input_msg}\n{text_obj.text}"
-            else:
-                Log.warning("Cannot convert to Input")
+                    # if isinstance(action_output, TextObj):
+                    text_obj = TextObj.model_validate(action_output)
+                    input_msg = f"{input_msg}## {action_doc.name}:\n{text_obj.text}\n\n"
+            except Exception as e:
+                Log.warning(f"Cannot convert to Input: {str(e)}")
+            # if isinstance(action_outputs, TextObjs):
+            #     for action_output in action_outputs.texts:
+            #         if isinstance(action_output, TextObj):
+            #             text_obj = TextObj.model_validate(action_output)
+            #             input_msg = f"{input_msg}\n{text_obj.text}"
+            # else:
+            #     Log.warning("Cannot convert to Input")
 
         text_obj = TextObj(text=input_msg)
         return text_obj
