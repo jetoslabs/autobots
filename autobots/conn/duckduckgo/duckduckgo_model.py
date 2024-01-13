@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -24,3 +25,18 @@ class SearchTextParams(BaseModel):
     safesearch: Safesearch = Safesearch.moderate.value
     timelimit: Timelimit | None = None
     max_results: int = Field(3, ge=1, le=10)
+
+
+class SearchMapsParams(BaseModel):
+    keywords: str
+    place: str
+    # street: Optional[str] = None
+    # city: Optional[str] = None
+    # county: Optional[str] = None
+    # state: Optional[str] = None
+    # country: Optional[str] = None
+    # postalcode: Optional[str] = None
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
+    radius: int = 0
+    max_results: Optional[int] = 3
