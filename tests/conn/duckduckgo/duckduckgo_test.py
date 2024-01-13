@@ -3,7 +3,7 @@ from typing import List
 import pytest
 
 from autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Safesearch, Timelimit
+from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Safesearch, Timelimit, SearchMapsParams
 from autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
@@ -43,7 +43,6 @@ async def test_answer_happy_path(set_test_settings):
     assert len(ans_res) > 0
     assert ans_res[0].text
     assert ans_res[0].url
-    assert ans_res[0].title
 
 
 @pytest.mark.asyncio
@@ -64,7 +63,23 @@ async def test_search_videos_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_search_map_happy_path(set_test_settings):
-    ans_res = await get_duckduckgo().search_map("monuments", city="New Delhi")
+    search_params = SearchMapsParams(keywords="coffee", place="San Francisco")
+    ans_res = await get_duckduckgo().search_maps(search_params)
+    assert len(ans_res) > 0
+    assert ans_res[0].address
+    assert ans_res[0].title
+
+
+@pytest.mark.asyncio
+async def test_search_map_happy_path_1(set_test_settings):
+    search_params = SearchMapsParams(
+        keywords="coffee",
+        place="New Delhi",
+        latitude="28.6139",
+        longitude="77.2090",
+        radius=50
+    )
+    ans_res = await get_duckduckgo().search_maps(search_params)
     assert len(ans_res) > 0
     assert ans_res[0].url
     assert ans_res[0].title

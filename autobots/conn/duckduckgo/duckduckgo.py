@@ -4,7 +4,7 @@ from typing import List, Optional, Iterator
 from duckduckgo_search import DDGS
 from pydantic import BaseModel, HttpUrl
 
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams
+from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams
 from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
@@ -65,11 +65,11 @@ class MapRes(BaseModel):
     longitude: float
     url: HttpUrl | str
     desc: Optional[str]
-    phone: str
+    phone: Optional[str]
     image: Optional[HttpUrl]
     source: HttpUrl
     links: Optional[str]
-    hours: dict
+    hours: dict | str
 
 
 class TranslateRes(BaseModel):
@@ -168,32 +168,18 @@ class DuckDuckGo:
                 Log.trace(f"Video for {keywords}: {r}")
         return videos
 
-    async def search_map(
-            self, keywords: str, place: str = None, street: str = None, city: str = None,
-            county: str = None, state: str = None, country: str = None, postalcode: str = None,
-            latitude: str = None, longitude: str = None, radius: int = 0, num_results: int = 3
-    ) -> List[MapRes]:
+    async def search_maps(self, search_params: SearchMapsParams) -> List[MapRes]:
         maps = []
-        num = 1
+        # num = 1
         with DDGS() as ddgs:
-            for r in ddgs.maps(
-                    keywords,
-                    place=place,
-                    street=street,
-                    city=city,
-                    county=county,
-                    state=state,
-                    country=country,
-                    postalcode=postalcode,
-                    latitude=latitude,
-                    longitude=longitude,
-                    radius=radius):
-                if num > num_results:
-                    break
-                num = num + 1
+            search_iter = ddgs.maps(**search_params.model_dump())
+            for r in search_iter:
+                # if num > num_results:
+                #     break
+                # num = num + 1
                 res = MapRes(**r)
                 maps.append(res)
-                Log.trace(f"Map search for {keywords}: {r}")
+                Log.trace(f"Map search for {search_params.keywords}: {r}")
         return maps
 
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
