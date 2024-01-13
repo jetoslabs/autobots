@@ -16,6 +16,7 @@ from autobots.action.action_type.action_text2text.action_text2text_llm_chat_open
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
 from autobots.action.action_type.action_text2text.action_text2text_read_url import ActionText2TextReadUrl
+from autobots.action.action_type.action_text2text.action_text2text_search_map import ActionText2TextSearchMaps
 from autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
 from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
@@ -27,6 +28,7 @@ ACTION_MAP = {
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
+    ActionType.text2text_search_maps: ActionText2TextSearchMaps,
     ActionType.text2text_io_mapper: ActionText2TextIOMapper,
     # text2img
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,

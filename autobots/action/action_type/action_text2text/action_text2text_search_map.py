@@ -1,4 +1,4 @@
-from typing import Type, Literal
+from typing import Literal, Type
 
 from pydantic import BaseModel, ValidationError
 
@@ -6,21 +6,21 @@ from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
 from autobots.action.action_type.action_types import ActionType
 from autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams
+from autobots.conn.duckduckgo.duckduckgo_model import SearchMapsParams
 from autobots.core.logging.log import Log
 
 
-class SearchWebConfig(BaseModel):
-    search_type: Literal["web", "news"] = "web"
-    search_params: SearchTextParams
+class SearchMapsConfig(BaseModel):
+    search_type: Literal["maps"] = "maps"
+    search_params: SearchMapsParams
 
 
-class ActionText2TextSearchWeb(IAction[SearchWebConfig, TextObj, TextObjs]):
-    type = ActionType.text2text_search_web
+class ActionText2TextSearchMaps(IAction[SearchMapsConfig, TextObj, TextObjs]):
+    type = ActionType.text2text_search_maps
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        return SearchWebConfig
+        return SearchMapsConfig
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
@@ -38,12 +38,7 @@ class ActionText2TextSearchWeb(IAction[SearchWebConfig, TextObj, TextObjs]):
         try:
             duckduckgo = get_duckduckgo()
             self.action_config.search_params.keywords = f"{self.action_config.search_params.keywords} {action_input.text}"
-            search_res = []
-            match self.action_config.search_type:
-                case "news":
-                    search_res = await duckduckgo.news(self.action_config.search_params)
-                case "web":
-                    search_res = await duckduckgo.search_text(self.action_config.search_params)
+            search_res = await duckduckgo.search_maps(self.action_config.search_params)
             for search in search_res:
                 # text = f"title: {search.title}\nbody: {search.body}\nhref: {search.href}"
                 text = str(search)
