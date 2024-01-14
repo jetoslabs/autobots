@@ -14,6 +14,7 @@ class ActionType(str, Enum):
     text2img_dalle_openai = "text2img_dalle_openai"
     text2img_stability_ai = "text2img_stability_ai"
     text2img_stable_diffusion = "text2img_stable_diffusion"
+    text2img_search_image = "text2img_search_image"
 
     # img2img
     image_mixer_stable_diffusion = "image_mixer_stable_diffusion"
@@ -23,6 +24,7 @@ class ActionType(str, Enum):
 
     # text2video
     text2video_stable_diffusion = "text2video_stable_diffusion"
+    text2video_search_video = "text2img_search_video"
 
     # text2audio
     text2audio_speech_openai = "text2audio_openai"
