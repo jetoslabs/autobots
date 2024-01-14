@@ -70,7 +70,7 @@ class SearchVideoParams(BaseModel):
     region: Region = Region.No_Region.value
     safesearch: Literal["on", "moderate", "off"] = "moderate"
     timelimit: Literal["Day", "Week", "Month", "Year"] | None = None
-    resolution: Literal["high", "standard"] | None = None,
-    duration: Literal["short", "medium", "long"] | None = None,
-    license_videos: Literal["creativeCommon", "youtube"] | None = None,
+    resolution: Literal["high", "standard"] | None = None
+    duration: Literal["short", "medium", "long"] | None = None
+    license_videos: Literal["creativeCommon", "youtube"] | None = None
     max_results: int = Field(3, ge=1, le=10)
