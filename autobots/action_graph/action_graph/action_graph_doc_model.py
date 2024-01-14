@@ -51,6 +51,7 @@ class ActionGraphUpdate(BaseModel):
                                                  examples=[{"node1": {"id": "node1", "position": {"x": 288, "y": 203}, "type": "default", "data": {"label": "action1_name_version", "actionId": "action1"}}}])
     graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes",
                                                   examples=[{"node1": ["node2", "node3"], "node2": ["node3"]}])
+    start_node_id: str | None = None
     input: Optional[TextObj] = None
     output: Optional[Dict[str, ActionDoc]] = None
 
@@ -74,6 +75,7 @@ class ActionGraphCreate(BaseModel):
                                                  examples=[{"node1": {"id": "node1", "position": {"x": 288, "y": 203},"type": "default","data": {"label": "action1_name_version","actionId": "action1"}}}])
     graph: Optional[Dict[str, List[str]]] = Field(None, description="map of node to nodes",
                                                   examples=[{"node1": ["node2", "node3"], "node2": ["node3"]}])
+    start_node_id: str | None = None
     input: Optional[TextObj] = None
     output: Optional[Dict[str, ActionDoc]] = None
 
