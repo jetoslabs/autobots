@@ -50,7 +50,7 @@ class ActionCreate(BaseModel):
     description: str = ""
     user_manual: str = ""
     type: ActionType
-    config: Dict[str, Any]
+    config: Dict[str, Any] = {}
     input: Optional[Dict[str, Any]] = None
     output: Optional[Dict[str, Any]] = None
     is_published: bool = False
