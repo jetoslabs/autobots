@@ -24,6 +24,7 @@ class EventResultFind(BaseModel):
     type: Optional[EventType] = None
     status: Optional[EventResultStatus] = None
     is_saved: Optional[bool] = None
+    # result: Optional[Dict[str, Any]] = None
 
 
 class EventResultDocFind(EventResultFind):
