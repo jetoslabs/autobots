@@ -4,7 +4,8 @@ from typing import List, Optional, Iterator
 from duckduckgo_search import DDGS
 from pydantic import BaseModel, HttpUrl
 
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams
+from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams, SearchImageParams, \
+    SearchVideoParams
 from autobots.core.logging.log import Log
 from autobots.core.settings import Settings, SettingsProvider
 
@@ -124,48 +125,32 @@ class DuckDuckGo:
                 Log.trace(f"Answer for {keywords}: {r}")
         return answer_res
 
-    async def search_images(self, keywords: str, num_results: int = 3) -> List[ImageRes]:
+    async def search_images(self, search_params: SearchImageParams) -> List[ImageRes]:
         images = []
         with DDGS() as ddgs:
-            num = 1
-            ddgs_images_gen = ddgs.images(
-                keywords,
-                region="wt-wt",
-                safesearch="Off",
-                size=None,
-                color="color",
-                type_image=None,
-                layout=None,
-                license_image="ModifyCommercially",
-            )
+            # num = 1
+            ddgs_images_gen = ddgs.images(**search_params.model_dump(exclude_none=True))
             for r in ddgs_images_gen:
-                if num > num_results:
-                    break
-                num = num + 1
+                # if num > num_results:
+                #     break
+                # num = num + 1
                 res = ImageRes(**r)
                 images.append(res)
-                Log.trace(f"Image for {keywords}: {r}")
+                Log.trace(f"Image for {search_params.keywords}: {r}")
         return images
 
-    async def search_videos(self, keywords: str, num_results: int = 3) -> List[VideoRes]:
+    async def search_videos(self, search_params: SearchVideoParams) -> List[VideoRes]:
         videos = []
         with DDGS() as ddgs:
-            num = 1
-            ddgs_videos_gen = ddgs.videos(
-                keywords,
-                region="wt-wt",
-                safesearch="Off",
-                timelimit="w",
-                resolution="high",
-                duration="medium",
-            )
+            # num = 1
+            ddgs_videos_gen = ddgs.videos(**search_params.model_dump(exclude_none=True))
             for r in ddgs_videos_gen:
-                if num > num_results:
-                    break
-                num = num + 1
+                # if num > num_results:
+                #     break
+                # num = num + 1
                 res = VideoRes(**r)
                 videos.append(res)
-                Log.trace(f"Video for {keywords}: {r}")
+                Log.trace(f"Video for {search_params.keywords}: {r}")
         return videos
 
     async def search_maps(self, search_params: SearchMapsParams) -> List[MapRes]:

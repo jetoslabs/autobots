@@ -8,7 +8,7 @@ from autobots.action_graph.action_graph_result.action_graph_result_model_doc imp
 from autobots.core.logging.log import Log
 from autobots.event_result.event_result_crud import EventResultCRUD
 from autobots.event_result.event_result_model import EventResultDocCreate, EventResultFind, EventResultDocFind, \
-    EventResultDocUpdate
+    EventResultDocUpdate, EventType
 from autobots.user.user_orm_model import UserORM
 
 
@@ -33,6 +33,7 @@ class UserActionGraphResult:
             self, action_graph_result_find: EventResultFind,
             limit: int = 100, offset: int = 0
     ) -> List[ActionGraphResultDoc]:
+        action_graph_result_find.type = EventType.action_graph_run
         event_result_doc_find = EventResultDocFind(user_id=self.user_id, **action_graph_result_find.model_dump())
         event_result_docs = await self.event_result_crud.find(event_result_doc_find, limit, offset)
         action_graph_result_docs = []
