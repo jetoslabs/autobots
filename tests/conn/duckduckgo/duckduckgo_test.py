@@ -3,7 +3,8 @@ from typing import List
 import pytest
 
 from autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Safesearch, Timelimit, SearchMapsParams
+from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Safesearch, Timelimit, SearchMapsParams, \
+    SearchImageParams, SearchVideoParams, LicenseImage
 from autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
@@ -47,7 +48,12 @@ async def test_answer_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_search_images_happy_path(set_test_settings):
-    ans_res = await get_duckduckgo().search_images("Athlete running in the city")
+    search_params = SearchImageParams(
+        keywords="Tourism",
+        license_image=LicenseImage.Public_Domain,
+        timelimit="Month"
+    )
+    ans_res = await get_duckduckgo().search_images(search_params)
     assert len(ans_res) > 0
     assert ans_res[0].url
     assert ans_res[0].title
@@ -55,7 +61,8 @@ async def test_search_images_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_search_videos_happy_path(set_test_settings):
-    ans_res = await get_duckduckgo().search_videos("Athlete running in the city")
+    search_params = SearchVideoParams(keywords="Athlete running in the city")
+    ans_res = await get_duckduckgo().search_videos(search_params)
     assert len(ans_res) > 0
     assert ans_res[0].embed_url
     assert ans_res[0].title

@@ -73,6 +73,7 @@ class Settings(BaseSettings):
     API_ACTIONS_MARKET: str = "/action_market"
     API_ACTION_RESULTS: str = "/action_results"
     API_ACTION_GRAPHS: str = "/action_graphs"
+    API_ACTION_GRAPHS_RESULTS: str = "/action_graphs_results"
     API_DATASTORE: str = "/datastore"
     API_ACTION_CHATS: str = "/action_chats"
     API_AGENTS: str = "/agents"
