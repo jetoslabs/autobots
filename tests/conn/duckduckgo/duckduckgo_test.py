@@ -3,7 +3,7 @@ from typing import List
 import pytest
 
 from autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Safesearch, Timelimit, SearchMapsParams, \
+from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Timelimit, SearchMapsParams, \
     SearchImageParams, SearchVideoParams, LicenseImage
 from autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
@@ -13,8 +13,8 @@ async def test_search_text_happy_path(set_test_settings):
     search_params = SearchTextParams(
         keywords="where is Arsenal Football club located",
         region=Region.wt_wt,
-        safesearch=Safesearch.off,
-        # timelimit=Timelimit.day,
+        safesearch="moderate",
+        timelimit=Timelimit.d,
         max_result=3
     )
     search_res: List[SearchRes] = await get_duckduckgo().search_text(search_params)
@@ -28,7 +28,7 @@ async def test_news_happy_path(set_test_settings):
     search_params = SearchTextParams(
         keywords="Latest football news",
         region=Region.uk_en,
-        safesearch=Safesearch.off,
+        safesearch="moderate",
         timelimit=Timelimit.d,
         max_result=3
     )
