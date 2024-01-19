@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     OPENAI_ORG_ID: str = None
     OPENAI_API_KEY: str = None
 
+    GOOGLE_BARD_COOKIE_KEY: str = None
+
     STABILITY_HOST: str = None
     STABILITY_KEY: str = None
     STABLE_DIFFUSION_API_KEY: str = None

@@ -39,6 +39,7 @@ unstructured-client = "^0.15.0"
 webdriver-manager = "^4.0.1"
 pytest-timeout = "^2.2.0"
 psutil = "^5.9.7"
+bardapi = "^0.1.39"
 
 [build-system]
 requires = ["poetry-core"]
