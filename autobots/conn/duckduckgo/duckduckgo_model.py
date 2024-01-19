@@ -13,15 +13,15 @@ class Safesearch(str, Enum):
 
 
 class Timelimit(str, Enum):
-    day = "d"
-    week = "w"
-    month = "m"
-    year = "y"
+    d = "day"
+    w = "week"
+    m = "month"
+    y = "year"
 
 
 class SearchTextParams(BaseModel):
     keywords: str = ""
-    region: Region = Region.No_Region.value
+    region: Region = Region.wt_wt.value
     safesearch: Safesearch = Safesearch.moderate.value
     timelimit: Timelimit | None = None
     max_results: int = Field(3, ge=1, le=10)
@@ -53,7 +53,7 @@ class LicenseImage(str, Enum):
 
 class SearchImageParams(BaseModel):
     keywords: str = ""
-    region: Region = Region.No_Region.value
+    region: Region = Region.wt_wt.value
     safesearch: Literal["on", "moderate", "off"] = "moderate"
     timelimit: Literal["Day", "Week", "Month", "Year"] | None = None
     size: Literal["Small", "Medium", "Large", "Wallpaper"] | None = None
@@ -67,7 +67,7 @@ class SearchImageParams(BaseModel):
 
 class SearchVideoParams(BaseModel):
     keywords: str = ""
-    region: Region = Region.No_Region.value
+    region: Region = Region.wt_wt.value
     safesearch: Literal["on", "moderate", "off"] = "moderate"
     timelimit: Literal["Day", "Week", "Month", "Year"] | None = None
     resolution: Literal["high", "standard"] | None = None
