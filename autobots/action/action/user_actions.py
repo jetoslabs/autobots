@@ -7,6 +7,7 @@ from autobots.action.action.action_crud import ActionCRUD
 from autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
     ActionUpdate, ActionDocUpdate
 from autobots.action.action_type.action_factory import ActionFactory
+from autobots.action.action_type.action_types import ActionType
 from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
@@ -81,6 +82,12 @@ class UserActions:
     async def run_action_v1(
             self, action_id: str, input: Dict[str, Any]
     ) -> ActionDoc:
+        if action_id == "":
+            action_doc = ActionDoc(
+                id="", user_id=self.user_id, name="", type=ActionType.mock_action, input=input, output={"texts":[input]}
+            )
+            return action_doc
+
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await self.action_crud.find(action_doc_find)
         if len(action_docs) != 1:
