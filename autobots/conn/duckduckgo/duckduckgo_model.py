@@ -1,15 +1,15 @@
 from enum import Enum
 from typing import Optional, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
-class Safesearch(str, Enum):
-    on = "on"
-    moderate = "moderate"
-    off = "off"
+# class Safesearch(str, Enum):
+#     on = "on"
+#     moderate = "moderate"
+#     off = "off"
 
 
 class Timelimit(str, Enum):
@@ -21,10 +21,17 @@ class Timelimit(str, Enum):
 
 class SearchTextParams(BaseModel):
     keywords: str = ""
-    region: Region = Region.wt_wt.value
-    safesearch: Safesearch = Safesearch.moderate.value
+    region: Region = Region.wt_wt
+    safesearch: Literal["on", "moderate", "off"] = "moderate"
     timelimit: Timelimit | None = None
     max_results: int = Field(3, ge=1, le=10)
+
+    @field_validator("region", "timelimit")
+    @classmethod
+    def get_enum_name(cls, value):
+        if isinstance(value, Enum):
+            return value.name
+        return value
 
 
 class SearchMapsParams(BaseModel):
@@ -53,7 +60,7 @@ class LicenseImage(str, Enum):
 
 class SearchImageParams(BaseModel):
     keywords: str = ""
-    region: Region = Region.wt_wt.value
+    region: Region = Region.wt_wt
     safesearch: Literal["on", "moderate", "off"] = "moderate"
     timelimit: Literal["Day", "Week", "Month", "Year"] | None = None
     size: Literal["Small", "Medium", "Large", "Wallpaper"] | None = None
@@ -64,13 +71,27 @@ class SearchImageParams(BaseModel):
     license_image: LicenseImage | None = None
     max_results: int = Field(3, ge=1, le=10)
 
+    @field_validator("region")#, "license_image")
+    @classmethod
+    def get_enum_name(cls, value):
+        if isinstance(value, Enum):
+            return value.name
+        return value
+
 
 class SearchVideoParams(BaseModel):
     keywords: str = ""
-    region: Region = Region.wt_wt.value
+    region: Region = Region.wt_wt
     safesearch: Literal["on", "moderate", "off"] = "moderate"
     timelimit: Literal["Day", "Week", "Month", "Year"] | None = None
     resolution: Literal["high", "standard"] | None = None
     duration: Literal["short", "medium", "long"] | None = None
     license_videos: Literal["creativeCommon", "youtube"] | None = None
     max_results: int = Field(3, ge=1, le=10)
+
+    @field_validator("region")
+    @classmethod
+    def get_enum_name(cls, value):
+        if isinstance(value, Enum):
+            return value.name
+        return value
