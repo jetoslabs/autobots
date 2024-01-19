@@ -12,7 +12,7 @@ from autobots.conn.duckduckgo.duckduckgo_region_model import Region
 async def test_search_text_happy_path(set_test_settings):
     search_params = SearchTextParams(
         keywords="where is Arsenal Football club located",
-        region=Region.No_Region,
+        region=Region.wt_wt,
         safesearch=Safesearch.off,
         # timelimit=Timelimit.day,
         max_result=3
@@ -27,9 +27,9 @@ async def test_search_text_happy_path(set_test_settings):
 async def test_news_happy_path(set_test_settings):
     search_params = SearchTextParams(
         keywords="Latest football news",
-        region=Region.United_Kingdom_en,
+        region=Region.uk_en,
         safesearch=Safesearch.off,
-        timelimit=Timelimit.day,
+        timelimit=Timelimit.d,
         max_result=3
     )
     news_res = await get_duckduckgo().news(search_params)
