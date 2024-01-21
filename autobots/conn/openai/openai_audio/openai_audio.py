@@ -3,7 +3,7 @@ import os
 import httpx
 from httpx import URL
 from openai import AsyncOpenAI
-from openai._base_client import HttpxBinaryResponseContent
+from openai._legacy_response import HttpxBinaryResponseContent
 from openai.types.audio import Transcription, Translation
 from pydantic import HttpUrl
 
