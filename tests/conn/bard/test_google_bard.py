@@ -1,6 +1,7 @@
 import pytest
 
 from autobots.conn.google.bard.google_bard import get_google_bard
+from autobots.conn.google.bard.google_bard_model import GoogleBardAsk
 
 
 @pytest.mark.asyncio

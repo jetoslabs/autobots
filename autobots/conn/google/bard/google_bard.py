@@ -26,4 +26,4 @@ class GoogleBard:
 
 @lru_cache
 def get_google_bard(settings: Settings = SettingsProvider.sget()) -> GoogleBard:
-    return GoogleBard(cookie_key=settings.OPENAI_API_KEY)
+    return GoogleBard(cookie_key=settings.GOOGLE_BARD_COOKIE_KEY)
