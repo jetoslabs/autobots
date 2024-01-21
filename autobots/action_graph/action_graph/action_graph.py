@@ -140,7 +140,7 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        Log.info("Completed Action Graph _run_as_background_task")
+        Log.bind(action_graph_id=action_graph_result_doc.result.id).info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
 
     @staticmethod
