@@ -127,7 +127,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            Log.error(f"Error while graph run, {str(e)}")
+            Log.bind(action_graph_id=action_graph_result_doc.result.id).error(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
