@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 import gotrue
@@ -5,9 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
+from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.action.action.user_actions import UserActions
-from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
-    ActionCreateText2TextLlmChatOpenai
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionCreateText2TextLlmChatWithVectorSearchOpenai
 from autobots.action.action_type.action_text2text.action_text2text_read_url import ReadUrlConfig
@@ -15,11 +15,19 @@ from autobots.action.action_type.action_text2text.action_text2text_search_map im
 from autobots.action.action_type.action_text2text.action_text2text_search_web import SearchWebConfig
 from autobots.action.action_type.action_types import ActionType
 from autobots.auth.security import get_user_from_access_token
+from autobots.conn.openai.openai_chat.chat_model import ChatReq
 from autobots.core.database.mongo_base import get_mongo_db
 from autobots.core.logging.log import Log
 from autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
+
+
+class ActionCreateText2TextLlmChatOpenai(ActionCreate):
+    type: ActionType = ActionType.text2text_llm_chat_openai
+    config: ChatReq
+    input: Optional[TextObj] = None
+    output: Optional[TextObjs] = None
 
 
 @router.post("/text2text/llm_chat_openai")
