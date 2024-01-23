@@ -17,7 +17,7 @@ class OpenaiChat:
         for i in range(max_retry):
             try:
                 Log.trace("Starting OpenAI Chat, try: 1")
-                res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(), timeout=180)
+                res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump())
                 Log.trace("Completed OpenAI Chat")
                 if isinstance(res, AsyncStream):
                     return self.yield_chat_chunks(res)

@@ -3,19 +3,11 @@ from typing import Optional, Type
 from pydantic import ValidationError
 
 from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
-from autobots.action.action.action_doc_model import ActionCreate
 from autobots.action.action_type.action_types import ActionType
 from autobots.action.action.common_action_models import TextObj, TextObjs
 from autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
 from autobots.conn.openai.openai_client import get_openai
 from autobots.core.logging.log import Log
-
-
-class ActionCreateText2TextLlmChatOpenai(ActionCreate):
-    type: ActionType = ActionType.text2text_llm_chat_openai
-    config: ChatReq
-    input: Optional[TextObj] = None
-    output: Optional[TextObjs] = None
 
 
 class ActionText2TextLlmChatOpenai(IAction[ChatReq, TextObj, TextObjs]):

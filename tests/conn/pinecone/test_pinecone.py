@@ -21,9 +21,9 @@ async def test_pinecone_happy_path(set_test_settings):
         await get_pinecone().upsert_data(str2_id, str2, metadata={"type": "places"}, namespace=namespace)
 
         query_res = await get_pinecone().query(data=query, top_k=2, namespace=namespace)
-        assert len(query_res) == 2
+        assert len(query_res.get("matches")) == 2
 
-        vec_id = query_res[0].id
+        vec_id = query_res.get("matches")[0].id
         assert str1_id == vec_id
 
     finally:

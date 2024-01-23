@@ -4,7 +4,7 @@ import string
 from typing import List, Dict, Callable, AsyncGenerator
 
 from fastapi import UploadFile
-from pinecone import QueryResult
+from pinecone import QueryResponse
 from pydantic import BaseModel, HttpUrl
 
 from autobots.conn.aws.s3 import S3
@@ -179,11 +179,12 @@ class Datastore:
         :return:
         """
         result = []
-        query_results: List[QueryResult] = await self.pinecone.query(
+        query_res: QueryResponse = await self.pinecone.query(
             data=query,
             top_k=top_k,
             namespace=self._get_pinecone_namespace()
         )
+        query_results = query_res.get("matches")
         for query_result in query_results:
             data = await self.s3.get(f"{self._get_s3_basepath()}/{query_result.id}")
             result.append(data)

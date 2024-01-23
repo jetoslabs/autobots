@@ -127,10 +127,12 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            Log.error("Error while graph run")
+            Log.bind(action_graph_id=action_graph_result_doc.result.id).error(f"Error while graph run, {str(e)}")
+
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                status=EventResultStatus.error
+                status=EventResultStatus.error,
+                error_message=TextObj(text=str(e))
             )
             action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
                 action_graph_result_doc.id,
@@ -138,7 +140,7 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        Log.info("Completed Action Graph _run_as_background_task")
+        Log.bind(action_graph_id=action_graph_result_doc.result.id).info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
 
     @staticmethod
