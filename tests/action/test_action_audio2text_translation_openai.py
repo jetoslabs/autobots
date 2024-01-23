@@ -2,7 +2,7 @@ import datetime
 import io
 
 import pytest
-from openai._base_client import HttpxBinaryResponseContent
+from openai._legacy_response import HttpxBinaryResponseContent
 
 from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import AudioRes, \
     ActionAudio2TextTranslationOpenai

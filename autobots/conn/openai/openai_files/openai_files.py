@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI
-from openai._base_client import AsyncPaginator, HttpxBinaryResponseContent
+from openai._base_client import AsyncPaginator
+from openai._legacy_response import HttpxBinaryResponseContent
 from openai.pagination import AsyncPage
 from openai.types import FileObject, FileDeleted
 

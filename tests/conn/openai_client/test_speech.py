@@ -2,7 +2,7 @@ import datetime
 import io
 
 import pytest
-from openai._base_client import HttpxBinaryResponseContent
+from openai._legacy_response import HttpxBinaryResponseContent
 
 from autobots.conn.aws.aws_s3 import get_public_s3
 from autobots.conn.openai.openai_client import get_openai
