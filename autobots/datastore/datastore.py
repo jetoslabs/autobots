@@ -179,11 +179,12 @@ class Datastore:
         :return:
         """
         result = []
-        query_results: QueryResponse = await self.pinecone.query(
+        query_res: QueryResponse = await self.pinecone.query(
             data=query,
             top_k=top_k,
             namespace=self._get_pinecone_namespace()
         )
+        query_results = query_res.get("matches")
         for query_result in query_results:
             data = await self.s3.get(f"{self._get_s3_basepath()}/{query_result.id}")
             result.append(data)

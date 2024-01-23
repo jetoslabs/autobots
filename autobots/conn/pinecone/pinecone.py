@@ -69,7 +69,7 @@ class Pinecone:
         try:
             for embedding_data in embedding_res.data:
                 res: QueryResponse = self.index.query(
-                    values=embedding_data.embedding,
+                    vector=embedding_data.embedding,
                     namespace=namespace,
                     top_k=top_k,
                     filter=filter,
@@ -85,7 +85,7 @@ class Pinecone:
         return fetch_res
 
     async def delete_all(self, namespace: str | None = None):
-        deleted = self.index.delete(namespace=namespace)
+        deleted = self.index.delete(delete_all=True, namespace=namespace)
         return deleted
 
     async def delete_metadata(

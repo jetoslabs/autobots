@@ -6,10 +6,10 @@ from pymongo.database import Database
 
 from autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from autobots.action.action_market.user_actions_market import UserActionsMarket
-from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import ActionCreateText2TextLlmChatOpenai
 from autobots.action.action.common_action_models import TextObj
 from autobots.action.action.user_actions import UserActions
 from autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
+from autobots.api.v1.api_action_type.text2text.api_actions_text2text import ActionCreateText2TextLlmChatOpenai
 from autobots.conn.openai.openai_chat.chat_model import ChatReq
 from autobots.core.utils import gen_random_str
 from autobots.core.database.mongo_base import get_mongo_db
