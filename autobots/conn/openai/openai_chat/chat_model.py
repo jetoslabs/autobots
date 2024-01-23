@@ -45,7 +45,7 @@ class ChatReq(BaseModel):
     max_tokens: Optional[int] = 2000
     n: Optional[int] = 1
     presence_penalty: Optional[float] = None
-    response_format: completion_create_params.ResponseFormat = None
+    response_format: Optional[completion_create_params.ResponseFormat] = None
     seed: Optional[int] = None
     stop: Union[Optional[str], List[str]] = "stop"
     stream: Optional[Literal[False]] | Literal[True] = False
