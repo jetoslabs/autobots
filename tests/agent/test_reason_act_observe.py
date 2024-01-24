@@ -1,6 +1,6 @@
 import pytest
 
-from autobots.agent.reason_act_observe import ReasonActObserve
+from src.autobots.agent.reason_act_observe import ReasonActObserve
 
 
 @pytest.mark.skip(reason="agent stalling")

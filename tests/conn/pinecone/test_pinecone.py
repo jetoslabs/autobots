@@ -1,7 +1,7 @@
 import pytest as pytest
 
-from autobots.conn.pinecone.pinecone import get_pinecone
-from autobots.core.utils import gen_hash
+from src.autobots.conn.pinecone.pinecone import get_pinecone
+from src.autobots.core.utils import gen_hash
 
 
 @pytest.mark.asyncio

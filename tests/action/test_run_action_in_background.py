@@ -1,16 +1,16 @@
 import pytest
 from openai.types.chat import ChatCompletionUserMessageParam
 
-from autobots.action.action.action_crud import ActionCRUD
-from autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
-from autobots.action.action.common_action_models import TextObj
-from autobots.action.action_result.user_action_result import UserActionResult
-from autobots.action.action_type.action_factory import ActionFactory
-from autobots.action.action_type.action_types import ActionType
-from autobots.conn.openai.openai_chat.chat_model import ChatReq
-from autobots.core.database.mongo_base import get_mongo_db
-from autobots.core.utils import gen_uuid
-from autobots.user.user_orm_model import UserORM
+from src.autobots.action.action.action_crud import ActionCRUD
+from src.autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
+from src.autobots.action.action.common_action_models import TextObj
+from src.autobots.action.action_result.user_action_result import UserActionResult
+from src.autobots.action.action_type.action_factory import ActionFactory
+from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
+from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.core.utils import gen_uuid
+from src.autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio

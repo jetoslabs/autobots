@@ -2,10 +2,10 @@ from typing import List
 
 import pytest
 
-from autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
-from autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Timelimit, SearchMapsParams, \
+from src.autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
+from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Timelimit, SearchMapsParams, \
     SearchImageParams, SearchVideoParams, LicenseImage
-from autobots.conn.duckduckgo.duckduckgo_region_model import Region
+from src.autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
 @pytest.mark.asyncio

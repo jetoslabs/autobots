@@ -1,11 +1,10 @@
 from pathlib import Path
 import pytest
-import requests
 
 from openai.types import ImagesResponse
 
-from autobots.conn.openai.openai_client import get_openai
-from autobots.conn.openai.openai_images.image_model import ImageEdit, ImageCreateVariation
+from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.conn.openai.openai_images.image_model import ImageEdit, ImageCreateVariation
 
 
 @pytest.mark.asyncio

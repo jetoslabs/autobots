@@ -1,6 +1,6 @@
 import pytest
 
-from autobots.agent.one_step import AgentData, OneStepAgent
+from src.autobots.agent.one_step import AgentData, OneStepAgent
 
 
 # TODO: Make Selenium work, currently unable to install chromedriver in image
