@@ -33,7 +33,7 @@ async def test_image_mixer_happy_path(set_test_settings):
     assert (len(res.urls) >= 1 or res.fetch_url is not None)
 
 
-@pytest.mark.skip(reason="Stable Diffusion text 2 video api is broken")
+# @pytest.mark.skip(reason="Stable Diffusion text 2 video api is broken")
 @pytest.mark.asyncio
 async def test_text2video_happy_path(set_test_settings):
     prompt = "Ultra real athlete running in urban environment TV quality"
