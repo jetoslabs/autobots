@@ -1,7 +1,7 @@
 import pytest
 from pydantic import HttpUrl
 
-from autobots.conn.selenium.selenium import get_selenium
+from src.autobots.conn.selenium.selenium import get_selenium
 
 
 # TODO: Make Selenium work, currently unable to install chromedriver in image
