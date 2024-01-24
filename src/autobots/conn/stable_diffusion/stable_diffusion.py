@@ -77,7 +77,7 @@ class StableDiffusion:
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(res.id))
 
     async def fetch_queued_image(self, id: int) -> StableDiffusionRes:
-        res: FetchQueuedImagesResModel | None = await fetch_queued_image(id, self.api_key)
+        res: FetchQueuedImagesResModel | None = await fetch_queued_image(id, self.api_key, 10, 20)
         if res:
             result = StableDiffusionRes(urls=res.output)
             return result

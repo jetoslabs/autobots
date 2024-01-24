@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, ConfigDict
 
 
 class DatastoreMetaFind(BaseModel):
@@ -55,5 +55,4 @@ class DatastoreMetaDoc(DatastoreMetaDocCreate):
 
     id: str = Field(..., alias='_id')
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)

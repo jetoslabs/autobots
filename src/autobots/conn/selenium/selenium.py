@@ -32,7 +32,6 @@ class Selenium:
         return driver
 
     def close_webdriver(self):
-        self.driver.close()
         self.driver.quit()
 
     # Not working yet
