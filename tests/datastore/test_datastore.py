@@ -1,6 +1,7 @@
 from typing import List
 
 import pytest
+from fastapi import UploadFile
 
 from src.autobots.conn.aws.s3 import get_s3
 from src.autobots.conn.pinecone.pinecone import get_pinecone
@@ -51,7 +52,6 @@ async def test_datastore_happy_path(set_test_settings):
         deleted = await datastore.empty_and_close()
 
 
-@pytest.mark.skip(reason="not using put_file anymore, using put_files now")
 @pytest.mark.asyncio
 async def test_put_file_happy_path(set_test_settings):
     filename = "tests/resources/datastore/google.txt"
@@ -63,7 +63,10 @@ async def test_put_file_happy_path(set_test_settings):
     datastore = Datastore(s3, pinecone, unstructured).init(name="teststore")
 
     try:
-        await datastore.put_file(filename)
+        with open(filename, mode='rb') as file:
+            upload_file = UploadFile(filename=filename, file=file)
+            await datastore.put_files([upload_file])
+
         results: List[str] = await datastore.search(query, 2)
 
         assert len(results) > 0
