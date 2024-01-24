@@ -2,8 +2,8 @@ import time
 
 import pytest
 
-from autobots.conn.aws.s3 import get_s3
-from autobots.core.utils import gen_hash
+from src.autobots.conn.aws.s3 import get_s3
+from src.autobots.core.utils import gen_hash
 
 
 @pytest.mark.asyncio

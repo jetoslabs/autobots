@@ -1,8 +1,8 @@
 import pytest as pytest
 from openai.types.chat import ChatCompletion, ChatCompletionUserMessageParam, ChatCompletionSystemMessageParam
 
-from autobots.conn.openai.openai_chat.chat_model import ChatReq
-from autobots.conn.openai.openai_client import get_openai
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
+from src.autobots.conn.openai.openai_client import get_openai
 
 
 @pytest.mark.asyncio

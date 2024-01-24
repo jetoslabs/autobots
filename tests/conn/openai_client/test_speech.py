@@ -4,10 +4,10 @@ import io
 import pytest
 from openai._legacy_response import HttpxBinaryResponseContent
 
-from autobots.conn.aws.aws_s3 import get_public_s3
-from autobots.conn.openai.openai_client import get_openai
-from autobots.conn.openai.openai_audio.speech_model import SpeechReq
-from autobots.core.utils import gen_hash
+from src.autobots.conn.aws.aws_s3 import get_public_s3
+from src.autobots.conn.openai.openai_audio.speech_model import SpeechReq
+from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.core.utils import gen_hash
 
 
 @pytest.mark.asyncio

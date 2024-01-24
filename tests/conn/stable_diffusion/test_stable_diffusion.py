@@ -1,12 +1,12 @@
 
 import pytest
 
-from autobots.conn.stable_diffusion.common_models import StableDiffusionRes, YesNo
-from autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
-from autobots.conn.stable_diffusion.stable_diffusion import StableDiffusion
-from autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel
-from autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel
-from autobots.core.settings import SettingsProvider
+from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes, YesNo
+from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
+from src.autobots.conn.stable_diffusion.stable_diffusion import StableDiffusion
+from src.autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel
+from src.autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel
+from src.autobots.core.settings import SettingsProvider
 
 
 @pytest.mark.asyncio

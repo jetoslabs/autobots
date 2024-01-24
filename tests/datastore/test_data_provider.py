@@ -1,6 +1,6 @@
 import pytest
 
-from autobots.datastore.data_provider import DataProvider
+from src.autobots.datastore.data_provider import DataProvider
 
 FILENAME = "tests/resources/datastore/shopifyql"
 

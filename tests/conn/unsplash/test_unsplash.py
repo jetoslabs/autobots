@@ -1,6 +1,6 @@
 import pytest
 
-from autobots.conn.unsplash.unsplash import get_unsplash
+from src.autobots.conn.unsplash.unsplash import get_unsplash
 
 
 @pytest.mark.asyncio

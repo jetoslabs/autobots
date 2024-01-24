@@ -1,7 +1,8 @@
 import pytest
 
-from autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import AudioRes, ActionAudio2TextTranscriptionOpenai
-from autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
+from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import AudioRes, \
+    ActionAudio2TextTranscriptionOpenai
+from src.autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
 
 
 @pytest.mark.asyncio

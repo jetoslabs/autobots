@@ -1,7 +1,7 @@
 import pytest
 
-from autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingRes, EmbeddingReq
-from autobots.conn.openai.openai_client import get_openai
+from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingReq, EmbeddingRes
 
 
 @pytest.mark.asyncio

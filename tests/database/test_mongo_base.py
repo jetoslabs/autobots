@@ -1,7 +1,7 @@
 import pytest
 from pymongo.database import Database
-from autobots.core.utils import gen_random_str
-from autobots.core.database.mongo_base import get_mongo_db, get_mongo_db_collection
+from src.autobots.core.utils import gen_random_str
+from src.autobots.core.database.mongo_base import get_mongo_db, get_mongo_db_collection
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,7 @@
 import pytest_asyncio
 from fastapi.testclient import TestClient
 
-from autobots.main import app
+from src.autobots.main import app
 
 
 @pytest_asyncio.fixture

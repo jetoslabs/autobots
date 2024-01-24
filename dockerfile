@@ -13,7 +13,7 @@ COPY ./pyproject.toml ./poetry.lock ./README.md ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
-COPY ./autobots ./autobots
+COPY ./src/autobots ./src/autobots
 
 ## DataDog setup
 ARG DD_ENV=default
@@ -32,4 +32,4 @@ LABEL "com.datadoghq.ad.instances"='[{"autobots_status_url": "https://%%host%%:%
 LABEL "com.datadoghq.ad.logs"='[{"source": "autobots", "service": "autobots"}]'
 ##
 
-ENTRYPOINT ["uvicorn", "autobots.main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "20", "--lifespan", "on"]
+ENTRYPOINT ["uvicorn", "src.autobots.main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "20", "--lifespan", "on"]

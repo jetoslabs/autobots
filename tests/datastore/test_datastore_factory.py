@@ -1,6 +1,6 @@
 import pytest
 
-from autobots.datastore.datastore_factory import get_datastore_factory
+from src.autobots.datastore.datastore_factory import get_datastore_factory
 
 
 @pytest.mark.asyncio
