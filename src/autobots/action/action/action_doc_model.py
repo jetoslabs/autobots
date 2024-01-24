@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from src.autobots.action.action_type.action_types import ActionType
 
@@ -69,5 +69,4 @@ class ActionDoc(ActionDocCreate):
 
     id: str = Field(..., alias='_id')
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)

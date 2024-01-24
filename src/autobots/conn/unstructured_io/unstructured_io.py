@@ -15,7 +15,7 @@ from src.autobots.core.settings import Settings, SettingsProvider
 class PartitionResponseElementMetadata(BaseModel):
     filename: Optional[str]
     filetype: Optional[str]
-    page_number: Optional[int]
+    page_number: Optional[int] = None
     languages: Optional[List[str]] = []
     links: Optional[List[Any]] = None
 

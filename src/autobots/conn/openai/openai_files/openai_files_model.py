@@ -1,6 +1,8 @@
 from os import PathLike
 from typing import Mapping, IO, Literal
 
+from pydantic import ConfigDict
+
 from src.autobots.conn.openai.openai_common_models import OpenaiExtraValues
 
 
@@ -15,8 +17,7 @@ class FileCreate(OpenaiExtraValues):
               str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None, Mapping[str, str]]
     purpose: Literal["fine-tune", "assistants"]
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class FileDelete(OpenaiExtraValues):

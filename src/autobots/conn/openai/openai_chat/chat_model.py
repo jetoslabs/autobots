@@ -5,7 +5,7 @@ import httpx
 from openai._types import Headers, Query, Body
 from openai.types.chat import ChatCompletionMessageParam, completion_create_params, ChatCompletionToolChoiceOptionParam, \
     ChatCompletionToolParam
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Role(str, Enum):
@@ -62,8 +62,7 @@ class ChatReq(BaseModel):
     extra_body: Body | None = None
     timeout: float | httpx.Timeout | None = 180
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # @model_validator(mode="before")
     # @classmethod
