@@ -2,9 +2,9 @@ import uuid
 
 import pytest
 
-from autobots.core.database.base import get_db
-from autobots.user.user_crud import UserCRUD
-from autobots.user.user_orm_model import UserORM
+from src.autobots.core.database.base import get_db
+from src.autobots.user.user_crud import UserCRUD
+from src.autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio

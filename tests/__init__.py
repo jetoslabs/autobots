@@ -1,4 +1,4 @@
-from autobots.core.settings import SettingsProvider
+from src.autobots.core.settings import SettingsProvider
 
 
 def set_test_settings():

@@ -2,10 +2,10 @@ from typing import List
 
 import pytest
 
-from autobots.conn.aws.s3 import get_s3
-from autobots.conn.pinecone.pinecone import get_pinecone
-from autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
-from autobots.datastore.datastore import Datastore
+from src.autobots.conn.aws.s3 import get_s3
+from src.autobots.conn.pinecone.pinecone import get_pinecone
+from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
+from src.autobots.datastore.datastore import Datastore
 
 
 @pytest.mark.asyncio
