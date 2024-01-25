@@ -60,27 +60,42 @@ class Selenium:
         return text
 
     async def read_url_v1(self, url: HttpUrl, xpath: str = "/html/body", attribute: str = "") -> str:
-        await self.refresh_driver_on_resource_overload()
-        Log.bind(url=url).debug("Reading url")
-        # Target URL
-        self.driver.get(url.unicode_string())
-        # To load entire webpage
-        time.sleep(5)
+        try:
+            await self.refresh_driver_on_resource_overload()
+            Log.bind(url=url).debug("Reading url")
+            # Target URL
+            self.driver.get(url.unicode_string())
+            # To load entire webpage
+            time.sleep(5)
 
-        resp: List[str] = []
-        if xpath and attribute:
-            web_elements = self.driver.find_elements(By.XPATH, xpath)
-            for web_element in web_elements:
-                resp = resp + [web_element.get_attribute(attribute)]
-        elif xpath and not attribute:
-            web_elements = self.driver.find_elements(By.XPATH, xpath)
-            for web_element in web_elements:
-                resp = resp + [web_element.text]
-        else:
-            resp = [self.driver.page_source]
+            resp: List[str] = []
+            if xpath and attribute:
+                web_elements = self.driver.find_elements(By.XPATH, xpath)
+                for web_element in web_elements:
+                    resp = resp + [web_element.get_attribute(attribute)]
+            elif xpath and not attribute:
+                web_elements = self.driver.find_elements(By.XPATH, xpath)
+                for web_element in web_elements:
+                    resp = resp + [web_element.text]
+            else:
+                resp = [self.driver.page_source]
 
-        resp_str = "\n".join(str(x) for x in resp)
-        return resp_str
+            resp_str = "\n".join(str(x) for x in resp)
+            return resp_str
+        except Exception as e:
+            Log.bind(url=url).error(f"Error while reading url: {str(e)}")
+            raise
+
+    async def read_urls(self, urls: List[HttpUrl], xpath: str = "/html/body", attribute: str = "") -> str:
+        result = ""
+        for url in urls:
+            try:
+                txt = await self.read_url_v1(url, xpath, attribute)
+                result = result + f"{url.unicode_string()}:\n{txt}\n\n"
+            except Exception as e:
+                pass
+        return result
+
 
     async def read_url(self, url: HttpUrl, ) -> str:
         await self.refresh_driver_on_resource_overload()

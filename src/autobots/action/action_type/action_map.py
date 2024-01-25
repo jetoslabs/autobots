@@ -16,7 +16,7 @@ from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_
     ActionText2TextLlmChatOpenai
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
-from src.autobots.action.action_type.action_text2text.action_text2text_read_url import ActionText2TextReadUrl
+from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
 from src.autobots.action.action_type.action_text2text.action_text2text_search_map import ActionText2TextSearchMaps
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
 from src.autobots.action.action_type.action_text2video.action_text2video_search_video import ActionText2VideoSearchVideo

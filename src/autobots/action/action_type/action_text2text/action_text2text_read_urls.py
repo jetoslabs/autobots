@@ -14,8 +14,8 @@ class ReadUrlConfig(BaseModel):
     attribute: str = ""
 
 
-class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):
-    type = ActionType.text2text_read_url
+class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):#TODO: add `s` at the end
+    type = ActionType.text2text_read_url #TODO: add `s` at the end
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
@@ -36,15 +36,24 @@ class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):
         text_objs = TextObjs(texts=[])
         try:
             selenium = get_selenium()
-            out = await selenium.read_url_v1(
-                HttpUrl(action_input.text),
-                self.action_config.xpath,
-                self.action_config.attribute
-            )
+            urls = []
+            potential_urls = action_input.text.split(",")
+            for potential_url in potential_urls:
+                try:
+                    urls.append(HttpUrl(potential_url))
+                except Exception as e:
+                    pass
+
+            out = await selenium.read_urls(urls, self.action_config.xpath, self.action_config.attribute)
+
+            # out = await selenium.read_url_v1(
+            #     HttpUrl(action_input.text),
+            #     self.action_config.xpath,
+            #     self.action_config.attribute
+            # )
             text_objs.texts.append(TextObj(text=out))
             return text_objs
         except ValidationError as e:
             Log.error(str(e))
         except Exception as e:
             Log.error(str(e))
-

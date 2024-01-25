@@ -1,6 +1,7 @@
 from typing import Dict, List, Set, Any
 
 from fastapi import BackgroundTasks, HTTPException
+from pydantic import HttpUrl
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -140,7 +141,8 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        Log.bind(action_graph_id=action_graph_result_doc.result.id).info("Completed Action Graph _run_as_background_task")
+        (Log.bind(action_graph_result_id=action_graph_result_doc.id,action_graph_id=action_graph_result_doc.result.id)
+         .info("Completed Action Graph _run_as_background_task"))
         return action_graph_result_doc
 
     @staticmethod
@@ -204,9 +206,15 @@ class ActionGraph:
                 # check if action_output is TextObjs
                 action_outputs = TextObjs.model_validate(action_outputs)
                 for action_output in action_outputs.texts:
-                    # if isinstance(action_output, TextObj):
-                    text_obj = TextObj.model_validate(action_output)
-                    input_msg = f"{input_msg}## {action_doc.name}:\n{text_obj.text}\n\n"
+                    # check for urls first TODO: Need for better solution
+                    try:
+                        potential_urls = action_output.text.split(",")
+                        for potential_url in potential_urls:
+                            url = HttpUrl(potential_url)
+                            input_msg = input_msg + f"{url.unicode_string()},"
+                    except Exception as e:
+                        text_obj = TextObj.model_validate(action_output)
+                        input_msg = f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"
             except Exception as e:
                 Log.warning(f"Cannot convert to Input: {str(e)}")
             # if isinstance(action_outputs, TextObjs):
