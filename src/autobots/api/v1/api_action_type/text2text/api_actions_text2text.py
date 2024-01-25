@@ -10,7 +10,7 @@ from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionCreateText2TextLlmChatWithVectorSearchOpenai
-from src.autobots.action.action_type.action_text2text.action_text2text_read_url import ReadUrlConfig
+from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ReadUrlConfig
 from src.autobots.action.action_type.action_text2text.action_text2text_search_map import SearchMapsConfig
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import SearchWebConfig
 from src.autobots.action.action_type.action_types import ActionType
