@@ -120,7 +120,7 @@ class Datastore:
             #     result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.error))
         return result
 
-    @retry(exceptions=Exception, tries=3, delay=15)
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def put_file(self, file: UploadFile, chunk_size: int = 500) -> DatastoreResult:
         datastore_result: DatastoreResult
         try:
