@@ -48,7 +48,7 @@ class StableDiffusion:
             fetched: StableDiffusionRes = await self.fetch_queued_image(res.id)
             return fetched
         elif res.status == StableDiffusionResStatus.error:
-            raise HTTPException(503, res.message)
+            raise HTTPException(503, res.messege)
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(res.id))
 
     async def img2img(self, req: SDImg2ImgReqModel) -> StableDiffusionRes:
