@@ -56,8 +56,8 @@ async def test_datastore_happy_path(set_test_settings):
 # @pytest.mark.skip(reason="Skipping test_put_files_happy_path to keep within rate limit")
 @pytest.mark.asyncio
 async def test_put_files_happy_path(set_test_settings):
-    filename = "tests/resources/datastore/google.txt"
-    query = "How to make search engine large scale"
+    filename = "tests/resources/datastore/poem_if.txt"
+    query = "How to deal with Triumph and Disaster"
 
     s3 = get_s3()
     pinecone = get_pinecone()
@@ -67,13 +67,13 @@ async def test_put_files_happy_path(set_test_settings):
     try:
         with open(filename, mode='rb') as file:
             upload_file = UploadFile(filename=filename, file=file)
-            await datastore.put_files([upload_file])
+            await datastore.put_files([upload_file], chunk_size=50)
 
         results: List[str] = await datastore.search(query, 2)
 
         assert len(results) > 0
-        assert "scale" in results[0]
-        assert "scale" in results[1]
+        assert "treat those two impostors just the same" in results[0]
+        assert "risk it on one turn of pitch-and-toss" in results[1]
 
     finally:
         # cleanup datastore
