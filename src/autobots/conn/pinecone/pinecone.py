@@ -42,6 +42,7 @@ class Pinecone:
         index = self.pinecone.Index(self.index_name)
         return index
 
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def upsert_data(self, vector_id: str, data: str, metadata: dict, namespace: str = "default"):
         try:
             upserted = []
