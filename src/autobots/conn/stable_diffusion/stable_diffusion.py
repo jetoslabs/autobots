@@ -64,8 +64,7 @@ class StableDiffusion:
 
     async def text2video(self, req: Text2VideoReqModel) -> StableDiffusionRes:
         req.key = self.api_key
-        res: Text2VideoResModel | Text2VideoProcessingResModel | Text2VideoResError = \
-            await text2video(req)
+        res: Text2VideoResModel | Text2VideoProcessingResModel | Text2VideoResError = await text2video(req)
         if res.status == StableDiffusionResStatus.success:
             result = StableDiffusionRes(urls=res.output)
             return result
