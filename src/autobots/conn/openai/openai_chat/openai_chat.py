@@ -13,7 +13,7 @@ class OpenaiChat:
     def __init__(self, openai_client: AsyncOpenAI):
         self.client = openai_client
 
-    @retry(Exception, tries=3, delay=30)
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def chat(self, chat_req: ChatReq) -> ChatCompletion | AsyncStream[ChatCompletionChunk] | None:
         try:
             Log.trace("Starting OpenAI Chat, try: 1")
