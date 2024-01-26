@@ -17,7 +17,7 @@ class ImageMixerReqModel(BaseModel):
                                     description="weight of the images being passed separated by comma. Min 0 and Max 1")
     width: int = Field(default=512, ge=1, le=1024, description="Width of the image. Max Height: Width: 1024x1024")
     height: int = Field(default=512, ge=1, le=1024, description="Height of the image. Max Height: Width: 1024x1024")
-    steps: int = Field(default=30, ge=1, le=50, description="Number of denoising steps (minimum: 1; maximum: 50)")
+    steps: int = Field(default=50, ge=1, le=50, description="Number of denoising steps (minimum: 1; maximum: 50)")
     guidance_scale: float = Field(default=10, ge=1, le=20,
                                   description="Scale for classifier-free guidance (minimum: 1; maximum: 20)")
     seed: Optional[int] = Field(None,
