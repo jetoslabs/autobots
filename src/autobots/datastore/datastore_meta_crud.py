@@ -46,7 +46,7 @@ class DatastoreMetaCRUD:
         if len(find_params) == 0:
             return []
 
-        cursor = self.document.find(find_params)
+        cursor = self.document.find(find_params).sort("created_at", -1)
         datastore_meta_docs = []
 
         skipped = 0
