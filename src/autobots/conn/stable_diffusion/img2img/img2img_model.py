@@ -13,20 +13,23 @@ class SDImg2ImgReqModel(BaseModel):
                         description="Text prompt with description of the things you want in the image to be generated")
     negative_prompt: Optional[str] = Field(default=None, description="Items you don't want in the image")
     init_image: str = Field(..., description="Link to the Initial Image")
-    width: int = Field(default=512, ge=1, le=1024, description="Width of the image. Max Height: Width: 1024x1024")
-    height: int = Field(default=512, ge=1, le=1024, description="Height of the image. Max Height: Width: 1024x1024")
+    width: int = Field(default=1024, ge=1, le=1024, description="Width of the image. Max Height: Width: 1024x1024")
+    height: int = Field(default=1024, ge=1, le=1024, description="Height of the image. Max Height: Width: 1024x1024")
     samples: int = Field(default=1, ge=1, le=4,
                          description="Number of images to be returned in response. The maximum value is 4.")
-    num_inference_steps: Literal["21", "31", "41", "51"] = Field("41", description="Number of denoising steps. Available values: 21, 31, 41, 51.")
-    safety_checker: Literal["yes", "no"] = Field("no", description="A checker for NSFW images. If such an image is detected, it will be replaced by a blank image.")
-    enhance_prompt: Literal["yes", "no"] = Field("yes", description="Enhance prompts for better results")
-    guidance_scale: float = Field(default=10, ge=1, le=20,
+    # num_inference_steps: Literal["21", "31", "41", "51"] = Field("41", description="Number of denoising steps. Available values: 21, 31, 41, 51.")
+    safety_checker: Optional[bool] = Field(False, description="A checker for NSFW images. If such an image is detected, it will be replaced by a blank image.")
+    # enhance_prompt: Literal["yes", "no"] = Field("yes", description="Enhance prompts for better results")
+    guidance_scale: float = Field(default=5, ge=1, le=5,
                                   description="Scale for classifier-free guidance (minimum: 1; maximum: 20)")
+    base64: Optional[bool] = Field(default=False,
+                                   description="Get response as base64 string, default: false, options: true or false")
     strength: float = Field(0.7, ge=0.0, le=1.0,
                             description="Prompt strength when using init image. 1.0 corresponds to full destruction of information in the init image.")
+    instant_response: Optional[bool] = Field(default=False,
+                                             description="queue response instantly before processing finishes instead of waiting a minimum amount of time, default: false, options: true or false")
     seed: Optional[int] = Field(None,
                                 description="Seed is used to reproduce results, same seed will give you same image in return again. Pass null for a random number.")
-    base64: Literal["yes", "no"] = Field("no", description="Get response as base64 string, default: \"no\", options: yes/no")
     webhook: Optional[str] = Field(default=None,
                                    description="Set an URL to get a POST API call once the image generation is complete.")
     track_id: Optional[str] = Field(default=None,
@@ -39,21 +42,22 @@ class SDImg2ImgResError(BaseModel):
 
 
 class SDImg2ImgMeta(BaseModel):
-    H: int
-    W: int
-    enable_attention_slicing: Literal["true", "false"] = "true"
+    height: int
+    width: int
+    base64: str
     file_prefix: str
     guidance_scale: int
-    model: str
+    init_image: str
+    instant_response: str
     n_samples: int
     negative_prompt: str
     outdir: str
     prompt: str
-    revision: str
     safety_checker: str
+    safety_checker_type: str
     seed: int
-    steps: int
-    vae: str
+    strength: float
+    temp: str
 
 
 class SDImg2ImgProcessingModel(BaseModel):
@@ -72,6 +76,7 @@ class SDImg2ImgResModel(BaseModel):
     status: StableDiffusionResStatus
     generationTime: float
     id: int
-    output: List[str]
+    output: List[HttpUrl]
+    proxy_links: Optional[List[HttpUrl]] = None
     meta: SDImg2ImgMeta
 
