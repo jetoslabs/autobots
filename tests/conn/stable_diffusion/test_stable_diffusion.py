@@ -12,7 +12,7 @@ from src.autobots.core.settings import SettingsProvider
 @pytest.mark.asyncio
 async def test_text2img_happy_path(set_test_settings):
     prompt = "Ultra real Sport shoes advertisement"
-    req = Text2ImgReqModel(prompt=prompt, self_attestaion=YesNo.no.value, width=512)
+    req = Text2ImgReqModel(prompt=prompt, width=512)
     st = StableDiffusion(SettingsProvider.sget().STABLE_DIFFUSION_API_KEY)
     res: StableDiffusionRes = await st.text2img(req)
     assert (len(res.urls) >= 1 or res.fetch_url is not None)

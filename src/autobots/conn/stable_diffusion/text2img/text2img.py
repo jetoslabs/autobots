@@ -8,7 +8,10 @@ from src.autobots.core.logging.log import Log
 
 
 async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProcessingModel | Text2ImgResError:
-    url = "https://stablediffusionapi.com/api/v3/text2img"
+    """
+    Reference: https://docs.modelslab.com/realtime-stable-diffusion/text2img
+    """
+    url = "https://modelslab.com/api/v6/realtime/text2img"
 
     payload = req.model_dump_json()
 
