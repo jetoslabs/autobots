@@ -9,7 +9,10 @@ from src.autobots.core.logging.log import Log
 
 
 async def sd_img2img(req: SDImg2ImgReqModel, max_retry=3) -> SDImg2ImgResError | SDImg2ImgProcessingModel | SDImg2ImgResModel:
-    url = "https://stablediffusionapi.com/api/v3/img2img"
+    """
+    Reference: https://modelslab.com/api/v6/realtime/img2img
+    """
+    url = "https://modelslab.com/api/v6/realtime/img2img"
 
     payload = req.model_dump_json()
 
@@ -24,7 +27,7 @@ async def sd_img2img(req: SDImg2ImgReqModel, max_retry=3) -> SDImg2ImgResError |
     response_json = response.json()
     try:
         if response_json["status"] == "failed" and max_retry>0:
-            time.sleep(3)
+            time.sleep(10)
             return await sd_img2img(req, max_retry-1)
         elif response_json["status"] == "error":
             Log.error(f"Stable diffusion text2img error: {response_json}")
