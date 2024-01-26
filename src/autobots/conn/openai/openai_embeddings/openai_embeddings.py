@@ -11,7 +11,7 @@ class OpenaiEmbeddings():
     def __init__(self, client: AsyncOpenAI):
         self.client = client
 
-    @retry(exceptions=Exception, tries=3, delay=40)
+    @retry(exceptions=Exception, tries=15, delay=40)
     async def embeddings(self, embedding_req: EmbeddingReq) -> EmbeddingRes | None:
         try:
             Log.trace("Starting OpenAI Embedding")
