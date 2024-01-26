@@ -29,7 +29,7 @@ async def image_mixer(
     response_json = response.json()
     try:
         if response_json["status"] == "failed" and max_retry>0:
-            time.sleep(3)
+            time.sleep(30)
             return await image_mixer(req, max_retry-1)
         elif response_json["status"] == "error":
             Log.error(f"Stable diffusion text2img error: {response_json}")
