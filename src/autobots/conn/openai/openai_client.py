@@ -35,5 +35,5 @@ def get_openai(settings: Settings = SettingsProvider.sget()) -> OpenAI:
     return OpenAI(
         api_key=settings.OPENAI_API_KEY,
         organization=settings.OPENAI_ORG_ID,
-        timeout=180.0
+        timeout=60.0
     )

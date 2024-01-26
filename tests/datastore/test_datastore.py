@@ -53,7 +53,7 @@ async def test_datastore_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-async def test_put_file_happy_path(set_test_settings):
+async def test_put_files_happy_path(set_test_settings):
     filename = "tests/resources/datastore/google.txt"
     query = "How to make search engine large scale"
 
