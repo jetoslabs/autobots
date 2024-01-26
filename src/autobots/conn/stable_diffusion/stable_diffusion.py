@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from fastapi import HTTPException
+from retry import retry
 
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus, StableDiffusionRes
 from src.autobots.conn.stable_diffusion.fetch_queued_image.fetch_queued_image import FetchQueuedImagesResModel, \
@@ -36,6 +37,7 @@ class StableDiffusion:
             return fetched
         return StableDiffusionRes(ulrs=[], fetch_url=self.get_fetch_url(res.id))
 
+    @retry(exceptions=Exception, tries=3, delay=45)
     async def image_mixer(self, req: ImageMixerReqModel) -> StableDiffusionRes:
         req.key = self.api_key
         res: ImageMixerResModel | ImageMixerProcessingResModel | ImageMixerResError = await image_mixer(req)
