@@ -4,6 +4,7 @@ from typing import List
 
 from pinecone import Index, QueryResponse, FetchResponse, PodSpec
 import pinecone as pc
+from retry import retry
 
 from src.autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingReq, EmbeddingRes
 from src.autobots.conn.openai.openai_client import OpenAI, get_openai

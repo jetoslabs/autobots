@@ -6,6 +6,7 @@ from typing import List, Dict, Callable, AsyncGenerator
 from fastapi import UploadFile
 from pinecone import QueryResponse
 from pydantic import BaseModel, HttpUrl
+from retry import retry
 
 from src.autobots.conn.aws.s3 import S3
 from src.autobots.conn.pinecone.pinecone import Pinecone
@@ -106,16 +107,33 @@ class Datastore:
     async def put_files(self, files: List[UploadFile], chunk_size: int = 500) -> List[DatastoreResult]:
         result = []
         for file in files:
-            try:
-                Log.debug(f"Processing file: {file.filename}")
-                file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
-                Log.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
-                await self._put_file_chunks(file, file_chunks)
-                result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.success))
-            except Exception as e:
-                Log.error(f"Error: {str(e)} while putting file: {file.filename}")
-                result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.error))
-            return result
+            datastore_result = await self.put_file(file, chunk_size)
+            result.append(datastore_result)
+            # try:
+            #     Log.debug(f"Processing file: {file.filename}")
+            #     file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
+            #     Log.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
+            #     await self._put_file_chunks(file, file_chunks)
+            #     result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.success))
+            # except Exception as e:
+            #     Log.error(f"Error: {str(e)} while putting file: {file.filename}")
+            #     result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.error))
+        return result
+
+    @retry(exceptions=Exception, tries=3, delay=30)
+    async def put_file(self, file: UploadFile, chunk_size: int = 500) -> DatastoreResult:
+        datastore_result: DatastoreResult
+        try:
+            Log.debug(f"Processing file: {file.filename}")
+            file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
+            Log.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
+            await self._put_file_chunks(file, file_chunks)
+            datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.success)
+        except Exception as e:
+            Log.error(f"Error: {str(e)} while putting file: {file.filename}")
+            datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.error)
+            raise
+        return datastore_result
 
     async def put_urls(self,
                        urls: List[HttpUrl],

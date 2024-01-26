@@ -11,8 +11,10 @@ from src.autobots.core.logging.log import Log
 
 async def image_mixer(
         req: ImageMixerReqModel, max_retry=3) -> ImageMixerResModel | ImageMixerProcessingResModel | ImageMixerResError:
-    # url = "https://stablediffusionapi.com/api/v3/img_mixer"
-    url = "https://stablediffusionapi.com/api/v5/img_mixer"
+    """
+    Reference: https://docs.modelslab.com/image-editing/imagemixer
+    """
+    url = "https://modelslab.com/api/v6/image_editing/img_mixer"
 
     payload = req.model_dump_json()
 
@@ -27,7 +29,7 @@ async def image_mixer(
     response_json = response.json()
     try:
         if response_json["status"] == "failed" and max_retry>0:
-            time.sleep(3)
+            time.sleep(30)
             return await image_mixer(req, max_retry-1)
         elif response_json["status"] == "error":
             Log.error(f"Stable diffusion text2img error: {response_json}")
