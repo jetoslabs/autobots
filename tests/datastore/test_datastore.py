@@ -9,6 +9,7 @@ from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_i
 from src.autobots.datastore.datastore import Datastore
 
 
+@pytest.mark.skip(reason="Skipping test_datastore_happy_path to keep within rate limit")
 @pytest.mark.asyncio
 async def test_datastore_happy_path(set_test_settings):
     str1 = "Delhi,officially the National Capital Territory (NCT) of Delhi, is a city and a union territory of India containing New Delhi, the capital of India. Straddling the Yamuna river, primarily its western or right bank, Delhi shares borders with the state of Uttar Pradesh in the east and with the state of Haryana in the remaining directions. The NCT covers an area of 1,484 square kilometres (573 sq mi). According to the 2011 census, Delhi's city proper population was over 11 million, while the NCT's population was about 16.8 million. Delhi's urban agglomeration, which includes the satellite cities Ghaziabad, Faridabad, Gurgaon and Noida in an area known as the National Capital Region (NCR), has an estimated population of over 28 million, making it the largest metropolitan area in India and the second-largest in the world"
