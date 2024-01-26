@@ -1,6 +1,6 @@
 import pytest
 
-from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes, YesNo
+from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
 from src.autobots.conn.stable_diffusion.img2img.img2img_model import SDImg2ImgReqModel
 from src.autobots.conn.stable_diffusion.stable_diffusion import StableDiffusion
