@@ -11,8 +11,10 @@ from src.autobots.core.logging.log import Log
 
 async def image_mixer(
         req: ImageMixerReqModel, max_retry=3) -> ImageMixerResModel | ImageMixerProcessingResModel | ImageMixerResError:
-    # url = "https://stablediffusionapi.com/api/v3/img_mixer"
-    url = "https://stablediffusionapi.com/api/v5/img_mixer"
+    """
+    Reference: https://docs.modelslab.com/image-editing/imagemixer
+    """
+    url = "https://modelslab.com/api/v6/image_editing/img_mixer"
 
     payload = req.model_dump_json()
 
