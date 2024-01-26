@@ -30,7 +30,7 @@ jobs:
       - name: Run Tests
 #        working-directory: ./tests
         run: |
-          python -m pytest -vv -n 5 --timeout=180
+          python -m pytest -vv -n 5 --timeout=300
         env:
           ENV: ${{ secrets.ENV }}
           COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}

@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from fastapi import HTTPException
+from retry import retry
 
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionResStatus, StableDiffusionRes
 from src.autobots.conn.stable_diffusion.fetch_queued_image.fetch_queued_image import FetchQueuedImagesResModel, \
@@ -36,6 +37,7 @@ class StableDiffusion:
             return fetched
         return StableDiffusionRes(ulrs=[], fetch_url=self.get_fetch_url(res.id))
 
+    @retry(exceptions=Exception, tries=3, delay=45)
     async def image_mixer(self, req: ImageMixerReqModel) -> StableDiffusionRes:
         req.key = self.api_key
         res: ImageMixerResModel | ImageMixerProcessingResModel | ImageMixerResError = await image_mixer(req)
@@ -46,7 +48,7 @@ class StableDiffusion:
             fetched: StableDiffusionRes = await self.fetch_queued_image(res.id)
             return fetched
         elif res.status == StableDiffusionResStatus.error:
-            raise HTTPException(503, res.message)
+            raise HTTPException(503, res.messege)
         return StableDiffusionRes(urls=[], fetch_url=self.get_fetch_url(res.id))
 
     async def img2img(self, req: SDImg2ImgReqModel) -> StableDiffusionRes:
@@ -64,8 +66,7 @@ class StableDiffusion:
 
     async def text2video(self, req: Text2VideoReqModel) -> StableDiffusionRes:
         req.key = self.api_key
-        res: Text2VideoResModel | Text2VideoProcessingResModel | Text2VideoResError = \
-            await text2video(req)
+        res: Text2VideoResModel | Text2VideoProcessingResModel | Text2VideoResError = await text2video(req)
         if res.status == StableDiffusionResStatus.success:
             result = StableDiffusionRes(urls=res.output)
             return result

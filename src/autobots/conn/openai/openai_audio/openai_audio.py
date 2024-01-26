@@ -6,6 +6,7 @@ from openai import AsyncOpenAI
 from openai._legacy_response import HttpxBinaryResponseContent
 from openai.types.audio import Transcription, Translation
 from pydantic import HttpUrl
+from retry import retry
 
 from src.autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from src.autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
@@ -18,6 +19,7 @@ class OpenaiAudio():
     def __init__(self, openai_client: AsyncOpenAI):
         self.client = openai_client
 
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def speech(self, speech_req: SpeechReq) -> HttpxBinaryResponseContent | None:
         try:
             Log.trace("Starting OpenAI create speech")
@@ -27,6 +29,7 @@ class OpenaiAudio():
         except Exception as e:
             Log.error(str(e))
 
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def transcription(self, transcription_req: TranscriptionReq) -> Transcription | None:
         # create new single directory
         path = "./to_del"
@@ -57,6 +60,7 @@ class OpenaiAudio():
             # delete the file
             os.remove(full_path_name)
 
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def translation(self, translation_req: TranslationReq) -> Translation | None:
         # create new single directory
         path = "./to_del"

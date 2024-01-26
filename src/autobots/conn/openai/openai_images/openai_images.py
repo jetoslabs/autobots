@@ -4,6 +4,7 @@ import httpx
 from openai import AsyncOpenAI
 from openai.types import ImagesResponse
 from pydantic_core import Url
+from retry import retry
 
 from src.autobots.conn.openai.openai_images.image_model import ImageReq, ImageEdit, ImageCreateVariation
 from src.autobots.core.logging.log import Log
@@ -14,6 +15,7 @@ class OpenaiImages():
     def __init__(self, openai_client: AsyncOpenAI):
         self.client = openai_client
 
+    @retry(exceptions=Exception, tries=3, delay=30)
     async def create_image(self, image_req: ImageReq) -> ImagesResponse | None:
         try:
             Log.trace("Starting OpenAI create image")

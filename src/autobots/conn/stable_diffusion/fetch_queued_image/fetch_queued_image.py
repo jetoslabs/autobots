@@ -26,10 +26,11 @@ class FetchQueuedImagesResModel(BaseModel):
 async def fetch_queued_image(
         id: int,
         key: str = SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
-        max_retry: int = 4,
-        sleep_time: float = 5.0
+        max_retry: int = 10,
+        sleep_time: float = 30.0
 ) -> FetchQueuedImagesResModel | None:
-    url = f"https://stablediffusionapi.com/api/v3/fetch/{id}"
+    # url = f"https://stablediffusionapi.com/api/v3/fetch/{id}"
+    url = f"https://modelslab.com/api/v6/realtime/fetch/{id}"
 
     payload = json.dumps({
         "key": key
