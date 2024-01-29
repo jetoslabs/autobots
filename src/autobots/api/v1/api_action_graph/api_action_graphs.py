@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 import gotrue
@@ -108,6 +108,7 @@ async def async_run_action_graph(
         id: str,
         input: TextObj,
         background_tasks: BackgroundTasks,
+        action_graph_result_id: Optional[str] = None,
         webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
@@ -122,6 +123,7 @@ async def async_run_action_graph(
         user_action_graph_result,
         id,
         input,
+        action_graph_result_id,
         background_tasks,
         webhook
     )

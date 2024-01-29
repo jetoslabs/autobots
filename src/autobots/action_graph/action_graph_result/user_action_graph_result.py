@@ -43,10 +43,10 @@ class UserActionGraphResult:
         return action_graph_result_docs
 
     async def get_action_graph_result(
-            self, action_result_id: str
+            self, action_graph_result_id: str
     ) -> ActionGraphResultDoc | None:
         try:
-            event_result_doc_find = EventResultDocFind(id=action_result_id, user_id=self.user_id)
+            event_result_doc_find = EventResultDocFind(id=action_graph_result_id, user_id=self.user_id)
             event_result_docs = await self.event_result_crud.find(event_result_doc_find)
             if len(event_result_docs) != 1:
                 raise HTTPException(500, "Error in finding result")

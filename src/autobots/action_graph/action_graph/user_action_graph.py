@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException, BackgroundTasks
 from pymongo.database import Database
@@ -83,6 +83,7 @@ class UserActionGraphs:
             user_action_graph_result: UserActionGraphResult,
             action_graph_id: str,
             input: TextObj,
+            action_graph_result_id: Optional[str] = None,
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
@@ -96,6 +97,7 @@ class UserActionGraphs:
             user_actions=user_actions,
             user_actions_market=user_actions_market,
             user_action_graph_result=user_action_graph_result,
+            action_graph_result_id=action_graph_result_id,
             background_tasks=background_tasks,
             webhook=webhook
         )
