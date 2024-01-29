@@ -17,6 +17,7 @@ class EventResultStatus(str, Enum):
     success = "success"
     processing = "processing"
     error = "error"
+    waiting = "waiting"
 
 
 class EventResultFind(BaseModel):
