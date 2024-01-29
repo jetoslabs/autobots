@@ -19,9 +19,11 @@ class NodeData(BaseModel):
 
 class Node(BaseModel):
     id: str
-    position: Position
-    type: str
-    data: NodeData
+    position: Optional[Position] = None
+    type: Optional[str] = None
+    data: Optional[NodeData] = None
+    user_review_required: bool = False
+    user_review_done: bool = False
 
 
 class ActionGraphFind(BaseModel):

@@ -1,4 +1,4 @@
-from typing import Dict, List, Set, Any
+from typing import Dict, List, Set, Any, Optional
 
 from fastapi import BackgroundTasks, HTTPException
 from pydantic import HttpUrl
@@ -25,18 +25,24 @@ class ActionGraph:
             user_actions: UserActions,
             user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
+            action_graph_result_id: Optional[str] = None,
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
-        # Create initial Action Graph Result
-        action_graph_doc.input = action_graph_input_dict
-        action_graph_doc.output = {}
-        action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
-            status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
-        )
-        action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
-        if webhook:
-            await webhook.send(action_graph_result_doc.model_dump())
+        action_graph_result_doc: ActionGraphResultDoc | None = None
+        if not action_graph_result_id:
+            # Create initial Action Graph Result if not provided
+            action_graph_doc.input = action_graph_input_dict
+            action_graph_doc.output = {}
+            action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
+                status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
+            )
+            action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
+            if webhook:
+                await webhook.send(action_graph_result_doc.model_dump())
+        else:
+            # find and use Action Graph Result
+            action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
 
         if background_tasks:
             background_tasks.add_task(
