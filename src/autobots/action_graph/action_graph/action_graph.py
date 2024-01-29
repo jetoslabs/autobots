@@ -77,14 +77,17 @@ class ActionGraph:
     ):
         graph_map = action_graph_result_doc.result.graph
         node_action_map = action_graph_result_doc.result.nodes
+        node_details_map = action_graph_result_doc.result.node_details
+        action_response: Dict[str, ActionDoc] = action_graph_result_doc.result.output
         action_graph_input = TextObj.model_validate(action_graph_input_dict)
 
         total_nodes = await ActionGraph.get_nodes(graph_map)
         inverted_map = await ActionGraph.invert_map(graph_map)
-        action_response: Dict[str, ActionDoc] = {}
+
+        review_required_nodes: List[str] = []
 
         try:
-            while len(action_response) != len(total_nodes):
+            while len(action_response) + len(review_required_nodes) != len(total_nodes):
                 for node, values in inverted_map.items():
                     if await ActionGraph.is_work_done([node], action_response) or \
                             not await ActionGraph.is_work_done(values, action_response):
