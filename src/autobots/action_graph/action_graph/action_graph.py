@@ -92,6 +92,15 @@ class ActionGraph:
                     if await ActionGraph.is_work_done([node], action_response) or \
                             not await ActionGraph.is_work_done(values, action_response):
                         continue
+                    # Check if user review required
+                    is_any_dependent_require_review = False
+                    for value in values:
+                        if node_details_map and node_details_map.get(value) and node_details_map.get(value).user_review_required and not node_details_map.get(value).user_review_done:
+                            review_required_nodes.append(value)
+                            is_any_dependent_require_review = True
+                    if is_any_dependent_require_review:
+                        continue
+
                     if len(values) == 0:
                         # Run action with no dependency
                         action_result = await ActionGraph.run_action(
@@ -126,10 +135,17 @@ class ActionGraph:
                     if webhook:
                         await webhook.send(action_graph_result_doc.model_dump())
 
-            # Update action result graph as success
-            action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                status=EventResultStatus.success
-            )
+            # Update action result graph as success or waiting
+            action_graph_result_update: ActionGraphResultUpdate | None
+            if len(review_required_nodes) == 0:
+                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
+                    status=EventResultStatus.success
+                )
+            else:
+                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
+                    status=EventResultStatus.waiting
+                )
+
             action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
                 action_graph_result_doc.id,
                 action_graph_result_update
