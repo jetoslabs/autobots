@@ -16,7 +16,7 @@ openai = {extras = ["datalib"], version = "1.10.0"}
 pytest-asyncio = "0.23.4"
 selenium = "4.17.2"
 #stability-sdk = "^0.8.3"
-aiohttp = "^3.8.6"
+aiohttp = "3.9.3"
 pytest-xdist = "^3.3.1"
 duckduckgo-search = "4.4"
 pinecone-client = {extras = ["grpc"], version = "3.0.2"}
