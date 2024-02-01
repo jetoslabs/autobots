@@ -15,15 +15,15 @@ class Position(BaseModel):
 class NodeData(BaseModel):
     label: str
     actionId: str
+    user_review_required: bool = False
+    user_review_done: bool = False
 
 
 class Node(BaseModel):
     id: str
     position: Optional[Position] = None
     type: Optional[str] = None
-    data: Optional[NodeData] = None
-    user_review_required: bool = False
-    user_review_done: bool = False
+    data: NodeData
 
 
 class ActionGraphFind(BaseModel):
