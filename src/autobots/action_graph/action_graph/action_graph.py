@@ -98,7 +98,7 @@ class ActionGraph:
                     # Check if user review required
                     is_any_dependent_require_review = False
                     for value in values:
-                        if node_details_map and node_details_map.get(value) and node_details_map.get(value).user_review_required and not node_details_map.get(value).user_review_done:
+                        if node_details_map and node_details_map.get(value) and node_details_map.get(value).data.user_review_required and not node_details_map.get(value).data.user_review_done:
                             review_required_nodes.append(value)
                             is_any_dependent_require_review = True
                     if is_any_dependent_require_review:
