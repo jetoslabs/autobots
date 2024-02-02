@@ -2,14 +2,17 @@ from typing import List, Any, Dict
 from uuid import UUID
 
 import gotrue
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from pymongo.database import Database
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action_market.action_market_model import ActionMarketFind
+from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc
+from src.autobots.action.action_result.user_action_result import UserActionResult
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action_market.user_actions_market import UserActionsMarket
+from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM
@@ -81,4 +84,20 @@ async def run_market_action(
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_action = UserActionsMarket(user_orm, db)
     resp = await user_market_action.run_market_action(id, input)
+    return resp
+
+
+@router.post("/{id}/market/async_run")
+async def async_run_action(
+        id: str,
+        input: Dict[str, Any],
+        background_tasks: BackgroundTasks,
+        webhook: Webhook | None = None,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db),
+) -> ActionResultDoc:
+    user_orm = UserORM(id=UUID(user_res.user.id))
+    user_market_action = UserActionsMarket(user_orm, db)
+    user_action_result = UserActionResult(user_orm, db)
+    resp = await user_market_action.run_market_action_async(id, input, user_action_result, background_tasks, webhook)
     return resp
