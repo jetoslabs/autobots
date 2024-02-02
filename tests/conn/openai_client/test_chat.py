@@ -18,6 +18,29 @@ async def test_chat_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+async def test_vision_chat_happy_path(set_test_settings):
+    msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
+    msg1 = ChatCompletionUserMessageParam(role="user", content=[
+          {
+            "type": "text",
+            "text": "What’s in this image?"
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+            }
+          }
+        ])
+    params = ChatReq(messages=[msg0, msg1], model="gpt-4-vision-preview")
+
+    resp: ChatCompletion = await get_openai().openai_chat.chat(chat_req=params)
+
+    assert "assistant" == resp.choices[0].message.role
+    assert "green" in resp.choices[0].message.content
+
+
+@pytest.mark.asyncio
 async def test_chat_stream_happy_path(set_test_settings):
     msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
     msg1 = ChatCompletionUserMessageParam(role="user", content="Most famous Mechanics law")
