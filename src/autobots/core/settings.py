@@ -62,6 +62,8 @@ class Settings(BaseSettings):
 
     UNSTRUCTURED_API_KEY: str = None
 
+    REPLICATE_API_KEY: str = None
+
     DATASTORE_IDENTIFIER: str = "datastore"
 
     API_v1: str = "/v1"
