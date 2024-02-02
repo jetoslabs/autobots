@@ -159,6 +159,7 @@ jobs:
           -e PINECONE_ENVIRONMENT=$PINECONE_ENVIRONMENT 
           -e PINECONE_API_KEY=$PINECONE_API_KEY 
           -e UNSTRUCTURED_API_KEY=$UNSTRUCTURED_API_KEY
+          -e REPLICATE_API_KEY=$REPLICATE_API_KEY
           registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
@@ -188,3 +189,4 @@ jobs:
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           UNSTRUCTURED_API_KEY: ${{ secrets.UNSTRUCTURED_API_KEY }}
+          REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
