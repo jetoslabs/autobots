@@ -13,6 +13,7 @@ from src.autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
 class Timelimit(str, Enum):
+    all = "all"
     d = "day"
     w = "week"
     m = "month"
@@ -30,6 +31,9 @@ class SearchTextParams(BaseModel):
     @classmethod
     def get_enum_name(cls, value):
         if isinstance(value, Enum):
+            if isinstance(value, Timelimit):
+                if value == Timelimit.all:
+                    return None
             return value.name
         return value
 

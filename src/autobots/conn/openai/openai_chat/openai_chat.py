@@ -13,9 +13,17 @@ class OpenaiChat:
 
     @retry(exceptions=Exception, tries=3, delay=30)
     async def chat(self, chat_req: ChatReq) -> ChatCompletion | AsyncStream[ChatCompletionChunk] | None:
+        # model vision is resulting in error because of these 6 extra params
+        if chat_req.model.__contains__("-vision-"):
+            chat_req.logit_bias = None
+            chat_req.logprobs = None
+            chat_req.response_format = None
+            chat_req.tool_choice = None
+            chat_req.tools = None
+            chat_req.top_logprobs = None
         try:
             Log.trace("Starting OpenAI Chat, try: 1")
-            res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump())
+            res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(exclude_none=True))
             Log.trace("Completed OpenAI Chat")
             if isinstance(res, AsyncStream):
                 return self.yield_chat_chunks(res)

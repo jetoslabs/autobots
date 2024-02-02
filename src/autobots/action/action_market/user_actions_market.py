@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from pymongo.database import Database
 
 from src.autobots.action.action.action_crud import ActionCRUD
@@ -8,6 +8,10 @@ from src.autobots.action.action.action_doc_model import ActionDoc, ActionUpdate
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.action_market_crud import ActionMarketCRUD
 from src.autobots.action.action_market.action_market_model import ActionMarketFind, ActionMarketDocFind
+from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc
+from src.autobots.action.action_result.user_action_result import UserActionResult
+from src.autobots.action.action_type.action_factory import ActionFactory
+from src.autobots.api.webhook import Webhook
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -74,3 +78,18 @@ class UserActionsMarket:
         action_doc = action_docs[0]
         resp = await self._user_actions.run_action_doc(action_doc, input)
         return resp
+
+    async def run_market_action_async(
+            self, action_id: str, input: Dict[str, Any], user_action_result: UserActionResult,
+            background_tasks: BackgroundTasks = None, webhook: Webhook | None = None
+    ) -> ActionResultDoc:
+        # Only get action if it is published in market
+        # Market actions will have `is_published = True`
+        action_find = ActionMarketFind(id=action_id)
+        action_market_doc_find = ActionMarketDocFind(**action_find.model_dump())
+        action_docs = await self.action_market_crud.find(action_market_doc_find, 1, 0)
+        action_doc = action_docs[0]
+
+        action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result,
+                                                                           background_tasks, webhook)
+        return action_result_doc

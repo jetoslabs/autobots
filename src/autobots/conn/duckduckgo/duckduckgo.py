@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional, Iterator, AsyncGenerator
+from typing import List, Optional, AsyncGenerator
 
 from duckduckgo_search import AsyncDDGS
 from pydantic import BaseModel, HttpUrl
