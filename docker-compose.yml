@@ -10,7 +10,7 @@ services:
     ports:
       - "8001:80"
     env_file:
-      - .env.dev
+      - .env.local
     networks:
       network:
 
@@ -20,7 +20,7 @@ services:
 #    ports:
 #      - "80:80"
 #    env_file:
-#      - .env.dev
+#      - .env.local
 #    networks:
 #      network:
 
@@ -32,7 +32,7 @@ services:
     cgroup_parent: host
     pid: host
     env_file:
-      - .env.dev.datadog
+      - .env.local.datadog
     ports:
       - "8126:8126"
     volumes:

@@ -1,4 +1,4 @@
-from typing import Dict, List, Set, Any
+from typing import Dict, List, Set, Any, Optional
 
 from fastapi import BackgroundTasks, HTTPException
 from pydantic import HttpUrl
@@ -25,18 +25,24 @@ class ActionGraph:
             user_actions: UserActions,
             user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
+            action_graph_result_id: Optional[str] = None,
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
-        # Create initial Action Graph Result
-        action_graph_doc.input = action_graph_input_dict
-        action_graph_doc.output = {}
-        action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
-            status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
-        )
-        action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
-        if webhook:
-            await webhook.send(action_graph_result_doc.model_dump())
+        action_graph_result_doc: ActionGraphResultDoc | None = None
+        if not action_graph_result_id:
+            # Create initial Action Graph Result if not provided
+            action_graph_doc.input = action_graph_input_dict
+            action_graph_doc.output = {}
+            action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
+                status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
+            )
+            action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
+            if webhook:
+                await webhook.send(action_graph_result_doc.model_dump())
+        else:
+            # find and use Action Graph Result
+            action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
 
         if background_tasks:
             background_tasks.add_task(
@@ -69,20 +75,35 @@ class ActionGraph:
             user_action_graph_result: UserActionGraphResult,
             webhook: Webhook | None = None
     ):
+        # TODO: check if action_graph_result_doc status is success, if success then return.
+        # TODO: This behaviour should be accompanied by status change on action_graph_result_doc update
+
         graph_map = action_graph_result_doc.result.graph
         node_action_map = action_graph_result_doc.result.nodes
+        node_details_map = action_graph_result_doc.result.node_details
+        action_response: Dict[str, ActionDoc] = action_graph_result_doc.result.output
         action_graph_input = TextObj.model_validate(action_graph_input_dict)
 
         total_nodes = await ActionGraph.get_nodes(graph_map)
         inverted_map = await ActionGraph.invert_map(graph_map)
-        action_response: Dict[str, ActionDoc] = {}
+
+        review_required_nodes: List[str] = []
 
         try:
-            while len(action_response) != len(total_nodes):
+            while len(action_response) + len(review_required_nodes) != len(total_nodes):
                 for node, values in inverted_map.items():
                     if await ActionGraph.is_work_done([node], action_response) or \
                             not await ActionGraph.is_work_done(values, action_response):
                         continue
+                    # Check if user review required
+                    is_any_dependent_require_review = False
+                    for value in values:
+                        if node_details_map and node_details_map.get(value) and node_details_map.get(value).data.user_review_required and not node_details_map.get(value).data.user_review_done:
+                            review_required_nodes.append(value)
+                            is_any_dependent_require_review = True
+                    if is_any_dependent_require_review:
+                        continue
+
                     if len(values) == 0:
                         # Run action with no dependency
                         action_result = await ActionGraph.run_action(
@@ -117,10 +138,17 @@ class ActionGraph:
                     if webhook:
                         await webhook.send(action_graph_result_doc.model_dump())
 
-            # Update action result graph as success
-            action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                status=EventResultStatus.success
-            )
+            # Update action result graph as success or waiting
+            action_graph_result_update: ActionGraphResultUpdate | None
+            if len(review_required_nodes) == 0:
+                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
+                    status=EventResultStatus.success
+                )
+            else:
+                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
+                    status=EventResultStatus.waiting
+                )
+
             action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
                 action_graph_result_doc.id,
                 action_graph_result_update

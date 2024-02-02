@@ -1,5 +1,3 @@
-import time
-
 from openai import AsyncOpenAI, AsyncStream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 from retry import retry
