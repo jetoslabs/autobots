@@ -1,7 +1,7 @@
 from functools import lru_cache
-from typing import List, Optional, Iterator
+from typing import List, Optional, Iterator, AsyncGenerator
 
-from duckduckgo_search import DDGS
+from duckduckgo_search import AsyncDDGS
 from pydantic import BaseModel, HttpUrl
 
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams, SearchImageParams, \
@@ -61,16 +61,20 @@ class VideoRes(BaseModel):
 class MapRes(BaseModel):
     title: str
     address: str
-    country_code: Optional[str]
+    country_code: Optional[str] = None
     latitude: float
     longitude: float
     url: HttpUrl | str
-    desc: Optional[str]
-    phone: Optional[str]
-    image: Optional[HttpUrl]
+    desc: Optional[str] = None
+    phone: Optional[str] = None
+    image: Optional[HttpUrl] = None
     source: HttpUrl
-    links: Optional[str]
+    links: Optional[str] = None
     hours: dict | str
+    category: Optional[str] = None
+    facebook: Optional[str] = None
+    instagram: Optional[str] = None
+    twitter: Optional[str] = None
 
 
 class TranslateRes(BaseModel):
@@ -87,10 +91,10 @@ class DuckDuckGo:
 
     async def search_text(self, search_params: SearchTextParams) -> List[SearchRes]:
         search_res = []
-        with DDGS() as ddgs:
+        async with AsyncDDGS() as ddgs:
             # num = 1
-            search_iter: Iterator[dict[str, str | None]] = ddgs.text(**search_params.model_dump(exclude_none=True))
-            for r in search_iter:
+            search_iter: AsyncGenerator[dict[str, str | None]] = ddgs.text(**search_params.model_dump(exclude_none=True))
+            async for r in search_iter:
                 # if num > search_params.max_results:
                 #     break
                 # num = num + 1
@@ -101,9 +105,9 @@ class DuckDuckGo:
 
     async def news(self, search_params: SearchTextParams) -> List[NewsRes]:
         news_res = []
-        with DDGS() as ddgs:
+        async with AsyncDDGS() as ddgs:
             # num = 1
-            for r in ddgs.news(**search_params.model_dump(exclude_none=True)):
+            async for r in ddgs.news(**search_params.model_dump(exclude_none=True)):
                 # if num > num_results:
                 #     break
                 # num = num + 1
@@ -114,9 +118,9 @@ class DuckDuckGo:
 
     async def answer(self, keywords: str, num_results: int = 3) -> List[AnswerRes]:
         answer_res = []
-        with DDGS() as ddgs:
+        async with AsyncDDGS() as ddgs:
             num = 1
-            for r in ddgs.answers(keywords):
+            async for r in ddgs.answers(keywords):
                 if num > num_results:
                     break
                 num = num + 1
@@ -127,10 +131,10 @@ class DuckDuckGo:
 
     async def search_images(self, search_params: SearchImageParams) -> List[ImageRes]:
         images = []
-        with DDGS() as ddgs:
+        async with AsyncDDGS() as ddgs:
             # num = 1
             ddgs_images_gen = ddgs.images(**search_params.model_dump(exclude_none=True))
-            for r in ddgs_images_gen:
+            async for r in ddgs_images_gen:
                 # if num > num_results:
                 #     break
                 # num = num + 1
@@ -141,10 +145,10 @@ class DuckDuckGo:
 
     async def search_videos(self, search_params: SearchVideoParams) -> List[VideoRes]:
         videos = []
-        with DDGS() as ddgs:
+        async with AsyncDDGS() as ddgs:
             # num = 1
             ddgs_videos_gen = ddgs.videos(**search_params.model_dump(exclude_none=True))
-            for r in ddgs_videos_gen:
+            async for r in ddgs_videos_gen:
                 # if num > num_results:
                 #     break
                 # num = num + 1
@@ -156,9 +160,9 @@ class DuckDuckGo:
     async def search_maps(self, search_params: SearchMapsParams) -> List[MapRes]:
         maps = []
         # num = 1
-        with DDGS() as ddgs:
+        async with AsyncDDGS() as ddgs:
             search_iter = ddgs.maps(**search_params.model_dump())
-            for r in search_iter:
+            async for r in search_iter:
                 # if num > num_results:
                 #     break
                 # num = num + 1
@@ -169,8 +173,8 @@ class DuckDuckGo:
 
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
         translated: TranslateRes
-        with DDGS() as ddgs:
-            r = ddgs.translate(keywords, to=to)
+        async with AsyncDDGS() as ddgs:
+            r = await ddgs.translate(keywords, to=to)
             res = TranslateRes(**r)
             translated = res
             Log.trace(f"Translated for {keywords}: {r}")
@@ -179,8 +183,8 @@ class DuckDuckGo:
     async def suggestions(self, keywords: str, num_results: int = 30):
         suggestions = []
         num = 1
-        with DDGS() as ddgs:
-            for r in ddgs.suggestions(keywords):
+        async with AsyncDDGS() as ddgs:
+            async for r in ddgs.suggestions(keywords):
                 if num > num_results:
                     break
                 num = num + 1
