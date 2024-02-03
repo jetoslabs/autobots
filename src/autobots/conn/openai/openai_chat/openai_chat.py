@@ -21,6 +21,7 @@ class OpenaiChat:
             chat_req.tool_choice = None
             chat_req.tools = None
             chat_req.top_logprobs = None
+            Log.warning(f"Openai Chat model {chat_req.model} does not accept some params, removing them before calling Openai API")
         try:
             Log.trace("Starting OpenAI Chat, try: 1")
             res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(exclude_none=True))
