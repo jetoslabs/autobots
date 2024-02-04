@@ -2,11 +2,11 @@ from typing import List
 
 from bson import ObjectId
 from fastapi import HTTPException
+from loguru import logger
 from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from src.autobots.core.logging.log import Log
 from src.autobots.datastore.datastore_meta_doc_model import DatastoreMetaDoc, DatastoreMetaDocCreate, DatastoreMetaDocFind, \
     DatastoreMetaDocUpdate
 
@@ -67,7 +67,7 @@ class DatastoreMetaCRUD:
                 datastore_meta_doc = DatastoreMetaDoc.model_validate(doc)
                 datastore_meta_docs.append(datastore_meta_doc)
             except Exception as e:
-                Log.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
 
         return datastore_meta_docs
 

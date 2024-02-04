@@ -2,6 +2,7 @@ import time
 from functools import lru_cache
 from typing import List
 
+from loguru import logger
 # import psutil
 from pydantic import HttpUrl
 from selenium import webdriver
@@ -9,8 +10,6 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
-
-from src.autobots.core.logging.log import Log
 
 
 class Selenium:
@@ -41,7 +40,7 @@ class Selenium:
         # # percentage of used RAM
         # used_ram_percent = psutil.virtual_memory().percent
         # if cpu_percent >= 100 or used_ram_percent >= 60:
-        #     Log.info("Refreshing web_driver on resource overload")
+        #     logger.info("Refreshing web_driver on resource overload")
         #     # replace with new driver
         #     self.close_webdriver()
         #     self.driver = self.get_webdriver()
@@ -49,7 +48,7 @@ class Selenium:
 
     async def read_url_text(self, url: HttpUrl, xpath: str = "/html/body") -> str:
         await self.refresh_driver_on_resource_overload()
-        Log.bind(url=url).debug("Reading url")
+        logger.bind(url=url).debug("Reading url")
         # Target URL
         self.driver.get(url.unicode_string())
         # To load entire webpage
@@ -62,7 +61,7 @@ class Selenium:
     async def read_url_v1(self, url: HttpUrl, xpath: str = "/html/body", attribute: str = "") -> str:
         try:
             await self.refresh_driver_on_resource_overload()
-            Log.bind(url=url).debug("Reading url")
+            logger.bind(url=url).debug("Reading url")
             # Target URL
             self.driver.get(url.unicode_string())
             # To load entire webpage
@@ -83,7 +82,7 @@ class Selenium:
             resp_str = "\n".join(str(x) for x in resp)
             return resp_str
         except Exception as e:
-            Log.bind(url=url).error(f"Error while reading url: {str(e)}")
+            logger.bind(url=url).error(f"Error while reading url: {str(e)}")
             raise
 
     async def read_urls(self, urls: List[HttpUrl], xpath: str = "/html/body", attribute: str = "") -> str:
@@ -99,7 +98,7 @@ class Selenium:
 
     async def read_url(self, url: HttpUrl, ) -> str:
         await self.refresh_driver_on_resource_overload()
-        Log.bind(url=url).debug("Reading url")
+        logger.bind(url=url).debug("Reading url")
         # Target URL
         self.driver.get(url.unicode_string())
         # To load entire webpage

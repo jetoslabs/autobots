@@ -3,11 +3,11 @@ from fastapi import HTTPException, Depends, Security
 from fastapi.security import OAuth2PasswordBearer, APIKeyQuery, APIKeyHeader, APIKeyCookie
 from gotrue.errors import AuthApiError
 from jose import jwt
+from loguru import logger
 from starlette.status import HTTP_403_FORBIDDEN
 
 from src.autobots.auth.data_models import JwtPayload
 from src.autobots.conn.supabase.supabase import get_supabase
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import SettingsProvider
 
 
@@ -32,10 +32,10 @@ def decode_access_token(token: str, audience: str = "authenticated") -> JwtPaylo
             access_token=None
         )
         token_payload: JwtPayload = JwtPayload(**decoded_jwt)
-        # log.debug(token_payload)
+        # logger.debug(token_payload)
         return token_payload
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
 
 
 def supabase_decode_access_token(token: str, audience: str = None) -> gotrue.UserResponse:
@@ -53,7 +53,7 @@ def supabase_decode_access_token(token: str, audience: str = None) -> gotrue.Use
         return user_res
 
     except AuthApiError | Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise e
 
 
@@ -69,7 +69,7 @@ def get_user_from_creds(token: str = Depends(oauth2_scheme)) -> gotrue.UserRespo
             raise HTTPException(403, "Could not validate credentials")
         return jwt_payload
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
 
 
 api_key_query = APIKeyQuery(name="Authorization", auto_error=False)
@@ -91,7 +91,7 @@ def get_user_from_access_token(
             return supabase_decode_access_token(api_key_cookie.split(" ")[1], audience="authenticated")
 
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
 
     raise HTTPException(
         status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"

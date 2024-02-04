@@ -1,5 +1,6 @@
 from typing import Type
 
+from loguru import logger
 from pydantic import BaseModel, ValidationError
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -7,7 +8,6 @@ from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigTyp
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchVideoParams
-from src.autobots.core.logging.log import Log
 
 
 class SearchVideoConfig(BaseModel):
@@ -44,6 +44,6 @@ class ActionText2VideoSearchVideo(IAction[SearchVideoConfig, TextObj, TextObjs])
                 text_objs.texts.append(TextObj(text=text))
             return text_objs
         except ValidationError as e:
-            Log.error(str(e))
+            logger.error(str(e))
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))

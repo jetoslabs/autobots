@@ -3,6 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 from openai.types.audio import Translation
 from pymongo.database import Database
 
@@ -13,7 +14,6 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.openai.openai_audio.translation_model import TranslationReq
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.core.logging.log import Log
 from src.autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -39,5 +39,5 @@ async def create_action_audio2text_translation_openai(
         )
         return action_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500)

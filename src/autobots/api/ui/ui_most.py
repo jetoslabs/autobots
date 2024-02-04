@@ -2,13 +2,13 @@ import gotrue
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from gotrue import UserResponse, AuthResponse
+from loguru import logger
 from starlette import status
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from src.autobots.api.deps import get_user_from_cookie
 from src.autobots.auth.auth import get_auth
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import SettingsProvider
 
 router = APIRouter()
@@ -36,10 +36,10 @@ async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depend
                 expires=1800,
             )
         else:
-            Log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+            logger.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
         return response
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -78,12 +78,12 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
                 expires=1800,
             )
         else:
-            Log.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+            logger.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
         return response
     except HTTPException as e:
-        Log.error(str(e))
+        logger.error(str(e))
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
     return templates.TemplateResponse("index.html", {"request": request})
 
 

@@ -1,12 +1,12 @@
 from typing import List
 
+from loguru import logger
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionSystemMessageParam, \
     ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam
 
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from src.autobots.conn.openai.openai_chat.chat_model import ChatRes, ChatReq
 from src.autobots.conn.openai.openai_client import get_openai
-from src.autobots.core.logging.log import Log
 
 Task_Prefix = "Task: "
 Thought_Prefix = "Thought: "
@@ -51,7 +51,7 @@ class ReasonActObserve():
         messages = self.setup_messages + [ChatCompletionUserMessageParam(role="user", content=f"{Task_Prefix}{user_goal}")]
 
         is_finish = False
-        Log.info(f"Task stared: {user_goal}")
+        logger.info(f"Task stared: {user_goal}")
         while not is_finish:
             thought = await self.think(messages)
             messages = messages + [ChatCompletionAssistantMessageParam(role="assistant", content=thought)]
@@ -65,7 +65,7 @@ class ReasonActObserve():
 
             if "finish[" in action:
                 is_finish = True
-                Log.info(f"Task: {user_goal}\nResult: {action}")
+                logger.info(f"Task: {user_goal}\nResult: {action}")
         return messages
 
     async def think(self, messages: List[ChatCompletionMessageParam]) -> str:
@@ -73,7 +73,7 @@ class ReasonActObserve():
         chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
         resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
         response = resp.choices[0].message.content
-        Log.info(f"{Thought_Prefix}{response}")
+        logger.info(f"{Thought_Prefix}{response}")
         return f"{response}"
 
     async def act(self, messages: List[ChatCompletionMessageParam]) -> str:
@@ -82,10 +82,10 @@ class ReasonActObserve():
             chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
             resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
             response = resp.choices[0].message.content
-            Log.info(f"{response}")
+            logger.info(f"{response}")
             return f"{response}"
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
 
     async def observe(self, action: str) -> str:
         if "search" in action:
@@ -95,7 +95,7 @@ class ReasonActObserve():
             for search in search_res:
                 res = res + f"Title:{search.title}, Excerpt: {search.body}, URL: {search.href}\n"
             res = Observe_Prefix + res
-            Log.info(f"{Observe_Prefix}{res}")
+            logger.info(f"{Observe_Prefix}{res}")
             return res
 
         elif "news" in action:
@@ -105,5 +105,5 @@ class ReasonActObserve():
             for search in search_res:
                 res = res + f"{search.title}: {search.body} - source({search.source})\n"
             res = Observe_Prefix + res
-            Log.info(f"{Observe_Prefix}{res}")
+            logger.info(f"{Observe_Prefix}{res}")
             return res
