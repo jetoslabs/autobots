@@ -43,6 +43,7 @@ class Pinecone:
         index = self.pinecone.Index(self.index_name)
         return index
 
+    @retry(exceptions=Exception, tries=5, delay=30)
     async def upsert_data(self, vector_id: str, data: str, metadata: dict, namespace: str = "default"):
         try:
             upserted = []
@@ -55,6 +56,7 @@ class Pinecone:
                 upserted.append(upsert_res)
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def query(
             self,
