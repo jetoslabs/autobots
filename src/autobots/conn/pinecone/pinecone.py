@@ -2,13 +2,13 @@ import time
 from functools import lru_cache
 from typing import List
 
+from loguru import logger
 from pinecone import Index, QueryResponse, FetchResponse, PodSpec
 import pinecone as pc
 from retry import retry
 
 from src.autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingReq, EmbeddingRes
 from src.autobots.conn.openai.openai_client import OpenAI, get_openai
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import Settings, SettingsProvider
 
 
@@ -54,7 +54,7 @@ class Pinecone:
                 upsert_res = self.index.upsert(vectors=[vector], namespace=namespace)
                 upserted.append(upsert_res)
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
 
     async def query(
             self,
@@ -79,7 +79,7 @@ class Pinecone:
                 )
                 return res
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
 
     async def fetch(self, vector_ids: List[str], namespace: str = "default") -> FetchResponse:
         fetch_res = self.index.fetch(ids=vector_ids, namespace=namespace)

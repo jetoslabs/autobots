@@ -2,13 +2,13 @@ from typing import List
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException
+from loguru import logger
 from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionDocCreate, ActionDocFind, ActionDocUpdate
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.core.logging.log import Log
 
 
 class ActionCRUD:
@@ -65,7 +65,7 @@ class ActionCRUD:
                 action_doc = ActionDoc.model_validate(doc)
                 action_docs.append(action_doc)
             except Exception as e:
-                Log.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
 
         return action_docs
 

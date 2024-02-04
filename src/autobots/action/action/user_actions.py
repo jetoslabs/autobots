@@ -1,6 +1,7 @@
 from typing import List, Any, Dict
 
 from fastapi import HTTPException
+from loguru import logger
 from pymongo.database import Database
 
 from src.autobots.action.action.action_crud import ActionCRUD
@@ -8,7 +9,6 @@ from src.autobots.action.action.action_doc_model import ActionFind, ActionDocFin
     ActionUpdate, ActionDocUpdate
 from src.autobots.action.action_type.action_factory import ActionFactory
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.core.logging.log import Log
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -28,10 +28,10 @@ class UserActions:
             action_doc = await self.action_crud.insert_one(action_doc_create)
             return action_doc
         except HTTPException as e:
-            Log.error(str(e))
+            logger.error(str(e))
             raise
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def list_actions(
@@ -52,7 +52,7 @@ class UserActions:
                 raise HTTPException(500, "Error in finding action")
             return action_docs[0]
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def update_action(

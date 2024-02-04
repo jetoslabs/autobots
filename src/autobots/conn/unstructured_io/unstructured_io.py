@@ -2,13 +2,13 @@ from functools import lru_cache
 from typing import List, Optional, Any
 
 from fastapi import UploadFile
+from loguru import logger
 from pydantic import BaseModel, ValidationError
 from unstructured_client import UnstructuredClient
 from unstructured_client.models import shared
 from unstructured_client.models.errors import SDKError
 from unstructured_client.models.operations import PartitionResponse
 
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import Settings, SettingsProvider
 
 
@@ -55,11 +55,11 @@ class UnstructuredIO:
         try:
             res: PartitionResponse = self.client.general.partition(req)
         except SDKError as e:
-            Log.error(str(e))
+            logger.error(str(e))
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         if not res or res.status_code != 200:
-            Log.error(f"Error in extracting data from file {file.filename}")
+            logger.error(f"Error in extracting data from file {file.filename}")
         return res
         # res_str = ("\n\n".join([str(el) for el in res.elements]))
 
@@ -70,9 +70,9 @@ class UnstructuredIO:
                 element = PartitionResponseElement.model_validate(element_dict)
                 elements.append(element)
             except ValidationError as e:
-                Log.error(str(e))
+                logger.error(str(e))
             except Exception as e:
-                Log.error(str(e))
+                logger.error(str(e))
         return elements
 
     async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:

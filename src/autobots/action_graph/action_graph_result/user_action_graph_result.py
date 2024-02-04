@@ -1,11 +1,11 @@
 from typing import List
 
 from fastapi import HTTPException
+from loguru import logger
 from pymongo.database import Database
 
 from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
     ActionGraphResultCreate, ActionGraphResultUpdate
-from src.autobots.core.logging.log import Log
 from src.autobots.event_result.event_result_crud import EventResultCRUD
 from src.autobots.event_result.event_result_model import EventResultDocCreate, EventResultFind, EventResultDocFind, \
     EventResultDocUpdate, EventType
@@ -26,7 +26,7 @@ class UserActionGraphResult:
             action_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
             return action_result_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
             raise e
 
     async def list_action_graph_result(
@@ -54,7 +54,7 @@ class UserActionGraphResult:
             action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
             return action_graph_result_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def update_action_graph_result(
@@ -66,7 +66,7 @@ class UserActionGraphResult:
             action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
             return action_graph_result_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
             raise e
 
     async def delete_action_graph_result(

@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import HTTPException, UploadFile, BackgroundTasks
+from loguru import logger
 from pydantic import HttpUrl
 from pymongo.database import Database
 from pymongo.results import DeleteResult
@@ -9,7 +10,6 @@ from src.autobots.api.webhook import Webhook
 from src.autobots.conn.aws.s3 import S3, get_s3
 from src.autobots.conn.pinecone.pinecone import Pinecone, get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
-from src.autobots.core.logging.log import Log
 from src.autobots.datastore.datastore_meta_crud import DatastoreMetaCRUD
 from src.autobots.datastore.datastore import Datastore
 from src.autobots.datastore.datastore_meta_doc_model import DatastoreMetaDocCreate, DatastoreMetaDoc, DatastoreMetaDocFind
@@ -136,7 +136,7 @@ class UserDatastore():
                     datastore_result_doc.id, DatastoreResultUpdate(**datastore_result_doc.model_dump())
                 )
             except Exception as e:
-                Log.error(str(e))
+                logger.error(str(e))
         if files:
             try:
                 datastore_results_2 = await user_datastore.put_files(files, chunk_size)
@@ -145,7 +145,7 @@ class UserDatastore():
                     datastore_result_doc.id, DatastoreResultUpdate(**datastore_result_doc.model_dump())
                 )
             except Exception as e:
-                Log.error(str(e))
+                logger.error(str(e))
         if urls:
             try:
                 datastore_results_3 = await user_datastore.put_urls(urls, chunk_token_size=chunk_size)
@@ -154,7 +154,7 @@ class UserDatastore():
                     datastore_result_doc.id, DatastoreResultUpdate(**datastore_result_doc.model_dump())
                 )
             except Exception as e:
-                Log.error(str(e))
+                logger.error(str(e))
 
         datastore_result_doc.status = EventResultStatus.success
         datastore_result_doc = await user_datastore_result.update_datastore_result(

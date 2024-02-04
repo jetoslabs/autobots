@@ -1,9 +1,9 @@
+from loguru import logger
 from openai import AsyncOpenAI, AsyncStream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 from retry import retry
 
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
-from src.autobots.core.logging.log import Log
 
 
 class OpenaiChat:
@@ -21,17 +21,17 @@ class OpenaiChat:
             chat_req.tool_choice = None
             chat_req.tools = None
             chat_req.top_logprobs = None
-            Log.warning(f"Openai Chat model {chat_req.model} does not accept some params, removing them before calling Openai API")
+            logger.warning(f"Openai Chat model {chat_req.model} does not accept some params, removing them before calling Openai API")
         try:
-            Log.trace("Starting OpenAI Chat, try: 1")
+            logger.trace("Starting OpenAI Chat, try: 1")
             res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(exclude_none=True))
-            Log.trace("Completed OpenAI Chat")
+            logger.trace("Completed OpenAI Chat")
             if isinstance(res, AsyncStream):
                 return self.yield_chat_chunks(res)
             else:
                 return res
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
             raise
 
     async def yield_chat_chunks(self, chat_res: AsyncStream[ChatCompletionChunk]) -> ChatCompletionChunk | None:
@@ -39,4 +39,4 @@ class OpenaiChat:
             async for part in chat_res:
                 yield part
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))

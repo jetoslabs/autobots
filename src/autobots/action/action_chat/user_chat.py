@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import HTTPException
+from loguru import logger
 from openai.types.chat import ChatCompletionUserMessageParam
 from pymongo.database import Database
 
@@ -12,7 +13,6 @@ from src.autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, 
     ChatUpdate
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role, Message
 from src.autobots.conn.openai.openai_client import get_openai
-from src.autobots.core.logging.log import Log
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -36,7 +36,7 @@ class UserChat():
             chat_doc = await self.chat_crud.insert_one(chat_doc_create)
             return chat_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def list_chat(self, chat_find: ChatFind, limit: int = 100, offset: int = 0) -> List[ChatDoc] | None:
@@ -45,7 +45,7 @@ class UserChat():
             chat_docs = await self.chat_crud.find(chat_doc_find, limit, offset)
             return chat_docs
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def get_chat(self, chat_id: str) -> ChatDoc | None:
@@ -56,7 +56,7 @@ class UserChat():
                 raise HTTPException(500, "Error in finding chat")
             return chat_docs[0]
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def update_chat(self, chat_id: str, chat_update: ChatUpdate) -> ChatDoc:
@@ -118,5 +118,5 @@ class UserChat():
             title = f"{chat_doc.action.name}-{chat_res.choices[0].message.content}"
             return title
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return UserChat.DEFAULT_TITLE
