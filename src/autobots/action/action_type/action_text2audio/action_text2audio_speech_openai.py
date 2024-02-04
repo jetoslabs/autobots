@@ -1,6 +1,7 @@
 import io
 from typing import Type
 
+from loguru import logger
 from pydantic import HttpUrl, ValidationError, BaseModel
 
 from src.autobots.action.action.common_action_models import TextObj
@@ -9,7 +10,6 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.aws.aws_s3 import get_public_s3
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.speech_model import SpeechReq
-from src.autobots.core.logging.log import Log
 from src.autobots.core.utils import gen_hash
 
 
@@ -50,6 +50,6 @@ class ActionText2AudioSpeechOpenai(IAction[SpeechReq, TextObj, AudioRes]):
             http_url = HttpUrl(url)
             return AudioRes(url=str(http_url))
         except ValidationError as e:
-            Log.error(str(e))
+            logger.error(str(e))
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))

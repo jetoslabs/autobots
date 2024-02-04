@@ -2,13 +2,13 @@ from typing import List
 
 from bson import ObjectId
 from fastapi import Depends
+from loguru import logger
 from pymongo.collection import Collection
 from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action_market.action_market_model import ActionMarketDocFind
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.core.logging.log import Log
 
 
 class ActionMarketCRUD:
@@ -50,7 +50,7 @@ class ActionMarketCRUD:
                 action_doc = ActionDoc.model_validate(doc)
                 action_docs.append(action_doc)
             except Exception as e:
-                Log.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
 
         return action_docs
 

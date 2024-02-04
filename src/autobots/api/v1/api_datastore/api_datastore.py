@@ -3,6 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
+from loguru import logger
 from pydantic import HttpUrl
 from pymongo.database import Database
 
@@ -11,7 +12,6 @@ from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.core.logging.log import Log
 from src.autobots.datastore.datastore_meta_doc_model import DatastoreMetaDoc
 from src.autobots.datastore.datastore_result.datastore_result_doc_model import DatastoreResultDoc
 from src.autobots.datastore.user_datastore import UserDatastore
@@ -31,7 +31,7 @@ async def create_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).init(name)
         return user_datastore_meta
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "unable to create datastore")
 
 
@@ -46,7 +46,7 @@ async def list_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).list(limit, offset)
         return user_datastore_meta
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "unable to list datastore")
 
 
@@ -61,7 +61,7 @@ async def get_datastore(
         user_datastore_meta = await UserDatastore(user_orm, db).get(name)
         return user_datastore_meta
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "unable to get datastore")
 
 
@@ -79,7 +79,7 @@ async def store_text(
         await user_datastore.put_data(data=text.text, chunk_token_size=chunk_token_size)
         return {"done": "ok"}
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while storing text in datastore")
 
 
@@ -97,7 +97,7 @@ async def upload_files(
         await user_datastore.put_files(files, chunk_size=chunk_size)
         return {"done": "ok"}
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while storing files in datastore")
 
 
@@ -115,7 +115,7 @@ async def store_urls(
         await user_datastore.put_urls(urls=urls, chunk_token_size=chunk_token_size)
         return {"done": "ok"}
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while storing URLs in datastore")
 
 
@@ -133,7 +133,7 @@ async def search(
         results = await user_datastore.search(query=query.text, top_k=top_k)
         return results
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while search in datastore")
 
 
@@ -154,7 +154,7 @@ async def delete_datastore(
             raise HTTPException(500, "Error in deleting datastore_meta_doc")
         return datastore_meta_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while deleting datastore")
 
 
@@ -182,7 +182,7 @@ async def store_data_async(
         )
         return datastore_result_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while storing data in datastore")
 
 
@@ -210,7 +210,7 @@ async def store_files_async(
         )
         return datastore_result_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while storing files in datastore")
 
 
@@ -238,7 +238,7 @@ async def store_urls_async(
         )
         return datastore_result_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Error while storing urls in datastore")
 
 
@@ -253,5 +253,5 @@ async def get_datastore_put_result(
         user_datastore = UserDatastore(user, db)
         return await user_datastore.get_datastore_put_result(datastore_put_result_id)
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500, "Internal server error")

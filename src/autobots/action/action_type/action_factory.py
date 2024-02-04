@@ -2,6 +2,7 @@ from functools import lru_cache
 from typing import List, Any, Dict
 
 from fastapi import BackgroundTasks
+from loguru import logger
 from pydantic import BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionDoc
@@ -36,7 +37,6 @@ from src.autobots.action.action_type.action_map import ACTION_MAP
 #     ActionText2VideoStableDiffusion
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook
-from src.autobots.core.logging.log import Log
 from src.autobots.event_result.event_result_model import EventResultStatus
 
 
@@ -74,7 +74,7 @@ class ActionFactory:
                     action_data_types.output = action.get_output_type().model_json_schema()
             return action_data_types
         except Exception as e:
-            Log.error(f"ActionType does not exist {action_type}, error: {str(e)}")
+            logger.error(f"ActionType does not exist {action_type}, error: {str(e)}")
             raise
 
     @staticmethod
@@ -177,7 +177,7 @@ class ActionFactory:
     #             return await MockAction(config).run_action(input)
     #
     #         case _:
-    #             Log.error("Action Type not found")
+    #             logger.error("Action Type not found")
     #             raise HTTPException(status_code=404, detail="Action Type not found")
 
     @staticmethod
@@ -220,12 +220,12 @@ class ActionFactory:
             # Action is a success
             action_result_doc.status = EventResultStatus.success
             action_result_doc.result.output = result
-            Log.bind(action_result_doc=action_result_doc).info("Action run success")
+            logger.bind(action_result_doc=action_result_doc).info("Action run success")
         except Exception as e:
             # Action resulted in an error
             action_result_doc.status = EventResultStatus.error
             action_result_doc.error_message = TextObj(text="Action run error")
-            Log.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
+            logger.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
         finally:
             # Finally persist the Action Result
             action_result_update = ActionResultUpdate(**action_result_doc.model_dump())
@@ -233,7 +233,7 @@ class ActionFactory:
                 action_result_doc.id,
                 action_result_update
             )
-            Log.bind(action_result_doc=action_result_doc).info("Action Result updated")
+            logger.bind(action_result_doc=action_result_doc).info("Action Result updated")
             # Send webhook
             if webhook:
                 await webhook.send(action_result_doc.model_dump())

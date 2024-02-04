@@ -3,13 +3,13 @@ from io import BytesIO
 from typing import List
 
 import boto3
+from loguru import logger
 
 from mypy_boto3_s3 import S3ServiceResource
 from mypy_boto3_s3.service_resource import ObjectSummary
 from mypy_boto3_s3.type_defs import DeletedObjectTypeDef
 from pydantic import HttpUrl
 
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import Settings, SettingsProvider
 
 
@@ -39,7 +39,7 @@ class AwsS3:
             self.bucket.upload_fileobj(file_obj, object_path)
             return len(data)
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return -1
 
     async def put_file_obj(self, file_obj: BytesIO, filename: str) -> HttpUrl:
@@ -48,10 +48,10 @@ class AwsS3:
             length = len(file_obj.getvalue())
             self.bucket.upload_fileobj(file_obj, object_path)
             object_url = await self.get_object_url(object_path)
-            Log.debug(f"File written to s3, filename: {object_url}, size: {length}")
+            logger.debug(f"File written to s3, filename: {object_url}, size: {length}")
             return object_url
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return ""
 
     async def get(self, filename: str) -> str:
@@ -62,7 +62,7 @@ class AwsS3:
             res_data = res_bytes.getvalue().decode('utf-8')
             return res_data
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
 
     async def delete(self, filename: str) -> list[DeletedObjectTypeDef]:
         object_path = self.object_prefix + filename
@@ -76,7 +76,7 @@ class AwsS3:
             })
             return delete_res["Deleted"]
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
 
     async def list(self, prefix: str, limit: int = 300) -> List[ObjectSummary]:
         prefix = self.object_prefix + prefix

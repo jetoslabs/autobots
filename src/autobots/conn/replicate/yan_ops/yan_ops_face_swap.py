@@ -1,10 +1,9 @@
 from pathlib import Path
 
 import replicate.client
+from loguru import logger
 from pydantic import BaseModel, Field, HttpUrl
 from replicate.model import Model
-
-from src.autobots.core.logging.log import Log
 
 
 class YanOpsFaceSwapParams(BaseModel):
@@ -37,4 +36,4 @@ class YanOpsFaceSwap:
             output = YanOpsFaceSwapOutParams.model_validate(output_dict)
             return output
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))

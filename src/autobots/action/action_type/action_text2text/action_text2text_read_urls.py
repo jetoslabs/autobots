@@ -1,12 +1,12 @@
 from typing import Type
 
+from loguru import logger
 from pydantic import BaseModel, ValidationError, HttpUrl
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.selenium.selenium import get_selenium
-from src.autobots.core.logging.log import Log
 
 
 class ReadUrlConfig(BaseModel):
@@ -54,6 +54,6 @@ class ActionText2TextReadUrl(IAction[ReadUrlConfig, TextObj, TextObjs]):#TODO: a
             text_objs.texts.append(TextObj(text=out))
             return text_objs
         except ValidationError as e:
-            Log.error(str(e))
+            logger.error(str(e))
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))

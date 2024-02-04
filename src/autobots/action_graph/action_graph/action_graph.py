@@ -1,6 +1,7 @@
 from typing import Dict, List, Set, Any, Optional
 
 from fastapi import BackgroundTasks, HTTPException
+from loguru import logger
 from pydantic import HttpUrl
 
 from src.autobots.action.action.action_doc_model import ActionDoc
@@ -12,7 +13,6 @@ from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc
     ActionGraphResultCreate, ActionGraphResultUpdate
 from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from src.autobots.api.webhook import Webhook
-from src.autobots.core.logging.log import Log
 from src.autobots.event_result.event_result_model import EventResultStatus
 
 
@@ -156,7 +156,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            Log.bind(action_graph_id=action_graph_result_doc.result.id).error(f"Error while graph run, {str(e)}")
+            logger.bind(action_graph_id=action_graph_result_doc.result.id).error(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
@@ -169,7 +169,7 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        (Log.bind(action_graph_result_id=action_graph_result_doc.id,action_graph_id=action_graph_result_doc.result.id)
+        (logger.bind(action_graph_result_id=action_graph_result_doc.id,action_graph_id=action_graph_result_doc.result.id)
          .info("Completed Action Graph _run_as_background_task"))
         return action_graph_result_doc
 
@@ -244,14 +244,14 @@ class ActionGraph:
                         text_obj = TextObj.model_validate(action_output)
                         input_msg = f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"
             except Exception as e:
-                Log.warning(f"Cannot convert to Input: {str(e)}")
+                logger.warning(f"Cannot convert to Input: {str(e)}")
             # if isinstance(action_outputs, TextObjs):
             #     for action_output in action_outputs.texts:
             #         if isinstance(action_output, TextObj):
             #             text_obj = TextObj.model_validate(action_output)
             #             input_msg = f"{input_msg}\n{text_obj.text}"
             # else:
-            #     Log.warning("Cannot convert to Input")
+            #     logger.warning("Cannot convert to Input")
 
         text_obj = TextObj(text=input_msg)
         return text_obj
