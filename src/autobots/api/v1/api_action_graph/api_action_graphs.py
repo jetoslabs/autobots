@@ -3,6 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from loguru import logger
 from pymongo.database import Database
 
 from src.autobots import SettingsProvider
@@ -16,7 +17,6 @@ from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, ActionGraphFind, ActionGraphUpdate
 from src.autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
-from src.autobots.core.logging.log import Log
 
 from src.autobots.user.user_orm_model import UserORM
 
@@ -34,7 +34,7 @@ async def create_action_graph(
         resp = await UserActionGraphs(user=user_orm, db=db).create(action_graph_create, db)
         return resp
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500)
 
 

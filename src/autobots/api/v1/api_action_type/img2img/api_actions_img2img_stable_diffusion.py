@@ -3,6 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionDoc
@@ -14,7 +15,6 @@ from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.img2img.img2img_model import SDImg2ImgReqModel
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.core.logging.log import Log
 from src.autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -40,7 +40,7 @@ async def create_action_img2img_stable_diffusion(
         )
         return action_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500)
 
 
@@ -60,6 +60,6 @@ async def run_action_image_mixer_stable_diffusion(
         resp = await image_mixer.run_action(action_input)
         return resp
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500)
 

@@ -4,6 +4,7 @@ import string
 from typing import List, Dict, Callable, AsyncGenerator
 
 from fastapi import UploadFile
+from loguru import logger
 from pinecone import QueryResponse
 from pydantic import BaseModel, HttpUrl
 from retry import retry
@@ -11,7 +12,6 @@ from retry import retry
 from src.autobots.conn.aws.s3 import S3
 from src.autobots.conn.pinecone.pinecone import Pinecone
 from src.autobots.conn.selenium.selenium import get_selenium, Selenium
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import SettingsProvider
 from src.autobots.conn.unstructured_io.unstructured_io import UnstructuredIO
 from src.autobots.core.utils import gen_hash, gen_random_str
@@ -100,7 +100,7 @@ class Datastore:
                 await self._put_embedding(data=chunk)
             result.append(DatastoreResult(resource=data, status=EventResultStatus.success))
         except Exception as e:
-            Log.error(f"Error processing data {str(e)}")
+            logger.error(f"Error processing data {str(e)}")
             result.append(DatastoreResult(resource=data, status=EventResultStatus.error))
         return result
 
@@ -110,13 +110,13 @@ class Datastore:
             datastore_result = await self.put_file(file, chunk_size)
             result.append(datastore_result)
             # try:
-            #     Log.debug(f"Processing file: {file.filename}")
+            #     logger.debug(f"Processing file: {file.filename}")
             #     file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
-            #     Log.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
+            #     logger.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
             #     await self._put_file_chunks(file, file_chunks)
             #     result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.success))
             # except Exception as e:
-            #     Log.error(f"Error: {str(e)} while putting file: {file.filename}")
+            #     logger.error(f"Error: {str(e)} while putting file: {file.filename}")
             #     result.append(DatastoreResult(resource=file.filename, status=EventResultStatus.error))
         return result
 
@@ -124,13 +124,13 @@ class Datastore:
     async def put_file(self, file: UploadFile, chunk_size: int = 500) -> DatastoreResult:
         datastore_result: DatastoreResult
         try:
-            Log.debug(f"Processing file: {file.filename}")
+            logger.debug(f"Processing file: {file.filename}")
             file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
-            Log.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
+            logger.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
             await self._put_file_chunks(file, file_chunks)
             datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.success)
         except Exception as e:
-            Log.error(f"Error: {str(e)} while putting file: {file.filename}")
+            logger.error(f"Error: {str(e)} while putting file: {file.filename}")
             datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.error)
             raise
         return datastore_result
@@ -151,7 +151,7 @@ class Datastore:
             # build filename
             full_path_name = f"{path}/{url.path.replace('/', '_')}_{gen_random_str(5)}.html"
             try:
-                Log.debug(f"Processing URL: {url}")
+                logger.debug(f"Processing URL: {url}")
                 # web scrape html data
                 html_data = await web_scraper.read_url(url)
                 # write html to file
@@ -164,7 +164,7 @@ class Datastore:
                                          chunk_size=chunk_token_size)
                 result.append(DatastoreResult(resource=str(url), status=EventResultStatus.success))
             except Exception as e:
-                Log.error(f"Error: processing URL: {str(url)}, error: {str(e)}")
+                logger.error(f"Error: processing URL: {str(url)}, error: {str(e)}")
                 result.append(DatastoreResult(resource=str(url), status=EventResultStatus.error))
             finally:
                 # delete file
@@ -179,10 +179,10 @@ class Datastore:
                 await self._put_embedding(data=chunk)
                 # housekeeping
                 loop = loop + 1
-                Log.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
-                Log.trace(f"Processed file chunk: {file.filename} - {chunk}")
+                logger.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
+                logger.trace(f"Processed file chunk: {file.filename} - {chunk}")
             except Exception as e:
-                Log.error(str(e))
+                logger.error(str(e))
 
     # async def get(self):
     #     """

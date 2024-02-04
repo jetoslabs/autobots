@@ -1,12 +1,12 @@
 import time
 
 import requests
+from loguru import logger
 
 from pydantic import ValidationError
 
 from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel, ImageMixerResError, \
     ImageMixerProcessingResModel, ImageMixerResModel
-from src.autobots.core.logging.log import Log
 
 
 async def image_mixer(
@@ -24,7 +24,7 @@ async def image_mixer(
 
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code != 200:
-        Log.error(f"Stable diffusion image_mixer error: {response.status_code}")
+        logger.error(f"Stable diffusion image_mixer error: {response.status_code}")
 
     response_json = response.json()
     try:
@@ -32,7 +32,7 @@ async def image_mixer(
             time.sleep(30)
             return await image_mixer(req, max_retry-1)
         elif response_json["status"] == "error":
-            Log.error(f"Stable diffusion text2img error: {response_json}")
+            logger.error(f"Stable diffusion text2img error: {response_json}")
             err = ImageMixerResError.model_validate(response_json)
             return err
         elif response_json["status"] == "processing":
@@ -42,4 +42,4 @@ async def image_mixer(
             res = ImageMixerResModel.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
-        Log.error(f"Stable diffusion image_mixer validation error for response: {response_json}")
+        logger.error(f"Stable diffusion image_mixer validation error for response: {response_json}")

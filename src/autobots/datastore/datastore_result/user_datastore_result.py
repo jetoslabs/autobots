@@ -1,9 +1,9 @@
 from typing import List
 
 from fastapi import HTTPException
+from loguru import logger
 from pymongo.database import Database
 
-from src.autobots.core.logging.log import Log
 from src.autobots.datastore.datastore_result.datastore_result_doc_model import DatastoreResultCreate, DatastoreResultDoc, \
     DatastoreResultUpdate
 from src.autobots.event_result.event_result_crud import EventResultCRUD
@@ -26,7 +26,7 @@ class UserDatastoreResult:
             datastore_result_doc = DatastoreResultDoc.model_validate(event_result_doc.model_dump())
             return datastore_result_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
             raise e
 
     async def list_datastore_result(
@@ -53,7 +53,7 @@ class UserDatastoreResult:
             datastore_result_doc = DatastoreResultDoc.model_validate(event_result_doc.model_dump())
             return datastore_result_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
         return None
 
     async def update_datastore_result(
@@ -65,7 +65,7 @@ class UserDatastoreResult:
             datastore_result_doc = DatastoreResultDoc.model_validate(event_result_doc.model_dump())
             return datastore_result_doc
         except Exception as e:
-            Log.error(str(e))
+            logger.error(str(e))
             raise e
 
     async def delete_datastore_result(

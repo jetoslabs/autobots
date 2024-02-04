@@ -2,11 +2,11 @@ from functools import lru_cache
 from typing import List, Optional, AsyncGenerator
 
 from duckduckgo_search import AsyncDDGS
+from loguru import logger
 from pydantic import BaseModel, HttpUrl
 
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams, SearchImageParams, \
     SearchVideoParams
-from src.autobots.core.logging.log import Log
 from src.autobots.core.settings import Settings, SettingsProvider
 
 
@@ -100,7 +100,7 @@ class DuckDuckGo:
                 # num = num + 1
                 res = SearchRes(**r)
                 search_res.append(res)
-                Log.trace(f"Search for {search_params.keywords}: {r}")
+                logger.trace(f"Search for {search_params.keywords}: {r}")
         return search_res
 
     async def news(self, search_params: SearchTextParams) -> List[NewsRes]:
@@ -113,7 +113,7 @@ class DuckDuckGo:
                 # num = num + 1
                 res = NewsRes(**r)
                 news_res.append(res)
-        Log.trace(f"News for {search_params.keywords}: {news_res}")
+        logger.trace(f"News for {search_params.keywords}: {news_res}")
         return news_res
 
     async def answer(self, keywords: str, num_results: int = 3) -> List[AnswerRes]:
@@ -126,7 +126,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = AnswerRes(**r)
                 answer_res.append(res)
-                Log.trace(f"Answer for {keywords}: {r}")
+                logger.trace(f"Answer for {keywords}: {r}")
         return answer_res
 
     async def search_images(self, search_params: SearchImageParams) -> List[ImageRes]:
@@ -140,7 +140,7 @@ class DuckDuckGo:
                 # num = num + 1
                 res = ImageRes(**r)
                 images.append(res)
-                Log.trace(f"Image for {search_params.keywords}: {r}")
+                logger.trace(f"Image for {search_params.keywords}: {r}")
         return images
 
     async def search_videos(self, search_params: SearchVideoParams) -> List[VideoRes]:
@@ -154,7 +154,7 @@ class DuckDuckGo:
                 # num = num + 1
                 res = VideoRes(**r)
                 videos.append(res)
-                Log.trace(f"Video for {search_params.keywords}: {r}")
+                logger.trace(f"Video for {search_params.keywords}: {r}")
         return videos
 
     async def search_maps(self, search_params: SearchMapsParams) -> List[MapRes]:
@@ -168,7 +168,7 @@ class DuckDuckGo:
                 # num = num + 1
                 res = MapRes(**r)
                 maps.append(res)
-                Log.trace(f"Map search for {search_params.keywords}: {r}")
+                logger.trace(f"Map search for {search_params.keywords}: {r}")
         return maps
 
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
@@ -177,7 +177,7 @@ class DuckDuckGo:
             r = await ddgs.translate(keywords, to=to)
             res = TranslateRes(**r)
             translated = res
-            Log.trace(f"Translated for {keywords}: {r}")
+            logger.trace(f"Translated for {keywords}: {r}")
         return translated
 
     async def suggestions(self, keywords: str, num_results: int = 30):
@@ -190,7 +190,7 @@ class DuckDuckGo:
                 num = num + 1
                 res = SuggestionRes(**r)
                 suggestions.append(res)
-                Log.trace(f"Suggestion for {keywords}: {r}")
+                logger.trace(f"Suggestion for {keywords}: {r}")
         return suggestions
 
 

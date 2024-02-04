@@ -2,6 +2,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
@@ -14,7 +15,6 @@ from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.core.logging.log import Log
 from src.autobots.user.user_orm_model import UserORM
 
 router = APIRouter()
@@ -34,7 +34,7 @@ async def create_action_text2video_stable_diffusion(
         )
         return action_doc
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500)
 
 
@@ -54,5 +54,5 @@ async def run_action_text2video_stable_diffusion(
         resp = await text2video.run_action(action_input)
         return resp
     except Exception as e:
-        Log.error(str(e))
+        logger.error(str(e))
         raise HTTPException(500)

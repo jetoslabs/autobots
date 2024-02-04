@@ -1,5 +1,6 @@
 from typing import Type
 
+from loguru import logger
 from pydantic import ValidationError
 
 from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
@@ -7,7 +8,6 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
-from src.autobots.core.logging.log import Log
 
 
 class ActionText2TextLlmChatOpenai(IAction[ChatReq, TextObj, TextObjs]):
@@ -42,4 +42,4 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, TextObj, TextObjs]):
                 text_objs.texts.append(TextObj(text=choice.message.content))
             return text_objs
         except ValidationError as e:
-            Log.error(str(e))
+            logger.error(str(e))

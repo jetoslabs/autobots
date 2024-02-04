@@ -1,11 +1,11 @@
 from typing import Optional
 
+from loguru import logger
 from pydantic import EmailStr, BaseModel, HttpUrl
 from requests import Request
 
 from src.autobots.auth.data_models import JwtPayload
 from src.autobots.auth.security import decode_access_token
-from src.autobots.core.logging.log import Log
 
 
 class Usage(BaseModel):
@@ -22,7 +22,7 @@ async def usage_info_dispatch(request: Request, call_next):
             email=jwt_payload.email,
             url=str(request.url)
         )
-        Log.bind(**usage.model_dump()).debug("API usage")
+        logger.bind(**usage.model_dump()).debug("API usage")
     response = await call_next(request)
     return response
 
@@ -41,5 +41,5 @@ async def get_jwt_payload(request: Request) -> Optional[JwtPayload]:
             jwt_payload = decode_access_token(token)
         return jwt_payload
     except Exception as e:
-        Log.error(f"Error while get_jwt_payload: {e}")
+        logger.error(f"Error while get_jwt_payload: {e}")
 

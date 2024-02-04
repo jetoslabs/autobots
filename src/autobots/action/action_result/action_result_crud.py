@@ -32,7 +32,7 @@
 #             self, action_result_doc_find: ActionResultDocFind, limit: int = 100, offset: int = 0
 #     ) -> List[ActionResultDoc]:
 #         if not action_result_doc_find.action_user_id:
-#             log.error("action_result find issued without specifying user")
+#             logger.error("action_result find issued without specifying user")
 #             return []
 #         find_params = {}
 #         for key, value in action_result_doc_find.model_dump().items():
@@ -70,7 +70,7 @@
 #
 #     async def delete_many(self, action_result_doc_find: ActionResultDocFind) -> DeleteResult | None:
 #         if not action_result_doc_find.user_id:
-#             log.error("action_result delete issued without specifying user")
+#             logger.error("action_result delete issued without specifying user")
 #             return None
 #         find_params = {}
 #         for key, value in action_result_doc_find.model_dump().items():
