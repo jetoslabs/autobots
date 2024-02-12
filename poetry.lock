@@ -158,6 +158,17 @@ test = ["anyio[trio]", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypo
 trio = ["trio (>=0.23)"]
 
 [[package]]
+name = "asn1crypto"
+version = "1.5.1"
+description = "Fast ASN.1 parser and serializer with definitions for private keys, public keys, certificates, CRL, OCSP, CMS, PKCS#3, PKCS#7, PKCS#8, PKCS#12, PKCS#5, X.509 and TSP"
+optional = false
+python-versions = "*"
+files = [
+    {file = "asn1crypto-1.5.1-py2.py3-none-any.whl", hash = "sha256:db4e40728b728508912cbb3d44f19ce188f218e9eba635821bb4b68564f8fd67"},
+    {file = "asn1crypto-1.5.1.tar.gz", hash = "sha256:13ae38502be632115abf8a24cbe5f4da52e3b5231990aff31123c805306ccb9c"},
+]
+
+[[package]]
 name = "async-timeout"
 version = "4.0.3"
 description = "Timeout context manager for asyncio programs"
@@ -2306,6 +2317,21 @@ numpy = {version = ">=1.26.0", markers = "python_version < \"3.13\""}
 types-pytz = ">=2022.1.1"
 
 [[package]]
+name = "pg8000"
+version = "1.30.4"
+description = "PostgreSQL interface library"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pg8000-1.30.4-py3-none-any.whl", hash = "sha256:64bbe27b11588a53cee08e840988416227263dc5191b649fab963949f3ddd84d"},
+    {file = "pg8000-1.30.4.tar.gz", hash = "sha256:2fa6964fff591a5e076fa6dd21a317c74de2caaa52991bb1f8b3d8ef2e56d172"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.8.2"
+scramp = ">=1.4.4"
+
+[[package]]
 name = "pillow"
 version = "10.2.0"
 description = "Python Imaging Library (Fork)"
@@ -3237,6 +3263,20 @@ botocore = ">=1.33.2,<2.0a.0"
 crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
+name = "scramp"
+version = "1.4.4"
+description = "An implementation of the SCRAM protocol."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "scramp-1.4.4-py3-none-any.whl", hash = "sha256:b142312df7c2977241d951318b7ee923d6b7a4f75ba0f05b621ece1ed616faa3"},
+    {file = "scramp-1.4.4.tar.gz", hash = "sha256:b7022a140040f33cf863ab2657917ed05287a807b917950489b89b9f685d59bc"},
+]
+
+[package.dependencies]
+asn1crypto = ">=1.5.1"
+
+[[package]]
 name = "selenium"
 version = "4.17.2"
 description = ""
@@ -4048,4 +4088,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "ef47ef9586b4fed1fd6690a1a332f7b7dc256ab82845668a8ecad1eb5a190853"
+content-hash = "547f72adcfa06dd02d657924f34dc7aecd4fb7c799bb663588d3d9de05e3cf40"
