@@ -3,6 +3,7 @@ import pytest
 from src.autobots.datastore.datastore_factory import get_datastore_factory
 
 
+@pytest.mark.skip(reason="Skipping test_datastore_happy_path to keep within rate limit")
 @pytest.mark.asyncio
 async def test_datastore_factory_happy_path(set_test_settings):
     str1 = "The truth is one, the wise call it by many names. ― Rig Veda"
