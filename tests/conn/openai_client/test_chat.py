@@ -1,5 +1,9 @@
 import pytest as pytest
-from openai.types.chat import ChatCompletion, ChatCompletionUserMessageParam, ChatCompletionSystemMessageParam
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionUserMessageParam,
+    ChatCompletionSystemMessageParam,
+)
 
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.conn.openai.openai_client import get_openai
@@ -7,8 +11,12 @@ from src.autobots.conn.openai.openai_client import get_openai
 
 @pytest.mark.asyncio
 async def test_chat_happy_path(set_test_settings):
-    msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
-    msg1 = ChatCompletionUserMessageParam(role="user", content="Most famous Mechanics law")
+    msg0 = ChatCompletionSystemMessageParam(
+        role="system", content="You are a helpful assistant."
+    )
+    msg1 = ChatCompletionUserMessageParam(
+        role="user", content="Most famous Mechanics law"
+    )
     params = ChatReq(messages=[msg0, msg1], model="gpt-3.5-turbo-16k-0613")
 
     resp: ChatCompletion = await get_openai().openai_chat.chat(chat_req=params)
@@ -19,19 +27,21 @@ async def test_chat_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_vision_chat_happy_path(set_test_settings):
-    msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
-    msg1 = ChatCompletionUserMessageParam(role="user", content=[
-          {
-            "type": "text",
-            "text": "What’s in this image?"
-          },
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
-            }
-          }
-        ])
+    msg0 = ChatCompletionSystemMessageParam(
+        role="system", content="You are a helpful assistant."
+    )
+    msg1 = ChatCompletionUserMessageParam(
+        role="user",
+        content=[
+            {"type": "text", "text": "What’s in this image?"},
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                },
+            },
+        ],
+    )
     params = ChatReq(messages=[msg0, msg1], model="gpt-4-vision-preview")
 
     resp: ChatCompletion = await get_openai().openai_chat.chat(chat_req=params)
@@ -42,8 +52,12 @@ async def test_vision_chat_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_chat_stream_happy_path(set_test_settings):
-    msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
-    msg1 = ChatCompletionUserMessageParam(role="user", content="Most famous Mechanics law")
+    msg0 = ChatCompletionSystemMessageParam(
+        role="system", content="You are a helpful assistant."
+    )
+    msg1 = ChatCompletionUserMessageParam(
+        role="user", content="Most famous Mechanics law"
+    )
     params = ChatReq(messages=[msg0, msg1], model="gpt-3.5-turbo-16k-0613", stream=True)
 
     stream = await get_openai().openai_chat.chat(chat_req=params)

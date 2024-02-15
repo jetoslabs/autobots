@@ -8,17 +8,24 @@ from pymongo.database import Database
 from pymongo.results import DeleteResult
 
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphDocCreate, ActionGraphDocFind, \
-    ActionGraphDocUpdate
+from src.autobots.action_graph.action_graph.action_graph_doc_model import (
+    ActionGraphDoc,
+    ActionGraphDocCreate,
+    ActionGraphDocFind,
+    ActionGraphDocUpdate,
+)
 
 
 class ActionGraphCRUD:
-
     def __init__(self, db: Database = Depends(get_mongo_db)):
         self.document: Collection = db[ActionGraphDoc.__collection__]
 
     async def insert_one(self, action_graph: ActionGraphDocCreate) -> ActionGraphDoc:
-        action_graph_find = ActionGraphDocFind(name=action_graph.name, version=action_graph.version, user_id=action_graph.user_id)
+        action_graph_find = ActionGraphDocFind(
+            name=action_graph.name,
+            version=action_graph.version,
+            user_id=action_graph.user_id,
+        )
         actions_graph_found = await self.find(action_graph_find)
         if len(actions_graph_found) > 0:
             raise HTTPException(400, "Action name and version not unique")
@@ -33,7 +40,10 @@ class ActionGraphCRUD:
         return ActionGraphDoc.model_validate(doc)
 
     async def find(
-            self, action_graph_doc_find: ActionGraphDocFind, limit: int = 100, offset: int = 0
+        self,
+        action_graph_doc_find: ActionGraphDocFind,
+        limit: int = 100,
+        offset: int = 0,
     ) -> List[ActionGraphDoc]:
         find_params = {}
         for key, value in action_graph_doc_find.model_dump().items():
@@ -78,7 +88,9 @@ class ActionGraphCRUD:
         delete_result = self.document.delete_many(find_params)
         return delete_result
 
-    async def update_one(self, action_graph_doc_update: ActionGraphDocUpdate) -> ActionGraphDoc:
+    async def update_one(
+        self, action_graph_doc_update: ActionGraphDocUpdate
+    ) -> ActionGraphDoc:
         update_params = {}
         for key, value in action_graph_doc_update.model_dump().items():
             if value is not None:
@@ -90,9 +102,12 @@ class ActionGraphCRUD:
             raise HTTPException(405, "Cannot find action to update")
 
         updated_action_graph_doc = self.document.find_one_and_update(
-            filter={"_id": update_params.get("_id"), "user_id": action_graph_doc_update.user_id},
+            filter={
+                "_id": update_params.get("_id"),
+                "user_id": action_graph_doc_update.user_id,
+            },
             update={"$set": update_params},
-            return_document=ReturnDocument.AFTER
+            return_document=ReturnDocument.AFTER,
         )
         if updated_action_graph_doc is None:
             raise HTTPException(405, "Unable to update action")
@@ -101,6 +116,7 @@ class ActionGraphCRUD:
         action = ActionGraphDoc.model_validate(updated_action_graph_doc)
         return action
 
-    async def upsert(self, ):
+    async def upsert(
+        self,
+    ):
         pass
-

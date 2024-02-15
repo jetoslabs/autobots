@@ -20,14 +20,11 @@ async def test_read_file_line_by_line_happy_path(set_test_settings):
 async def test_create_file_chunks_happy_path(set_test_settings):
     count = 0
 
-    chunks = DataProvider.create_file_chunks(FILENAME, DataProvider.read_file_line_by_line, 52)
+    chunks = DataProvider.create_file_chunks(
+        FILENAME, DataProvider.read_file_line_by_line, 52
+    )
 
     async for chunk in chunks:
         count = count + 1
 
     assert count == 3
-
-
-
-
-

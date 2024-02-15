@@ -14,15 +14,14 @@ from src.autobots.core.utils import gen_uuid
 
 
 class Stability:
-
     def __init__(
-            self,
-            host: str,
-            key: str,
-            engine: str = "stable-diffusion-xl-1024-v0-9",  # "stable-diffusion-xl-beta-v2-2-2",
-            upscale_engine: str = "stable-diffusion-x4-latent-upscaler",
-            verbose: bool = True,
-            wait_for_ready: bool = True
+        self,
+        host: str,
+        key: str,
+        engine: str = "stable-diffusion-xl-1024-v0-9",  # "stable-diffusion-xl-beta-v2-2-2",
+        upscale_engine: str = "stable-diffusion-x4-latent-upscaler",
+        verbose: bool = True,
+        wait_for_ready: bool = True,
     ):
         # Set up our connection to the API.
         self.stability_api = client.StabilityInference(
@@ -51,7 +50,7 @@ class Stability:
             width=stability_req.width,  # 512,  # Generation width, defaults to 512 if not included.
             height=stability_req.height,  # 512,  # Generation height, defaults to 512 if not included.
             samples=stability_req.samples,  # 1,  # Number of images to generate, defaults to 1 if not included.
-            sampler=generation.SAMPLER_K_DPMPP_2M  # Choose which sampler we want to denoise our generation with.
+            sampler=generation.SAMPLER_K_DPMPP_2M,  # Choose which sampler we want to denoise our generation with.
             # Defaults to k_dpmpp_2m if not specified. Clip Guidance only supports ancestral samplers.
             # (Available Samplers: ddim, plms, k_euler, k_euler_ancestral, k_heun, k_dpm_2, k_dpm_2_ancestral, k_dpmpp_2s_ancestral, k_lms, k_dpmpp_2m, k_dpmpp_sde)
         )
@@ -63,18 +62,23 @@ class Stability:
                 if artifact.finish_reason == generation.FILTER:
                     warnings.warn(
                         "Your request activated the API's safety filters and could not be processed."
-                        "Please modify the prompt and try again.")
+                        "Please modify the prompt and try again."
+                    )
                 if artifact.type == generation.ARTIFACT_IMAGE:
                     img = Image.open(io.BytesIO(artifact.binary))
                     # Save our generated images with their seed number as the filename.
                     img.save(str(artifact.seed) + ".png")
 
                     settings = SettingsProvider.sget()
-                    s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
-                                    settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME)
+                    s3 = get_aws_s3(
+                        settings.AWS_S3_BUCKET_REGION,
+                        settings.AWS_ACCESS_KEY_ID,
+                        settings.AWS_SECRET_ACCESS_KEY,
+                        settings.AWS_S3_PUBLIC_BUCKET_NAME,
+                    )
                     added_file_url = await s3.put_file_obj(
                         io.BytesIO(artifact.binary),
-                        f"{settings.AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(gen_uuid())}.png"
+                        f"{settings.AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER}/{str(gen_uuid())}.png",
                     )
 
                     # return artifact.binary
@@ -98,10 +102,13 @@ class Stability:
                 if artifact.finish_reason == generation.FILTER:
                     warnings.warn(
                         "Your request activated the API's safety filters and could not be processed."
-                        "Please submit a different image and try again.")
+                        "Please submit a different image and try again."
+                    )
                 if artifact.type == generation.ARTIFACT_IMAGE:
                     big_img = Image.open(io.BytesIO(artifact.binary))
-                    big_img.save("imageupscaled" + ".png")  # Save our image to a local file.
+                    big_img.save(
+                        "imageupscaled" + ".png"
+                    )  # Save our image to a local file.
                     return artifact.binary
 
 

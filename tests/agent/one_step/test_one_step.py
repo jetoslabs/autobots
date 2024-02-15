@@ -7,7 +7,9 @@ from src.autobots.agent.one_step import AgentData, OneStepAgent
 @pytest.mark.skip(reason="One step agent stalling")
 @pytest.mark.asyncio
 async def test_one_step_happy_path_1(set_test_settings):
-    agent_data = AgentData(goal="Act as an effective google search advert maker. Create advert for Nike shoes")
+    agent_data = AgentData(
+        goal="Act as an effective google search advert maker. Create advert for Nike shoes"
+    )
     await OneStepAgent().run(agent_data)
     print(f"test_one_step_happy_path_1: {agent_data.context[-1]['content']}")
     assert True

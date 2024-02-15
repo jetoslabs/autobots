@@ -13,7 +13,6 @@ DocUpdateType = TypeVar("DocUpdateType", bound=BaseModel)
 
 
 class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
-
     def __init__(self, doc_model: Type[DocType], collection: Collection):
         self.doc_model = doc_model
         self.document: Collection = collection  # db[DocType.__collection__]
@@ -29,7 +28,9 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         doc["_id"] = str(doc.get("_id"))
         return self.doc_model.model_validate(doc)
 
-    async def find(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> List[DocType]:
+    async def find(
+        self, doc_find: DocFindType, limit: int = 100, offset: int = 0
+    ) -> List[DocType]:
         find_params = {}
         for key, value in doc_find.model_dump().items():
             if value is not None:
@@ -86,9 +87,12 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
                     update_params[key] = value
 
         updated_action_doc = self.document.find_one_and_update(
-            filter={"_id": update_params.get("_id"), "user_id": update_params.get("user_id")},
+            filter={
+                "_id": update_params.get("_id"),
+                "user_id": update_params.get("user_id"),
+            },
             update={"$set": update_params},
-            return_document=ReturnDocument.AFTER
+            return_document=ReturnDocument.AFTER,
         )
         if updated_action_doc is None:
             raise HTTPException(405, "Unable to update doc")
@@ -96,7 +100,3 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         updated_action_doc["_id"] = str(updated_action_doc.get("_id"))
         doc_type = self.doc_model.model_validate(updated_action_doc)
         return doc_type
-
-
-
-

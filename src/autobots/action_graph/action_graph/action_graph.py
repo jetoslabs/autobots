@@ -9,40 +9,56 @@ from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.user_actions_market import UserActionsMarket
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
-from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
-    ActionGraphResultCreate, ActionGraphResultUpdate
-from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
+from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import (
+    ActionGraphResultDoc,
+    ActionGraphResultCreate,
+    ActionGraphResultUpdate,
+)
+from src.autobots.action_graph.action_graph_result.user_action_graph_result import (
+    UserActionGraphResult,
+)
 from src.autobots.api.webhook import Webhook
 from src.autobots.event_result.event_result_model import EventResultStatus
 
 
 class ActionGraph:
-
     @staticmethod
     async def run_in_background(
-            action_graph_doc: ActionGraphDoc,
-            action_graph_input_dict: Dict[str, Any],
-            user_actions: UserActions,
-            user_actions_market: UserActionsMarket,
-            user_action_graph_result: UserActionGraphResult,
-            action_graph_result_id: Optional[str] = None,
-            background_tasks: BackgroundTasks = None,
-            webhook: Webhook | None = None,
+        action_graph_doc: ActionGraphDoc,
+        action_graph_input_dict: Dict[str, Any],
+        user_actions: UserActions,
+        user_actions_market: UserActionsMarket,
+        user_action_graph_result: UserActionGraphResult,
+        action_graph_result_id: Optional[str] = None,
+        background_tasks: BackgroundTasks = None,
+        webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
         action_graph_result_doc: ActionGraphResultDoc | None = None
         if not action_graph_result_id:
             # Create initial Action Graph Result if not provided
             action_graph_doc.input = action_graph_input_dict
             action_graph_doc.output = {}
-            action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
-                status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
+            action_graph_result_create: ActionGraphResultCreate = (
+                ActionGraphResultCreate(
+                    status=EventResultStatus.processing,
+                    result=action_graph_doc,
+                    is_saved=False,
+                )
             )
-            action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
+            action_graph_result_doc = (
+                await user_action_graph_result.create_action_graph_result(
+                    action_graph_result_create
+                )
+            )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         else:
             # find and use Action Graph Result
-            action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
+            action_graph_result_doc = (
+                await user_action_graph_result.get_action_graph_result(
+                    action_graph_result_id
+                )
+            )
 
         if background_tasks:
             background_tasks.add_task(
@@ -52,7 +68,7 @@ class ActionGraph:
                 action_graph_input_dict,
                 action_graph_result_doc,
                 user_action_graph_result,
-                webhook
+                webhook,
             )
         else:
             action_graph_result_doc = await ActionGraph._run_as_background_task(
@@ -61,19 +77,19 @@ class ActionGraph:
                 action_graph_input_dict,
                 action_graph_result_doc,
                 user_action_graph_result,
-                webhook
+                webhook,
             )
 
         return action_graph_result_doc
 
     @staticmethod
     async def _run_as_background_task(
-            user_actions: UserActions,
-            user_actions_market: UserActionsMarket,
-            action_graph_input_dict: Dict[str, Any],
-            action_graph_result_doc: ActionGraphResultDoc,
-            user_action_graph_result: UserActionGraphResult,
-            webhook: Webhook | None = None
+        user_actions: UserActions,
+        user_actions_market: UserActionsMarket,
+        action_graph_input_dict: Dict[str, Any],
+        action_graph_result_doc: ActionGraphResultDoc,
+        user_action_graph_result: UserActionGraphResult,
+        webhook: Webhook | None = None,
     ):
         # TODO: check if action_graph_result_doc status is success, if success then return.
         # TODO: This behaviour should be accompanied by status change on action_graph_result_doc update
@@ -92,13 +108,19 @@ class ActionGraph:
         try:
             while len(action_response) + len(review_required_nodes) != len(total_nodes):
                 for node, values in inverted_map.items():
-                    if await ActionGraph.is_work_done([node], action_response) or \
-                            not await ActionGraph.is_work_done(values, action_response):
+                    if await ActionGraph.is_work_done(
+                        [node], action_response
+                    ) or not await ActionGraph.is_work_done(values, action_response):
                         continue
                     # Check if user review required
                     is_any_dependent_require_review = False
                     for value in values:
-                        if node_details_map and node_details_map.get(value) and node_details_map.get(value).data.user_review_required and not node_details_map.get(value).data.user_review_done:
+                        if (
+                            node_details_map
+                            and node_details_map.get(value)
+                            and node_details_map.get(value).data.user_review_required
+                            and not node_details_map.get(value).data.user_review_done
+                        ):
                             review_required_nodes.append(value)
                             is_any_dependent_require_review = True
                     if is_any_dependent_require_review:
@@ -110,30 +132,33 @@ class ActionGraph:
                             user_actions,
                             user_actions_market,
                             node_action_map.get(node),
-                            action_graph_input
+                            action_graph_input,
                         )
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_graph_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
                         # Run action with at least 1 dependency
-                        action_input = await ActionGraph.to_input(values, action_response)
+                        action_input = await ActionGraph.to_input(
+                            values, action_response
+                        )
                         action_result = await ActionGraph.run_action(
                             user_actions,
                             user_actions_market,
                             node_action_map.get(node),
-                            action_input
+                            action_input,
                         )
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
 
                     # Update action result graph
                     action_graph_result_doc.result.output[node] = action_response[node]
-                    action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                        result=action_graph_result_doc.result
+                    action_graph_result_update: ActionGraphResultUpdate = (
+                        ActionGraphResultUpdate(result=action_graph_result_doc.result)
                     )
-                    action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
-                        action_graph_result_doc.id,
-                        action_graph_result_update
+                    action_graph_result_doc = (
+                        await user_action_graph_result.update_action_graph_result(
+                            action_graph_result_doc.id, action_graph_result_update
+                        )
                     )
                     if webhook:
                         await webhook.send(action_graph_result_doc.model_dump())
@@ -141,58 +166,69 @@ class ActionGraph:
             # Update action result graph as success or waiting
             action_graph_result_update: ActionGraphResultUpdate | None
             if len(review_required_nodes) == 0:
-                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                    status=EventResultStatus.success
+                action_graph_result_update: ActionGraphResultUpdate = (
+                    ActionGraphResultUpdate(status=EventResultStatus.success)
                 )
             else:
-                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                    status=EventResultStatus.waiting
+                action_graph_result_update: ActionGraphResultUpdate = (
+                    ActionGraphResultUpdate(status=EventResultStatus.waiting)
                 )
 
-            action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
-                action_graph_result_doc.id,
-                action_graph_result_update
+            action_graph_result_doc = (
+                await user_action_graph_result.update_action_graph_result(
+                    action_graph_result_doc.id, action_graph_result_update
+                )
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            logger.bind(action_graph_id=action_graph_result_doc.result.id).error(f"Error while graph run, {str(e)}")
+            logger.bind(action_graph_id=action_graph_result_doc.result.id).error(
+                f"Error while graph run, {str(e)}"
+            )
 
             # Update action result graph as error
-            action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-                status=EventResultStatus.error,
-                error_message=TextObj(text=str(e))
+            action_graph_result_update: ActionGraphResultUpdate = (
+                ActionGraphResultUpdate(
+                    status=EventResultStatus.error, error_message=TextObj(text=str(e))
+                )
             )
-            action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
-                action_graph_result_doc.id,
-                action_graph_result_update
+            action_graph_result_doc = (
+                await user_action_graph_result.update_action_graph_result(
+                    action_graph_result_doc.id, action_graph_result_update
+                )
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        (logger.bind(action_graph_result_id=action_graph_result_doc.id,action_graph_id=action_graph_result_doc.result.id)
-         .info("Completed Action Graph _run_as_background_task"))
+        (
+            logger.bind(
+                action_graph_result_id=action_graph_result_doc.id,
+                action_graph_id=action_graph_result_doc.result.id,
+            ).info("Completed Action Graph _run_as_background_task")
+        )
         return action_graph_result_doc
 
     @staticmethod
     async def run_action(
-            user_actions: UserActions,
-            user_action_market: UserActionsMarket,
-            action_id: str,
-            action_graph_input: TextObj
+        user_actions: UserActions,
+        user_action_market: UserActionsMarket,
+        action_id: str,
+        action_graph_input: TextObj,
     ):
         exception = None
         try:
-            action_result = await user_actions.run_action_v1(action_id, action_graph_input.model_dump())
+            action_result = await user_actions.run_action_v1(
+                action_id, action_graph_input.model_dump()
+            )
             return action_result
         except HTTPException as e:
             exception = e
         try:
-            action_result = await user_action_market.run_market_action(action_id, action_graph_input.model_dump())
+            action_result = await user_action_market.run_market_action(
+                action_id, action_graph_input.model_dump()
+            )
             return action_result
         except Exception as e:
             raise HTTPException(405, f"{exception.detail} and {e}")
-
-
 
     @staticmethod
     async def get_nodes(graph: Dict[str, List[str]]) -> Set[str]:
@@ -225,7 +261,9 @@ class ActionGraph:
         return True
 
     @staticmethod
-    async def to_input(values: List[str], action_response: Dict[str, ActionDoc]) -> TextObj:
+    async def to_input(
+        values: List[str], action_response: Dict[str, ActionDoc]
+    ) -> TextObj:
         input_msg = ""
         for value in values:
             action_doc = action_response.get(value)
@@ -242,7 +280,9 @@ class ActionGraph:
                             input_msg = input_msg + f"{url.unicode_string()},"
                     except Exception as e:
                         text_obj = TextObj.model_validate(action_output)
-                        input_msg = f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"
+                        input_msg = (
+                            f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"
+                        )
             except Exception as e:
                 logger.warning(f"Cannot convert to Input: {str(e)}")
             # if isinstance(action_outputs, TextObjs):

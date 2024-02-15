@@ -63,6 +63,6 @@ class EventResultDocCreate(EventResultCreate):
 class EventResultDoc(EventResultDocCreate):
     __collection__ = "EventResults"
 
-    id: str = Field(..., alias='_id')
+    id: str = Field(..., alias="_id")
 
     model_config = ConfigDict(populate_by_name=True)

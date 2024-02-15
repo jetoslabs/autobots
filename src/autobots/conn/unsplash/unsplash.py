@@ -27,7 +27,9 @@ class Unsplash:
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url=url, params=params) as r:
                 json_body = await r.json()
-                img_list: List[Image] = [Image(**image_json_body) for image_json_body in json_body]
+                img_list: List[Image] = [
+                    Image(**image_json_body) for image_json_body in json_body
+                ]
                 # List[Image](json_body)]ImageList.parse_obj(json_body)
                 return img_list
 
@@ -45,4 +47,3 @@ class Unsplash:
 @lru_cache
 def get_unsplash(settings: Settings = SettingsProvider.sget()) -> Unsplash:
     return Unsplash(access_key=settings.UNSPLASH_ACCESS_KEY)
-

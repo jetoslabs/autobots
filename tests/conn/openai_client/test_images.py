@@ -4,30 +4,32 @@ import pytest
 from openai.types import ImagesResponse
 
 from src.autobots.conn.openai.openai_client import get_openai
-from src.autobots.conn.openai.openai_images.image_model import ImageEdit, ImageCreateVariation
+from src.autobots.conn.openai.openai_images.image_model import (
+    ImageEdit,
+    ImageCreateVariation,
+)
 
 
 @pytest.mark.asyncio
 async def test_create_image_edit_file_happy_path(set_test_settings):
-    SOURCE_FILE="tests/resources/openai/test_images/suit_1.png"
+    SOURCE_FILE = "tests/resources/openai/test_images/suit_1.png"
     path = Path(SOURCE_FILE)
 
-    params = ImageEdit(
-        image=path,
-        prompt="smiling face"
+    params = ImageEdit(image=path, prompt="smiling face")
+    resp: ImagesResponse | None = await get_openai().openai_images.create_image_edit(
+        params
     )
-    resp: ImagesResponse | None = await get_openai().openai_images.create_image_edit(params)
     assert resp is not None
 
 
 @pytest.mark.asyncio
 async def test_create_image_variation_file_happy_path(set_test_settings):
-    SOURCE_FILE="tests/resources/openai/test_images/suit_1.png"
+    SOURCE_FILE = "tests/resources/openai/test_images/suit_1.png"
 
-    params = ImageCreateVariation(
-        image=SOURCE_FILE
+    params = ImageCreateVariation(image=SOURCE_FILE)
+    resp: ImagesResponse | None = (
+        await get_openai().openai_images.create_image_variation(params)
     )
-    resp: ImagesResponse | None = await get_openai().openai_images.create_image_variation(params)
     assert resp is not None
 
 

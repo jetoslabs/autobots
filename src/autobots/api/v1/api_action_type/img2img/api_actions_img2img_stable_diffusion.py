@@ -8,8 +8,10 @@ from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from src.autobots.action.action.user_actions import UserActions
-from src.autobots.action.action_type.action_img2img.action_img2img_stable_diffusion import Img2ImgRunModel, \
-    ActionImg2ImgStableDiffusion
+from src.autobots.action.action_type.action_img2img.action_img2img_stable_diffusion import (
+    Img2ImgRunModel,
+    ActionImg2ImgStableDiffusion,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -29,9 +31,9 @@ class ActionCreateImg2ImgStableDiffusion(ActionCreate):
 
 @router.post("/img2img/stable_diffusion")
 async def create_action_img2img_stable_diffusion(
-        action_create: ActionCreateImg2ImgStableDiffusion,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+    action_create: ActionCreateImg2ImgStableDiffusion,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -46,10 +48,10 @@ async def create_action_img2img_stable_diffusion(
 
 @router.post("/img2img/stable_diffusion/{action_id}/run")
 async def run_action_image_mixer_stable_diffusion(
-        action_id: str,
-        action_input: Img2ImgRunModel,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+    action_id: str,
+    action_input: Img2ImgRunModel,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
 ) -> StableDiffusionRes:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -62,4 +64,3 @@ async def run_action_image_mixer_stable_diffusion(
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(500)
-

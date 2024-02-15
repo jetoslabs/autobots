@@ -1,7 +1,7 @@
 # from uuid import UUID
 
 # import gotrue
-from fastapi import APIRouter# Depends, HTTPException
+from fastapi import APIRouter  # Depends, HTTPException
 # from pymongo.database import Database
 
 # from autobots.action.action.action_doc_model import ActionDoc, ActionCreate

@@ -7,24 +7,32 @@ from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from src.autobots.datastore.datastore_meta_doc_model import DatastoreMetaDoc, DatastoreMetaDocCreate, DatastoreMetaDocFind, \
-    DatastoreMetaDocUpdate
+from src.autobots.datastore.datastore_meta_doc_model import (
+    DatastoreMetaDoc,
+    DatastoreMetaDocCreate,
+    DatastoreMetaDocFind,
+    DatastoreMetaDocUpdate,
+)
 
 
 class DatastoreMetaCRUD:
-
     def __init__(self, db: Database):
         self.document: Collection = db[DatastoreMetaDoc.__collection__]
 
-    async def insert_one(self, datastore_meta_doc_create: DatastoreMetaDocCreate) -> DatastoreMetaDoc:
+    async def insert_one(
+        self, datastore_meta_doc_create: DatastoreMetaDocCreate
+    ) -> DatastoreMetaDoc:
         datastore_meta_doc_find = DatastoreMetaDocFind(
-            name=datastore_meta_doc_create.name, user_id=datastore_meta_doc_create.user_id
+            name=datastore_meta_doc_create.name,
+            user_id=datastore_meta_doc_create.user_id,
         )
         datastore_meta_doc_found = await self.find(datastore_meta_doc_find)
         if len(datastore_meta_doc_found) > 0:
             raise HTTPException(400, "Datastore_Meta not unique")
         insert_result = self.document.insert_one(datastore_meta_doc_create.model_dump())
-        inserted_datastore_meta = await self._find_by_object_id(insert_result.inserted_id)
+        inserted_datastore_meta = await self._find_by_object_id(
+            insert_result.inserted_id
+        )
         return inserted_datastore_meta
 
     async def _find_by_object_id(self, id: str) -> DatastoreMetaDoc:
@@ -34,7 +42,10 @@ class DatastoreMetaCRUD:
         return DatastoreMetaDoc.model_validate(doc)
 
     async def find(
-            self, datastore_meta_doc_find: DatastoreMetaDocFind, limit: int = 100, offset: int = 0
+        self,
+        datastore_meta_doc_find: DatastoreMetaDocFind,
+        limit: int = 100,
+        offset: int = 0,
     ) -> List[DatastoreMetaDoc]:
         find_params = {}
         for key, value in datastore_meta_doc_find.model_dump().items():
@@ -67,11 +78,15 @@ class DatastoreMetaCRUD:
                 datastore_meta_doc = DatastoreMetaDoc.model_validate(doc)
                 datastore_meta_docs.append(datastore_meta_doc)
             except Exception as e:
-                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=action_doc).error(
+                    f"Error while parsing action doc: {e}, skipping to next"
+                )
 
         return datastore_meta_docs
 
-    async def delete_many(self, datastore_meta_doc_find: DatastoreMetaDocFind) -> DeleteResult:
+    async def delete_many(
+        self, datastore_meta_doc_find: DatastoreMetaDocFind
+    ) -> DeleteResult:
         find_params = {}
         for key, value in datastore_meta_doc_find.model_dump().items():
             if value is not None:
@@ -87,10 +102,14 @@ class DatastoreMetaCRUD:
         datastore_meta_doc = await self._find_by_object_id(id)
         if datastore_meta_doc is None:
             raise HTTPException(405, "Unable to find datastore_meta_doc to delete")
-        delete_result = self.document.delete_one({"_id": ObjectId(datastore_meta_doc.id)})
+        delete_result = self.document.delete_one(
+            {"_id": ObjectId(datastore_meta_doc.id)}
+        )
         return delete_result
 
-    async def update_one(self, datastore_meta_doc_update: DatastoreMetaDocUpdate) -> DatastoreMetaDoc:
+    async def update_one(
+        self, datastore_meta_doc_update: DatastoreMetaDocUpdate
+    ) -> DatastoreMetaDoc:
         update_params = {}
         for key, value in datastore_meta_doc_update.model_dump().items():
             if value is not None:
@@ -102,9 +121,12 @@ class DatastoreMetaCRUD:
             raise HTTPException(405, "Cannot find datastore_meta_doc to update")
 
         updated_datastore_meta_doc = self.document.find_one_and_update(
-            filter={"_id": update_params.get("_id"), "user_id": datastore_meta_doc_update.user_id},
+            filter={
+                "_id": update_params.get("_id"),
+                "user_id": datastore_meta_doc_update.user_id,
+            },
             update={"$set": update_params},
-            return_document=ReturnDocument.AFTER
+            return_document=ReturnDocument.AFTER,
         )
         if updated_datastore_meta_doc is None:
             raise HTTPException(405, "Unable to update datastore_meta_doc")

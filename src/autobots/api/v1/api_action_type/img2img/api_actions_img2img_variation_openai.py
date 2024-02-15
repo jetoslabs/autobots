@@ -8,7 +8,9 @@ from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from src.autobots.action.action.user_actions import UserActions
-from src.autobots.action.action_type.action_img2img.action_img2img_variation_openai import ImageVariationInput
+from src.autobots.action.action_type.action_img2img.action_img2img_variation_openai import (
+    ImageVariationInput,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.openai.openai_images.image_model import ImageCreateVariation
@@ -27,9 +29,9 @@ class ActionCreateImg2ImgVariationOpenai(ActionCreate):
 
 @router.post("/img2img/variation_openai")
 async def create_img2img_edit_openai(
-        action_create: ActionCreateImg2ImgVariationOpenai,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+    action_create: ActionCreateImg2ImgVariationOpenai,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

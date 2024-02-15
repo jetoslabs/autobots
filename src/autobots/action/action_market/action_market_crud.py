@@ -12,12 +12,14 @@ from src.autobots.core.database.mongo_base import get_mongo_db
 
 
 class ActionMarketCRUD:
-
     def __init__(self, db: Database = Depends(get_mongo_db)):
         self.document: Collection = db[ActionDoc.__collection__]
 
     async def find(
-            self, action_market_doc_find: ActionMarketDocFind, limit: int = 100, offset: int = 0
+        self,
+        action_market_doc_find: ActionMarketDocFind,
+        limit: int = 100,
+        offset: int = 0,
     ) -> List[ActionDoc]:
         find_params = {}
         for key, value in action_market_doc_find.model_dump().items():
@@ -50,7 +52,8 @@ class ActionMarketCRUD:
                 action_doc = ActionDoc.model_validate(doc)
                 action_docs.append(action_doc)
             except Exception as e:
-                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=action_doc).error(
+                    f"Error while parsing action doc: {e}, skipping to next"
+                )
 
         return action_docs
-

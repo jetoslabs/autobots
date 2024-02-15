@@ -2,7 +2,12 @@ from typing import Optional, Type
 
 from openai.types import ImagesResponse
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import (
+    IAction,
+    ActionOutputType,
+    ActionInputType,
+    ActionConfigType,
+)
 from src.autobots.action.action.action_doc_model import ActionCreate
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj

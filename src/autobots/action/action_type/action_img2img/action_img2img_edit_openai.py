@@ -5,7 +5,12 @@ from openai.types import ImagesResponse
 from pydantic import BaseModel
 from pydantic_core import Url
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
+from src.autobots.action.action_type.abc.IAction import (
+    IAction,
+    ActionConfigType,
+    ActionInputType,
+    ActionOutputType,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_images.image_model import ImageEdit
@@ -38,7 +43,9 @@ class ActionImg2ImgEditOpenai(IAction[ImageEdit, ImageEditInput, ImagesResponse]
 
     async def run_action(self, action_input: ImageEditInput) -> ImagesResponse:
         if action_input.prompt:
-            self.action_config.prompt = f"{self.action_config.prompt} {action_input.prompt}"
+            self.action_config.prompt = (
+                f"{self.action_config.prompt} {action_input.prompt}"
+            )
         if action_input.image:
             self.action_config.image = action_input.image
         if action_input.mask:

@@ -7,7 +7,10 @@ from src.autobots.action.action.action_crud import ActionCRUD
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionUpdate
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.action_market_crud import ActionMarketCRUD
-from src.autobots.action.action_market.action_market_model import ActionMarketFind, ActionMarketDocFind
+from src.autobots.action.action_market.action_market_model import (
+    ActionMarketFind,
+    ActionMarketDocFind,
+)
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc
 from src.autobots.action.action_result.user_action_result import UserActionResult
 from src.autobots.action.action_type.action_factory import ActionFactory
@@ -16,7 +19,6 @@ from src.autobots.user.user_orm_model import UserORM
 
 
 class UserActionsMarket:
-
     def __init__(self, user: UserORM, db: Database):
         self.user = user
         self.user_id = str(user.id)
@@ -35,8 +37,7 @@ class UserActionsMarket:
         return updated_action
 
     async def list_market_actions(
-            self, action_market_find: ActionMarketFind,
-            limit: int = 100, offset: int = 0
+        self, action_market_find: ActionMarketFind, limit: int = 100, offset: int = 0
     ) -> List[ActionDoc]:
         # Market actions will have `is_published = True`
         # action_find.is_published = True
@@ -69,7 +70,9 @@ class UserActionsMarket:
         updated_action = await self._user_actions.update_action(id, action_update)
         return updated_action
 
-    async def run_market_action(self, action_id: str, input: Dict[str, Any]) -> ActionDoc:
+    async def run_market_action(
+        self, action_id: str, input: Dict[str, Any]
+    ) -> ActionDoc:
         # Only get action if it is published in market
         # Market actions will have `is_published = True`
         action_find = ActionMarketFind(id=action_id)
@@ -80,8 +83,12 @@ class UserActionsMarket:
         return resp
 
     async def run_market_action_async(
-            self, action_id: str, input: Dict[str, Any], user_action_result: UserActionResult,
-            background_tasks: BackgroundTasks = None, webhook: Webhook | None = None
+        self,
+        action_id: str,
+        input: Dict[str, Any],
+        user_action_result: UserActionResult,
+        background_tasks: BackgroundTasks = None,
+        webhook: Webhook | None = None,
     ) -> ActionResultDoc:
         # Only get action if it is published in market
         # Market actions will have `is_published = True`
@@ -90,6 +97,7 @@ class UserActionsMarket:
         action_docs = await self.action_market_crud.find(action_market_doc_find, 1, 0)
         action_doc = action_docs[0]
 
-        action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result,
-                                                                           background_tasks, webhook)
+        action_result_doc = await ActionFactory().run_action_in_background(
+            action_doc, input, user_action_result, background_tasks, webhook
+        )
         return action_result_doc

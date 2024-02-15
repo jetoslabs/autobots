@@ -3,6 +3,7 @@ from functools import lru_cache
 from typing import List
 
 from loguru import logger
+
 # import psutil
 from pydantic import HttpUrl
 from selenium import webdriver
@@ -13,7 +14,6 @@ from selenium.webdriver.common.by import By
 
 
 class Selenium:
-
     def __init__(self, options: Options = Options()):
         # Do not open browser
         # options.add_argument("--no-sandbox")
@@ -27,7 +27,9 @@ class Selenium:
         self.driver = self.get_webdriver()
 
     def get_webdriver(self):
-        driver = webdriver.Firefox(options=self.browser_options, service=self.browser_service, keep_alive=False)
+        driver = webdriver.Firefox(
+            options=self.browser_options, service=self.browser_service, keep_alive=False
+        )
         return driver
 
     def close_webdriver(self):
@@ -58,7 +60,9 @@ class Selenium:
         text: str = self.driver.find_element(By.XPATH, xpath).text
         return text
 
-    async def read_url_v1(self, url: HttpUrl, xpath: str = "/html/body", attribute: str = "") -> str:
+    async def read_url_v1(
+        self, url: HttpUrl, xpath: str = "/html/body", attribute: str = ""
+    ) -> str:
         try:
             await self.refresh_driver_on_resource_overload()
             logger.bind(url=url).debug("Reading url")
@@ -85,7 +89,9 @@ class Selenium:
             logger.bind(url=url).error(f"Error while reading url: {str(e)}")
             raise
 
-    async def read_urls(self, urls: List[HttpUrl], xpath: str = "/html/body", attribute: str = "") -> str:
+    async def read_urls(
+        self, urls: List[HttpUrl], xpath: str = "/html/body", attribute: str = ""
+    ) -> str:
         result = ""
         for url in urls:
             try:
@@ -95,8 +101,10 @@ class Selenium:
                 pass
         return result
 
-
-    async def read_url(self, url: HttpUrl, ) -> str:
+    async def read_url(
+        self,
+        url: HttpUrl,
+    ) -> str:
         await self.refresh_driver_on_resource_overload()
         logger.bind(url=url).debug("Reading url")
         # Target URL

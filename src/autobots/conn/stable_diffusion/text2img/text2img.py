@@ -3,11 +3,17 @@ from loguru import logger
 
 from pydantic import ValidationError
 
-from src.autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgReqModel, Text2ImgResModel, \
-    Text2ImgResProcessingModel, Text2ImgResError
+from src.autobots.conn.stable_diffusion.text2img.text2img_model import (
+    Text2ImgReqModel,
+    Text2ImgResModel,
+    Text2ImgResProcessingModel,
+    Text2ImgResError,
+)
 
 
-async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProcessingModel | Text2ImgResError:
+async def text2img(
+    req: Text2ImgReqModel,
+) -> Text2ImgResModel | Text2ImgResProcessingModel | Text2ImgResError:
     """
     Reference: https://docs.modelslab.com/realtime-stable-diffusion/text2img
     """
@@ -15,9 +21,7 @@ async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProce
 
     payload = req.model_dump_json()
 
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {"Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code != 200:
@@ -36,4 +40,6 @@ async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProce
             res = Text2ImgResModel.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
-        logger.error(f"Stable diffusion text2img validation error for response: {response_json}")
+        logger.error(
+            f"Stable diffusion text2img validation error for response: {response_json}"
+        )

@@ -36,7 +36,9 @@ async def test_datastore_happy_path(set_test_settings):
         assert result[1] == str2
 
         # testing hydrated datastore
-        hydrated_datastore = Datastore(s3, pinecone, unstructured).hydrate(datastore_id=datastore.id)
+        hydrated_datastore = Datastore(s3, pinecone, unstructured).hydrate(
+            datastore_id=datastore.id
+        )
         assert hydrated_datastore.id == datastore.id
         assert hydrated_datastore.trace == datastore.trace
         assert hydrated_datastore.name == datastore.name
@@ -65,7 +67,7 @@ async def test_put_files_happy_path(set_test_settings):
     datastore = Datastore(s3, pinecone, unstructured).init(name="teststore")
 
     try:
-        with open(filename, mode='rb') as file:
+        with open(filename, mode="rb") as file:
             upload_file = UploadFile(filename=filename, file=file)
             await datastore.put_files([upload_file], chunk_size=50)
 
@@ -78,4 +80,3 @@ async def test_put_files_happy_path(set_test_settings):
     finally:
         # cleanup datastore
         deleted = await datastore.empty_and_close()
-

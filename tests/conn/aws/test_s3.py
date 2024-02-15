@@ -40,7 +40,6 @@ async def test_aws_s3_list(set_test_settings):
         assert len(s3_objects) == num_of_files
 
     finally:
-
         # Delete list of objects
         await get_s3().delete_prefix(prefix)
 

@@ -28,17 +28,29 @@ class Text2VideoScheduler(str, Enum):
 
 
 class Text2VideoReqModel(BaseModel):
-    key: str = Field(default=SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
-                     description="Your API Key used for request authorization.")
+    key: str = Field(
+        default=SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
+        description="Your API Key used for request authorization.",
+    )
     # model_id: str = Field(default="zeroscope",
     #                       description="The ID of the model to use. Can be zeroscope or one of the models present here https://modelslab.com/models/category/stable-diffusion")
-    prompt: str = Field(...,
-                        description="Text prompt with description of the things you want in the video to be generated.")
-    negative_prompt: Optional[str] = Field(default="low quality", description="Items you don't want in the video.")
-    seed: Optional[int] = Field(default=None,
-                                description="Seed is used to reproduce results, same seed will give you same image in return again. Pass null for a random number.")
-    width: int = Field(default=1024, ge=0, le=1024, description="Max Height: Width: 1024x1024.")
-    height: int = Field(default=1024, ge=0, le=1024, description="Max Height: Width: 1024x1024.")
+    prompt: str = Field(
+        ...,
+        description="Text prompt with description of the things you want in the video to be generated.",
+    )
+    negative_prompt: Optional[str] = Field(
+        default="low quality", description="Items you don't want in the video."
+    )
+    seed: Optional[int] = Field(
+        default=None,
+        description="Seed is used to reproduce results, same seed will give you same image in return again. Pass null for a random number.",
+    )
+    width: int = Field(
+        default=1024, ge=0, le=1024, description="Max Height: Width: 1024x1024."
+    )
+    height: int = Field(
+        default=1024, ge=0, le=1024, description="Max Height: Width: 1024x1024."
+    )
     # num_frames: int = Field(default=25, ge=16, le=25,
     #                         description="Number of frames in generated video. Max: 25. Defaults to 16.")
     # num_inference_steps: int = Field(default=20, ge=20, le=50,
@@ -62,8 +74,10 @@ class Text2VideoReqModel(BaseModel):
     #                                description="Set an URL to get a POST API call once the image generation is complete.")
     # track_id: Optional[str] = Field(default=None,
     #                                 description="This ID is returned in the response to the webhook API call. This will be used to identify the webhook request.")
-    scheduler: Text2VideoScheduler = Field(default=Text2VideoScheduler.UniPCMultistepScheduler.value,
-                                           description="Use it to set a scheduler for video creation.")
+    scheduler: Text2VideoScheduler = Field(
+        default=Text2VideoScheduler.UniPCMultistepScheduler.value,
+        description="Use it to set a scheduler for video creation.",
+    )
     seconds: int = Field(default=3, description="Duration of the video in seconds.")
 
 

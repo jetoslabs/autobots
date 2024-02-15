@@ -29,7 +29,7 @@ async def test_action_mock_happy_path(set_test_settings):
             config=TextObj(text="mock_action").model_dump(),
             # input=None,
             # output=None,
-            user_id=str(user_id)
+            user_id=str(user_id),
         )
         inserted = await action_crud.insert_one(action_doc_create)
         assert inserted is not None
@@ -42,9 +42,7 @@ async def test_action_mock_happy_path(set_test_settings):
         action_input = TextObj(text="okok")
 
         action_result_doc = await ActionFactory().run_action_in_background(
-            action_doc,
-            action_input.model_dump(),
-            user_action_result
+            action_doc, action_input.model_dump(), user_action_result
         )
 
     except Exception as e:
@@ -57,6 +55,7 @@ async def test_action_mock_happy_path(set_test_settings):
         deleted = await action_crud.delete_many(find)
         assert deleted.deleted_count == 1
 
+
 @pytest.mark.asyncio
 async def test_action_llm_chat_happy_path(set_test_settings):
     db = next(get_mongo_db())
@@ -67,14 +66,20 @@ async def test_action_llm_chat_happy_path(set_test_settings):
     action_name = "test_action_llm_chat_happy_path"
 
     try:
-        chat_req = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content="You are an expert blogger")])
+        chat_req = ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user", content="You are an expert blogger"
+                )
+            ]
+        )
         action_doc_create = ActionDocCreate(
             name=action_name,
             type=ActionType.text2text_llm_chat_openai,
             config=chat_req.model_dump(),
             # input=None,
             # output=None,
-            user_id=str(user_id)
+            user_id=str(user_id),
         )
         inserted = await action_crud.insert_one(action_doc_create)
         assert inserted is not None
@@ -87,9 +92,7 @@ async def test_action_llm_chat_happy_path(set_test_settings):
         action_input = TextObj(text="okok")
 
         action_result_doc = await ActionFactory().run_action_in_background(
-            action_doc,
-            action_input.model_dump(),
-            user_action_result
+            action_doc, action_input.model_dump(), user_action_result
         )
 
     except Exception as e:

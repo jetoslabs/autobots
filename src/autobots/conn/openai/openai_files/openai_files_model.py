@@ -12,9 +12,15 @@ class FileList(OpenaiExtraValues):
 
 class FileCreate(OpenaiExtraValues):
     file: IO[bytes] | bytes | PathLike[str] | PathLike | tuple[
-        str | None, IO[bytes] | bytes | PathLike[str] | PathLike] | tuple[
-              str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None] | tuple[
-              str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None, Mapping[str, str]]
+        str | None, IO[bytes] | bytes | PathLike[str] | PathLike
+    ] | tuple[
+        str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None
+    ] | tuple[
+        str | None,
+        IO[bytes] | bytes | PathLike[str] | PathLike,
+        str | None,
+        Mapping[str, str],
+    ]
     purpose: Literal["fine-tune", "assistants"]
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

@@ -9,17 +9,25 @@ from src.autobots.action.action_type.action_factory import ActionFactory
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_chat.chat_crud import ChatCRUD
-from src.autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
-    ChatUpdate
+from src.autobots.action.action_chat.chat_doc_model import (
+    ChatCreate,
+    ChatDoc,
+    ChatDocCreate,
+    ChatFind,
+    ChatDocFind,
+    ChatDocUpdate,
+    ChatUpdate,
+)
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role, Message
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.user.user_orm_model import UserORM
 
 
-class UserChat():
+class UserChat:
     """
     LM chat uses an Action to run and stores context to enable chat functionality
     """
+
     DEFAULT_TITLE = "New Chat"
 
     def __init__(self, user: UserORM, db: Database):
@@ -27,19 +35,30 @@ class UserChat():
         self.user_id = str(user.id)
         self.chat_crud = ChatCRUD(db)
 
-    async def create_chat(self, chat_create: ChatCreate, title: str = DEFAULT_TITLE) -> ChatDoc | None:
-        if not chat_create.action.type == ActionType.text2text_llm_chat_openai and \
-                not chat_create.action.type == ActionType.text2text_llm_chat_with_vector_search_openai:
+    async def create_chat(
+        self, chat_create: ChatCreate, title: str = DEFAULT_TITLE
+    ) -> ChatDoc | None:
+        if (
+            not chat_create.action.type == ActionType.text2text_llm_chat_openai
+            and not chat_create.action.type
+            == ActionType.text2text_llm_chat_with_vector_search_openai
+        ):
             raise HTTPException(400, "Action is not available for chat")
         try:
-            chat_doc_create = ChatDocCreate(user_id=self.user_id, title=title, **chat_create.model_dump(by_alias=True))
+            chat_doc_create = ChatDocCreate(
+                user_id=self.user_id,
+                title=title,
+                **chat_create.model_dump(by_alias=True),
+            )
             chat_doc = await self.chat_crud.insert_one(chat_doc_create)
             return chat_doc
         except Exception as e:
             logger.error(str(e))
         return None
 
-    async def list_chat(self, chat_find: ChatFind, limit: int = 100, offset: int = 0) -> List[ChatDoc] | None:
+    async def list_chat(
+        self, chat_find: ChatFind, limit: int = 100, offset: int = 0
+    ) -> List[ChatDoc] | None:
         try:
             chat_doc_find = ChatDocFind(user_id=self.user_id, **chat_find.model_dump())
             chat_docs = await self.chat_crud.find(chat_doc_find, limit, offset)
@@ -60,7 +79,9 @@ class UserChat():
         return None
 
     async def update_chat(self, chat_id: str, chat_update: ChatUpdate) -> ChatDoc:
-        chat_doc_update = ChatDocUpdate(id=chat_id, user_id=self.user_id, **chat_update.model_dump())
+        chat_doc_update = ChatDocUpdate(
+            id=chat_id, user_id=self.user_id, **chat_update.model_dump()
+        )
         chat_doc = await self.chat_crud.update_one(chat_doc_update)
         return chat_doc
 
@@ -76,7 +97,9 @@ class UserChat():
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
 
-        resp_text_objs: TextObjs = await ActionFactory.run_action(chat_doc.action, input.model_dump())
+        resp_text_objs: TextObjs = await ActionFactory.run_action(
+            chat_doc.action, input.model_dump()
+        )
 
         messages = []
         input_message = Message(role=Role.user, content=input.text)
@@ -86,10 +109,12 @@ class UserChat():
             message = Message(role="user", content=text_obj.text)
             messages.append(message)
 
-        chat_doc.messages = (chat_doc.messages + messages)
+        chat_doc.messages = chat_doc.messages + messages
         if chat_doc.title == UserChat.DEFAULT_TITLE:
             chat_doc.title = await self._gen_title(chat_doc)
-        updated_chat_doc = await self.update_chat(chat_id, ChatUpdate(**chat_doc.model_dump()))
+        updated_chat_doc = await self.update_chat(
+            chat_id, ChatUpdate(**chat_doc.model_dump())
+        )
         return updated_chat_doc
 
     async def _gen_title(self, chat_doc: ChatDoc) -> str:
@@ -105,16 +130,20 @@ class UserChat():
             conversation_content = ""
             i = 0
             for message in chat_doc.messages:
-                conversation_content = conversation_content + f"{message.role}: {message.content}\n"
+                conversation_content = (
+                    conversation_content + f"{message.role}: {message.content}\n"
+                )
                 i = i + 1
                 if i >= 2:
                     break
 
             title_gen_message = ChatCompletionUserMessageParam(
                 role=Role.user.value,
-                content=title_gen_content+action_content+conversation_content
+                content=title_gen_content + action_content + conversation_content,
             )
-            chat_res = await get_openai().openai_chat.chat(ChatReq(messages=[title_gen_message], max_token=25))
+            chat_res = await get_openai().openai_chat.chat(
+                ChatReq(messages=[title_gen_message], max_token=25)
+            )
             title = f"{chat_doc.action.name}-{chat_res.choices[0].message.content}"
             return title
         except Exception as e:

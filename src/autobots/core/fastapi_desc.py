@@ -16,8 +16,7 @@ class FastAPIDesc(BaseModel):
         "name": "Anurag Jha",
         # "url": "http://x-force.example.com/contact/",
         # "email": metadata.metadata("app").get("Author-email")
-        "email": "aj@jetoslabs.com"
-
+        "email": "aj@jetoslabs.com",
     }
     license_info: Dict[str, str] = {
         "name": "Apache 2.0",

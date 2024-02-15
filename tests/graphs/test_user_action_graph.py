@@ -8,10 +8,16 @@ from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.user_actions_market import UserActionsMarket
 from src.autobots.action.action.common_action_models import TextObj
-from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate
+from src.autobots.action_graph.action_graph.action_graph_doc_model import (
+    ActionGraphCreate,
+)
 
-from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
-from src.autobots.api.v1.api_action_type.text2text.api_actions_text2text import ActionCreateText2TextLlmChatOpenai
+from src.autobots.action_graph.action_graph_result.user_action_graph_result import (
+    UserActionGraphResult,
+)
+from src.autobots.api.v1.api_action_type.text2text.api_actions_text2text import (
+    ActionCreateText2TextLlmChatOpenai,
+)
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.utils import gen_random_str
 from src.autobots.core.database.mongo_base import get_mongo_db
@@ -48,21 +54,14 @@ async def test_user_graph_run_happy_path(set_test_settings):
             "n2": str(action_llm_persona.id),
             "n3": str(action_llm_product.id),
             "n4": str(action_llm_creative.id),
-            "n5": str(action_llm_jingle.id)
-
+            "n5": str(action_llm_jingle.id),
         }
         # create action graph
-        action_graph = {
-            "n1": ["n2", "n3"],
-            "n2": ["n4", "n5"],
-            "n3": ["n4", "n5"]
-        }
+        action_graph = {"n1": ["n2", "n3"], "n2": ["n4", "n5"], "n3": ["n4", "n5"]}
 
         # create action_graph
         action_graph_create = ActionGraphCreate(
-            name="Marketing Dept",
-            nodes=node_map,
-            graph=action_graph
+            name="Marketing Dept", nodes=node_map, graph=action_graph
         )
         action_graph_doc = await user_action_graph.create(action_graph_create, db)
 
@@ -74,7 +73,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
             user_action_graph_result,
             action_graph_doc.id,
             user_input,
-            None
+            None,
         )
 
         assert action_graph_result_doc.status == EventResultStatus.success
@@ -111,13 +110,18 @@ async def test_user_graph_run_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-async def create_action_persona(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
+async def create_action_persona(
+    user_actions: UserActions, db: Database, rand: str
+) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="persona_" + rand,
-        config=ChatReq(messages=[ChatCompletionUserMessageParam(
-            role="user",
-            content="Generate personas for Marketing this product"
-        )])
+        config=ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user", content="Generate personas for Marketing this product"
+                )
+            ]
+        ),
     )
     action_doc = await user_actions.create_action(
         ActionCreate(**action_create.model_dump())
@@ -126,13 +130,19 @@ async def create_action_persona(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
-async def create_action_manager(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
+async def create_action_manager(
+    user_actions: UserActions, db: Database, rand: str
+) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="manager_" + rand,
-        config=ChatReq(messages=[ChatCompletionUserMessageParam(
-            role="user",
-            content="Act as market manager, create input for department"
-        )])
+        config=ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user",
+                    content="Act as market manager, create input for department",
+                )
+            ]
+        ),
     )
     action_doc = await user_actions.create_action(
         ActionCreate(**action_create.model_dump())
@@ -141,13 +151,19 @@ async def create_action_manager(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
-async def create_action_product(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
+async def create_action_product(
+    user_actions: UserActions, db: Database, rand: str
+) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="market researcher_" + rand,
-        config=ChatReq(messages=[ChatCompletionUserMessageParam(
-            role="user",
-            content="Act as product researcher, create research report for the product"
-        )])
+        config=ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user",
+                    content="Act as product researcher, create research report for the product",
+                )
+            ]
+        ),
     )
     action_doc = await user_actions.create_action(
         ActionCreate(**action_create.model_dump())
@@ -156,13 +172,19 @@ async def create_action_product(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
-async def create_action_creative(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
+async def create_action_creative(
+    user_actions: UserActions, db: Database, rand: str = gen_random_str()
+) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="creative_" + rand,
-        config=ChatReq(messages=[ChatCompletionUserMessageParam(
-            role="user",
-            content="Act as a creative editor, generate text creative"
-        )])
+        config=ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user",
+                    content="Act as a creative editor, generate text creative",
+                )
+            ]
+        ),
     )
     action_doc = await user_actions.create_action(
         ActionCreate(**action_create.model_dump())
@@ -171,18 +193,25 @@ async def create_action_creative(user_actions: UserActions, db: Database, rand: 
 
 
 @pytest.mark.asyncio
-async def create_action_jingle(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
+async def create_action_jingle(
+    user_actions: UserActions, db: Database, rand: str = gen_random_str()
+) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="jingle_" + rand,
-        config=ChatReq(messages=[ChatCompletionUserMessageParam(
-            role="user",
-            content="Act as a creative editor, generate jingle for marketing"
-        )])
+        config=ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user",
+                    content="Act as a creative editor, generate jingle for marketing",
+                )
+            ]
+        ),
     )
     action_doc = await user_actions.create_action(
         ActionCreate(**action_create.model_dump())
     )
     return action_doc
+
 
 # @pytest.mark.asyncio
 # async def create_graph(user_graphs: UserGraphs, graph_map: Dict[str, List[str]], db: Session, rand: str = gen_random_str()) -> GraphORM:

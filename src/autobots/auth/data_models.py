@@ -32,7 +32,7 @@ class SupaJwtPayload(BaseModel):
     exp: int
     sub: str
     email: str
-    phone: Optional[str] = ''
+    phone: Optional[str] = ""
     app_metadata: AppMetadata
     user_metadata: UserMetadata | dict
     role: str

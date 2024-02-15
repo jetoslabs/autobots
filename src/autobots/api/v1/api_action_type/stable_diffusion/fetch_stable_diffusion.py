@@ -11,9 +11,9 @@ router = APIRouter(tags=["action_results/stable_diffusion"])
 
 @router.post("/fetch/stable_diffusion")
 async def fetch_stable_diffusion(
-        stable_diffusion_id: int,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        # db: Database = Depends(get_mongo_db)
+    stable_diffusion_id: int,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    # db: Database = Depends(get_mongo_db)
 ) -> StableDiffusionRes:
     # Later do it through user keys
     key = SettingsProvider.sget().STABLE_DIFFUSION_API_KEY

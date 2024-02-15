@@ -6,13 +6,17 @@ from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from src.autobots.action.action_chat.chat_doc_model import ChatDoc, ChatDocCreate, ChatDocFind, ChatDocUpdate
+from src.autobots.action.action_chat.chat_doc_model import (
+    ChatDoc,
+    ChatDocCreate,
+    ChatDocFind,
+    ChatDocUpdate,
+)
 from src.autobots.conn.openai.openai_chat.chat_model import Message
 from src.autobots.core.database.mongo_base import get_mongo_db
 
 
 class ChatCRUD:
-
     def __init__(self, db: Database = Depends(get_mongo_db)):
         self.document: Collection = db[ChatDoc.__collection__]
 
@@ -28,7 +32,7 @@ class ChatCRUD:
         return ChatDoc.model_validate(doc)
 
     async def find(
-            self, chat_doc_find: ChatDocFind, limit: int = 100, offset: int = 0
+        self, chat_doc_find: ChatDocFind, limit: int = 100, offset: int = 0
     ) -> List[ChatDoc]:
         find_params = {}
         for key, value in chat_doc_find.model_dump().items():
@@ -85,9 +89,12 @@ class ChatCRUD:
             raise HTTPException(405, "Cannot find chat to update")
 
         updated_chat_doc = self.document.find_one_and_update(
-            filter={"_id": update_params.get("_id"), "user_id": chat_doc_update.user_id},
+            filter={
+                "_id": update_params.get("_id"),
+                "user_id": chat_doc_update.user_id,
+            },
             update={"$set": update_params},
-            return_document=ReturnDocument.AFTER
+            return_document=ReturnDocument.AFTER,
         )
         if updated_chat_doc is None:
             raise HTTPException(405, "Unable to update chat")
@@ -98,6 +105,3 @@ class ChatCRUD:
 
     async def _append_message(self, messages: List[Message]):
         pass
-
-
-

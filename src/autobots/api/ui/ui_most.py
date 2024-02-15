@@ -15,11 +15,14 @@ router = APIRouter()
 
 templates = Jinja2Templates(directory="src/autobots/ui/templates")
 
+
 @router.post("/cookie")
 async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     settings = SettingsProvider.sget()
     try:
-        auth_res: AuthResponse = await get_auth().sign_in_with_password(form_data.username, form_data.password)
+        auth_res: AuthResponse = await get_auth().sign_in_with_password(
+            form_data.username, form_data.password
+        )
         user: gotrue.User | None = auth_res.user
         session: gotrue.Session | None = auth_res.session
         if not user or not session:
@@ -36,7 +39,9 @@ async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depend
                 expires=1800,
             )
         else:
-            logger.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+            logger.error(
+                f"Cookie domain codes not contain request base url: {request.base_url.hostname}"
+            )
         return response
     except Exception as e:
         logger.error(str(e))
@@ -78,7 +83,9 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
                 expires=1800,
             )
         else:
-            logger.error(f"Cookie domain codes not contain request base url: {request.base_url.hostname}")
+            logger.error(
+                f"Cookie domain codes not contain request base url: {request.base_url.hostname}"
+            )
         return response
     except HTTPException as e:
         logger.error(str(e))
@@ -88,11 +95,15 @@ async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depend
 
 
 @router.get("/")
-async def page_index(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_index(
+    request: Request, user: UserResponse | None = Depends(get_user_from_cookie)
+):
     settings = SettingsProvider.sget()
     if user:
-        return templates.TemplateResponse("home.html",
-                                          {"request": request, "user": user.user, "version": settings.VERSION})
+        return templates.TemplateResponse(
+            "home.html",
+            {"request": request, "user": user.user, "version": settings.VERSION},
+        )
     else:
         return templates.TemplateResponse("index.html", {"request": request})
 
@@ -108,44 +119,57 @@ async def page_login(request: Request):
 
 
 @router.get("/docs")
-async def page_api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_api_docs(
+    request: Request, user: UserResponse | None = Depends(get_user_from_cookie)
+):
     settings = SettingsProvider.sget()
     if user:
-        return templates.TemplateResponse("docs.html",
-                                          {"request": request, "user": user, "version": settings.VERSION})
+        return templates.TemplateResponse(
+            "docs.html", {"request": request, "user": user, "version": settings.VERSION}
+        )
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
 
 
 @router.get("/redoc")
-async def page_api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_api_docs(
+    request: Request, user: UserResponse | None = Depends(get_user_from_cookie)
+):
     settings = SettingsProvider.sget()
     if user:
-        return templates.TemplateResponse("redoc.html",
-                                          {"request": request, "user": user, "version": settings.VERSION})
+        return templates.TemplateResponse(
+            "redoc.html",
+            {"request": request, "user": user, "version": settings.VERSION},
+        )
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
 
 
 @router.get("/logs")
-async def page_logs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_logs(
+    request: Request, user: UserResponse | None = Depends(get_user_from_cookie)
+):
     settings = SettingsProvider.sget()
     if user:
-        return templates.TemplateResponse("logs.html",
-                                          {"request": request, "user": user, "version": settings.VERSION})
+        return templates.TemplateResponse(
+            "logs.html", {"request": request, "user": user, "version": settings.VERSION}
+        )
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
 
 
 @router.get("/user")
-async def page_user(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_user(
+    request: Request, user: UserResponse | None = Depends(get_user_from_cookie)
+):
     settings = SettingsProvider.sget()
     if user:
-        return templates.TemplateResponse("user.html",
-                                          {"request": request, "user": user, "version": settings.VERSION})
+        return templates.TemplateResponse(
+            "user.html", {"request": request, "user": user, "version": settings.VERSION}
+        )
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response

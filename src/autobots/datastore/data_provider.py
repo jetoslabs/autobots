@@ -4,22 +4,21 @@ from src.autobots.conn.tiktoken.tiktoken import get_tiktoken
 
 
 class DataProvider:
-
     def __init__(self):
         pass
 
     ####### File
     @staticmethod
     async def read_file_line_by_line(filename: str) -> AsyncGenerator[str, None]:
-        with open(filename, 'r', encoding='UTF-8') as file:
+        with open(filename, "r", encoding="UTF-8") as file:
             while line := file.readline():
                 yield line
 
     @staticmethod
     async def create_file_chunks(
-            filename: str,
-            chunk_func: Callable[[str], AsyncGenerator[str, None]],
-            chunk_token_size: int = 512
+        filename: str,
+        chunk_func: Callable[[str], AsyncGenerator[str, None]],
+        chunk_token_size: int = 512,
     ) -> AsyncGenerator[str, None]:
         chunk = ""
         count = 0
@@ -41,7 +40,9 @@ class DataProvider:
 
     ####### Data
     @staticmethod
-    async def read_data_line_by_line(data: str, delimiter: str = "\n") -> AsyncGenerator[str, None]:
+    async def read_data_line_by_line(
+        data: str, delimiter: str = "\n"
+    ) -> AsyncGenerator[str, None]:
         if not delimiter:
             yield data
         else:
@@ -49,14 +50,15 @@ class DataProvider:
             lines[-1] = lines[-1].rstrip(delimiter)
 
             for line in lines:
-                if line == delimiter: continue
+                if line == delimiter:
+                    continue
                 yield line
 
     @staticmethod
     async def create_data_chunks(
-            data: str,
-            chunk_func: Callable[[str], AsyncGenerator[str, None]],
-            chunk_token_size: int = 512
+        data: str,
+        chunk_func: Callable[[str], AsyncGenerator[str, None]],
+        chunk_token_size: int = 512,
     ) -> AsyncGenerator[str, None]:
         chunk = ""
         count = 0

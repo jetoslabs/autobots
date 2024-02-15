@@ -10,7 +10,11 @@ router = APIRouter()
 
 
 @router.post("/react")
-async def run_react_agent(input: TextObj) -> List[Any]:#List[ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam | ChatCompletionAssistantMessageParam | ChatCompletionToolMessageParam | ChatCompletionFunctionMessageParam]:
+async def run_react_agent(
+    input: TextObj,
+) -> List[
+    Any
+]:  # List[ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam | ChatCompletionAssistantMessageParam | ChatCompletionToolMessageParam | ChatCompletionFunctionMessageParam]:
     messages = await ReasonActObserve().do_task(input.text)
     return messages
 

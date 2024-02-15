@@ -26,12 +26,14 @@ class AssistantCreate(OpenaiExtraValues):
     instructions: str | None = None
     metadata: object | None = None
     name: str | None = None
-    tools: (list[
-               assistant_create_params.ToolAssistantToolsCode |
-               assistant_create_params.ToolAssistantToolsRetrieval |
-               assistant_create_params.ToolAssistantToolsFunction
-               ] |
-            None) = None
+    tools: (
+        list[
+            assistant_create_params.ToolAssistantToolsCode
+            | assistant_create_params.ToolAssistantToolsRetrieval
+            | assistant_create_params.ToolAssistantToolsFunction
+        ]
+        | None
+    ) = None
 
 
 class AssistantRetrieve(OpenaiExtraValues):
@@ -57,13 +59,14 @@ class AssistantUpdate(OpenaiExtraValues):
     metadata: object | None = None
     model: str | None = None
     name: str | None = None
-    tools: (list[
-                assistant_update_params.ToolAssistantToolsCode |
-                assistant_update_params.ToolAssistantToolsRetrieval |
-                assistant_update_params.ToolAssistantToolsFunction
-                ] |
-            None
-            ) = None
+    tools: (
+        list[
+            assistant_update_params.ToolAssistantToolsCode
+            | assistant_update_params.ToolAssistantToolsRetrieval
+            | assistant_update_params.ToolAssistantToolsFunction
+        ]
+        | None
+    ) = None
 
 
 class AssistantFileInput(OpenaiExtraValues):
@@ -73,9 +76,7 @@ class AssistantFileInput(OpenaiExtraValues):
 
 class AssistantFileListInput(OpenaiExtraValues):
     assistant_id: str
-    after: str | None = None,
-    before: str | None = None,
-    limit: int | None = None,
+    after: str | None = (None,)
+    before: str | None = (None,)
+    limit: int | None = (None,)
     order: Literal["asc", "desc"] | None = None
-
-

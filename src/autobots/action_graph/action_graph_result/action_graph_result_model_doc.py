@@ -1,13 +1,19 @@
 from typing import Optional
 
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
-from src.autobots.event_result.event_result_model import EventResultUpdate, EventResultCreate, EventType, EventResultDoc
+from src.autobots.event_result.event_result_model import (
+    EventResultUpdate,
+    EventResultCreate,
+    EventType,
+    EventResultDoc,
+)
 
 
 class ActionGraphResultUpdate(EventResultUpdate):
     """
     Input from User to update Action Result
     """
+
     result: Optional[ActionGraphDoc] = None
 
 

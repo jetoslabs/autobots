@@ -7,17 +7,23 @@ from pymongo.collection import Collection, ReturnDocument
 from pymongo.database import Database
 from pymongo.results import DeleteResult
 
-from src.autobots.action.action.action_doc_model import ActionDoc, ActionDocCreate, ActionDocFind, ActionDocUpdate
+from src.autobots.action.action.action_doc_model import (
+    ActionDoc,
+    ActionDocCreate,
+    ActionDocFind,
+    ActionDocUpdate,
+)
 from src.autobots.core.database.mongo_base import get_mongo_db
 
 
 class ActionCRUD:
-
     def __init__(self, db: Database = Depends(get_mongo_db)):
         self.document: Collection = db[ActionDoc.__collection__]
 
     async def insert_one(self, action: ActionDocCreate) -> ActionDoc:
-        action_find = ActionDocFind(name=action.name, version=action.version, user_id=action.user_id)
+        action_find = ActionDocFind(
+            name=action.name, version=action.version, user_id=action.user_id
+        )
         actions_found = await self.find(action_find)
         if len(actions_found) > 0:
             raise HTTPException(400, "Action name and version not unique")
@@ -32,7 +38,7 @@ class ActionCRUD:
         return ActionDoc.model_validate(doc)
 
     async def find(
-            self, action_doc_find: ActionDocFind, limit: int = 100, offset: int = 0
+        self, action_doc_find: ActionDocFind, limit: int = 100, offset: int = 0
     ) -> List[ActionDoc]:
         find_params = {}
         for key, value in action_doc_find.model_dump().items():
@@ -65,7 +71,9 @@ class ActionCRUD:
                 action_doc = ActionDoc.model_validate(doc)
                 action_docs.append(action_doc)
             except Exception as e:
-                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=action_doc).error(
+                    f"Error while parsing action doc: {e}, skipping to next"
+                )
 
         return action_docs
 
@@ -93,9 +101,12 @@ class ActionCRUD:
             raise HTTPException(405, "Cannot find action to update")
 
         updated_action_doc = self.document.find_one_and_update(
-            filter={"_id": update_params.get("_id"), "user_id": action_doc_update.user_id},
+            filter={
+                "_id": update_params.get("_id"),
+                "user_id": action_doc_update.user_id,
+            },
             update={"$set": update_params},
-            return_document=ReturnDocument.AFTER
+            return_document=ReturnDocument.AFTER,
         )
         if updated_action_doc is None:
             raise HTTPException(405, "Unable to update action")
@@ -104,6 +115,7 @@ class ActionCRUD:
         action = ActionDoc.model_validate(updated_action_doc)
         return action
 
-    async def upsert(self, ):
+    async def upsert(
+        self,
+    ):
         pass
-

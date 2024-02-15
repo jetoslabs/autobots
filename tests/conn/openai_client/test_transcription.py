@@ -16,17 +16,18 @@ async def test_transcription_happy_path(set_test_settings):
     openai_client = get_openai()
     input = f"Hello, I am AutobotX. I am here to assist you. Today is {datetime.datetime.now().strftime('%B %d, %Y')}."
     params = SpeechReq(input=input)
-    resp:  HttpxBinaryResponseContent = await openai_client.openai_audio.speech(speech_req=params)
+    resp: HttpxBinaryResponseContent = await openai_client.openai_audio.speech(
+        speech_req=params
+    )
     assert resp is not None
-    url = await get_public_s3().put_file_obj(io.BytesIO(resp.content),f"{gen_hash(input)}.{params.response_format}")
+    url = await get_public_s3().put_file_obj(
+        io.BytesIO(resp.content), f"{gen_hash(input)}.{params.response_format}"
+    )
     assert url != ""
 
     # Create Transcription
-    transcription_req = TranscriptionReq(
-        file_url=str(url)
-    )
+    transcription_req = TranscriptionReq(file_url=str(url))
     transcription = await openai_client.openai_audio.transcription(transcription_req)
 
     assert transcription is not None
     assert "AutobotX" in transcription.text
-

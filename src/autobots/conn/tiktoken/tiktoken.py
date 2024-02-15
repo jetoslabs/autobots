@@ -6,7 +6,6 @@ from src.autobots.core.settings import Settings, SettingsProvider
 
 
 class Tiktoken:
-
     def __init__(self, model: str):
         self.enc = tiktoken.encoding_for_model(model)
 

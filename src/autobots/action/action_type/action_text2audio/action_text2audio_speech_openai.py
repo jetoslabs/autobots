@@ -5,7 +5,12 @@ from loguru import logger
 from pydantic import HttpUrl, ValidationError, BaseModel
 
 from src.autobots.action.action.common_action_models import TextObj
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
+from src.autobots.action.action_type.abc.IAction import (
+    IAction,
+    ActionConfigType,
+    ActionInputType,
+    ActionOutputType,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.aws.aws_s3 import get_public_s3
 from src.autobots.conn.openai.openai_client import get_openai
@@ -40,12 +45,14 @@ class ActionText2AudioSpeechOpenai(IAction[SpeechReq, TextObj, AudioRes]):
             if action_input and action_input.text != "":
                 input = f"{self.action_config.input} {action_input.text}"
                 self.action_config.input = input
-            httpx_binary_response = await get_openai().openai_audio.speech(speech_req=self.action_config)
+            httpx_binary_response = await get_openai().openai_audio.speech(
+                speech_req=self.action_config
+            )
             if not httpx_binary_response or not httpx_binary_response.content:
                 return None
             url = await get_public_s3().put_file_obj(
                 io.BytesIO(httpx_binary_response.content),
-                f"{gen_hash(self.action_config.input)}.{self.action_config.response_format}"
+                f"{gen_hash(self.action_config.input)}.{self.action_config.response_format}",
             )
             http_url = HttpUrl(url)
             return AudioRes(url=str(http_url))

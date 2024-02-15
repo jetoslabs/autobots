@@ -5,7 +5,12 @@ from openai.types import ImagesResponse
 from pydantic import BaseModel
 from pydantic_core import Url
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
+from src.autobots.action.action_type.abc.IAction import (
+    IAction,
+    ActionConfigType,
+    ActionInputType,
+    ActionOutputType,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_images.image_model import ImageCreateVariation
@@ -16,7 +21,9 @@ class ImageVariationInput(BaseModel):
     size: Optional[Literal["256x256", "512x512", "1024x1024"]] = None
 
 
-class ActionImg2ImgVariationOpenai(IAction[ImageCreateVariation, ImageVariationInput, ImagesResponse]):
+class ActionImg2ImgVariationOpenai(
+    IAction[ImageCreateVariation, ImageVariationInput, ImagesResponse]
+):
     type = ActionType.img2img_variation_openai
 
     @staticmethod
@@ -40,5 +47,7 @@ class ActionImg2ImgVariationOpenai(IAction[ImageCreateVariation, ImageVariationI
         if action_input.size:
             self.action_config.size = action_input.size
 
-        images = await get_openai().openai_images.create_image_variation(self.action_config)
+        images = await get_openai().openai_images.create_image_variation(
+            self.action_config
+        )
         return images

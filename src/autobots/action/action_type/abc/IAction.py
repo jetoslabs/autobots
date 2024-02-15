@@ -9,7 +9,6 @@ ActionOutputType = TypeVar("ActionOutputType", bound=BaseModel)
 
 
 class IAction(Generic[ActionConfigType, ActionInputType, ActionOutputType]):
-
     def __init__(self, action_config: ActionConfigType):
         self.action_config = action_config
 

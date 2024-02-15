@@ -14,8 +14,7 @@ from src.autobots.conn.openai.openai_audio.transcription_model import Transcript
 from src.autobots.conn.openai.openai_audio.translation_model import TranslationReq
 
 
-class OpenaiAudio():
-
+class OpenaiAudio:
     def __init__(self, openai_client: AsyncOpenAI):
         self.client = openai_client
 
@@ -30,7 +29,9 @@ class OpenaiAudio():
             logger.error(str(e))
 
     @retry(exceptions=Exception, tries=3, delay=30)
-    async def transcription(self, transcription_req: TranscriptionReq) -> Transcription | None:
+    async def transcription(
+        self, transcription_req: TranscriptionReq
+    ) -> Transcription | None:
         # create new single directory
         path = "./to_del"
         if not os.path.exists(path):
@@ -50,8 +51,9 @@ class OpenaiAudio():
             with open(full_path_name, "rb") as binary_file:
                 logger.trace("Starting OpenAI create transcription")
                 transcription_req.file_url = None
-                res = await self.client.audio.transcriptions.create(file=binary_file,
-                                                                    **transcription_req.model_dump(exclude_none=True))
+                res = await self.client.audio.transcriptions.create(
+                    file=binary_file, **transcription_req.model_dump(exclude_none=True)
+                )
                 logger.trace("Completed OpenAI create transcription")
             return res
         except Exception as e:
@@ -81,8 +83,9 @@ class OpenaiAudio():
             with open(full_path_name, "rb") as binary_file:
                 logger.trace("Starting OpenAI create translation")
                 translation_req.file_url = None
-                res = await self.client.audio.translations.create(file=binary_file,
-                                                                  **translation_req.model_dump(exclude_none=True))
+                res = await self.client.audio.translations.create(
+                    file=binary_file, **translation_req.model_dump(exclude_none=True)
+                )
                 logger.trace("Completed OpenAI create translation")
             return res
         except Exception as e:

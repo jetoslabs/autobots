@@ -9,7 +9,9 @@ from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from src.autobots.action.action.user_actions import UserActions
-from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import AudioRes
+from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import (
+    AudioRes,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
@@ -28,9 +30,9 @@ class ActionCreateAudio2TextTranscriptionOpenai(ActionCreate):
 
 @router.post("/audio2text/transcription_openai")
 async def create_action_audio2text_transcription_openai(
-        action_create: ActionCreateAudio2TextTranscriptionOpenai,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+    action_create: ActionCreateAudio2TextTranscriptionOpenai,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

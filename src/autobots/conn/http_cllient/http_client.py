@@ -3,7 +3,6 @@ from pydantic import HttpUrl
 
 
 class HttpClient:
-
     @staticmethod
     async def download_from_url(url: HttpUrl):
         async with ClientSession() as session:

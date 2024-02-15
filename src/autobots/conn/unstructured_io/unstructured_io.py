@@ -28,13 +28,14 @@ class PartitionResponseElement(BaseModel):
 
 
 class UnstructuredIO:
-
     def __init__(self, unstructured_api_key: str):
         self.client = UnstructuredClient(
             api_key_auth=unstructured_api_key,
         )
 
-    async def _build_PartitionParameters(self, file: UploadFile, chunk_size: int = 500) -> shared.PartitionParameters:
+    async def _build_PartitionParameters(
+        self, file: UploadFile, chunk_size: int = 500
+    ) -> shared.PartitionParameters:
         req = shared.PartitionParameters(
             # Note that this currently only supports a single file
             files=shared.Files(
@@ -50,7 +51,9 @@ class UnstructuredIO:
         )
         return req
 
-    async def _get_PartitionResponse(self, file: UploadFile, req: shared.PartitionParameters) -> PartitionResponse | None:
+    async def _get_PartitionResponse(
+        self, file: UploadFile, req: shared.PartitionParameters
+    ) -> PartitionResponse | None:
         res: PartitionResponse | None = None
         try:
             res: PartitionResponse = self.client.general.partition(req)
@@ -63,7 +66,9 @@ class UnstructuredIO:
         return res
         # res_str = ("\n\n".join([str(el) for el in res.elements]))
 
-    async def get_file_partition_elements(self, res: PartitionResponse | None) -> List[PartitionResponseElement]:
+    async def get_file_partition_elements(
+        self, res: PartitionResponse | None
+    ) -> List[PartitionResponseElement]:
         elements = []
         for element_dict in res.elements:
             try:
@@ -75,7 +80,9 @@ class UnstructuredIO:
                 logger.error(str(e))
         return elements
 
-    async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:
+    async def get_file_chunks(
+        self, file: UploadFile, chunk_size: int = 500
+    ) -> List[str]:
         req = await self._build_PartitionParameters(file, chunk_size=chunk_size)
         res: PartitionResponse | None = await self._get_PartitionResponse(file, req)
         elements = await self.get_file_partition_elements(res)

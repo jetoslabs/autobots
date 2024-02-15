@@ -23,14 +23,20 @@ async def test_action_crud_happy_path(set_test_settings):
     user = UserORM(id=user_id)
 
     try:
-        chat_req = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content="You are an expert blogger")])
+        chat_req = ChatReq(
+            messages=[
+                ChatCompletionUserMessageParam(
+                    role="user", content="You are an expert blogger"
+                )
+            ]
+        )
         action_doc_create = ActionDocCreate(
             name="test_action_crud_happy_path",
             type=ActionType.text2text_llm_chat_openai,
             config=chat_req.model_dump(),
             # input=None,
             # output=None,
-            user_id=str(user_id)
+            user_id=str(user_id),
         )
         inserted = await action_crud.insert_one(action_doc_create)
         assert inserted is not None
@@ -46,8 +52,14 @@ async def test_action_crud_happy_path(set_test_settings):
         # resp: TextObjs = await action_factory.run_action(action_doc, user_input.model_dump())
         # assert len(resp.texts) > 0
         # assert resp.texts[0] != ""
-        resp_raw: dict = await action_factory.run_action(action_doc, user_input.model_dump())
-        resp = ACTION_MAP.get(ActionType.text2text_llm_chat_openai).get_output_type().model_validate(resp_raw)
+        resp_raw: dict = await action_factory.run_action(
+            action_doc, user_input.model_dump()
+        )
+        resp = (
+            ACTION_MAP.get(ActionType.text2text_llm_chat_openai)
+            .get_output_type()
+            .model_validate(resp_raw)
+        )
         assert len(resp.texts) > 0
         assert resp.texts[0] != ""
 

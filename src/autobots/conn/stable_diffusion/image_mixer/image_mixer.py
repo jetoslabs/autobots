@@ -5,12 +5,17 @@ from loguru import logger
 
 from pydantic import ValidationError
 
-from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel, ImageMixerResError, \
-    ImageMixerProcessingResModel, ImageMixerResModel
+from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import (
+    ImageMixerReqModel,
+    ImageMixerResError,
+    ImageMixerProcessingResModel,
+    ImageMixerResModel,
+)
 
 
 async def image_mixer(
-        req: ImageMixerReqModel, max_retry=3) -> ImageMixerResModel | ImageMixerProcessingResModel | ImageMixerResError:
+    req: ImageMixerReqModel, max_retry=3
+) -> ImageMixerResModel | ImageMixerProcessingResModel | ImageMixerResError:
     """
     Reference: https://docs.modelslab.com/image-editing/imagemixer
     """
@@ -18,9 +23,7 @@ async def image_mixer(
 
     payload = req.model_dump_json()
 
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {"Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code != 200:
@@ -28,9 +31,9 @@ async def image_mixer(
 
     response_json = response.json()
     try:
-        if response_json["status"] == "failed" and max_retry>0:
+        if response_json["status"] == "failed" and max_retry > 0:
             time.sleep(30)
-            return await image_mixer(req, max_retry-1)
+            return await image_mixer(req, max_retry - 1)
         elif response_json["status"] == "error":
             logger.error(f"Stable diffusion text2img error: {response_json}")
             err = ImageMixerResError.model_validate(response_json)
@@ -42,4 +45,6 @@ async def image_mixer(
             res = ImageMixerResModel.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
-        logger.error(f"Stable diffusion image_mixer validation error for response: {response_json}")
+        logger.error(
+            f"Stable diffusion image_mixer validation error for response: {response_json}"
+        )

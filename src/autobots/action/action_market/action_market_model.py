@@ -10,6 +10,7 @@ class ActionMarketFind(BaseModel):
     """
     Input from User to find action
     """
+
     id: Optional[str] = Field(default=None)  # , alias='_id')
     name: Optional[str] = None
     version: Optional[float] = None
@@ -22,4 +23,5 @@ class ActionMarketDocFind(ActionMarketFind):
     """
     Action if published can be fetched, not connected to user_id
     """
+
     is_published: bool = True

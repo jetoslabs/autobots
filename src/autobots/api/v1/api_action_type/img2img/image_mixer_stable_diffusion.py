@@ -6,12 +6,17 @@ from loguru import logger
 from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
-from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
-    ActionCreateImageMixerStableDiffusion, ActionImageMixerStableDiffusion, ImageMixerRunModel
+from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import (
+    ActionCreateImageMixerStableDiffusion,
+    ActionImageMixerStableDiffusion,
+    ImageMixerRunModel,
+)
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
-from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
+from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import (
+    ImageMixerReqModel,
+)
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM
 
@@ -20,9 +25,9 @@ router = APIRouter()
 
 @router.post("/img2img/image_mixer_stable_diffusion")
 async def create_action_image_mixer_stable_diffusion(
-        action_create: ActionCreateImageMixerStableDiffusion,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+    action_create: ActionCreateImageMixerStableDiffusion,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -37,10 +42,10 @@ async def create_action_image_mixer_stable_diffusion(
 
 @router.post("/img2img/image_mixer/stable_diffusion/{action_id}/run")
 async def run_action_image_mixer_stable_diffusion(
-        action_id: str,
-        action_input: ImageMixerRunModel,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+    action_id: str,
+    action_input: ImageMixerRunModel,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
 ) -> StableDiffusionRes:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -53,4 +58,3 @@ async def run_action_image_mixer_stable_diffusion(
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(500)
-

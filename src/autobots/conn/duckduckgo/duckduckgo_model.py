@@ -69,13 +69,27 @@ class SearchImageParams(BaseModel):
     timelimit: Literal["Day", "Week", "Month", "Year"] | None = None
     size: Literal["Small", "Medium", "Large", "Wallpaper"] | None = None
     color: Literal[
-               "color", "Monochrome", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Brown", "Black", "Gray", "Teal", "White"] | None = None
+        "color",
+        "Monochrome",
+        "Red",
+        "Orange",
+        "Yellow",
+        "Green",
+        "Blue",
+        "Purple",
+        "Pink",
+        "Brown",
+        "Black",
+        "Gray",
+        "Teal",
+        "White",
+    ] | None = None
     type_image: Literal["photo", "clipart", "gif", "transparent", "line"] | None = None
     layout: Literal["Square", "Tall", "Wide"] | None = None
     license_image: LicenseImage | None = None
     max_results: int = Field(3, ge=1, le=10)
 
-    @field_validator("region")#, "license_image")
+    @field_validator("region")  # , "license_image")
     @classmethod
     def get_enum_name(cls, value):
         if isinstance(value, Enum):

@@ -16,9 +16,12 @@ async def test_pinecone_happy_path(set_test_settings):
     namespace = "default"
 
     try:
-
-        await get_pinecone().upsert_data(str1_id, str1, metadata={"type": "places"}, namespace=namespace)
-        await get_pinecone().upsert_data(str2_id, str2, metadata={"type": "places"}, namespace=namespace)
+        await get_pinecone().upsert_data(
+            str1_id, str1, metadata={"type": "places"}, namespace=namespace
+        )
+        await get_pinecone().upsert_data(
+            str2_id, str2, metadata={"type": "places"}, namespace=namespace
+        )
 
         query_res = await get_pinecone().query(data=query, top_k=2, namespace=namespace)
         assert len(query_res.get("matches")) == 2
@@ -27,5 +30,4 @@ async def test_pinecone_happy_path(set_test_settings):
         assert str1_id == vec_id
 
     finally:
-
         await get_pinecone().delete_all(namespace=namespace)

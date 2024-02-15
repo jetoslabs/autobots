@@ -1,11 +1,15 @@
 from typing import Type
 
 from src.autobots.action.action.common_action_models import TextObj
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import (
+    IAction,
+    ActionOutputType,
+    ActionInputType,
+    ActionConfigType,
+)
 
 
 class MockAction(IAction[TextObj, TextObj, TextObj]):
-
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
         return TextObj

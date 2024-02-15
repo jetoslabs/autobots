@@ -13,22 +13,28 @@ router = APIRouter()
 
 
 @router.get("/openapi.json")
-async def open_api_json(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
+async def open_api_json(
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+):
     fastapi_dec = FastAPIDesc()
-    return JSONResponse(get_openapi(
-        title=fastapi_dec.title,
-        version=fastapi_dec.version,
-        description=fastapi_dec.description,
-        routes=v1.router.routes,
-        contact=fastapi_dec.contact,
-        license_info=fastapi_dec.license_info
-    ))
+    return JSONResponse(
+        get_openapi(
+            title=fastapi_dec.title,
+            version=fastapi_dec.version,
+            description=fastapi_dec.description,
+            routes=v1.router.routes,
+            contact=fastapi_dec.contact,
+            license_info=fastapi_dec.license_info,
+        )
+    )
 
 
 @router.get("/docs")
 async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
     settings = SettingsProvider.sget()
-    return get_swagger_ui_html(openapi_url=f"{settings.API_v1}/openapi.json", title="docs")
+    return get_swagger_ui_html(
+        openapi_url=f"{settings.API_v1}/openapi.json", title="docs"
+    )
 
 
 @router.get("/redoc")

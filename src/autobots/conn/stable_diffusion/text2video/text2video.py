@@ -4,12 +4,18 @@ from loguru import logger
 from pydantic import ValidationError
 from retry import retry
 
-from src.autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel, Text2VideoResModel, \
-    Text2VideoProcessingResModel, Text2VideoResError
+from src.autobots.conn.stable_diffusion.text2video.text2video_model import (
+    Text2VideoReqModel,
+    Text2VideoResModel,
+    Text2VideoProcessingResModel,
+    Text2VideoResError,
+)
 
 
 @retry(exceptions=Exception, tries=3, delay=40)
-async def text2video(req: Text2VideoReqModel) -> Text2VideoResModel | Text2VideoProcessingResModel | Text2VideoResError:
+async def text2video(
+    req: Text2VideoReqModel,
+) -> Text2VideoResModel | Text2VideoProcessingResModel | Text2VideoResError:
     """
     Reference: https://docs.modelslab.com/text-to-video/texttovideo
     url = "https://modelslab.com/api/v6/video/text2video"
@@ -18,9 +24,7 @@ async def text2video(req: Text2VideoReqModel) -> Text2VideoResModel | Text2Video
 
     payload = req.model_dump_json(exclude_none=True)
 
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {"Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code != 200:
@@ -30,7 +34,7 @@ async def text2video(req: Text2VideoReqModel) -> Text2VideoResModel | Text2Video
     try:
         if response_json["status"] == "failed" or response_json["status"] == "error":
             logger.error(f"Stable diffusion text2img error: {response_json['message']}")
-            if str(response_json['message']).lower().__contains__("try again"):
+            if str(response_json["message"]).lower().__contains__("try again"):
                 raise Exception()
             err = Text2VideoResError.model_validate(response_json)
             return err
@@ -41,4 +45,6 @@ async def text2video(req: Text2VideoReqModel) -> Text2VideoResModel | Text2Video
             res = Text2VideoResModel.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
-        logger.error(f"Stable diffusion text2img validation error for response: {response_json}")
+        logger.error(
+            f"Stable diffusion text2img validation error for response: {response_json}"
+        )

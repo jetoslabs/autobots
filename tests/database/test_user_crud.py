@@ -32,4 +32,3 @@ async def test_user_crud_happy_path(set_test_settings):
 
     except Exception as e:
         assert e is None
-

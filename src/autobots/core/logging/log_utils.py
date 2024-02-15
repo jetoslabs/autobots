@@ -8,6 +8,7 @@ from src.autobots.core.logging.app_code import AppCode
 async def get_bind_dict():
     return {"app": "autobots"}
 
+
 # class Log:
 #
 #     logger = loguru.logger.bind(app="autobots")

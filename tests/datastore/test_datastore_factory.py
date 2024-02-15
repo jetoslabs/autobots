@@ -10,9 +10,10 @@ async def test_datastore_factory_happy_path(set_test_settings):
     str2 = "One who talks sweet, spend all their days in happiness. – Rig Veda"
     str3 = "One has to be humble if he desires to acquire knowledge. – Rig Veda"
 
-    datastore = await get_datastore_factory().create_datastore("test_datastore_factory_happy_path")
+    datastore = await get_datastore_factory().create_datastore(
+        "test_datastore_factory_happy_path"
+    )
     try:
-
         await datastore.put_data(str1)
         await datastore.put_data(str2)
         await datastore.put_data(str3)

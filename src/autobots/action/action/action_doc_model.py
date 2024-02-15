@@ -10,6 +10,7 @@ class ActionFind(BaseModel):
     """
     Input from User to find action
     """
+
     id: Optional[str] = Field(default=None)  # , alias='_id')
     name: Optional[str] = None
     version: Optional[float] = None
@@ -24,6 +25,7 @@ class ActionDocFind(ActionFind):
     """
     Add in user id to enforce multi-tenancy
     """
+
     user_id: str
 
 
@@ -45,6 +47,7 @@ class ActionCreate(BaseModel):
     """
     base class to be utilized by concrete action types to create action
     """
+
     name: str
     version: float = 0
     description: str = ""
@@ -60,6 +63,7 @@ class ActionDocCreate(ActionCreate):
     """
     Add in user id to enforce multi-tenancy
     """
+
     user_id: str
     created_at: datetime = datetime.now()
 
@@ -67,6 +71,6 @@ class ActionDocCreate(ActionCreate):
 class ActionDoc(ActionDocCreate):
     __collection__ = "Actions"
 
-    id: str = Field(..., alias='_id')
+    id: str = Field(..., alias="_id")
 
     model_config = ConfigDict(populate_by_name=True)

@@ -83,7 +83,7 @@ class Settings(BaseSettings):
 
     class ConfigDict:
         # env_file = f".env.local"
-        env_file_encoding = 'utf-8'
+        env_file_encoding = "utf-8"
 
 
 class SettingsProvider:
@@ -92,7 +92,7 @@ class SettingsProvider:
 
     @staticmethod
     @lru_cache
-    def set_env_file(_env_file: str = '.env.local') -> None:
+    def set_env_file(_env_file: str = ".env.local") -> None:
         SettingsProvider._env_file = _env_file
 
     @staticmethod

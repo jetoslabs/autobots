@@ -36,12 +36,13 @@ class Datastore:
     Each datastore will have unique namespace in pinecone
     """
 
-    def __init__(self,
-                 s3: S3,
-                 pinecone: Pinecone,
-                 unstructured: UnstructuredIO,
-                 # web_scraper: Selenium = get_selenium()
-                 ):
+    def __init__(
+        self,
+        s3: S3,
+        pinecone: Pinecone,
+        unstructured: UnstructuredIO,
+        # web_scraper: Selenium = get_selenium()
+    ):
         self.name = None
         self.trace = None
         self.id = None
@@ -51,7 +52,7 @@ class Datastore:
 
     def init(self, name: str):
         self.name = name
-        self.trace = ''.join(random.choices(string.hexdigits, k=9))
+        self.trace = "".join(random.choices(string.hexdigits, k=9))
         # Id for the datastore is unique identifier for the datastore
         self.id = f"{self.name}-{self.trace}"
         return self
@@ -74,20 +75,25 @@ class Datastore:
         return f"{self._datastore_identifier()}/{self.id}"
 
     async def _put_data(self, data: str):
-        await self.s3.put(data=data, filename=f"{self._get_s3_basepath()}/{gen_hash(data)}")
+        await self.s3.put(
+            data=data, filename=f"{self._get_s3_basepath()}/{gen_hash(data)}"
+        )
 
     async def _put_embedding(self, data: str):
         await self.pinecone.upsert_data(
             gen_hash(data),
-            data=data, metadata={},
-            namespace=self._get_pinecone_namespace()
+            data=data,
+            metadata={},
+            namespace=self._get_pinecone_namespace(),
         )
 
     async def put_data(
-            self,
-            data: str,
-            chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
-            chunk_token_size: int = 512
+        self,
+        data: str,
+        chunk_func: Callable[
+            [str], AsyncGenerator[str, None]
+        ] = DataProvider.read_data_line_by_line,
+        chunk_token_size: int = 512,
     ) -> List[DatastoreResult]:
         """
         Store data
@@ -95,16 +101,24 @@ class Datastore:
         """
         result = []
         try:
-            async for chunk in DataProvider.create_data_chunks(data, chunk_func, chunk_token_size):
+            async for chunk in DataProvider.create_data_chunks(
+                data, chunk_func, chunk_token_size
+            ):
                 await self._put_data(data=chunk)
                 await self._put_embedding(data=chunk)
-            result.append(DatastoreResult(resource=data, status=EventResultStatus.success))
+            result.append(
+                DatastoreResult(resource=data, status=EventResultStatus.success)
+            )
         except Exception as e:
             logger.error(f"Error processing data {str(e)}")
-            result.append(DatastoreResult(resource=data, status=EventResultStatus.error))
+            result.append(
+                DatastoreResult(resource=data, status=EventResultStatus.error)
+            )
         return result
 
-    async def put_files(self, files: List[UploadFile], chunk_size: int = 500) -> List[DatastoreResult]:
+    async def put_files(
+        self, files: List[UploadFile], chunk_size: int = 500
+    ) -> List[DatastoreResult]:
         result = []
         for file in files:
             datastore_result = await self.put_file(file, chunk_size)
@@ -121,25 +135,36 @@ class Datastore:
         return result
 
     @retry(exceptions=Exception, tries=3, delay=30)
-    async def put_file(self, file: UploadFile, chunk_size: int = 500) -> DatastoreResult:
+    async def put_file(
+        self, file: UploadFile, chunk_size: int = 500
+    ) -> DatastoreResult:
         datastore_result: DatastoreResult
         try:
             logger.debug(f"Processing file: {file.filename}")
-            file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
+            file_chunks: List[str] = await self.unstructured.get_file_chunks(
+                file, chunk_size=chunk_size
+            )
             logger.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
             await self._put_file_chunks(file, file_chunks)
-            datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.success)
+            datastore_result = DatastoreResult(
+                resource=file.filename, status=EventResultStatus.success
+            )
         except Exception as e:
             logger.error(f"Error: {str(e)} while putting file: {file.filename}")
-            datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.error)
+            datastore_result = DatastoreResult(
+                resource=file.filename, status=EventResultStatus.error
+            )
             raise
         return datastore_result
 
-    async def put_urls(self,
-                       urls: List[HttpUrl],
-                       chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
-                       chunk_token_size: int = 512
-                       ) -> List[DatastoreResult]:
+    async def put_urls(
+        self,
+        urls: List[HttpUrl],
+        chunk_func: Callable[
+            [str], AsyncGenerator[str, None]
+        ] = DataProvider.read_data_line_by_line,
+        chunk_token_size: int = 512,
+    ) -> List[DatastoreResult]:
         result = []
         # create new temp directory
         path = "./to_del"
@@ -149,7 +174,9 @@ class Datastore:
         # fetch html for each url
         for url in urls:
             # build filename
-            full_path_name = f"{path}/{url.path.replace('/', '_')}_{gen_random_str(5)}.html"
+            full_path_name = (
+                f"{path}/{url.path.replace('/', '_')}_{gen_random_str(5)}.html"
+            )
             try:
                 logger.debug(f"Processing URL: {url}")
                 # web scrape html data
@@ -157,15 +184,21 @@ class Datastore:
                 # write html to file
                 with open(full_path_name, "w+b") as file:
                     # Write str to file
-                    file.write(bytes(html_data, encoding='utf-8'))
+                    file.write(bytes(html_data, encoding="utf-8"))
                 # put file in datastore
                 with open(full_path_name, "rb") as file:
-                    await self.put_files(files=[UploadFile(filename=full_path_name, file=file)],
-                                         chunk_size=chunk_token_size)
-                result.append(DatastoreResult(resource=str(url), status=EventResultStatus.success))
+                    await self.put_files(
+                        files=[UploadFile(filename=full_path_name, file=file)],
+                        chunk_size=chunk_token_size,
+                    )
+                result.append(
+                    DatastoreResult(resource=str(url), status=EventResultStatus.success)
+                )
             except Exception as e:
                 logger.error(f"Error: processing URL: {str(url)}, error: {str(e)}")
-                result.append(DatastoreResult(resource=str(url), status=EventResultStatus.error))
+                result.append(
+                    DatastoreResult(resource=str(url), status=EventResultStatus.error)
+                )
             finally:
                 # delete file
                 os.remove(full_path_name)
@@ -179,7 +212,9 @@ class Datastore:
                 await self._put_embedding(data=chunk)
                 # housekeeping
                 loop = loop + 1
-                logger.debug(f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}")
+                logger.debug(
+                    f"Processed chunk: {loop}/{len(file_chunks)} of file {file.filename}"
+                )
                 logger.trace(f"Processed file chunk: {file.filename} - {chunk}")
             except Exception as e:
                 logger.error(str(e))
@@ -198,9 +233,7 @@ class Datastore:
         """
         result = []
         query_res: QueryResponse = await self.pinecone.query(
-            data=query,
-            top_k=top_k,
-            namespace=self._get_pinecone_namespace()
+            data=query, top_k=top_k, namespace=self._get_pinecone_namespace()
         )
         query_results = query_res.get("matches")
         for query_result in query_results:
@@ -210,6 +243,8 @@ class Datastore:
 
     async def empty_and_close(self):
         # delete namespace in pinecone
-        deleted_embeddings = await self.pinecone.delete_all(namespace=self._get_pinecone_namespace())
+        deleted_embeddings = await self.pinecone.delete_all(
+            namespace=self._get_pinecone_namespace()
+        )
         # delete folder in s3
         deleted_objects = await self.s3.delete_prefix(prefix=self._get_s3_basepath())

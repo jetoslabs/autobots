@@ -43,4 +43,3 @@ class ThreadMessageFileList(BaseModel):
     before: str | None = None
     limit: int | None = None
     order: Literal["asc", "desc"] | None = None
-

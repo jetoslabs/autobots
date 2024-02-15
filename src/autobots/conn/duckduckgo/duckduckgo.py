@@ -5,8 +5,12 @@ from duckduckgo_search import AsyncDDGS
 from loguru import logger
 from pydantic import BaseModel, HttpUrl
 
-from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams, SearchImageParams, \
-    SearchVideoParams
+from src.autobots.conn.duckduckgo.duckduckgo_model import (
+    SearchTextParams,
+    SearchMapsParams,
+    SearchImageParams,
+    SearchVideoParams,
+)
 from src.autobots.core.settings import Settings, SettingsProvider
 
 
@@ -88,12 +92,13 @@ class SuggestionRes(BaseModel):
 
 
 class DuckDuckGo:
-
     async def search_text(self, search_params: SearchTextParams) -> List[SearchRes]:
         search_res = []
         async with AsyncDDGS() as ddgs:
             # num = 1
-            search_iter: AsyncGenerator[dict[str, str | None]] = ddgs.text(**search_params.model_dump(exclude_none=True))
+            search_iter: AsyncGenerator[dict[str, str | None]] = ddgs.text(
+                **search_params.model_dump(exclude_none=True)
+            )
             async for r in search_iter:
                 # if num > search_params.max_results:
                 #     break
@@ -171,7 +176,9 @@ class DuckDuckGo:
                 logger.trace(f"Map search for {search_params.keywords}: {r}")
         return maps
 
-    async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
+    async def translate(
+        self, keywords: str, from_: Optional[str] = None, to: str = "en"
+    ) -> TranslateRes:
         translated: TranslateRes
         async with AsyncDDGS() as ddgs:
             r = await ddgs.translate(keywords, to=to)

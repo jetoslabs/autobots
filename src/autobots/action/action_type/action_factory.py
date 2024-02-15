@@ -7,14 +7,19 @@ from pydantic import BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action.common_action_models import TextObj
-from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
-    ActionResultUpdate
+from src.autobots.action.action_result.action_result_doc_model import (
+    ActionResultDoc,
+    ActionResultCreate,
+    ActionResultUpdate,
+)
 from src.autobots.action.action_result.user_action_result import UserActionResult
+
 # from autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import \
 #     ActionAudio2TextTranscriptionOpenai
 # from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
 #     ActionAudio2TextTranslationOpenai
 from src.autobots.action.action_type.action_map import ACTION_MAP
+
 # from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
 #     ActionImageMixerStableDiffusion
 # from autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
@@ -48,37 +53,48 @@ class ActionDataTypes(BaseModel):
 
 
 class ActionFactory:
-
     @staticmethod
     @lru_cache
     def get_action_types() -> List[str]:
-        action_types = [action_type for action_type in ActionType if not action_type.lower().startswith("mock")]
+        action_types = [
+            action_type
+            for action_type in ActionType
+            if not action_type.lower().startswith("mock")
+        ]
         return action_types
 
     @staticmethod
     async def get_data_types(
-            action_type: ActionType,
-            is_get_config: bool = True,
-            is_get_input: bool = True,
-            is_get_output: bool = True
+        action_type: ActionType,
+        is_get_config: bool = True,
+        is_get_input: bool = True,
+        is_get_output: bool = True,
     ) -> ActionDataTypes:
         try:
             action_data_types = ActionDataTypes(type=action_type)
             action = ACTION_MAP.get(action_type)
             if action:
                 if is_get_config:
-                    action_data_types.config = action.get_config_type().model_json_schema()
+                    action_data_types.config = (
+                        action.get_config_type().model_json_schema()
+                    )
                 if is_get_input:
-                    action_data_types.input = action.get_input_type().model_json_schema()
+                    action_data_types.input = (
+                        action.get_input_type().model_json_schema()
+                    )
                 if is_get_output:
-                    action_data_types.output = action.get_output_type().model_json_schema()
+                    action_data_types.output = (
+                        action.get_output_type().model_json_schema()
+                    )
             return action_data_types
         except Exception as e:
             logger.error(f"ActionType does not exist {action_type}, error: {str(e)}")
             raise
 
     @staticmethod
-    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
+    async def run_action(
+        action_doc: ActionDoc, action_input_dict: Dict[str, Any]
+    ) -> Any:
         action = ACTION_MAP.get(action_doc.type)
         config = action.get_config_type().model_validate(action_doc.config)
         input = action.get_input_type().model_validate(action_input_dict)
@@ -182,23 +198,29 @@ class ActionFactory:
 
     @staticmethod
     async def run_action_in_background(
-            action_doc: ActionDoc,
-            action_input_dict: Dict[str, Any],
-            user_action_result: UserActionResult,
-            background_tasks: BackgroundTasks = None,
-            webhook: Webhook | None = None,
+        action_doc: ActionDoc,
+        action_input_dict: Dict[str, Any],
+        user_action_result: UserActionResult,
+        background_tasks: BackgroundTasks = None,
+        webhook: Webhook | None = None,
     ) -> ActionResultDoc | None:
         # Create initial Action Result
         action_doc.input = action_input_dict
         action_result_create: ActionResultCreate = ActionResultCreate(
             status=EventResultStatus.processing, result=action_doc, is_saved=False
         )
-        action_result_doc = await user_action_result.create_action_result(action_result_create)
+        action_result_doc = await user_action_result.create_action_result(
+            action_result_create
+        )
         # Run Action in background and update the Action Result with Output
         if background_tasks:
             # Run in background
             background_tasks.add_task(
-                ActionFactory._run_action_as_background_task, action_input_dict, action_result_doc, user_action_result, webhook
+                ActionFactory._run_action_as_background_task,
+                action_input_dict,
+                action_result_doc,
+                user_action_result,
+                webhook,
             )
         else:
             # For testing
@@ -209,14 +231,16 @@ class ActionFactory:
 
     @staticmethod
     async def _run_action_as_background_task(
-            action_input_dict: Dict[str, Any],
-            action_result_doc: ActionResultDoc,
-            user_action_result: UserActionResult,
-            webhook: Webhook | None = None,
+        action_input_dict: Dict[str, Any],
+        action_result_doc: ActionResultDoc,
+        user_action_result: UserActionResult,
+        webhook: Webhook | None = None,
     ) -> None:
         try:
             # Run the action
-            result = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
+            result = await ActionFactory.run_action(
+                action_result_doc.result, action_input_dict
+            )
             # Action is a success
             action_result_doc.status = EventResultStatus.success
             action_result_doc.result.output = result
@@ -225,15 +249,18 @@ class ActionFactory:
             # Action resulted in an error
             action_result_doc.status = EventResultStatus.error
             action_result_doc.error_message = TextObj(text="Action run error")
-            logger.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
+            logger.bind(action_result_doc=action_result_doc, error=e).error(
+                "Action run error"
+            )
         finally:
             # Finally persist the Action Result
             action_result_update = ActionResultUpdate(**action_result_doc.model_dump())
             action_result_doc = await user_action_result.update_action_result(
-                action_result_doc.id,
-                action_result_update
+                action_result_doc.id, action_result_update
             )
-            logger.bind(action_result_doc=action_result_doc).info("Action Result updated")
+            logger.bind(action_result_doc=action_result_doc).info(
+                "Action Result updated"
+            )
             # Send webhook
             if webhook:
                 await webhook.send(action_result_doc.model_dump())

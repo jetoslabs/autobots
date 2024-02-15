@@ -1,6 +1,11 @@
 import gotrue
 from fastapi import HTTPException, Depends, Security
-from fastapi.security import OAuth2PasswordBearer, APIKeyQuery, APIKeyHeader, APIKeyCookie
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    APIKeyQuery,
+    APIKeyHeader,
+    APIKeyCookie,
+)
 from gotrue.errors import AuthApiError
 from jose import jwt
 from loguru import logger
@@ -13,11 +18,13 @@ from src.autobots.core.settings import SettingsProvider
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"{SettingsProvider.sget().API_v1}{SettingsProvider.sget().API_AUTH}{SettingsProvider.sget().API_AUTH_TOKEN}",
-    scheme_name="JWT"
+    scheme_name="JWT",
 )
 
 
-def decode_access_token(token: str, audience: str = "authenticated") -> JwtPayload | None:
+def decode_access_token(
+    token: str, audience: str = "authenticated"
+) -> JwtPayload | None:
     settings = SettingsProvider.sget()
     try:
         # Decoding token independently
@@ -29,7 +36,7 @@ def decode_access_token(token: str, audience: str = "authenticated") -> JwtPaylo
             audience=audience,
             issuer=None,
             subject=None,
-            access_token=None
+            access_token=None,
         )
         token_payload: JwtPayload = JwtPayload(**decoded_jwt)
         # logger.debug(token_payload)
@@ -38,7 +45,9 @@ def decode_access_token(token: str, audience: str = "authenticated") -> JwtPaylo
         logger.error(str(e))
 
 
-def supabase_decode_access_token(token: str, audience: str = None) -> gotrue.UserResponse:
+def supabase_decode_access_token(
+    token: str, audience: str = None
+) -> gotrue.UserResponse:
     """
     Decodes token
     :param token:
@@ -64,7 +73,9 @@ def get_user_from_creds(token: str = Depends(oauth2_scheme)) -> gotrue.UserRespo
     :return:
     """
     try:
-        jwt_payload: gotrue.UserResponse = supabase_decode_access_token(token, audience="authenticated")
+        jwt_payload: gotrue.UserResponse = supabase_decode_access_token(
+            token, audience="authenticated"
+        )
         if not jwt_payload.user.email:
             raise HTTPException(403, "Could not validate credentials")
         return jwt_payload
@@ -78,17 +89,23 @@ api_key_cookie = APIKeyCookie(name="Authorization", auto_error=False)
 
 
 def get_user_from_access_token(
-        api_key_query: str | None = Security(api_key_query),
-        api_key_header: str | None = Security(api_key_header),
-        api_key_cookie: str | None = Security(api_key_cookie),
+    api_key_query: str | None = Security(api_key_query),
+    api_key_header: str | None = Security(api_key_header),
+    api_key_cookie: str | None = Security(api_key_cookie),
 ) -> gotrue.UserResponse:
     try:
         if api_key_query:
-            return supabase_decode_access_token(api_key_query.split(" ")[1], audience="authenticated")
+            return supabase_decode_access_token(
+                api_key_query.split(" ")[1], audience="authenticated"
+            )
         elif api_key_header:
-            return supabase_decode_access_token(api_key_header.split(" ")[1], audience="authenticated")
+            return supabase_decode_access_token(
+                api_key_header.split(" ")[1], audience="authenticated"
+            )
         elif api_key_cookie:
-            return supabase_decode_access_token(api_key_cookie.split(" ")[1], audience="authenticated")
+            return supabase_decode_access_token(
+                api_key_cookie.split(" ")[1], audience="authenticated"
+            )
 
     except Exception as e:
         logger.error(str(e))

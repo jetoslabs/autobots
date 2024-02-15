@@ -26,13 +26,16 @@ class ResponseFormat(str, Enum):
 #     response_format: ResponseFormat = ResponseFormat.url
 #     user: str = ""
 
+
 class ImageReq(BaseModel):
     prompt: str
     model: Literal["dall-e-3"] = "dall-e-3"
     n: Optional[int] = 1
     quality: Literal["standard", "hd"] = "standard"
     response_format: Optional[Literal["url", "b64_json"]] = "url"
-    size: Optional[Literal["256x256", "512x512", "1024x1024", "1792x1024", "1024x1792"]] = "1024x1024"
+    size: Optional[
+        Literal["256x256", "512x512", "1024x1024", "1792x1024", "1024x1792"]
+    ] = "1024x1024"
     style: Optional[Literal["vivid", "natural"]] = "natural"
     user: str = ""
     # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -46,6 +49,7 @@ class ImageReq(BaseModel):
 # class ImageRes(BaseModel):
 #     url: Optional[str] = None
 #     b64_json: Optional[str] = None
+
 
 class ImageEdit(OpenaiExtraValues):
     image: Url | Path | bytes

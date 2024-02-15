@@ -16,11 +16,13 @@ class YanOpsFaceSwapParams(BaseModel):
     cache_days: int = Field(10, ge=1, le=10)
     weight: float = Field(0.5, ge=0.1, le=1.0)
 
+
 class YanOpsFaceSwapOutParams(BaseModel):
     msg: str
     code: int
     image: HttpUrl
     status: str
+
 
 class YanOpsFaceSwap:
     model = "yan-ops/face_swap"
@@ -28,11 +30,15 @@ class YanOpsFaceSwap:
     def __init__(self, client: replicate.client.Client):
         self.client = client
 
-    async def run(self, face_swap_params: YanOpsFaceSwapParams) -> YanOpsFaceSwapOutParams | None:
+    async def run(
+        self, face_swap_params: YanOpsFaceSwapParams
+    ) -> YanOpsFaceSwapOutParams | None:
         try:
             model: Model = self.client.models.get(YanOpsFaceSwap.model)
             ref = f"{model.id}:{model.latest_version.id}"
-            output_dict = await self.client.async_run(ref, face_swap_params.model_dump(exclude_none=True))
+            output_dict = await self.client.async_run(
+                ref, face_swap_params.model_dump(exclude_none=True)
+            )
             output = YanOpsFaceSwapOutParams.model_validate(output_dict)
             return output
         except Exception as e:

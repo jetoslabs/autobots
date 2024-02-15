@@ -3,7 +3,12 @@ from typing import Type
 from loguru import logger
 from pydantic import ValidationError
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import (
+    IAction,
+    ActionOutputType,
+    ActionInputType,
+    ActionConfigType,
+)
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role

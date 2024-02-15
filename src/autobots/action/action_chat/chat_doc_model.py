@@ -41,4 +41,4 @@ class ChatDocCreate(ChatCreate):
 class ChatDoc(ChatDocCreate):
     __collection__ = "Chats"
 
-    id: str = Field(..., alias='_id')
+    id: str = Field(..., alias="_id")

@@ -11,11 +11,15 @@ from src.autobots.auth.data_models import BearerAccessToken
 from src.autobots.auth.security import get_user_from_access_token, get_user_from_creds
 from src.autobots.core.settings import SettingsProvider
 
-router = APIRouter(prefix=SettingsProvider.sget().API_AUTH, tags=[SettingsProvider.sget().API_AUTH])
+router = APIRouter(
+    prefix=SettingsProvider.sget().API_AUTH, tags=[SettingsProvider.sget().API_AUTH]
+)
 
 
 @router.post("/")
-async def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends()) -> AuthResponse:
+async def return_user_and_session(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+) -> AuthResponse:
     """
     Returns Auth Response (User and Session)
     :return: AuthResponse
@@ -29,7 +33,9 @@ async def return_user_and_session(form_data: OAuth2PasswordRequestForm = Depends
 
 
 @router.post(SettingsProvider.sget().API_AUTH_TOKEN)
-async def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> BearerAccessToken:
+async def return_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+) -> BearerAccessToken:
     """
     OAuth2 endpoint
     signs in user(username/password) and returns JWT token
@@ -41,28 +47,36 @@ async def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Bear
     )
 
     bearer_token: BearerAccessToken = BearerAccessToken(
-        access_token=auth_res.session.access_token,
-        token_type="Bearer"
+        access_token=auth_res.session.access_token, token_type="Bearer"
     )
 
     return bearer_token
 
 
 @router.post(f"/token/test")
-async def test_auth_access_token(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> gotrue.User:
+async def test_auth_access_token(
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+) -> gotrue.User:
     return user_res.user
 
 
 @router.post("/creds/test")
-async def test_auth_creds(user_res: gotrue.UserResponse = Depends(get_user_from_creds)) -> gotrue.User:
+async def test_auth_creds(
+    user_res: gotrue.UserResponse = Depends(get_user_from_creds),
+) -> gotrue.User:
     return user_res.user
 
 
 @router.post("/password/reset")
-async def reset_password_email(email: EmailStr, redirect_to: Optional[HttpUrl] = None) -> bool:
+async def reset_password_email(
+    email: EmailStr, redirect_to: Optional[HttpUrl] = None
+) -> bool:
     return await get_auth().reset_password_email(email, redirect_to)
 
 
 @router.post("/session/refresh")
-async def reset_password_email(refresh_token: str, user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> AuthResponse:
+async def reset_password_email(
+    refresh_token: str,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+) -> AuthResponse:
     return await get_auth().refresh_session(refresh_token)

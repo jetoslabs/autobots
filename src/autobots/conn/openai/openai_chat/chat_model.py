@@ -3,8 +3,12 @@ from typing import List, Union, Literal, Optional, Dict
 
 import httpx
 from openai._types import Headers, Query, Body
-from openai.types.chat import ChatCompletionMessageParam, completion_create_params, ChatCompletionToolChoiceOptionParam, \
-    ChatCompletionToolParam
+from openai.types.chat import (
+    ChatCompletionMessageParam,
+    completion_create_params,
+    ChatCompletionToolChoiceOptionParam,
+    ChatCompletionToolParam,
+)
 from pydantic import BaseModel, ConfigDict
 
 
@@ -36,7 +40,7 @@ class ChatReq(BaseModel):
         "gpt-3.5-turbo-0613",
         "gpt-3.5-turbo-1106",
         "gpt-3.5-turbo-16k-0613",
-        ] = "gpt-3.5-turbo-16k-0613"
+    ] = "gpt-3.5-turbo-16k-0613"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None
     # functions: List[completion_create_params.Function] = None
