@@ -97,7 +97,7 @@ class Selenium:
             try:
                 txt = await self.read_url_v1(url, xpath, attribute)
                 result = result + f"{url.unicode_string()}:\n{txt}\n\n"
-            except Exception as e:
+            except Exception:
                 pass
         return result
 

@@ -53,7 +53,7 @@ async def return_token(
     return bearer_token
 
 
-@router.post(f"/token/test")
+@router.post("/token/test")
 async def test_auth_access_token(
     user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
 ) -> gotrue.User:

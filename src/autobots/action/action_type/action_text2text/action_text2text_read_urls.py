@@ -48,7 +48,7 @@ class ActionText2TextReadUrl(
             for potential_url in potential_urls:
                 try:
                     urls.append(HttpUrl(potential_url))
-                except Exception as e:
+                except Exception:
                     pass
 
             out = await selenium.read_urls(

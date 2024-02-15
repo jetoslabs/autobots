@@ -1,10 +1,9 @@
 from enum import Enum
-from typing import Optional, List, Literal
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, HttpUrl
 
 from src.autobots import SettingsProvider
-from src.autobots.conn.stable_diffusion.common_models import YesNo
 
 
 class NumInferenceSteps(int, Enum):

@@ -110,7 +110,7 @@ async def create_action_text2text_search_web(
             ActionCreate(**action_create.model_dump(exclude_none=True))
         )
         return action_doc
-    except HTTPException as e:
+    except HTTPException:
         raise
     except Exception as e:
         logger.error(str(e))
@@ -134,7 +134,7 @@ async def create_action_text2text_search_maps(
             ActionCreate(**action_create.model_dump(exclude_none=True))
         )
         return action_doc
-    except HTTPException as e:
+    except HTTPException:
         raise
     except Exception as e:
         logger.error(str(e))

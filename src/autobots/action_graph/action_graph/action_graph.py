@@ -278,7 +278,7 @@ class ActionGraph:
                         for potential_url in potential_urls:
                             url = HttpUrl(potential_url)
                             input_msg = input_msg + f"{url.unicode_string()},"
-                    except Exception as e:
+                    except Exception:
                         text_obj = TextObj.model_validate(action_output)
                         input_msg = (
                             f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"

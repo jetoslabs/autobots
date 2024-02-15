@@ -43,12 +43,12 @@ class ReasonActObserve:
         thought_goal_example_1 = (
             f"{Thought_Prefix}I need to search where is Arsenal Football club located"
         )
-        action_example_1 = f"search[where is Arsenal Football club located]"
+        action_example_1 = "search[where is Arsenal Football club located]"
         observation_example_1 = f"{Observe_Prefix}Arsenal Football Club is an English professional football club based in Islington, London. Arsenal play in the Premier League, the top flight of English football."
         thought_goal_example_2 = (
             f"{Thought_Prefix}Arsenal Football Club is based in Islington, London"
         )
-        action_example_2 = f"finish[Islington, London]"
+        action_example_2 = "finish[Islington, London]"
         self.setup_messages: List[ChatCompletionMessageParam] = [
             ChatCompletionSystemMessageParam(
                 role="system",
