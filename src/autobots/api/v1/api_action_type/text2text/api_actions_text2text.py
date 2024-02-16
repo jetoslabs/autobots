@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
 from pymongo.database import Database
 
-from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
+from src.autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import (
@@ -23,7 +23,10 @@ from src.autobots.action.action_type.action_text2text.action_text2text_search_we
 )
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
-from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
+from src.autobots.conn.google.google_genai_chat.chat_model import (
+    ChatReq as ChatReqGoogleGenAI,
+)
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq as ChatReqOpenAI
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM
 
@@ -32,7 +35,14 @@ router = APIRouter()
 
 class ActionCreateText2TextLlmChatOpenai(ActionCreate):
     type: ActionType = ActionType.text2text_llm_chat_openai
-    config: ChatReq
+    config: ChatReqOpenAI
+    input: Optional[TextObj] = None
+    output: Optional[TextObjs] = None
+
+
+class ActionCreateText2TextLlmChatGoogleGenAI(ActionCreate):
+    type: ActionType = ActionType.text2text_llm_chat_google_genai
+    config: ChatReqGoogleGenAI
     input: Optional[TextObj] = None
     output: Optional[TextObjs] = None
 
@@ -57,6 +67,23 @@ async def create_action_text2text_llm_chat_openai(
 @router.post("/text2text/llm_chat_with_vector_search_openai")
 async def create_action_text2text_llm_chat_with_vector_search_openai(
     action_create: ActionCreateText2TextLlmChatWithVectorSearchOpenai,
+    user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+    db: Database = Depends(get_mongo_db),
+) -> ActionDoc:
+    try:
+        user_orm = UserORM(id=UUID(user_res.user.id))
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
+        )
+        return action_doc
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(500)
+
+
+@router.post("/text2text/llm_chat_google_genai")
+async def create_action_text2text_llm_chat_google_genai(
+    action_create: ActionCreateText2TextLlmChatGoogleGenAI,
     user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
     db: Database = Depends(get_mongo_db),
 ) -> ActionDoc:

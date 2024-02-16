@@ -38,11 +38,11 @@ class UserChat:
     async def create_chat(
         self, chat_create: ChatCreate, title: str = DEFAULT_TITLE
     ) -> ChatDoc | None:
-        if (
-            not chat_create.action.type == ActionType.text2text_llm_chat_openai
-            and not chat_create.action.type
-            == ActionType.text2text_llm_chat_with_vector_search_openai
-        ):
+        if chat_create.action.type not in [
+            ActionType.text2text_llm_chat_openai,
+            ActionType.text2text_llm_chat_google_genai,
+            ActionType.text2text_llm_chat_with_vector_search_openai,
+        ]:
             raise HTTPException(400, "Action is not available for chat")
         try:
             chat_doc_create = ChatDocCreate(

@@ -25,6 +25,9 @@ from src.autobots.action.action_type.action_text2img.action_text2img_search_imag
 from src.autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import (
     ActionText2ImgStableDiffusion,
 )
+from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_google import (
+    ActionText2TextLlmChatGoogleGenAI,
+)
 
 # from autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
 #     ActionText2TextIOMapper
@@ -55,6 +58,7 @@ from src.autobots.action.action_type.action_types import ActionType
 ACTION_MAP_COPY = {
     # text2text
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
+    ActionType.text2text_llm_chat_google_genai: ActionText2TextLlmChatGoogleGenAI,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,

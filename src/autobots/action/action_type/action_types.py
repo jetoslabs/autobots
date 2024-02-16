@@ -4,6 +4,7 @@ from enum import Enum
 class ActionType(str, Enum):
     # text2text
     text2text_llm_chat_openai = "text2text_llm_chat_openai"
+    text2text_llm_chat_google_genai = "text2text_llm_chat_google_genai"
     text2text_llm_chat_with_vector_search_openai = (
         "text2text_llm_chat_with_vector_search_openai"
     )

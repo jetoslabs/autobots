@@ -28,6 +28,9 @@ from src.autobots.action.action_type.action_text2img.action_text2img_stable_diff
 from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import (
     ActionText2TextIOMapper,
 )
+from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_google import (
+    ActionText2TextLlmChatGoogleGenAI,
+)
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import (
     ActionText2TextLlmChatOpenai,
 )
@@ -54,6 +57,7 @@ from src.autobots.action.action_type.action_types import ActionType
 ACTION_MAP = {
     # text2text
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
+    ActionType.text2text_llm_chat_google_genai: ActionText2TextLlmChatGoogleGenAI,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
