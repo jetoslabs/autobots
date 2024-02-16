@@ -1,4 +1,3 @@
-from importlib import metadata
 from typing import Dict, Any
 
 from pydantic import BaseModel

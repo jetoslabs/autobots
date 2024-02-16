@@ -32,10 +32,10 @@ class ReasonActObserve():
         observe_prompt = "Observe step is result of the action that interacts with external environment, so the search action will result in observation. Observation will be in format Observation[]"
         user_goal_example = f"{Task_Prefix}Find where Arsenal football club is based"
         thought_goal_example_1 = f"{Thought_Prefix}I need to search where is Arsenal Football club located"
-        action_example_1 = f"search[where is Arsenal Football club located]"
+        action_example_1 = "search[where is Arsenal Football club located]"
         observation_example_1 = f"{Observe_Prefix}Arsenal Football Club is an English professional football club based in Islington, London. Arsenal play in the Premier League, the top flight of English football."
         thought_goal_example_2 = f"{Thought_Prefix}Arsenal Football Club is based in Islington, London"
-        action_example_2 = f"finish[Islington, London]"
+        action_example_2 = "finish[Islington, London]"
         self.setup_messages: List[ChatCompletionMessageParam] = [
             ChatCompletionSystemMessageParam(role="system", content=f"{base_prompt}\n\n{thought_prompt}\n{act_prompt}\n{observe_prompt}")
         ] + [

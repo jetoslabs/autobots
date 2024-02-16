@@ -35,5 +35,5 @@ async def text2img(req: Text2ImgReqModel) -> Text2ImgResModel | Text2ImgResProce
         else:
             res = Text2ImgResModel.model_validate(response_json)
             return res
-    except ValidationError or TypeError as e:
+    except ValidationError or TypeError:
         logger.error(f"Stable diffusion text2img validation error for response: {response_json}")

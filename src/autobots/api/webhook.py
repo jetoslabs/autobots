@@ -12,5 +12,5 @@ class Webhook(BaseModel):
         try:
             async with httpx.AsyncClient() as client:
                 await client.post(f"{self.url}/{self.track_id}", json=data, timeout=1)
-        except Exception as e:
+        except Exception:
             pass
