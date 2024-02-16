@@ -45,6 +45,7 @@ pg8000 = "^1.30.4"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.1"
+pre-commit = "^3.6.1"
 
 [build-system]
 requires = ["poetry-core"]
