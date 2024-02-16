@@ -43,6 +43,7 @@ jobs:
 #          MONGO_CONN: ${{ secrets.MONGO_CONN }}
 #          OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
 #          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+#          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
 #          STABILITY_HOST: ${{ secrets.STABILITY_HOST }}
 #          STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
 #          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
