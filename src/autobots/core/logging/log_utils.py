@@ -1,7 +1,3 @@
-
-
-
-
 async def get_bind_dict():
     return {"app": "autobots"}
 

@@ -1,8 +1,8 @@
 from typing import Generator
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm.session import sessionmaker, Session
+from sqlalchemy.orm.session import Session, sessionmaker
 
 from src.autobots.core.settings import SettingsProvider
 
