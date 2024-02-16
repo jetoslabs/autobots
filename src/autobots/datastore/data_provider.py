@@ -49,7 +49,8 @@ class DataProvider:
             lines[-1] = lines[-1].rstrip(delimiter)
 
             for line in lines:
-                if line == delimiter: continue
+                if line == delimiter:
+                    continue
                 yield line
 
     @staticmethod

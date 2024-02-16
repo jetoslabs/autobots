@@ -45,9 +45,13 @@ class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunM
         super().__init__(action_config)
 
     async def run_action(self, action_input: Text2VideoRunModel) -> StableDiffusionRes:
-        if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
-        if action_input.negative_prompt: self.action_config.negative_prompt = f"{self.action_config.negative_prompt}\n{action_input.negative_prompt}"
-        if action_input.scheduler: self.action_config.scheduler = action_input.scheduler
-        if action_input.seconds: self.action_config.seconds = action_input.seconds
+        if action_input.prompt:
+            self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
+        if action_input.negative_prompt:
+            self.action_config.negative_prompt = f"{self.action_config.negative_prompt}\n{action_input.negative_prompt}"
+        if action_input.scheduler:
+            self.action_config.scheduler = action_input.scheduler
+        if action_input.seconds:
+            self.action_config.seconds = action_input.seconds
         video = await get_stable_diffusion().text2video(self.action_config)
         return video

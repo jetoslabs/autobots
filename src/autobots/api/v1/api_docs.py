@@ -32,6 +32,6 @@ async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_
 
 
 @router.get("/redoc")
-async def api_docs(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
+async def api_redoc(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)):
     settings = SettingsProvider.sget()
     return get_redoc_html(openapi_url=f"{settings.API_v1}/openapi.json", title="redoc")

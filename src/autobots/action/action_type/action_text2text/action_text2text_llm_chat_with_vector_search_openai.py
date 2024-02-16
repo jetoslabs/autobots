@@ -57,7 +57,7 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
         )
 
     async def run_action(self, action_input: TextObj) -> TextObjs | None:
-        text_objs = TextObjs(texts=[])
+        # text_objs = TextObjs(texts=[])
         # vector search
         search_results = await self.datastore.search(action_input.text, top_k=3)
         if len(search_results) == 0:

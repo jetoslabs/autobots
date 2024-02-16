@@ -11,7 +11,6 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
@@ -20,7 +19,7 @@ async def test_action_crud_happy_path(set_test_settings):
     action_crud = ActionCRUD(db)
 
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d39")
-    user = UserORM(id=user_id)
+    # user = UserORM(id=user_id)
 
     try:
         chat_req = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content="You are an expert blogger")])

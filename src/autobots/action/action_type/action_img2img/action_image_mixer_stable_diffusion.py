@@ -55,15 +55,25 @@ class ActionImageMixerStableDiffusion(IAction[ImageMixerReqModel, ImageMixerRunM
         super().__init__(action_config)
 
     async def run_action(self, action_input: ImageMixerRunModel) -> StableDiffusionRes:
-        if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
-        if action_input.negative_prompt: self.action_config.negative_prompt = f"{self.action_config.negative_prompt}\n{action_input.negative_prompt}"
-        if action_input.init_image: self.action_config.init_image = f"{self.action_config.init_image},{action_input.init_image}"
-        if action_input.init_image_weights: self.action_config.init_image_weights = f"{self.action_config.init_image_weights},{action_input.init_image_weights}"
-        if action_input.width: self.action_config.width = action_input.width
-        if action_input.height: self.action_config.height = action_input.height
-        if action_input.seed: self.action_config.seed = action_input.seed
-        if action_input.samples: self.action_config.height = action_input.samples
-        if action_input.webhook: self.action_config.webhook = action_input.webhook
-        if action_input.track_id: self.action_config.track_id = action_input.track_id
+        if action_input.prompt:
+            self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
+        if action_input.negative_prompt:
+            self.action_config.negative_prompt = f"{self.action_config.negative_prompt}\n{action_input.negative_prompt}"
+        if action_input.init_image:
+            self.action_config.init_image = f"{self.action_config.init_image},{action_input.init_image}"
+        if action_input.init_image_weights:
+            self.action_config.init_image_weights = f"{self.action_config.init_image_weights},{action_input.init_image_weights}"
+        if action_input.width:
+            self.action_config.width = action_input.width
+        if action_input.height:
+            self.action_config.height = action_input.height
+        if action_input.seed:
+            self.action_config.seed = action_input.seed
+        if action_input.samples:
+            self.action_config.height = action_input.samples
+        if action_input.webhook:
+            self.action_config.webhook = action_input.webhook
+        if action_input.track_id:
+            self.action_config.track_id = action_input.track_id
         images = await get_stable_diffusion().image_mixer(self.action_config)
         return images

@@ -119,7 +119,7 @@ async def page_api_docs(request: Request, user: UserResponse | None = Depends(ge
 
 
 @router.get("/redoc")
-async def page_api_docs(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_api_redoc(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
     settings = SettingsProvider.sget()
     if user:
         return templates.TemplateResponse("redoc.html",

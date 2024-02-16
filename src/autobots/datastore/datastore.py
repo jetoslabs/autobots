@@ -210,6 +210,6 @@ class Datastore:
 
     async def empty_and_close(self):
         # delete namespace in pinecone
-        deleted_embeddings = await self.pinecone.delete_all(namespace=self._get_pinecone_namespace())
+        deleted_embeddings = await self.pinecone.delete_all(namespace=self._get_pinecone_namespace())  # noqa: F841
         # delete folder in s3
-        deleted_objects = await self.s3.delete_prefix(prefix=self._get_s3_basepath())
+        deleted_objects = await self.s3.delete_prefix(prefix=self._get_s3_basepath())  # noqa: F841

@@ -48,7 +48,7 @@ async def return_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Bear
     return bearer_token
 
 
-@router.post(f"/token/test")
+@router.post("/token/test")
 async def test_auth_access_token(user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> gotrue.User:
     return user_res.user
 
@@ -64,5 +64,5 @@ async def reset_password_email(email: EmailStr, redirect_to: Optional[HttpUrl] =
 
 
 @router.post("/session/refresh")
-async def reset_password_email(refresh_token: str, user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> AuthResponse:
+async def refresh_password_email(refresh_token: str, user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> AuthResponse:
     return await get_auth().refresh_session(refresh_token)

@@ -41,5 +41,5 @@ async def image_mixer(
         else:
             res = ImageMixerResModel.model_validate(response_json)
             return res
-    except ValidationError or TypeError as e:
+    except ValidationError or TypeError:
         logger.error(f"Stable diffusion image_mixer validation error for response: {response_json}")

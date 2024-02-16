@@ -50,7 +50,7 @@ async def test_datastore_happy_path(set_test_settings):
 
     finally:
         # cleanup datastore
-        deleted = await datastore.empty_and_close()
+        deleted = await datastore.empty_and_close()  # noqa: F841
 
 
 @pytest.mark.skip(reason="Skipping test_put_files_happy_path to keep within rate limit")
@@ -77,5 +77,5 @@ async def test_put_files_happy_path(set_test_settings):
 
     finally:
         # cleanup datastore
-        deleted = await datastore.empty_and_close()
+        deleted = await datastore.empty_and_close()  # noqa: F841
 
