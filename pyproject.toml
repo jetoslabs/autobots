@@ -43,6 +43,9 @@ retry = "^0.9.2"
 replicate = "^0.23.1"
 pg8000 = "^1.30.4"
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
