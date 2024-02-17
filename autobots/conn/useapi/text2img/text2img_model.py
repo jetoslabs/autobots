@@ -5,9 +5,25 @@ from autobots import SettingsProvider
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime
 class DiscordReqModel(BaseModel):
-    key: str = Field(default=SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
-                     description="Your API Key used for request authorization.")
-    prompt: str = Field(..., description="Text prompt with description of the things you want in the image to be generated.")
+    discord_server_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_SERVER_ID,
+                     description="Your discord server id used for request authorization.")
+    prompt: Optional[str] = Field(..., description="Text prompt with description of the things" +
+                                         " you want in the image to be generated.")
+    url: Optional[str] =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+                     description="USE_API end point")
+    discord_token: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_TOKEN,
+                     description="Your discord token used for request authorization.")
+    discord_channel_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_CHANNEL_ID,
+                               description="Your discord channel id used for request authorization.")
+    use_api_net_token: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
+                               description="Your use aoi net token id used for request authorization.")
+    job_id: Optional[str] = Field(default=None, description="Job id to fetch")
+class DiscordJobReqModel(BaseModel):
+   url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+                     description="USE_API end point")
+   use_api_net_token: str = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
+                               description="Your discord channel id used for request authorization.")
+   job_id: str = Field(description="Job id to fetch")
 
 class DiscordChild(BaseModel):
     button: str

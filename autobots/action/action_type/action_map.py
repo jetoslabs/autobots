@@ -10,6 +10,7 @@ from autobots.action.action_type.action_text2audio.action_text2audio_speech_open
 from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from autobots.action.action_type.action_text2img.action_text2img_search_image import ActionText2ImgSearchImage
 from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
+from autobots.action.action_type.action_text2img.action_text2img_midjourney import ActionText2ImgMidjourney
 from autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
     ActionText2TextIOMapper
 from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
@@ -36,6 +37,7 @@ ACTION_MAP = {
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,
     ActionType.text2img_stable_diffusion: ActionText2ImgStableDiffusion,
     ActionType.text2img_search_image: ActionText2ImgSearchImage,
+    ActionType.text2img_midjourney_ai: ActionText2ImgMidjourney,
     # img2img
     ActionType.image_mixer_stable_diffusion: ActionImageMixerStableDiffusion,
     ActionType.img2img_edit_openai: ActionImg2ImgEditOpenai,
