@@ -10,6 +10,7 @@ from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
     ActionResultUpdate
 from src.autobots.action.action_result.user_action_result import UserActionResult
+from src.autobots.action.action_type.abc.IAction import ActionConfigType
 # from autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import \
 #     ActionAudio2TextTranscriptionOpenai
 # from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
@@ -75,6 +76,29 @@ class ActionFactory:
             return action_data_types
         except Exception as e:
             logger.error(f"ActionType does not exist {action_type}, error: {str(e)}")
+            raise
+
+    @staticmethod
+    async def create_action_config(action_type: ActionType, action_config_create: Dict[str, Any]) -> ActionConfigType:
+        try:
+            action_class = ACTION_MAP.get(action_type)
+            config_create = action_class.get_config_create_type().model_validate(action_config_create)
+            config = action_class.create_config(config_create)
+            return config
+        except Exception:
+            raise
+
+    @staticmethod
+    async def update_action_config(
+            action_type: ActionType, action_config: Dict[str, Any], action_config_update: Dict[str, Any]
+    ) -> ActionConfigType:
+        try:
+            action_class = ACTION_MAP.get(action_type)
+            config = action_class.get_config_type().model_validate(action_config)
+            config_update = action_class.get_config_update_type().model_validate(action_config_update)
+            updated_config = action_class.update_config(config, config_update)
+            return updated_config
+        except Exception:
             raise
 
     @staticmethod
