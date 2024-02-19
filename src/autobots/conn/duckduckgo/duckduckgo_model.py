@@ -34,7 +34,7 @@ class SearchTextParams(BaseModel):
             if isinstance(value, Timelimit):
                 if value == Timelimit.all:
                     return None
-            return value.name
+            return value.value
         return value
 
 
