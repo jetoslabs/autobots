@@ -5,10 +5,11 @@ from openai.pagination import AsyncCursorPage
 from openai.types.beta import Assistant, AssistantDeleted
 from openai.types.beta.assistants import AssistantFile, FileDeleteResponse
 
-
-from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantCreate, AssistantRetrieve, AssistantList, \
+from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantCreate, AssistantRetrieve, \
+    AssistantList, \
     AssistantDelete, AssistantUpdate, AssistantFileInput, AssistantFileListInput
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads import OpenaiThreads
+
 
 class OpenaiAssistants():
 
@@ -18,7 +19,8 @@ class OpenaiAssistants():
 
     async def create(self, assistant_create: AssistantCreate) -> Assistant | None:
         try:
-            return await self.client.beta.assistants.create(**assistant_create.model_dump(exclude_none=True))
+            assistant = await self.client.beta.assistants.create(**assistant_create.model_dump(exclude_none=True))
+            return assistant
         except Exception as e:
             logger.error(str(e))
 
@@ -66,7 +68,8 @@ class OpenaiAssistants():
             logger.error(str(e))
 
     async def list_files(self, assistant_file_input: AssistantFileListInput) -> AsyncPaginator[
-        AssistantFile, AsyncCursorPage[AssistantFile]] | None:
+                                                                                    AssistantFile, AsyncCursorPage[
+                                                                                        AssistantFile]] | None:
         try:
             return await self.client.beta.assistants.files.list(**assistant_file_input.model_dump(exclude_none=True))
         except Exception as e:
