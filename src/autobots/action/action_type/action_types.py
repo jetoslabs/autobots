@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class ActionType(str, Enum):
+    # multimodal
+    multimodal_assistant_openai = "multimodal_assistant_openai"
+
     # text2text
     text2text_llm_chat_openai = "text2text_llm_chat_openai"
     text2text_llm_chat_with_vector_search_openai = "text2text_llm_chat_with_vector_search_openai"

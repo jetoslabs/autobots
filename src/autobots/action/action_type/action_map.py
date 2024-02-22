@@ -6,6 +6,8 @@ from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_di
     ActionImageMixerStableDiffusion
 from src.autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
 from src.autobots.action.action_type.action_img2img.action_img2img_variation_openai import ActionImg2ImgVariationOpenai
+from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.action_multimodal_assistant_openai import \
+    ActionMultimodalAssistantOpenai
 from src.autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
 from src.autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from src.autobots.action.action_type.action_text2img.action_text2img_search_image import ActionText2ImgSearchImage
@@ -25,6 +27,8 @@ from src.autobots.action.action_type.action_text2video.action_text2video_stable_
 from src.autobots.action.action_type.action_types import ActionType
 
 ACTION_MAP = {
+    # multimodal
+    ActionType.multimodal_assistant_openai: ActionMultimodalAssistantOpenai,
     # text2text
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,

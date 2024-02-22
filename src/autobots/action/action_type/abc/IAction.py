@@ -41,16 +41,20 @@ class IAction(Generic[ActionConfigCreateType, ActionConfigUpdateType, ActionConf
         raise NotImplementedError
 
     @staticmethod
-    def create_config(config_create: ActionConfigCreateType) -> ActionConfigType:
+    async def create_config(config_create: ActionConfigCreateType) -> ActionConfigType:
         if ActionConfigCreateType == ActionConfigType:
             return config_create
         raise NotImplementedError
 
     @staticmethod
-    def update_config(config: ActionConfigType, config_update: ActionConfigUpdateType) -> ActionConfigType:
+    async def update_config(config: ActionConfigType, config_update: ActionConfigUpdateType) -> ActionConfigType:
         if ActionConfigUpdateType == ActionConfigType:
             return config_update
         raise NotImplementedError
+
+    @staticmethod
+    async def delete_config(config: ActionConfigType) -> ActionConfigType:
+        pass
 
     @abstractmethod
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType:
