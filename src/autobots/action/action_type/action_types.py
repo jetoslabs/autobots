@@ -18,6 +18,7 @@ class ActionType(str, Enum):
     text2img_stability_ai = "text2img_stability_ai"
     text2img_stable_diffusion = "text2img_stable_diffusion"
     text2img_search_image = "text2img_search_image"
+    text2img_midjourney_ai = "text2img_midjourney_ai"
 
     # img2img
     image_mixer_stable_diffusion = "image_mixer_stable_diffusion"
