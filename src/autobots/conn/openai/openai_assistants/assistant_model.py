@@ -7,6 +7,7 @@ from src.autobots.conn.openai.openai_common_models import OpenaiExtraValues
 
 class AssistantCreate(OpenaiExtraValues):
     model: Literal[
+        "gpt-4-turbo-preview",
         "gpt-4-1106-preview",
         "gpt-4-vision-preview",
         "gpt-4",
@@ -20,7 +21,7 @@ class AssistantCreate(OpenaiExtraValues):
         "gpt-3.5-turbo-0301",
         "gpt-3.5-turbo-0613",
         "gpt-3.5-turbo-16k-0613",
-    ] = "gpt-4"
+    ] = "gpt-4-turbo-preview"
     description: str | None = None
     file_ids: list[str] | None = None
     instructions: str | None = None

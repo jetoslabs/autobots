@@ -24,6 +24,10 @@ class UserActions:
     ) -> ActionDoc | None:
         try:
             # TODO: exclude_none=True
+            # Create Config for the Action based on action type
+            config = await ActionFactory.create_action_config(action_create.type, action_create.config)
+            action_create.config = config
+            # Now create Action
             action_doc_create = ActionDocCreate(user_id=self.user_id, **action_create.model_dump())
             action_doc = await self.action_crud.insert_one(action_doc_create)
             return action_doc
@@ -58,6 +62,14 @@ class UserActions:
     async def update_action(
             self, action_id: str, action_update: ActionUpdate
     ) -> ActionDoc:
+        if action_update.config:
+            # Update Config for the Action based on action type
+            existing_action_doc = await self.get_action(action_id)
+            updated_config = await ActionFactory.update_action_config(
+                existing_action_doc.type, existing_action_doc.config, action_update.config
+            )
+            action_update.config = updated_config
+        # Now create Action
         action_doc_update = ActionDocUpdate(id=action_id, user_id=self.user_id, **action_update.model_dump())
         action_doc = await self.action_crud.update_one(action_doc_update)
         return action_doc

@@ -10,31 +10,8 @@ from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
     ActionResultUpdate
 from src.autobots.action.action_result.user_action_result import UserActionResult
-# from autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import \
-#     ActionAudio2TextTranscriptionOpenai
-# from autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
-#     ActionAudio2TextTranslationOpenai
+from src.autobots.action.action_type.abc.IAction import ActionConfigType
 from src.autobots.action.action_type.action_map import ACTION_MAP
-# from autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
-#     ActionImageMixerStableDiffusion
-# from autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
-# from autobots.action.action_type.action_img2img.action_img2img_stable_diffusion import ActionImg2ImgStableDiffusion
-# from autobots.action.action_type.action_img2img.action_img2img_variation_openai import ActionImg2ImgVariationOpenai
-# from autobots.action.action_type.action_mock.action_mock import MockAction
-# from autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
-# from autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
-# # from autobots.action.action_type.action_text2img.action_text2img_stability_ai_v2 import ActionGenImageStabilityAiV2
-# from autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
-# from autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
-#     ActionText2TextIOMapper
-# from autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
-#     ActionText2TextLlmChatOpenai
-# from autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
-#     ActionText2TextLlmChatWithVectorSearchOpenai
-# from autobots.action.action_type.action_text2text.action_text2text_read_url import ActionText2TextReadUrl
-# from autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
-# from autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
-#     ActionText2VideoStableDiffusion
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook
 from src.autobots.event_result.event_result_model import EventResultStatus
@@ -42,6 +19,8 @@ from src.autobots.event_result.event_result_model import EventResultStatus
 
 class ActionDataTypes(BaseModel):
     type: ActionType
+    config_create: Dict[str, Any] | None = None
+    config_update: Dict[str, Any] | None = None
     config: Dict[str, Any] | None = None
     input: Dict[str, Any] | None = None
     output: Dict[str, Any] | None = None
@@ -58,6 +37,8 @@ class ActionFactory:
     @staticmethod
     async def get_data_types(
             action_type: ActionType,
+            is_get_config_create: bool = True,
+            is_get_config_update: bool = True,
             is_get_config: bool = True,
             is_get_input: bool = True,
             is_get_output: bool = True
@@ -66,6 +47,10 @@ class ActionFactory:
             action_data_types = ActionDataTypes(type=action_type)
             action = ACTION_MAP.get(action_type)
             if action:
+                if is_get_config_create:
+                    action_data_types.config_create = action.get_config_create_type().model_json_schema()
+                if is_get_config_update:
+                    action_data_types.config_update = action.get_config_update_type().model_json_schema()
                 if is_get_config:
                     action_data_types.config = action.get_config_type().model_json_schema()
                 if is_get_input:
@@ -78,107 +63,47 @@ class ActionFactory:
             raise
 
     @staticmethod
+    async def create_action_config(action_type: ActionType, action_config_create: Dict[str, Any]) -> ActionConfigType:
+        try:
+            action_class = ACTION_MAP.get(action_type)
+            config_create = action_class.get_config_create_type().model_validate(action_config_create)
+            config = await action_class.create_config(config_create)
+            return config
+        except Exception:
+            raise
+
+    @staticmethod
+    async def update_action_config(
+            action_type: ActionType, action_config: Dict[str, Any], action_config_update: Dict[str, Any]
+    ) -> ActionConfigType:
+        try:
+            action_class = ACTION_MAP.get(action_type)
+            config = action_class.get_config_type().model_validate(action_config)
+            config_update = action_class.get_config_update_type().model_validate(action_config_update)
+            updated_config = await action_class.update_config(config, config_update)
+            return updated_config
+        except Exception:
+            raise
+
+    @staticmethod
+    async def delete_action_config(
+            action_type: ActionType, action_config: Dict[str, Any]
+    ) -> ActionConfigType:
+        try:
+            action_class = ACTION_MAP.get(action_type)
+            config = action_class.get_config_type().model_validate(action_config)
+            deleted_config = await action_class.delete_config(config)
+            return deleted_config
+        except Exception:
+            raise
+
+    @staticmethod
     async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
         action = ACTION_MAP.get(action_doc.type)
         config = action.get_config_type().model_validate(action_doc.config)
         input = action.get_input_type().model_validate(action_input_dict)
         output = await action(config).run_action(input)
         return output.model_dump()
-
-    # async def run_action(self, action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
-    #     match action_doc.type:
-    #         case ActionType.text2text_llm_chat_openai:
-    #             config = ActionText2TextLlmChatOpenai.get_config_type().model_validate(action_doc.config)
-    #             input = ActionText2TextLlmChatOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2TextLlmChatOpenai(config).run_action(input)
-    #
-    #         case ActionType.text2img_dalle_openai:
-    #             config = ActionGenImageDalleOpenAiV2.get_config_type().model_validate(action_doc.config)
-    #             input = ActionGenImageDalleOpenAiV2.get_input_type().model_validate(action_input_dict)
-    #             return await ActionGenImageDalleOpenAiV2(config).run_action(input)
-    #
-    #         # case ActionType.text2img_stability_ai:
-    #         #     config = ActionGenImageStabilityAiV2.get_config_type().model_validate(action_doc.config)
-    #         #     input = ActionGenImageStabilityAiV2.get_input_type().model_validate(action_input_dict)
-    #         #     return await ActionGenImageStabilityAiV2(config).run_action(input)
-    #
-    #         case ActionType.text2text_llm_chat_with_vector_search_openai:
-    #             config = ActionText2TextLlmChatWithVectorSearchOpenai.get_config_type().model_validate(
-    #                 action_doc.config)
-    #             input = ActionText2TextLlmChatWithVectorSearchOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2TextLlmChatWithVectorSearchOpenai(config).run_action(input)
-    #
-    #         case ActionType.text2text_read_url:
-    #             config = ActionText2TextReadUrl.get_config_type().model_validate(
-    #                 action_doc.config)
-    #             input = ActionText2TextReadUrl.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2TextReadUrl(config).run_action(input)
-    #
-    #         case ActionType.text2text_search_web:
-    #             config = ActionText2TextSearchWeb.get_config_type().model_validate(
-    #                 action_doc.config)
-    #             input = ActionText2TextSearchWeb.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2TextSearchWeb(config).run_action(input)
-    #
-    #         case ActionType.text2text_io_mapper:
-    #             config = ActionText2TextIOMapper.get_config_type().model_validate(
-    #                 action_doc.config)
-    #             input = ActionText2TextIOMapper.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2TextIOMapper(config).run_action(input)
-    #
-    #         case ActionType.text2img_stable_diffusion:
-    #             config = ActionText2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)
-    #             input = ActionText2ImgStableDiffusion.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2ImgStableDiffusion(config).run_action(input)
-    #
-    #         case ActionType.img2img_stable_diffusion:
-    #             config = ActionImg2ImgStableDiffusion.get_config_type().model_validate(action_doc.config)
-    #             input = ActionImg2ImgStableDiffusion.get_input_type().model_validate(action_input_dict)
-    #             return await ActionImg2ImgStableDiffusion(config).run_action(input)
-    #
-    #         case ActionType.image_mixer_stable_diffusion:
-    #             config = ActionImageMixerStableDiffusion.get_config_type().model_validate(action_doc.config)
-    #             input = ActionImageMixerStableDiffusion.get_input_type().model_validate(action_input_dict)
-    #             return await ActionImageMixerStableDiffusion(config).run_action(input)
-    #
-    #         case ActionType.img2img_edit_openai:
-    #             config = ActionImg2ImgEditOpenai.get_config_type().model_validate(action_doc.config)
-    #             input = ActionImg2ImgEditOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionImg2ImgEditOpenai(config).run_action(input)
-    #
-    #         case ActionType.img2img_variation_openai:
-    #             config = ActionImg2ImgVariationOpenai.get_config_type().model_validate(action_doc.config)
-    #             input = ActionImg2ImgVariationOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionImg2ImgVariationOpenai(config).run_action(input)
-    #
-    #         case ActionType.text2video_stable_diffusion:
-    #             config = ActionText2VideoStableDiffusion.get_config_type().model_validate(action_doc.config)
-    #             input = ActionText2VideoStableDiffusion.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2VideoStableDiffusion(config).run_action(input)
-    #
-    #         case ActionType.text2audio_speech_openai:
-    #             config = ActionText2AudioSpeechOpenai.get_config_type().model_validate(action_doc.config)
-    #             input = ActionText2AudioSpeechOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionText2AudioSpeechOpenai(config).run_action(input)
-    #
-    #         case ActionType.audio2text_transcription_openai:
-    #             config = ActionAudio2TextTranscriptionOpenai.get_config_type().model_validate(action_doc.config)
-    #             input = ActionAudio2TextTranscriptionOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionAudio2TextTranscriptionOpenai(config).run_action(input)
-    #
-    #         case ActionType.audio2text_translation_openai:
-    #             config = ActionAudio2TextTranslationOpenai.get_config_type().model_validate(action_doc.config)
-    #             input = ActionAudio2TextTranslationOpenai.get_input_type().model_validate(action_input_dict)
-    #             return await ActionAudio2TextTranslationOpenai(config).run_action(input)
-    #
-    #         case ActionType.mock_action:
-    #             config = MockAction.get_config_type().model_validate(action_doc.config)
-    #             input = MockAction.get_input_type().model_validate(action_doc.input)
-    #             return await MockAction(config).run_action(input)
-    #
-    #         case _:
-    #             logger.error("Action Type not found")
-    #             raise HTTPException(status_code=404, detail="Action Type not found")
 
     @staticmethod
     async def run_action_in_background(

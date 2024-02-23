@@ -4,7 +4,8 @@ from loguru import logger
 from openai.types.audio import Translation
 from pydantic import BaseModel, HttpUrl, ValidationError
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.translation_model import TranslationReq
@@ -14,8 +15,16 @@ class AudioRes(BaseModel):
     url: str
 
 
-class ActionAudio2TextTranslationOpenai(IAction[TranslationReq, AudioRes, Translation]):
+class ActionAudio2TextTranslationOpenai(IAction[TranslationReq, TranslationReq, TranslationReq, AudioRes, Translation]):
     type = ActionType.audio2text_translation_openai
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return TranslationReq
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return TranslationReq
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

@@ -5,7 +5,8 @@ from openai.types import ImagesResponse
 from pydantic import BaseModel
 from pydantic_core import Url
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_images.image_model import ImageEdit
@@ -18,8 +19,16 @@ class ImageEditInput(BaseModel):
     size: Optional[Literal["256x256", "512x512", "1024x1024"]] = None
 
 
-class ActionImg2ImgEditOpenai(IAction[ImageEdit, ImageEditInput, ImagesResponse]):
+class ActionImg2ImgEditOpenai(IAction[ImageEdit, ImageEdit, ImageEdit, ImageEditInput, ImagesResponse]):
     type = ActionType.img2img_edit_openai
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return ImageEdit
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return ImageEdit
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

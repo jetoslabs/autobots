@@ -1,11 +1,13 @@
 from loguru import logger
 from openai import AsyncOpenAI
 from openai.types.beta import Thread
+from openai.types.beta.threads import Run
 
 from src.autobots.conn.openai.openai_assistants.openai_thread_messages.openai_thread_messages import OpenaiThreadMessages
 from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread_runs import OpenaiThreadRuns
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_model import ThreadCreate, ThreadRetrieve, \
-    ThreadUpdate, ThreadDelete
+    ThreadUpdate, ThreadDelete, ThreadCreateAndRun
+
 
 class OpenaiThreads():
 
@@ -13,6 +15,13 @@ class OpenaiThreads():
         self.client = openai_client
         self.messages = OpenaiThreadMessages(openai_client)
         self.runs = OpenaiThreadRuns(openai_client)
+
+    async def create_and_run(self, thread_create_and_run: ThreadCreateAndRun) -> Run:
+        try:
+            run = await self.client.beta.threads.create_and_run(**thread_create_and_run.model_dump(exclude_none=True))
+            return run
+        except Exception as e:
+            logger.error(str(e))
 
     async def create(self, thread_create: ThreadCreate) -> Thread:
         try:

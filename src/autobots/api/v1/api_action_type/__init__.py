@@ -5,6 +5,7 @@ from src.autobots.api.v1.api_action_type.audio2text import api_actions_audio2tex
 from src.autobots.api.v1.api_action_type.audio2text import api_actions_audio2text_translation_openai
 from src.autobots.api.v1.api_action_type.img2img import api_actions_img2img_edit_openai, image_mixer_stable_diffusion, \
     api_actions_img2img_variation_openai
+from src.autobots.api.v1.api_action_type.multimodal import api_actions_multimodal
 from src.autobots.api.v1.api_action_type.text2audio import api_actions_text2audio_speech_openai
 from src.autobots.api.v1.api_action_type.text2img import api_actions_text2img_stable_diffusion
 from src.autobots.api.v1.api_action_type.text2img import api_actions_text2img_stability_ai, api_actions_text2img_openai
@@ -14,6 +15,8 @@ from src.autobots.api.v1.api_action_type.text2video import api_actions_text2vide
 prefix = SettingsProvider.sget().API_ACTION_TYPES
 router = APIRouter(prefix=prefix)
 
+# multimodal
+router.include_router(api_actions_multimodal.router, tags=[f"{prefix}/multimodal"])
 # text2text
 router.include_router(api_actions_text2text.router, tags=[f"{prefix}/text2text"])
 # text2img

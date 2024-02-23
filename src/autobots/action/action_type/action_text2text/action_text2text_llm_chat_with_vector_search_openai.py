@@ -3,7 +3,8 @@ from typing import Optional, Type
 from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import BaseModel
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action.action_doc_model import ActionCreate
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -28,11 +29,26 @@ class ActionCreateText2TextLlmChatWithVectorSearchOpenai(ActionCreate):
 
 
 class ActionText2TextLlmChatWithVectorSearchOpenai(
-    IAction[ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig, TextObj, TextObjs]):
+    IAction[
+        ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,
+        ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,
+        ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,
+        TextObj,
+        TextObjs
+    ]
+):
     """
     Vector search and add it to chat prompt as context
     """
     type = ActionType.text2text_llm_chat_with_vector_search_openai
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

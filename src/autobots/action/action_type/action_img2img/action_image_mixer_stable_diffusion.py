@@ -3,7 +3,8 @@ from typing import Optional, Type
 from pydantic import Field, BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionCreate
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.image_mixer.image_mixer_model import ImageMixerReqModel
@@ -36,8 +37,18 @@ class ActionCreateImageMixerStableDiffusion(ActionCreate):
     output: Optional[StableDiffusionRes] = None
 
 
-class ActionImageMixerStableDiffusion(IAction[ImageMixerReqModel, ImageMixerRunModel, StableDiffusionRes]):
+class ActionImageMixerStableDiffusion(
+    IAction[ImageMixerReqModel, ImageMixerReqModel, ImageMixerReqModel, ImageMixerRunModel, StableDiffusionRes]
+):
     type = ActionType.image_mixer_stable_diffusion
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return ImageMixerReqModel
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return ImageMixerReqModel
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

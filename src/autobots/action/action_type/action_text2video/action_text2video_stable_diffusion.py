@@ -3,7 +3,8 @@ from typing import Optional, Type
 from pydantic import BaseModel, Field
 
 from src.autobots.action.action.action_doc_model import ActionCreate
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
@@ -26,8 +27,18 @@ class ActionCreateText2VideoStableDiffusion(ActionCreate):
     output: Optional[StableDiffusionRes] = None
 
 
-class ActionText2VideoStableDiffusion(IAction[Text2VideoReqModel, Text2VideoRunModel, StableDiffusionRes]):
+class ActionText2VideoStableDiffusion(
+    IAction[Text2VideoReqModel, Text2VideoReqModel, Text2VideoReqModel, Text2VideoRunModel, StableDiffusionRes]
+):
     type = ActionType.text2video_stable_diffusion
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return Text2VideoReqModel
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return Text2VideoReqModel
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

@@ -2,7 +2,8 @@ from typing import Type, Optional
 
 from pydantic import BaseModel, Field
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.img2img.img2img_model import SDImg2ImgReqModel
@@ -30,8 +31,18 @@ class Img2ImgRunModel(BaseModel):
                                     description="This ID is returned in the response to the webhook API call. This will be used to identify the webhook request.")
 
 
-class ActionImg2ImgStableDiffusion(IAction[SDImg2ImgReqModel, Img2ImgRunModel, StableDiffusionRes]):
+class ActionImg2ImgStableDiffusion(
+    IAction[SDImg2ImgReqModel, SDImg2ImgReqModel, SDImg2ImgReqModel, Img2ImgRunModel, StableDiffusionRes]
+):
     type = ActionType.img2img_stable_diffusion
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return SDImg2ImgReqModel
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return SDImg2ImgReqModel
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:

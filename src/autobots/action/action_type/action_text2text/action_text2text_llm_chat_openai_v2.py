@@ -3,15 +3,24 @@ from typing import Type
 from loguru import logger
 from pydantic import ValidationError
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
+from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+    ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
 
 
-class ActionText2TextLlmChatOpenai(IAction[ChatReq, TextObj, TextObjs]):
+class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
     type = ActionType.text2text_llm_chat_openai
+
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return ChatReq
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return ChatReq
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
