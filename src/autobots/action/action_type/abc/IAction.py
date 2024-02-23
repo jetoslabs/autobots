@@ -10,7 +10,8 @@ ActionInputType = TypeVar("ActionInputType", bound=BaseModel)
 ActionOutputType = TypeVar("ActionOutputType", bound=BaseModel)
 
 
-class IAction(Generic[ActionConfigCreateType, ActionConfigUpdateType, ActionConfigType, ActionInputType, ActionOutputType]):
+class IAction(
+    Generic[ActionConfigCreateType, ActionConfigUpdateType, ActionConfigType, ActionInputType, ActionOutputType]):
 
     def __init__(self, action_config: ActionConfigType):
         self.action_config = action_config
@@ -42,19 +43,15 @@ class IAction(Generic[ActionConfigCreateType, ActionConfigUpdateType, ActionConf
 
     @staticmethod
     async def create_config(config_create: ActionConfigCreateType) -> ActionConfigType:
-        if ActionConfigCreateType == ActionConfigType:
-            return config_create
-        raise NotImplementedError
+        return config_create
 
     @staticmethod
     async def update_config(config: ActionConfigType, config_update: ActionConfigUpdateType) -> ActionConfigType:
-        if ActionConfigUpdateType == ActionConfigType:
-            return config_update
-        raise NotImplementedError
+        return config_update
 
     @staticmethod
     async def delete_config(config: ActionConfigType) -> ActionConfigType:
-        pass
+        return config
 
     @abstractmethod
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType:
