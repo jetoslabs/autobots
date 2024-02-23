@@ -61,7 +61,7 @@ async def test_search_images_happy_path(set_test_settings):
 
 @pytest.mark.asyncio
 async def test_search_videos_happy_path(set_test_settings):
-    search_params = SearchVideoParams(keywords="Athlete running in the city")
+    search_params = SearchVideoParams(keywords="San Francisco tourism")
     ans_res = await get_duckduckgo().search_videos(search_params)
     assert len(ans_res) > 0
     assert ans_res[0].embed_url
