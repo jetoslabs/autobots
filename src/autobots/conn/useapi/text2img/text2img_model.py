@@ -1,9 +1,10 @@
-from enum import Enum
 from typing import Optional, List
 from pydantic import Field
 from src.autobots import SettingsProvider
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime
+
+
 class DiscordReqModel(BaseModel):
     discord_server_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_SERVER_ID,
                      description="Your discord server id used for request authorization.")
@@ -25,6 +26,7 @@ class DiscordJobReqModel(BaseModel):
                                description="Your discord channel id used for request authorization.")
    job_id: str = Field(description="Job id to fetch")
 
+
 class DiscordChild(BaseModel):
     button: str
     jobid: str
@@ -40,6 +42,8 @@ class DiscordAttachment(BaseModel):
     id: str
     filename: str
     size: int
+
+
 class DiscordJobsApiResponse(BaseModel):
     jobid: Optional[str]
     verb: Optional[str]
@@ -61,7 +65,7 @@ class DiscordJobsApiResponse(BaseModel):
     message: Optional[str]
 
     class Config:
-        allow_population_by_field_name = True  # This allows extra fields in the response
+        populate_by_name = True  # This allows extra fields in the response
 
 
 class DiscordErrorResponse(BaseModel):
@@ -87,5 +91,6 @@ class DiscordImagineApiResponse(BaseModel):
     timestamp: Optional[datetime]
     message: Optional[str]
     code: int
+
     class Config:
-        allow_population_by_field_name = True  # This allows extra fields in the response
+        populate_by_name = True  # This allows extra fields in the response
