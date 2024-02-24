@@ -5,19 +5,35 @@ from pydantic import ValidationError
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
     DiscordErrorResponse, DiscordImagineApiResponse, DiscordJobReqModel
 from loguru import logger
-from pydantic import BaseModel, HttpUrl
+from typing import Optional
+from pydantic import BaseModel, Field
+from src.autobots.core.settings import SettingsProvider
+
+class UseApiConfig(BaseModel):
+    discord_server_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_SERVER_ID,
+                                             description="Your discord server id used for request authorization.")
+    useapi_net_endpoint_url: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+                                                   description="USE_API end point")
+    discord_token: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_TOKEN,
+                                         description="Your discord token used for request authorization.")
+    discord_channel_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_CHANNEL_ID,
+                                              description="Your discord channel id used for request authorization.")
+    use_api_net_token: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
+                                             description="Your use aoi net token id used for request authorization.")
+
 async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | DiscordErrorResponse:
-    url = req.useapi_net_endpoint_url + 'v2/jobs/imagine'
+    useApiConfig = UseApiConfig()
+    url = useApiConfig.useapi_net_endpoint_url + 'v2/jobs/imagine'
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {req.use_api_net_token}"
+        "Authorization": f"Bearer {useApiConfig.use_api_net_token}"
     }
     body = {
         "prompt": f"{req.prompt}",
-        "discord": f"{req.discord_token}",
-        "server": f"{req.discord_server_id}",
-        "channel": f"{req.discord_channel_id}"
+        "discord": f"{useApiConfig.discord_token}",
+        "server": f"{useApiConfig.discord_server_id}",
+        "channel": f"{useApiConfig.discord_channel_id}"
     }
 
     response = requests.request("POST", url, headers=headers, json=body)
@@ -38,16 +54,17 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
 
 
 async def jobApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
-    print(req.job_id)
+
+    useApiConfig = UseApiConfig()
     job_id_string = req.job_id
     index_of_job = job_id_string.find("job")
 
     cleaned_job_id = job_id_string[index_of_job:]
-    url = req.useapi_net_endpoint_url + f"v2/jobs/?jobid={cleaned_job_id}"
+    url = useApiConfig.useapi_net_endpoint_url + f"v2/jobs/?jobid={cleaned_job_id}"
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {req.use_api_net_token}"
+        "Authorization": f"Bearer {useApiConfig.use_api_net_token}"
     }
 
     response = requests.request("GET", url, headers=headers)

@@ -6,18 +6,8 @@ from datetime import datetime
 
 
 class DiscordReqModel(BaseModel):
-    discord_server_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_SERVER_ID,
-                     description="Your discord server id used for request authorization.")
     prompt: Optional[str] = Field(..., description="Text prompt with description of the things" +
                                          " you want in the image to be generated.")
-    useapi_net_endpoint_url: Optional[str] =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
-                     description="USE_API end point")
-    discord_token: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_TOKEN,
-                     description="Your discord token used for request authorization.")
-    discord_channel_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_CHANNEL_ID,
-                               description="Your discord channel id used for request authorization.")
-    use_api_net_token: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
-                               description="Your use aoi net token id used for request authorization.")
     job_id: Optional[str] = Field(default=..., description="Job id to fetch")
 class DiscordJobReqModel(BaseModel):
    useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
