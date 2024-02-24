@@ -11,16 +11,17 @@ from src.autobots.conn.useapi.text2img.text2img_model import DiscordJobReqModel,
     DiscordJobsApiResponse, DiscordImagineApiResponse, DiscordErrorResponse
 
 
-class Text2ImgRunModel(BaseModel):
-    prompt: Optional[str] = Field(default=None,
-                                  description="Text prompt with description of the things you want in the image to be generated.")
+class Text2ImgJobRunModel(BaseModel):
+    job_id: Optional[str] = Field(default=None,
+                                  description="Mid Journey job id")
 
-class ActionCreateText2ImgMidJourney(ActionCreate):
+
+class ActionCreateText2ImgMidJourneyJob(ActionCreate):
     type: ActionType = ActionType.text2img_midjourney_ai
     config: DiscordReqModel
 
 
-class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordImagineApiResponse]):
+class ActionText2ImgMidjourneyJob(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgJobRunModel, DiscordImagineApiResponse]):
     type = ActionType.text2img_midjourney_ai
 
     @staticmethod
@@ -36,16 +37,17 @@ class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, Discord
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return Text2ImgRunModel
+        return Text2ImgJobRunModel
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        return DiscordImagineApiResponse
+        return DiscordJobsApiResponse
 
     def __init__(self, action_config: DiscordJobReqModel):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: Text2ImgRunModel) -> DiscordImagineApiResponse | DiscordErrorResponse:
-        if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
-        res = await get_use_api_net().imagine(self.action_config)
+
+    async def run_action(self, action_input: Text2ImgJobRunModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
+        if action_input.job_id: self.action_config.job_id = f"{self.action_config.job_id}\n{action_input.job_id}"
+        res = await get_use_api_net().jobs(self.action_config)
         return res

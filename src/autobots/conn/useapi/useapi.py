@@ -14,7 +14,7 @@ class UseApi:
         self.useapi_net_endpoint_url = useapi_net_endpoint_url
 
 
-    async def imagine(self, req: DiscordReqModel) -> DiscordImagineApiResponse:
+    async def imagine(self, req: DiscordReqModel) -> DiscordImagineApiResponse | DiscordErrorResponse:
 
         req.use_api_net_token = self.useapi_net_token
         req.discord_server_id = self.discord_server_id
@@ -26,7 +26,7 @@ class UseApi:
         res: DiscordImagineApiResponse | DiscordErrorResponse = await imagineApi(req)
         return res;
 
-    async def jobs(self, req: DiscordReqModel) -> DiscordJobsApiResponse:
+    async def jobs(self, req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
         req.use_api_net_token = self.useapi_net_token
         req.discord_server_id = self.discord_server_id
         req.discord_token = self.discord_token
@@ -39,7 +39,8 @@ class UseApi:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.useapi_net_token}"
         }
-        return requests.post(apiUrl, headers=headers)
+        res: DiscordJobsApiResponse | DiscordErrorResponse = await jobApi(req)
+        return res;
 
 
 @lru_cache

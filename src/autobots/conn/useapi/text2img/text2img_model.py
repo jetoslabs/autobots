@@ -18,7 +18,7 @@ class DiscordReqModel(BaseModel):
                                description="Your discord channel id used for request authorization.")
     use_api_net_token: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
                                description="Your use aoi net token id used for request authorization.")
-    job_id: Optional[str] = Field(default=None, description="Job id to fetch")
+    job_id: Optional[str] = Field(default=..., description="Job id to fetch")
 class DiscordJobReqModel(BaseModel):
    useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
                      description="USE_API end point")
@@ -51,7 +51,7 @@ class DiscordJobsApiResponse(BaseModel):
     created: Optional[datetime]
     updated: Optional[datetime]
     prompt: Optional[str]
-    children: Optional[List[DiscordChild]]
+    children: Optional[List[DiscordChild]] = None
     buttons: Optional[List[str]]
     discord: Optional[str]
     channel: Optional[str]
@@ -62,7 +62,7 @@ class DiscordJobsApiResponse(BaseModel):
     timestamp: Optional[datetime]
     attachments: Optional[List[DiscordAttachment]]
     code: int
-    message: Optional[str]
+    message: Optional[str] = None
 
     class Config:
         populate_by_name = True  # This allows extra fields in the response

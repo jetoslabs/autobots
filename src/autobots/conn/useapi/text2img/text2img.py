@@ -38,20 +38,25 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
 
 
 async def jobApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
-    url = req.useapi_net_endpoint_url + f"v2/jobs/?jobid={req.job_id}"
+    print(req.job_id)
+    job_id_string = req.job_id
+    index_of_job = job_id_string.find("job")
+
+    cleaned_job_id = job_id_string[index_of_job:]
+    url = req.useapi_net_endpoint_url + f"v2/jobs/?jobid={cleaned_job_id}"
 
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {req.use_api_net_token}"
     }
 
-    response = requests.request("POST", url, headers=headers)
+    response = requests.request("GET", url, headers=headers)
     if response.status_code != 200:
         logger.error(f"Mid journey text2img error: {response.status_code}")
 
     response_json = response.json()
     try:
-        if response_json["status"] == "error":
+        if response_json["code"] != 200:
             logger.error(f"Mid journey text2img error: {response_json['message']}")
             err = DiscordErrorResponse.model_validate(response_json)
             return err
