@@ -1,10 +1,9 @@
 from functools import lru_cache
 import requests
-from autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
+from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
     DiscordErrorResponse, DiscordImagineApiResponse, DiscordJobReqModel
-from autobots.conn.useapi.text2img.text2img import imagineApi, jobApi
-from autobots.conn.useapi.common_models import MidJourneyResStatus
-from autobots.core.settings import Settings, SettingsProvider
+from src.autobots.conn.useapi.text2img.text2img import imagineApi, jobApi
+from src.autobots.core.settings import Settings, SettingsProvider
 
 class UseApi:
     def __init__(self, discord_server_id: str, discord_token: str, discord_channel_id: str, useapi_net_token: str, useapi_net_endpoint_url: str):
@@ -34,7 +33,7 @@ class UseApi:
         req.discord_channel_id = self.discord_channel_id
         req.useapi_net_endpoint_url = self.useapi_net_endpoint_url
 
-        apiUrl = self.useapi_net_endpoint_url+f"v2/jobs/?jobid={jobid}"
+        apiUrl = self.useapi_net_endpoint_url+f"v2/jobs/?jobid={req.job_id}"
 
         headers = {
             "Content-Type": "application/json",

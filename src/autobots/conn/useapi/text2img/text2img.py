@@ -2,9 +2,9 @@ import requests
 
 from pydantic import ValidationError
 
-from autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
+from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
     DiscordErrorResponse, DiscordImagineApiResponse, DiscordJobReqModel
-from autobots.core.logging.log import Log
+from loguru import logger
 
 
 async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | DiscordErrorResponse:
@@ -23,19 +23,19 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
 
     response = requests.request("POST", url, headers=headers, json=body)
     if response.status_code != 200:
-        Log.error(f"Mid journey text2img error: {response.status_code}")
+        logger.error(f"Mid journey text2img error: {response.status_code}")
 
     response_json = response.json()
     try:
         if response_json["status"] == "error":
-            Log.error(f"Mid journey text2img error: {response_json['message']}")
+            logger.error(f"Mid journey text2img error: {response_json['message']}")
             err = DiscordErrorResponse.model_validate(response_json)
             return err
         else:
             res = DiscordImagineApiResponse.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
-        Log.error(f"Mid journey text2img validation error for response: {response_json}")
+        logger.error(f"Mid journey text2img validation error for response: {response_json}")
 
 
 async def jobApi(req: DiscordJobReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
@@ -48,16 +48,16 @@ async def jobApi(req: DiscordJobReqModel) -> DiscordJobsApiResponse | DiscordErr
 
     response = requests.request("POST", url, headers=headers)
     if response.status_code != 200:
-        Log.error(f"Mid journey text2img error: {response.status_code}")
+        logger.error(f"Mid journey text2img error: {response.status_code}")
 
     response_json = response.json()
     try:
         if response_json["status"] == "error":
-            Log.error(f"Mid journey text2img error: {response_json['message']}")
+            logger.error(f"Mid journey text2img error: {response_json['message']}")
             err = DiscordErrorResponse.model_validate(response_json)
             return err
         else:
             res = DiscordJobsApiResponse.model_validate(response_json)
             return res
     except ValidationError or TypeError as e:
-        Log.error(f"Mid journey text2img validation error for response: {response_json}")
+        logger.error(f"Mid journey text2img validation error for response: {response_json}")

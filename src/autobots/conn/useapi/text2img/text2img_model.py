@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 from pydantic import Field
-from autobots import SettingsProvider
+from src.autobots import SettingsProvider
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime
 class DiscordReqModel(BaseModel):

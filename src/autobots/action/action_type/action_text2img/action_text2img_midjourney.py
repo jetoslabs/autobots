@@ -2,11 +2,12 @@ from typing import Optional, Type
 
 from pydantic import BaseModel, Field
 
-from autobots.action.action.action_doc_model import ActionCreate
-from autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType
-from autobots.action.action_type.action_types import ActionType
-from autobots.conn.useapi.useapi import get_use_api_net
-from autobots.conn.useapi.text2img.text2img_model import DiscordJobReqModel, DiscordReqModel, DiscordJobsApiResponse, DiscordImagineApiResponse
+from src.autobots.action.action.action_doc_model import ActionCreate
+from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+    ActionConfigUpdateType, ActionConfigCreateType
+from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.conn.useapi.useapi import get_use_api_net
+from src.autobots.conn.useapi.text2img.text2img_model import DiscordJobReqModel, DiscordReqModel, DiscordJobsApiResponse, DiscordImagineApiResponse
 
 
 class Text2ImgRunModel(BaseModel):
@@ -19,9 +20,16 @@ class ActionCreateText2ImgMidJourney(ActionCreate):
     config: DiscordReqModel
 
 
-class ActionText2ImgMidjourney(IAction[DiscordReqModel, Text2ImgRunModel, DiscordImagineApiResponse]):
+class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordImagineApiResponse]):
     type = ActionType.text2img_midjourney_ai
 
+    @staticmethod
+    def get_config_create_type() -> Type[ActionConfigCreateType]:
+        return DiscordReqModel
+
+    @staticmethod
+    def get_config_update_type() -> Type[ActionConfigUpdateType]:
+        return DiscordReqModel
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
         return DiscordReqModel
