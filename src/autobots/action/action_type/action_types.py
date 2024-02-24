@@ -12,6 +12,7 @@ class ActionType(str, Enum):
     text2text_search_web = "text2text_search_web"
     text2text_search_maps = "text2text_search_maps"
     text2text_io_mapper = "text2text_io_mapper"
+    text2text_user_input= "text2text_user_input"
 
     # text2img
     text2img_dalle_openai = "text2img_dalle_openai"
