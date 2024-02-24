@@ -195,8 +195,8 @@ jobs:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           UNSTRUCTURED_API_KEY: ${{ secrets.UNSTRUCTURED_API_KEY }}
           REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
-          DISCORD_SERVER_ID: ${{ DISCORD_SERVER_ID }}
-          DISCORD_TOKEN: ${{ DISCORD_TOKEN }}
-          DISCORD_CHANNEL_ID: ${{ DISCORD_CHANNEL_ID }}
-          USEAPI_NET_TOKEN: ${{ USEAPI_NET_TOKEN }}
-          USEAPI_NET_END_POINT_URL: ${{ USEAPI_NET_END_POINT_URL }}
+          DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          USEAPI_NET_TOKEN: ${{ secrets.USEAPI_NET_TOKEN }}
+          USEAPI_NET_END_POINT_URL: ${{ secrets.USEAPI_NET_END_POINT_URL }}
