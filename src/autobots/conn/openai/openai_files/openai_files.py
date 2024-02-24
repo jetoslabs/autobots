@@ -1,5 +1,5 @@
 from loguru import logger
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, BadRequestError
 from openai._base_client import AsyncPaginator
 from openai._legacy_response import HttpxBinaryResponseContent
 from openai.pagination import AsyncPage
@@ -40,7 +40,9 @@ class OpenaiFiles():
 
     async def retrieve_content(self, file_content: FileContent) -> HttpxBinaryResponseContent:
         try:
-            return await self.client.files.content(**file_content.model_dump(exclude_none=True))
-        except Exception as e:
+            content = await self.client.files.content(**file_content.model_dump(exclude_none=True))
+            return content
+        except BadRequestError or Exception as e:
             logger.error(str(e))
+            raise
 
