@@ -26,7 +26,7 @@ class UseApi:
         res: DiscordImagineApiResponse | DiscordErrorResponse = await imagineApi(req)
         return res;
 
-    async def jobs(self, req: DiscordJobReqModel) -> DiscordJobsApiResponse:
+    async def jobs(self, req: DiscordReqModel) -> DiscordJobsApiResponse:
         req.use_api_net_token = self.useapi_net_token
         req.discord_server_id = self.discord_server_id
         req.discord_token = self.discord_token

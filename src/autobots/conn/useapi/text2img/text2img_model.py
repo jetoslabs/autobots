@@ -10,7 +10,7 @@ class DiscordReqModel(BaseModel):
                      description="Your discord server id used for request authorization.")
     prompt: Optional[str] = Field(..., description="Text prompt with description of the things" +
                                          " you want in the image to be generated.")
-    url: Optional[str] =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+    useapi_net_endpoint_url: Optional[str] =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
                      description="USE_API end point")
     discord_token: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_TOKEN,
                      description="Your discord token used for request authorization.")
@@ -20,7 +20,7 @@ class DiscordReqModel(BaseModel):
                                description="Your use aoi net token id used for request authorization.")
     job_id: Optional[str] = Field(default=None, description="Job id to fetch")
 class DiscordJobReqModel(BaseModel):
-   url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+   useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
                      description="USE_API end point")
    use_api_net_token: str = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
                                description="Your discord channel id used for request authorization.")
@@ -84,12 +84,12 @@ class DiscordImagineApiResponse(BaseModel):
     channel: Optional[str]
     server: Optional[str]
     maxJobs: Optional[int]
-    replyUrl: Optional[HttpUrl]
-    replyRef: Optional[str]
-    messageId: Optional[str]
+    replyUrl: Optional[HttpUrl] = None
+    replyRef: Optional[str] = None
+    messageId: Optional[str] = None
     content: Optional[str]
     timestamp: Optional[datetime]
-    message: Optional[str]
+    message: Optional[str] = None
     code: int
 
     class Config:

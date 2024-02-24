@@ -5,10 +5,9 @@ from pydantic import ValidationError
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
     DiscordErrorResponse, DiscordImagineApiResponse, DiscordJobReqModel
 from loguru import logger
-
-
+from pydantic import BaseModel, HttpUrl
 async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | DiscordErrorResponse:
-    url = req.url + 'v2/jobs/imagine'
+    url = req.useapi_net_endpoint_url + 'v2/jobs/imagine'
 
     headers = {
         "Content-Type": "application/json",
@@ -27,7 +26,7 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
 
     response_json = response.json()
     try:
-        if response_json["status"] == "error":
+        if response_json["code"] != 200:
             logger.error(f"Mid journey text2img error: {response_json['message']}")
             err = DiscordErrorResponse.model_validate(response_json)
             return err
@@ -38,8 +37,8 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
         logger.error(f"Mid journey text2img validation error for response: {response_json}")
 
 
-async def jobApi(req: DiscordJobReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
-    url = req.url + f"v2/jobs/?jobid={req.job_id}"
+async def jobApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
+    url = req.useapi_net_endpoint_url + f"v2/jobs/?jobid={req.job_id}"
 
     headers = {
         "Content-Type": "application/json",
