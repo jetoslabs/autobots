@@ -5,6 +5,5 @@ from src.autobots.conn.stable_diffusion.text2img.text2img_model import Text2ImgR
 class ActionCreateAPIModelText2ImgStableDiffusion(ActionCreateAPIModel):
     config: Text2ImgReqModel
 
-
 # class ActionRunAPIModelText2ImgStableDiffusion(BaseModel):
 #     config: Text2ImgReqModel

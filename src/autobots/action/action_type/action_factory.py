@@ -66,6 +66,8 @@ class ActionFactory:
     async def create_action_config(action_type: ActionType, action_config_create: Dict[str, Any]) -> ActionConfigType:
         try:
             action_class = ACTION_MAP.get(action_type)
+            if not action_class:
+                raise Exception(f"Action {action_type} not found in ACTION_MAP")
             config_create = action_class.get_config_create_type().model_validate(action_config_create)
             config = await action_class.create_config(config_create)
             return config
@@ -78,6 +80,8 @@ class ActionFactory:
     ) -> ActionConfigType:
         try:
             action_class = ACTION_MAP.get(action_type)
+            if not action_class:
+                raise Exception(f"Action {action_type} not found in ACTION_MAP")
             config = action_class.get_config_type().model_validate(action_config)
             config_update = action_class.get_config_update_type().model_validate(action_config_update)
             updated_config = await action_class.update_config(config, config_update)
@@ -91,6 +95,8 @@ class ActionFactory:
     ) -> ActionConfigType:
         try:
             action_class = ACTION_MAP.get(action_type)
+            if not action_class:
+                raise Exception(f"Action {action_type} not found in ACTION_MAP")
             config = action_class.get_config_type().model_validate(action_config)
             deleted_config = await action_class.delete_config(config)
             return deleted_config
@@ -100,6 +106,9 @@ class ActionFactory:
     @staticmethod
     async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
         action = ACTION_MAP.get(action_doc.type)
+        if not action:
+            logger.error(f"Action {action_doc.type} not found in ACTION_MAP")
+            raise Exception(f"Action {action_doc.type} not found in ACTION_MAP")
         config = action.get_config_type().model_validate(action_doc.config)
         input = action.get_input_type().model_validate(action_input_dict)
         output = await action(config).run_action(input)
