@@ -8,7 +8,7 @@ from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigTyp
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.useapi.useapi import get_use_api_net
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordJobReqModel, DiscordReqModel, \
-    DiscordJobsApiResponse, DiscordImagineApiResponse, DiscordErrorResponse
+    DiscordImagineApiResponse, DiscordErrorResponse
 
 
 class Text2ImgRunModel(BaseModel):

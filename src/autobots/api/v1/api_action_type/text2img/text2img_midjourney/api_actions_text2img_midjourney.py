@@ -12,7 +12,7 @@ from src.autobots.action.action_type.action_text2img.action_text2img_midjourney_
     ActionText2ImgMidjourneyJob
 from src.autobots.api.v1.api_action_type.text2img.text2img_midjourney.api_actions_text2img_midjourney_model import ActionCreateAPIModelText2ImgMidjourney
 from src.autobots.auth.security import get_user_from_access_token
-from src.autobots.conn.useapi.text2img.text2img_model import DiscordJobReqModel, DiscordImagineApiResponse, \
+from src.autobots.conn.useapi.text2img.text2img_model import DiscordImagineApiResponse, \
     DiscordErrorResponse, DiscordReqModel, DiscordJobsApiResponse
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM

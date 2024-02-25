@@ -6,9 +6,9 @@ from datetime import datetime
 
 
 class DiscordReqModel(BaseModel):
-    prompt: Optional[str] = Field(..., description="Text prompt with description of the things" +
+    prompt: Optional[str] = Field("", description="Text prompt with description of the things" +
                                          " you want in the image to be generated.")
-    job_id: Optional[str] = Field(default=..., description="Job id to fetch")
+    job_id: Optional[str] = Field(default="", description="Job id to fetch")
 class DiscordJobReqModel(BaseModel):
    useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
                      description="USE_API end point")

@@ -3,7 +3,7 @@ import requests
 from pydantic import ValidationError
 
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
-    DiscordErrorResponse, DiscordImagineApiResponse, DiscordJobReqModel
+    DiscordErrorResponse, DiscordImagineApiResponse
 from loguru import logger
 from typing import Optional
 from pydantic import BaseModel, Field
@@ -49,7 +49,7 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
         else:
             res = DiscordImagineApiResponse.model_validate(response_json)
             return res
-    except ValidationError or TypeError as e:
+    except ValidationError or TypeError:
         logger.error(f"Mid journey text2img validation error for response: {response_json}")
 
 
@@ -80,5 +80,5 @@ async def jobApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorR
         else:
             res = DiscordJobsApiResponse.model_validate(response_json)
             return res
-    except ValidationError or TypeError as e:
+    except ValidationError or TypeError:
         logger.error(f"Mid journey text2img validation error for response: {response_json}")
