@@ -12,6 +12,7 @@ from src.autobots.api.v1.api_action_type.text2img.text2img_midjourney.api_action
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordImagineApiResponse, \
     DiscordErrorResponse, DiscordReqModel, DiscordJobsApiResponse
+
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM
 from loguru import logger
@@ -55,4 +56,3 @@ async def run_action_text2img_midjourney(
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(500)
-

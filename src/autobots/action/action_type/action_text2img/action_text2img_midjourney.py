@@ -15,12 +15,15 @@ class Text2ImgRunModel(BaseModel):
     prompt: Optional[str] = Field(default=None,
                                   description="Text prompt with description of the things you want in the image to be generated.")
 
+
 class ActionCreateText2ImgMidJourney(ActionCreate):
     type: ActionType = ActionType.text2img_midjourney_ai
     config: DiscordReqModel
 
 
+
 class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
+
     type = ActionType.text2img_midjourney_ai
 
     @staticmethod
@@ -42,8 +45,10 @@ class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, Discord
     def get_output_type() -> Type[ActionOutputType]:
         return DiscordJobsApiResponse
 
+
     def __init__(self, action_config: DiscordJobReqModel):
         super().__init__(action_config)
+
 
     async def run_action(self, action_input: Text2ImgRunModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
