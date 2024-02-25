@@ -7,7 +7,7 @@ from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigTyp
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.useapi.useapi import get_use_api_net
-from src.autobots.conn.useapi.text2img.text2img_model import DiscordJobReqModel, DiscordReqModel, \
+from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, \
     DiscordErrorResponse, DiscordJobsApiResponse
 
 
@@ -21,9 +21,7 @@ class ActionCreateText2ImgMidJourney(ActionCreate):
     config: DiscordReqModel
 
 
-
 class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
-
     type = ActionType.text2img_midjourney_ai
 
     @staticmethod
@@ -33,6 +31,7 @@ class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, Discord
     @staticmethod
     def get_config_update_type() -> Type[ActionConfigUpdateType]:
         return DiscordReqModel
+
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
         return DiscordReqModel
@@ -45,12 +44,11 @@ class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, Discord
     def get_output_type() -> Type[ActionOutputType]:
         return DiscordJobsApiResponse
 
-
-    def __init__(self, action_config: DiscordJobReqModel):
+    def __init__(self, action_config: DiscordReqModel):
         super().__init__(action_config)
 
-
     async def run_action(self, action_input: Text2ImgRunModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
-        if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
+        if action_input.prompt:
+            self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
         res = await get_use_api_net().imagine(self.action_config)
         return res
