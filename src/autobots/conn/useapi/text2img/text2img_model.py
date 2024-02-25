@@ -42,7 +42,7 @@ class DiscordJobsApiResponse(BaseModel):
     updated: Optional[datetime]
     prompt: Optional[str]
     children: Optional[List[DiscordChild]] = None
-    buttons: Optional[List[str]]
+    buttons: Optional[List[str]] = None
     discord: Optional[str]
     channel: Optional[str]
     server: Optional[str]
@@ -50,7 +50,7 @@ class DiscordJobsApiResponse(BaseModel):
     messageId: Optional[str]
     content: Optional[str]
     timestamp: Optional[datetime]
-    attachments: Optional[List[DiscordAttachment]]
+    attachments: Optional[List[DiscordAttachment]] = None
     code: int
     message: Optional[str] = None
 

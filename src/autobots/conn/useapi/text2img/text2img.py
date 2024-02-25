@@ -1,4 +1,5 @@
 import requests
+import time
 
 from pydantic import ValidationError
 
@@ -21,7 +22,7 @@ class UseApiConfig(BaseModel):
     use_api_net_token: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
                                              description="Your use aoi net token id used for request authorization.")
 
-async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | DiscordErrorResponse:
+async def imagineApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
     useApiConfig = UseApiConfig()
     url = useApiConfig.useapi_net_endpoint_url + 'v2/jobs/imagine'
 
@@ -48,15 +49,31 @@ async def imagineApi(req: DiscordReqModel) -> DiscordImagineApiResponse | Discor
             return err
         else:
             res = DiscordImagineApiResponse.model_validate(response_json)
-            return res
+            retry_count = 0
+            while True:
+                job_res = await jobApi(res.jobid)
+                if job_res.code == 200 and job_res.status == 'completed':
+                    return job_res
+                else:
+                    retry_count += 1
+                    if retry_count >= 15:  # Maximum of 5 retries
+                        logger.error("Maximum retry limit reached")
+                        break  # Exit the loop if maximum retry limit is reached
+                    logger.warning(f"Retrying jobApi, attempt {retry_count}")
+                    time.sleep(15)
+
+            logger.error(f"Mid journey text2img error for job id: {res.jobid}")
+            response_json = {"error"}
+            err = DiscordErrorResponse(error="Mid Journey job fetch failed", code=500).dict()
+            return err
     except ValidationError or TypeError:
         logger.error(f"Mid journey text2img validation error for response: {response_json}")
 
 
-async def jobApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
+async def jobApi(jobId) -> DiscordJobsApiResponse | DiscordErrorResponse:
 
     useApiConfig = UseApiConfig()
-    job_id_string = req.job_id
+    job_id_string = jobId
     index_of_job = job_id_string.find("job")
 
     cleaned_job_id = job_id_string[index_of_job:]
