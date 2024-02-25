@@ -6,21 +6,11 @@ from datetime import datetime
 
 
 class DiscordReqModel(BaseModel):
-    discord_server_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_SERVER_ID,
-                     description="Your discord server id used for request authorization.")
-    prompt: Optional[str] = Field(..., description="Text prompt with description of the things" +
+    prompt: Optional[str] = Field("", description="Text prompt with description of the things" +
                                          " you want in the image to be generated.")
-    url: Optional[str] =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
-                     description="USE_API end point")
-    discord_token: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_TOKEN,
-                     description="Your discord token used for request authorization.")
-    discord_channel_id: Optional[str] = Field(default=SettingsProvider.sget().DISCORD_CHANNEL_ID,
-                               description="Your discord channel id used for request authorization.")
-    use_api_net_token: Optional[str] = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
-                               description="Your use aoi net token id used for request authorization.")
-    job_id: Optional[str] = Field(default=None, description="Job id to fetch")
+    job_id: Optional[str] = Field(default="", description="Job id to fetch")
 class DiscordJobReqModel(BaseModel):
-   url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+   useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
                      description="USE_API end point")
    use_api_net_token: str = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
                                description="Your discord channel id used for request authorization.")
@@ -51,8 +41,8 @@ class DiscordJobsApiResponse(BaseModel):
     created: Optional[datetime]
     updated: Optional[datetime]
     prompt: Optional[str]
-    children: Optional[List[DiscordChild]]
-    buttons: Optional[List[str]]
+    children: Optional[List[DiscordChild]] = None
+    buttons: Optional[List[str]] = None
     discord: Optional[str]
     channel: Optional[str]
     server: Optional[str]
@@ -60,9 +50,9 @@ class DiscordJobsApiResponse(BaseModel):
     messageId: Optional[str]
     content: Optional[str]
     timestamp: Optional[datetime]
-    attachments: Optional[List[DiscordAttachment]]
+    attachments: Optional[List[DiscordAttachment]] = None
     code: int
-    message: Optional[str]
+    message: Optional[str] = None
 
     class Config:
         populate_by_name = True  # This allows extra fields in the response
@@ -84,12 +74,12 @@ class DiscordImagineApiResponse(BaseModel):
     channel: Optional[str]
     server: Optional[str]
     maxJobs: Optional[int]
-    replyUrl: Optional[HttpUrl]
-    replyRef: Optional[str]
-    messageId: Optional[str]
+    replyUrl: Optional[HttpUrl] = None
+    replyRef: Optional[str] = None
+    messageId: Optional[str] = None
     content: Optional[str]
     timestamp: Optional[datetime]
-    message: Optional[str]
+    message: Optional[str] = None
     code: int
 
     class Config:
