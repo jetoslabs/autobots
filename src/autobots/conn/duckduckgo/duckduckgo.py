@@ -174,11 +174,11 @@ class DuckDuckGo:
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
         translated: TranslateRes
         async with AsyncDDGS() as ddgs:
-            r = await ddgs.translate(keywords, to=to)
-            res = TranslateRes(**r)
-            translated = res
-            logger.trace(f"Translated for {keywords}: {r}")
-        return translated
+            async for r in ddgs.translate(keywords, to=to):
+                res = TranslateRes(**r)
+                translated = res
+                logger.trace(f"Translated for {keywords}: {r}")
+                return translated
 
     async def suggestions(self, keywords: str, num_results: int = 30):
         suggestions = []
