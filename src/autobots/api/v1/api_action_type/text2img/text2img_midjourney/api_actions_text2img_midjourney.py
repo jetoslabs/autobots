@@ -6,10 +6,10 @@ from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action_type.action_text2img.action_text2img_midjourney import ActionText2ImgMidjourney, \
-    ActionCreateText2ImgMidJourney, Text2ImgRunModel
+    ActionCreateText2ImgImagineMidJourney, Text2ImgRunModel
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_type.action_text2img.action_text2img_midjourney_button import Text2ImgRunModelButton, \
-    ActionText2ImgMidjourneyButton
+    ActionText2ImgMidjourneyButton, ActionCreateText2ImgButtonMidJourney
 from src.autobots.api.v1.api_action_type.text2img.text2img_midjourney.api_actions_text2img_midjourney_model import ActionCreateAPIModelText2ImgMidjourney
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordImagineApiResponse, \
@@ -22,15 +22,32 @@ from loguru import logger
 router = APIRouter()
 
 
-@router.post("/text2img/mid_journey")
-async def create_action_text2img_midjourney(
+@router.post("/text2img_imagine/mid_journey")
+async def create_action_text2img_imagine_midjourney(
         action: ActionCreateAPIModelText2ImgMidjourney,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        action_create = ActionCreateText2ImgMidJourney(**action.model_dump())
+        action_create = ActionCreateText2ImgImagineMidJourney(**action.model_dump())
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump())
+        )
+        return action_doc
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(500)
+
+@router.post("/text2img_button/mid_journey")
+async def create_action_text2img_button_midjourney(
+        action: ActionCreateAPIModelText2ImgMidjourney,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> ActionDoc:
+    try:
+        user_orm = UserORM(id=UUID(user_res.user.id))
+        action_create = ActionCreateText2ImgButtonMidJourney(**action.model_dump())
         action_doc = await UserActions(user_orm, db).create_action(
             ActionCreate(**action_create.model_dump())
         )

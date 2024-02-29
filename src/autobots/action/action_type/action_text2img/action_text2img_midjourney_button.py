@@ -18,15 +18,15 @@ class Text2ImgRunModelButton(BaseModel):
                                   description="job id of a processed image via midjourney")
 
 
-class ActionCreateText2ImgMidJourney(ActionCreate):
-    type: ActionType = ActionType.text2img_midjourney_ai
+class ActionCreateText2ImgButtonMidJourney(ActionCreate):
+    type: ActionType = ActionType.text2img_button_midjourney_ai
     config: DiscordReqModel
 
 
 
 class ActionText2ImgMidjourneyButton(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModelButton, DiscordJobsApiResponse]):
 
-    type = ActionType.text2img_midjourney_ai
+    type = ActionType.text2img_button_midjourney_ai
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:

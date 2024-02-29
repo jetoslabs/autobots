@@ -16,15 +16,15 @@ class Text2ImgRunModel(BaseModel):
                                   description="Text prompt with description of the things you want in the image to be generated.")
 
 
-class ActionCreateText2ImgMidJourney(ActionCreate):
-    type: ActionType = ActionType.text2img_midjourney_ai
+class ActionCreateText2ImgImagineMidJourney(ActionCreate):
+    type: ActionType = ActionType.text2img_imagine_midjourney_ai
     config: DiscordReqModel
 
 
 
 class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
 
-    type = ActionType.text2img_midjourney_ai
+    type = ActionType.text2img_button_midjourney_ai
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:

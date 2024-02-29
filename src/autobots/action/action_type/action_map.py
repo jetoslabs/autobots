@@ -11,6 +11,8 @@ from src.autobots.action.action_type.action_multimodal.action_multimodal_assista
 from src.autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
 from src.autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
 from src.autobots.action.action_type.action_text2img.action_text2img_midjourney import ActionText2ImgMidjourney
+from src.autobots.action.action_type.action_text2img.action_text2img_midjourney_button import \
+    ActionText2ImgMidjourneyButton
 from src.autobots.action.action_type.action_text2img.action_text2img_search_image import ActionText2ImgSearchImage
 from src.autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
 from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
@@ -43,7 +45,8 @@ ACTION_MAP = {
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,
     ActionType.text2img_stable_diffusion: ActionText2ImgStableDiffusion,
     ActionType.text2img_search_image: ActionText2ImgSearchImage,
-    ActionType.text2img_midjourney_ai: ActionText2ImgMidjourney,
+    ActionType.text2img_imagine_midjourney_ai: ActionText2ImgMidjourney,
+    ActionType.text2img_button_midjourney_ai: ActionText2ImgMidjourneyButton,
     # img2img
     ActionType.image_mixer_stable_diffusion: ActionImageMixerStableDiffusion,
     ActionType.img2img_edit_openai: ActionImg2ImgEditOpenai,

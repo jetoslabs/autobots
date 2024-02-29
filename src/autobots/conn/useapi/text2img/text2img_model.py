@@ -41,7 +41,8 @@ class DiscordJobsApiResponse(BaseModel):
     status: Optional[str]
     created: Optional[datetime]
     updated: Optional[datetime]
-    prompt: Optional[str]
+    prompt: Optional[str] = None
+    button: Optional[str] = None
     children: Optional[List[DiscordChild]] = None
     buttons: Optional[List[str]] = None
     discord: Optional[str]
@@ -49,6 +50,8 @@ class DiscordJobsApiResponse(BaseModel):
     server: Optional[str]
     maxJobs: Optional[int]
     messageId: Optional[str]
+    replyUrl: Optional[str] = None
+    replyRef:Optional[str] = None
     content: Optional[str]
     timestamp: Optional[datetime]
     attachments: Optional[List[DiscordAttachment]] = None
@@ -96,15 +99,15 @@ class DiscordButtonJobResponse(BaseModel):
     discord: Optional[str]
     channel: Optional[str]
     server: Optional[str]
-    maxJobs: Optional[str] = None
+    maxJobs: Optional[int] = None
     replyUrl: Optional[str] = None
     replyRef: Optional[str] = None
     messageId: Optional[str] = None
     content: Optional[str]
     timestamp: Optional[datetime]
     error: Optional[str] = None
-    errorDetails: Optional[str]
-    executingJobs: Optional[List[str]]
+    errorDetails: Optional[str] = None
+    executingJobs: Optional[dict] = None
     code: Optional[int]
 
     class Config:
