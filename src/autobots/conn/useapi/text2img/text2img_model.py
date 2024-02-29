@@ -9,6 +9,7 @@ class DiscordReqModel(BaseModel):
     prompt: Optional[str] = Field("", description="Text prompt with description of the things" +
                                          " you want in the image to be generated.")
     job_id: Optional[str] = Field(default="", description="Job id to fetch")
+    button: Optional[str] = Field(default="", description= "Button to run the action")
 class DiscordJobReqModel(BaseModel):
    useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
                      description="USE_API end point")
@@ -62,7 +63,6 @@ class DiscordErrorResponse(BaseModel):
     error: str
     code: int
 
-
 class DiscordImagineApiResponse(BaseModel):
     jobid: Optional[str]
     verb: Optional[str]
@@ -82,5 +82,31 @@ class DiscordImagineApiResponse(BaseModel):
     message: Optional[str] = None
     code: int
 
+
     class Config:
         populate_by_name = True  # This allows extra fields in the response
+
+class DiscordButtonJobResponse(BaseModel):
+    jobid: Optional[str]
+    verb: Optional[str]
+    status: Optional[str]
+    created: Optional[datetime]
+    updated: Optional[datetime]
+    describeUrl: Optional[str] = None
+    discord: Optional[str]
+    channel: Optional[str]
+    server: Optional[str]
+    maxJobs: Optional[str] = None
+    replyUrl: Optional[str] = None
+    replyRef: Optional[str] = None
+    messageId: Optional[str] = None
+    content: Optional[str]
+    timestamp: Optional[datetime]
+    error: Optional[str] = None
+    errorDetails: Optional[str]
+    executingJobs: Optional[List[str]]
+    code: Optional[int]
+
+    class Config:
+        populate_by_name = True  # This allows extra fields in the response
+
