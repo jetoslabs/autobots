@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
-from src.autobots.action.action_type.action_text2img.action_text2img_midjourney import ActionText2ImgMidjourney, \
+from src.autobots.action.action_type.action_text2img.action_text2img_imagine_midjourney import ActionText2ImgMidjourney, \
     ActionCreateText2ImgImagineMidJourney, Text2ImgRunModel
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_type.action_text2img.action_text2img_midjourney_button import Text2ImgRunModelButton, \
@@ -35,9 +35,12 @@ async def create_action_text2img_imagine_midjourney(
             ActionCreate(**action_create.model_dump())
         )
         return action_doc
+    except HTTPException as http_exception:
+        logger.error(str(http_exception))
+        raise http_exception
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(500)
+        raise HTTPException(status_code=500)
 
 @router.post("/text2img_button/mid_journey")
 async def create_action_text2img_button_midjourney(
@@ -52,9 +55,12 @@ async def create_action_text2img_button_midjourney(
             ActionCreate(**action_create.model_dump())
         )
         return action_doc
+    except HTTPException as http_exception:
+        logger.error(str(http_exception))
+        raise http_exception
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(500)
+        raise HTTPException(status_code=500)
 
 
 @router.post("/text2img/mid_journey/{action_id}/run")
@@ -72,9 +78,12 @@ async def run_action_text2img_midjourney(
         )
         resp = await text2img.run_action(action_input)
         return resp
+    except HTTPException as http_exception:
+        logger.error(str(http_exception))
+        raise http_exception
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(500)
+        raise HTTPException(status_code=500)
 
 @router.post("/text2img/mid_journey/button/{action_id}/run")
 async def run_action_text2img_midjourney(
@@ -91,6 +100,9 @@ async def run_action_text2img_midjourney(
         )
         resp = await text2img.run_action(action_input)
         return resp
+    except HTTPException as http_exception:
+        logger.error(str(http_exception))
+        raise http_exception
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(500)
+        raise HTTPException(status_code=500)

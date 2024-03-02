@@ -24,7 +24,7 @@ class ActionCreateText2ImgImagineMidJourney(ActionCreate):
 
 class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
 
-    type = ActionType.text2img_button_midjourney_ai
+    type = ActionType.text2img_imagine_midjourney_ai
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
