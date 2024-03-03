@@ -45,7 +45,7 @@ async def imagineApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordEr
     response_json = response.json()
     try:
         if response_json["code"] != 200:
-            logger.error(f"Mid journey text2img error: {response_json['message']}")
+            logger.error(f"Mid journey text2img error: {response_json['error']}")
             err = DiscordErrorResponse.model_validate(response_json)
             return err
         else:
