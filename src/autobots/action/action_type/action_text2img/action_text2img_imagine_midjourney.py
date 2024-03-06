@@ -21,7 +21,6 @@ class ActionCreateText2ImgImagineMidJourney(ActionCreate):
     config: DiscordReqModel
 
 
-
 class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
 
     type = ActionType.text2img_imagine_midjourney_ai
@@ -33,6 +32,7 @@ class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, Discord
     @staticmethod
     def get_config_update_type() -> Type[ActionConfigUpdateType]:
         return DiscordReqModel
+
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
         return DiscordReqModel
@@ -48,7 +48,6 @@ class ActionText2ImgMidjourney(IAction[DiscordReqModel, DiscordReqModel, Discord
 
     def __init__(self, action_config: DiscordJobReqModel):
         super().__init__(action_config)
-
 
     async def run_action(self, action_input: Text2ImgRunModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
         if action_input.prompt: self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
