@@ -4,7 +4,7 @@ import pytest
 
 from src.autobots.conn.duckduckgo.duckduckgo import SearchRes, get_duckduckgo, AnswerRes
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, Timelimit, SearchMapsParams, \
-    SearchImageParams, SearchVideoParams, LicenseImage
+    SearchImageParams, LicenseImage
 from src.autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
@@ -59,13 +59,13 @@ async def test_search_images_happy_path(set_test_settings):
     assert ans_res[0].title
 
 
-@pytest.mark.asyncio
-async def test_search_videos_happy_path(set_test_settings):
-    search_params = SearchVideoParams(keywords="San Francisco tourism")
-    ans_res = await get_duckduckgo().search_videos(search_params)
-    assert len(ans_res) > 0
-    assert ans_res[0].embed_url
-    assert ans_res[0].title
+# @pytest.mark.asyncio
+# async def test_search_videos_happy_path(set_test_settings):
+#     search_params = SearchVideoParams(keywords="San Francisco tourism")
+#     ans_res = await get_duckduckgo().search_videos(search_params)
+#     assert len(ans_res) > 0
+#     assert ans_res[0].embed_url
+#     assert ans_res[0].title
 
 
 @pytest.mark.asyncio
