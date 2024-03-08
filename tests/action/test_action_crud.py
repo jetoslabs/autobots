@@ -5,7 +5,7 @@ from openai.types.chat import ChatCompletionUserMessageParam
 
 from src.autobots.action.action.action_crud import ActionCRUD
 from src.autobots.action.action.action_doc_model import ActionDocCreate, ActionDocFind
-from src.autobots.action.action_type.action_factory import ActionFactory
+from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
 from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj
@@ -45,8 +45,8 @@ async def test_action_crud_happy_path(set_test_settings):
         # resp: TextObjs = await action_factory.run_action(action_doc, user_input.model_dump())
         # assert len(resp.texts) > 0
         # assert resp.texts[0] != ""
-        resp_raw: dict = await action_factory.run_action(action_doc, user_input.model_dump())
-        resp = ACTION_MAP.get(ActionType.text2text_llm_chat_openai).get_output_type().model_validate(resp_raw)
+        run_action_obj: RunActionObj = await action_factory.run_action(action_doc, user_input.model_dump())
+        resp = ACTION_MAP.get(ActionType.text2text_llm_chat_openai).get_output_type().model_validate(run_action_obj.output_dict)
         assert len(resp.texts) > 0
         assert resp.texts[0] != ""
 
