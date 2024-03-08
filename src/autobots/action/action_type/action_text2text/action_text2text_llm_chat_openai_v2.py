@@ -39,7 +39,7 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, T
         super().__init__(action_config)
 
     @staticmethod
-    async def merge_prev_input_output_to_config(
+    async def update_config_with_prev_IO(
             curr_config: ChatReq,
             prev_input: TextObj | None = None,
             prev_output: TextObjs | None = None,

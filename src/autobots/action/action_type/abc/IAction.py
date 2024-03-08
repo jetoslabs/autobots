@@ -54,7 +54,7 @@ class IAction(
         return config
 
     @staticmethod
-    async def merge_prev_input_output_to_config(
+    async def update_config_with_prev_IO(
             curr_config: ActionConfigType,
             prev_input: ActionInputType | None = None,
             prev_output: ActionOutputType | None = None,
