@@ -53,6 +53,14 @@ class IAction(
     async def delete_config(config: ActionConfigType) -> ActionConfigType:
         return config
 
+    @staticmethod
+    async def merge_prev_input_output_to_config(
+            curr_config: ActionConfigType,
+            prev_input: ActionInputType | None = None,
+            prev_output: ActionOutputType | None = None,
+    ) -> ActionConfigType:
+        return curr_config
+
     @abstractmethod
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType:
         raise NotImplementedError

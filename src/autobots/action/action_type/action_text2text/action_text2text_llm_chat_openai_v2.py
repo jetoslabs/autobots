@@ -1,6 +1,7 @@
 from typing import Type
 
 from loguru import logger
+from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam
 from pydantic import ValidationError
 
 from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
@@ -37,13 +38,35 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, T
     def __init__(self, action_config: ChatReq):
         super().__init__(action_config)
 
+    @staticmethod
+    async def merge_prev_input_output_to_config(
+            curr_config: ChatReq,
+            prev_input: TextObj | None = None,
+            prev_output: TextObjs | None = None,
+    ) -> ChatReq:
+        #     ChatCompletionUserMessageParam,
+        #     ChatCompletionAssistantMessageParam,
+        if not prev_input or not prev_output or prev_input.text == "" or len(prev_output.texts) == 0 :
+            return curr_config
+        updated_messages = (
+                curr_config.messages +
+                [ChatCompletionUserMessageParam(role="user", content=prev_input.text)] +
+                [ChatCompletionAssistantMessageParam(role="assistant", content=prev_output_text_obj.text) for prev_output_text_obj in prev_output.texts]
+        )
+        curr_config.messages = updated_messages
+        return curr_config
+
+
+
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             if action_input and action_input.text != "":
-                message = Message(role=Role.user, content=action_input.text)
+                message = Message(role=Role.user.value, content=action_input.text)
                 self.action_config.messages = self.action_config.messages + [message]
             chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config)
+            # remove input message from Config messages
+            self.action_config.messages.pop()
             if not chat_res:
                 return text_objs
             # resp = Message.model_validate(chat_res.choices[0].message)
