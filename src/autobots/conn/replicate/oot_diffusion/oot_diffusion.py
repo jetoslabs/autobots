@@ -8,8 +8,9 @@ from typing import List
 
 
 class OotdDiffusionInParams(BaseModel):
-    model_image: str
-    garment_image: str
+    model_image: str = Field(None,
+                                  description="imange url")
+    garment_image: str = Field(default=None, description="garmemt image")
     steps: int = Field(20, ge=1, le=40)
     guidance_scale: int = Field(2, ge=1, le=5)
     seed: int = Field(0, ge=0, le=18446744073709552000)

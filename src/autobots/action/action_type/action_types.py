@@ -24,6 +24,7 @@ class ActionType(str, Enum):
     # img2img
     image_mixer_stable_diffusion = "image_mixer_stable_diffusion"
     img2img_stable_diffusion = "img2img_stable_diffusion"
+    img2img_ootd = "img2img_ootd"
     img2img_edit_openai = "img2img_edit_openai"
     img2img_variation_openai = "img2img_variation_openai"
 
