@@ -1,9 +1,10 @@
 import requests
 from loguru import logger
 from pydantic import ValidationError
+import time
 
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidErrorResponse, ClaidResponse
-from typing import Optional, Any
+from typing import Optional, Any, Union
 from pydantic import BaseModel, Field
 from src.autobots.core.settings import SettingsProvider
 
@@ -46,12 +47,51 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
     response = requests.post(url, json=request_payload, headers=headers)
     response_json = response.json()
     try:
-        err = ClaidResponse.model_validate(response_json)
-        return err
+        response = ClaidResponse.model_validate(response_json)
+        if(response.data.status == 'ACCEPTED'):
+            retry_count = 0
+            while True:
+                job_res: Union[ClaidResponse, ClaidErrorResponse] = await fetchResultsFromResultUrl(response.data.result_url)
+
+                try:
+                    job_response = ClaidResponse.model_validate(job_res.json())
+                    if job_response.data.status == 'DONE':
+                        return job_res
+
+                    elif job_response.data.status == 'PROCESSING' or job_response.data.status == 'ACCEPTED':
+                        continue
+
+                except Exception as e:
+                    logger.error(f"Result fetch api is failing with exception: {e} and response : {job_response}")
+                    return job_response
+
+                retry_count += 1
+                if retry_count >= 15:  # Maximum of 5 retries
+                    logger.error("Maximum retry limit reached")
+                    break  # Exit the loop if maximum retry limit is reached
+                logger.warning(f"Retrying fetchResultsFromResultUrl[Claid], attempt {retry_count}")
+                time.sleep(15)
+
+        else:
+            logger.error(f"Claid bulkedit error: {response.status}")
+            return response
+
     except ValidationError or TypeError as e:
         logger.error(f"Claid validtion error for response: {response_json} : {e}")
 
     return response
+
+async def fetchResultsFromResultUrl(url: str) -> ClaidResponse | ClaidErrorResponse:
+    claidConfig = ClaidConfig()
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {claidConfig.claid_apikey}"
+    }
+
+    response : ClaidResponse | ClaidErrorResponse = requests.get(url, headers=headers)
+    return response
+
+
 
 
 

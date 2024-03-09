@@ -8,6 +8,7 @@ from src.autobots.conn.useapi.useapi import UseApi
 
 @pytest.mark.asyncio
 async def test_bulkEdit(set_test_settings)-> KeyError:
+    #todo: change the  bucket before moving to prod
     req = ClaidRequestModel(
         input={"path": "storage://teststorage/input/photo1.jpeg"},
         operations=Operations(
@@ -35,7 +36,7 @@ async def test_bulkEdit(set_test_settings)-> KeyError:
     uca = UseClaidAiApi()
     res: ClaidResponse = await uca.bulkEdit(req)
     print(res)
-    assert (res.dict().get('data').get('status') == 'ACCEPTED')
+    assert (res.status_code == 200)
 
 
 
