@@ -66,6 +66,7 @@ class ClaidObject(BaseModel):
     format: str
     width: int
     height: int
+    tmp_url: Optional[str] = None
 
 
 class ClaidResult(BaseModel):
@@ -96,4 +97,45 @@ class ClaidErrorResponse(BaseModel):
     error_code: str
     error_type: str
     error_message: str
-    error_details: ErrorDetails
+    error_details: ErrorDetails = None
+
+class PhotoshootPosition(BaseModel):
+    x: float = 0.5
+    y: float = 0.5
+
+
+class PhotoshootObject(BaseModel):
+    image_url: str
+    placement_type: Literal["absolute", "original"] = "original"
+    rotation_degree: int = 0
+    scale: float = 1.0
+    position: PhotoshootPosition = None
+
+
+class PhotoshootScene(BaseModel):
+    template_url: str = None
+    template_mode: Literal["transform" ,  "lock"] = None
+    color: str = None
+    view: Literal["top" ,  "front"] = None
+    prompt: str = None
+    negative_prompt: str = None
+
+
+class PhotoshootOutput(BaseModel):
+    destination: str
+    number_of_images: int = None
+    format: str = None
+
+
+class ClaidPhotoShootRequestModel(BaseModel):
+    output: PhotoshootOutput
+    object: PhotoshootObject
+    scene: PhotoshootScene
+
+class ClaidPhotoShootOutputDataModel(BaseModel):
+    input: ClaidObject
+    output: List[ClaidObject]
+class ClaidPhotoShootOutputModel(BaseModel):
+    data: ClaidPhotoShootOutputDataModel
+
+
