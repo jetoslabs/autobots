@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import List, Any, Dict
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks, HTTPException
 from loguru import logger
 from pydantic import BaseModel
 
@@ -24,6 +24,11 @@ class ActionDataTypes(BaseModel):
     config: Dict[str, Any] | None = None
     input: Dict[str, Any] | None = None
     output: Dict[str, Any] | None = None
+
+class RunActionObj(BaseModel):
+    config_dict: Dict[str, Any]
+    input_dict: Dict[str, Any]
+    output_dict: Dict[str, Any]
 
 
 class ActionFactory:
@@ -104,30 +109,55 @@ class ActionFactory:
             raise
 
     @staticmethod
-    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> Any:
+    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> RunActionObj:
         action = ACTION_MAP.get(action_doc.type)
         if not action:
             logger.error(f"Action {action_doc.type} not found in ACTION_MAP")
             raise Exception(f"Action {action_doc.type} not found in ACTION_MAP")
         config = action.get_config_type().model_validate(action_doc.config)
+        prev_input = None
+        prev_output = None
+        try:
+            prev_input = action.get_input_type().model_validate(action_doc.input)
+            prev_output = action.get_output_type().model_validate(action_doc.output)
+        except Exception:
+            logger.warning("Unable to gather prev_input or prev_output")
+        updated_config = await action.update_config_with_prev_IO(config, prev_input, prev_output)
+
         input = action.get_input_type().model_validate(action_input_dict)
-        output = await action(config).run_action(input)
-        return output.model_dump()
+        output = await action(updated_config).run_action(input)
+        return RunActionObj(
+            config_dict=updated_config.model_dump(exclude_none=True),
+            input_dict=input.model_dump(exclude_none=True),
+            output_dict=output.model_dump(exclude_none=True),
+        )
 
     @staticmethod
     async def run_action_in_background(
             action_doc: ActionDoc,
             action_input_dict: Dict[str, Any],
             user_action_result: UserActionResult,
+            action_result_id: str = None,
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionResultDoc | None:
-        # Create initial Action Result
-        action_doc.input = action_input_dict
-        action_result_create: ActionResultCreate = ActionResultCreate(
-            status=EventResultStatus.processing, result=action_doc, is_saved=False
-        )
-        action_result_doc = await user_action_result.create_action_result(action_result_create)
+        action_result_doc: ActionResultDoc | None = None
+        if action_result_id is not None:
+            action_result_doc = await user_action_result.get_action_result(action_result_id)
+            if action_result_doc is None:
+                logger.error(f"Action Result not found {action_result_id}")
+                raise HTTPException(status_code=400, detail="Action Result not found")
+            # Change status back to processing
+            action_result_update: ActionResultUpdate = ActionResultUpdate(status=EventResultStatus.processing)
+            action_result_doc = await user_action_result.update_action_result(action_result_id, action_result_update)
+        else:
+            # Create initial Action Result
+            action_doc.input = action_input_dict
+            action_result_create: ActionResultCreate = ActionResultCreate(
+                status=EventResultStatus.processing, result=action_doc, is_saved=False
+            )
+            action_result_doc = await user_action_result.create_action_result(action_result_create)
+
         # Run Action in background and update the Action Result with Output
         if background_tasks:
             # Run in background
@@ -150,10 +180,13 @@ class ActionFactory:
     ) -> None:
         try:
             # Run the action
-            result = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
+            run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
             # Action is a success
             action_result_doc.status = EventResultStatus.success
-            action_result_doc.result.output = result
+            action_result_doc.error_message = None
+            action_result_doc.result.config = run_action_obj.config_dict
+            action_result_doc.result.input = run_action_obj.input_dict
+            action_result_doc.result.output = run_action_obj.output_dict
             logger.bind(action_result_doc=action_result_doc).info("Action run success")
         except Exception as e:
             # Action resulted in an error
