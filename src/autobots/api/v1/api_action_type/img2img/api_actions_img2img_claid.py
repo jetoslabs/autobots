@@ -42,40 +42,40 @@ async def create_action_img2img_bulk_edit_claid(
         raise HTTPException(500)
 
 
-@router.post("/img2img/bulk_edit/claid/{action_id}/run")
-async def run_action_img2img_bulk_edit_claid(
-        action_id: str,
-        action_input: ClaidRequestModel,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
-) -> ClaidResponse:
-    try:
-        user_orm = UserORM(id=UUID(user_res.user.id))
-        action = await UserActions(user=user_orm, db=db).get_action(action_id)
-        bulk_edit_claid = ActionImg2BulkEditClaid(
-            ClaidRequestModel.model_validate(action.model_dump())
-        )
-        resp = await bulk_edit_claid.run_action(action_input)
-        return resp
-    except Exception as e:
-        logger.error(str(e))
-        raise HTTPException(500)
-
-@router.post("/img2img/photoshoot/claid/run")
-async def run_action_img2img_photoshoot_claid(
-        action_id: str,
-        action_input: ClaidPhotoShootRequestModel,
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
-) -> ClaidPhotoShootOutputModel:
-    try:
-        user_orm = UserORM(id=UUID(user_res.user.id))
-        action = await UserActions(user=user_orm, db=db).get_action(action_id)
-        photoshoot_claid = ActionImg2ImgPhotoshootClaid(
-            ClaidPhotoShootRequestModel.model_validate(action.model_dump())
-        )
-        resp = await photoshoot_claid.run_action(action_input)
-        return resp
-    except Exception as e:
-        logger.error(str(e))
-        raise HTTPException(500)
+# @router.post("/img2img/bulk_edit/claid/{action_id}/run")
+# async def run_action_img2img_bulk_edit_claid(
+#         action_id: str,
+#         action_input: ClaidRequestModel,
+#         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+#         db: Database = Depends(get_mongo_db)
+# ) -> ClaidResponse:
+#     try:
+#         user_orm = UserORM(id=UUID(user_res.user.id))
+#         action = await UserActions(user=user_orm, db=db).get_action(action_id)
+#         bulk_edit_claid = ActionImg2BulkEditClaid(
+#             ClaidRequestModel.model_validate(action.model_dump())
+#         )
+#         resp = await bulk_edit_claid.run_action(action_input)
+#         return resp
+#     except Exception as e:
+#         logger.error(str(e))
+#         raise HTTPException(500)
+#
+# @router.post("/img2img/photoshoot/claid/run")
+# async def run_action_img2img_photoshoot_claid(
+#         action_id: str,
+#         action_input: ClaidPhotoShootRequestModel,
+#         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+#         db: Database = Depends(get_mongo_db)
+# ) -> ClaidPhotoShootOutputModel:
+#     try:
+#         user_orm = UserORM(id=UUID(user_res.user.id))
+#         action = await UserActions(user=user_orm, db=db).get_action(action_id)
+#         photoshoot_claid = ActionImg2ImgPhotoshootClaid(
+#             ClaidPhotoShootRequestModel.model_validate(action.model_dump())
+#         )
+#         resp = await photoshoot_claid.run_action(action_input)
+#         return resp
+#     except Exception as e:
+#         logger.error(str(e))
+#         raise HTTPException(500)
