@@ -35,7 +35,7 @@ class ActionImg2ImgPhotoshootClaid(
     def get_output_type() -> Type[ActionOutputType]:
         return ClaidPhotoShootOutputModel
 
-    def __init__(self, action_config: ClaidRequestModel):
+    def __init__(self, action_config: ClaidPhotoShootRequestModel):
         super().__init__(action_config)
 
     async def run_action(self, action_input: ClaidPhotoShootRequestModel) -> ClaidPhotoShootOutputModel:
