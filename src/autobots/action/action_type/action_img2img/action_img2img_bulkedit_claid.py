@@ -40,7 +40,8 @@ class ActionImg2BulkEditClaid(
     async def run_action(self, action_input: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse:
         claidai = get_calid_ai()
         try:
-            res : ClaidResponse = claidai.bulkEdit(action_input)
+            res = await claidai.bulkEdit(action_input)
+            return res
         except ValidationError as e:
             logger.error(str(e))
         except Exception as e:

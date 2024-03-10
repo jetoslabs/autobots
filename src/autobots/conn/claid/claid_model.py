@@ -28,18 +28,18 @@ class BackgroundBlur(BaseModel):
     level: Literal["low", "medium", "high"] = "low"
 
 class Background(BaseModel):
-    remove: BackgroundRemove
-    blur: BackgroundBlur
-    color:Literal["#ffffff", str] = None
+    remove: BackgroundRemove = None
+    blur: BackgroundBlur = None
+    color: str = None
 
 
 class Operations(BaseModel):
-    decompress: Literal["moderate", "strong", "auto"] = "auto"
-    upscale: Literal["smart_enhance", "smart_resize", "faces", "digital_art", "photo"] = "smart_enhance"
-    resizing: Resizing
-    adjustments: Adjustments
-    background: Background
-    padding: Literal["10%", "5% 25%"] = None
+    decompress: str = None
+    upscale: str = None
+    resizing: Resizing = None
+    adjustments: Adjustments = None
+    background: Background = None
+    padding: str = None
     privacy: Dict[str, bool] = None
 
 

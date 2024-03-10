@@ -38,14 +38,10 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
     input_url = 'storage://mystorage/input/'
     output_url = 'storage://mystorage/output/'
 
-    operations = req.operations.dict(exclude_none=True)
-    request_payload = {
-        "input": input_url,
-        "operations": operations,
-        "output": output_url
-    }
+    req['input'] = input_url
+    req['output'] = output_url
 
-    response = requests.post(url, json=request_payload, headers=headers)
+    response = requests.post(url, json=req, headers=headers)
     response_json = response.json()
     try:
         response = ClaidResponse.model_validate(response_json)
