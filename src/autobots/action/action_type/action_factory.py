@@ -182,6 +182,7 @@ class ActionFactory:
             # Run the action
             run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
             # Action is a success
+            # Update ActionDoc model config, input and output
             action_result_doc.status = EventResultStatus.success
             action_result_doc.error_message = None
             action_result_doc.result.config = run_action_obj.config_dict

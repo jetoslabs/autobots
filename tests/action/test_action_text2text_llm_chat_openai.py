@@ -1,5 +1,5 @@
 import pytest
-from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionContentPartTextParam
+from openai.types.chat import ChatCompletionUserMessageParam
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action_type.action_factory import ActionFactory
@@ -13,9 +13,7 @@ async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settin
         messages=[
             ChatCompletionUserMessageParam(
                 role="user",
-                content=[
-                    ChatCompletionContentPartTextParam(type="text", text="Write a simple story")
-                ]
+                content="Write a simple story"
             )
         ],
         model="gpt-4-0613"
@@ -32,8 +30,10 @@ async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settin
     assert action_run_obj_1.output_dict
     assert len(action_run_obj_1.config_dict.get("messages")) == 1
 
+    action_doc.config = action_run_obj_1.config_dict
     action_doc.input = action_run_obj_1.input_dict
     action_doc.output = action_run_obj_1.output_dict
+
     action_input = {"text": "Keep the same plot but make it funny"}
     action_run_obj_2 = await ActionFactory.run_action(action_doc, action_input)
     assert action_run_obj_2.output_dict
