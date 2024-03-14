@@ -32,4 +32,4 @@ LABEL "com.datadoghq.ad.instances"='[{"autobots_status_url": "https://%%host%%:%
 LABEL "com.datadoghq.ad.logs"='[{"source": "autobots", "service": "autobots"}]'
 ##
 
-ENTRYPOINT ["uvicorn", "--loop", "asyncio", "src.autobots.main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "20", "--lifespan", "on"]
+ENTRYPOINT ["uvicorn", "--loop", "asyncio", "src.autobots.main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "5", "--lifespan", "on"]
