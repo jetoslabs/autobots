@@ -200,17 +200,17 @@ tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "p
 
 [[package]]
 name = "boto3"
-version = "1.34.60"
+version = "1.34.62"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "boto3-1.34.60-py3-none-any.whl", hash = "sha256:199f11518b370e2ec1f6d5ec0c647eca967b6eb2cf6a332d9fc01a2144ea3690"},
-    {file = "boto3-1.34.60.tar.gz", hash = "sha256:f78f30f4d6b1d5839ec20da9ffe0f3b36c1b404a415d208459a0b88c202a05e9"},
+    {file = "boto3-1.34.62-py3-none-any.whl", hash = "sha256:a464a2fd519a9939357822f0538e7b56023dab26742bcae5131b9aa89603ba91"},
+    {file = "boto3-1.34.62.tar.gz", hash = "sha256:7373e50b97e27f55c5b2a15a095e7bb45a7d962ced4d1468650dced57087c56b"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.60,<1.35.0"
+botocore = ">=1.34.62,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -219,13 +219,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.34.60"
-description = "Type annotations for boto3 1.34.60 generated with mypy-boto3-builder 7.23.2"
+version = "1.34.62"
+description = "Type annotations for boto3 1.34.62 generated with mypy-boto3-builder 7.23.2"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-stubs-1.34.60.tar.gz", hash = "sha256:dd9f41291ba42590462e75f17c7862e386396523a8312a414095f25489bcce5e"},
-    {file = "boto3_stubs-1.34.60-py3-none-any.whl", hash = "sha256:98259f55473dcf9dc473e67c732a746cf879d9973c066db7f9b15f8c0956755f"},
+    {file = "boto3-stubs-1.34.62.tar.gz", hash = "sha256:d26b3aab3f31156c03493e9c31b7f5491549c9ab0cbaa57e0a09e389fb1c8a9a"},
+    {file = "boto3_stubs-1.34.62-py3-none-any.whl", hash = "sha256:3bdfb69e442299a01c1f1b5e03e236a77c7894c7c75e91808518d77084416e70"},
 ]
 
 [package.dependencies]
@@ -283,7 +283,7 @@ bedrock-agent = ["mypy-boto3-bedrock-agent (>=1.34.0,<1.35.0)"]
 bedrock-agent-runtime = ["mypy-boto3-bedrock-agent-runtime (>=1.34.0,<1.35.0)"]
 bedrock-runtime = ["mypy-boto3-bedrock-runtime (>=1.34.0,<1.35.0)"]
 billingconductor = ["mypy-boto3-billingconductor (>=1.34.0,<1.35.0)"]
-boto3 = ["boto3 (==1.34.60)", "botocore (==1.34.60)"]
+boto3 = ["boto3 (==1.34.62)", "botocore (==1.34.62)"]
 braket = ["mypy-boto3-braket (>=1.34.0,<1.35.0)"]
 budgets = ["mypy-boto3-budgets (>=1.34.0,<1.35.0)"]
 ce = ["mypy-boto3-ce (>=1.34.0,<1.35.0)"]
@@ -1184,13 +1184,13 @@ wmi = ["wmi (>=1.5.1)"]
 
 [[package]]
 name = "duckduckgo-search"
-version = "5.0"
+version = "5.1.0"
 description = "Search for words, documents, images, news, maps and text translation using the DuckDuckGo.com search engine."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "duckduckgo_search-5.0-py3-none-any.whl", hash = "sha256:127b57cd04826dc18d8d87a5eb354282cffb16fd179954ca88154a8690cdecf0"},
-    {file = "duckduckgo_search-5.0.tar.gz", hash = "sha256:d66685f1ce457499de91f6b0efbb330415233a82f3bb88fea50e538eaa636bb6"},
+    {file = "duckduckgo_search-5.1.0-py3-none-any.whl", hash = "sha256:691a3e1c948ab9c4409af7891557bdfff66b9f0c521336b008bbc91675ba5353"},
+    {file = "duckduckgo_search-5.1.0.tar.gz", hash = "sha256:27522d05f1e3dc5c2fbe95bd12cc32ff96a790cf8ee993b2949158dee0dbfb1f"},
 ]
 
 [package.dependencies]
@@ -1199,7 +1199,7 @@ curl-cffi = ">=0.6.2"
 lxml = ">=5.1.0"
 
 [package.extras]
-dev = ["pytest (>=8.0.1)", "ruff (>=0.3.0)"]
+dev = ["mypy (>=1.8.0)", "pytest (>=8.0.1)", "ruff (>=0.3.0)"]
 
 [[package]]
 name = "ecdsa"
@@ -2262,13 +2262,13 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.13.3"
+version = "1.14.0"
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.7.1"
 files = [
-    {file = "openai-1.13.3-py3-none-any.whl", hash = "sha256:5769b62abd02f350a8dd1a3a242d8972c947860654466171d60fb0972ae0a41c"},
-    {file = "openai-1.13.3.tar.gz", hash = "sha256:ff6c6b3bc7327e715e4b3592a923a5a1c7519ff5dd764a83d69f633d49e77a7b"},
+    {file = "openai-1.14.0-py3-none-any.whl", hash = "sha256:5c9fd3a59f5cbdb4020733ddf79a22f6b7a36d561968cb3f3dd255cdd263d9fe"},
+    {file = "openai-1.14.0.tar.gz", hash = "sha256:e287057adf0ec3315abc32ddcc968d095879abd9b68bf51c0402dab13ab5ae9b"},
 ]
 
 [package.dependencies]
@@ -2794,13 +2794,13 @@ files = [
 
 [[package]]
 name = "pydantic"
-version = "2.6.3"
+version = "2.6.4"
 description = "Data validation using Python type hints"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pydantic-2.6.3-py3-none-any.whl", hash = "sha256:72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a"},
-    {file = "pydantic-2.6.3.tar.gz", hash = "sha256:e07805c4c7f5c6826e33a1d4c9d47950d7eaf34868e2690f8594d2e30241f11f"},
+    {file = "pydantic-2.6.4-py3-none-any.whl", hash = "sha256:cc46fce86607580867bdc3361ad462bab9c222ef042d3da86f2fb333e1d916c5"},
+    {file = "pydantic-2.6.4.tar.gz", hash = "sha256:b1704e0847db01817624a6b86766967f552dd9dbf3afba4004409f908dcc84e6"},
 ]
 
 [package.dependencies]
@@ -3968,13 +3968,13 @@ files = [
 
 [[package]]
 name = "unstructured-client"
-version = "0.21.1"
+version = "0.22.0"
 description = "Python Client SDK for Unstructured API"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "unstructured-client-0.21.1.tar.gz", hash = "sha256:82109e485423169006addb18a780b0ffd0b94bde4ede2953ceb5880e164fedb6"},
-    {file = "unstructured_client-0.21.1-py3-none-any.whl", hash = "sha256:52a82a550bb5f722e77f3b3633664734e5ada0a1e354bf9503825e1f204d1434"},
+    {file = "unstructured-client-0.22.0.tar.gz", hash = "sha256:d76351c456fcf4067f59135c09a35008a120103621a1ac94cf9448db28ef2e1e"},
+    {file = "unstructured_client-0.22.0-py3-none-any.whl", hash = "sha256:140f7dd8515cc9be3276f66d6fb08d235ea35a50d4eb38a6ef82b60fc3d2fea0"},
 ]
 
 [package.dependencies]
@@ -4391,4 +4391,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "6b6f2dd95fbe7ef5ad4536499cbeb455b3c71842987c852016b35a8bb1b48ee6"
+content-hash = "6a7444eb858f79721b2ef05457a885f25cf5405477dbe66b72a70744b1253297"
