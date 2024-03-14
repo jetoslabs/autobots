@@ -67,7 +67,7 @@ class MapRes(BaseModel):
     url: HttpUrl | str
     desc: Optional[str] = None
     phone: Optional[str] = None
-    image: Optional[HttpUrl] = None
+    image: Optional[HttpUrl] | str = None
     source: HttpUrl
     links: Optional[str] = None
     hours: dict | str
