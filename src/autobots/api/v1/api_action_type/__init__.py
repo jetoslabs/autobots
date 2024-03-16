@@ -4,7 +4,7 @@ from src.autobots import SettingsProvider
 from src.autobots.api.v1.api_action_type.audio2text import api_actions_audio2text_transcription_openai
 from src.autobots.api.v1.api_action_type.audio2text import api_actions_audio2text_translation_openai
 from src.autobots.api.v1.api_action_type.img2img import api_actions_img2img_edit_openai, image_mixer_stable_diffusion, \
-    api_actions_img2img_variation_openai, api_actions_img2img_ootd
+    api_actions_img2img_variation_openai, api_actions_img2img_virtual_try_on
 from src.autobots.api.v1.api_action_type.multimodal import api_actions_multimodal
 from src.autobots.api.v1.api_action_type.text2audio import api_actions_text2audio_speech_openai
 from src.autobots.api.v1.api_action_type.text2img import api_actions_text2img_stable_diffusion

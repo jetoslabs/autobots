@@ -1,6 +1,6 @@
 import replicate
 
-from src.autobots.conn.replicate.oot_diffusion.oot_diffusion import OotdDiffusion
+from src.autobots.conn.replicate.virtual_try_on.virtual_try_on import VirtualTryOn
 from src.autobots.conn.replicate.yan_ops.yan_ops_face_swap import YanOpsFaceSwap
 from src.autobots.core.settings import Settings, SettingsProvider
 
@@ -10,7 +10,7 @@ class Replicate:
     def __init__(self, api_key: str):
         self.client = replicate.client.Client(api_token=api_key)
         self.yan_ops_face_swap = YanOpsFaceSwap(self.client)
-        self.ootd_diffusion = OotdDiffusion(self.client)
+        self.virtual_try_on = VirtualTryOn(self.client)
 
     async def list_collections_namespace(self):
         collections = [collection for page in replicate.paginate(self.client.collections.list) for collection in page]

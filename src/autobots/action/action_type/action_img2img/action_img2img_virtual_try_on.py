@@ -5,11 +5,11 @@ from pydantic import BaseModel, Field
 from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.conn.replicate.oot_diffusion.oot_diffusion import OotdDiffusionInParams, OotdDiffusionOutputData
+from src.autobots.conn.replicate.virtual_try_on.virtual_try_on import VirtualTryOnDiffusionInParams, VirtualTryOnOutputData
 from src.autobots.conn.replicate.replicate import get_replicate
 
 
-class Img2ImgRunModelOotd(BaseModel):
+class Img2ImgRunModelVirtualTryOn(BaseModel):
     model_image: Optional[str] = Field(None,
                                   description="imange url")
     garment_image: Optional[str] = Field(default=None, description="garmemt image")
@@ -20,34 +20,34 @@ class Img2ImgRunModelOotd(BaseModel):
                                   description="seed")
 
 class ActionImg2ImgOotd(
-    IAction[OotdDiffusionInParams, OotdDiffusionInParams, OotdDiffusionInParams, Img2ImgRunModelOotd, OotdDiffusionOutputData]
+    IAction[VirtualTryOnDiffusionInParams, VirtualTryOnDiffusionInParams, VirtualTryOnDiffusionInParams, Img2ImgRunModelVirtualTryOn, VirtualTryOnOutputData]
 ):
-    type = ActionType.img2img_ootd
+    type = ActionType.img2img_virtual_try_on
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
-        return OotdDiffusionInParams
+        return VirtualTryOnDiffusionInParams
 
     @staticmethod
     def get_config_update_type() -> Type[ActionConfigUpdateType]:
-        return OotdDiffusionInParams
+        return VirtualTryOnDiffusionInParams
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        return OotdDiffusionInParams
+        return VirtualTryOnDiffusionInParams
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return Img2ImgRunModelOotd
+        return Img2ImgRunModelVirtualTryOn
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        return OotdDiffusionOutputData
+        return VirtualTryOnOutputData
 
-    def __init__(self, action_config: OotdDiffusionInParams):
+    def __init__(self, action_config: VirtualTryOnDiffusionInParams):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: Img2ImgRunModelOotd) -> OotdDiffusionOutputData:
+    async def run_action(self, action_input: Img2ImgRunModelVirtualTryOn) -> VirtualTryOnOutputData:
         if action_input.model_image:
             self.action_config.model_image = f"{action_input.model_image}"
         if action_input.garment_image:
@@ -58,5 +58,5 @@ class ActionImg2ImgOotd(
             self.action_config.guidance_scale = action_input.guidance_scale
         if action_input.seed:
             self.action_config.seede = action_input.seed
-        images = await get_replicate().ootd_diffusion.run(self.action_config)
+        images = await get_replicate().virtual_try_on.run(self.action_config)
         return images

@@ -7,7 +7,7 @@ from replicate.model import Model
 from typing import List
 
 
-class OotdDiffusionInParams(BaseModel):
+class VirtualTryOnDiffusionInParams(BaseModel):
     model_image: str = Field(None,
                                   description="imange url")
     garment_image: str = Field(default=None, description="garmemt image")
@@ -16,23 +16,23 @@ class OotdDiffusionInParams(BaseModel):
     seed: int = Field(0, ge=0, le=18446744073709552000)
 
 
-class OotdDiffusionOutputData(BaseModel):
+class VirtualTryOnOutputData(BaseModel):
     urls: List[str]
 
 
 
-class OotdDiffusion:
-    model = "viktorfa/oot_diffusion"
+class VirtualTryOn:
+    model = "viktorfa/virtual_try_on"
 
     def __init__(self, client: replicate.client.Client):
         self.client = client
 
-    async def run(self, ootd_diffusion_params: OotdDiffusionInParams) -> OotdDiffusionOutputData | None:
+    async def run(self, virtual_try_on_params: VirtualTryOnDiffusionInParams) -> VirtualTryOnOutputData | None:
         try:
-            model: Model = self.client.models.get(OotdDiffusion.model)
+            model: Model = self.client.models.get(VirtualTryOn.model)
             ref = f"{model.id}:{model.latest_version.id}"
-            output_list = await self.client.async_run(ref, ootd_diffusion_params.model_dump(exclude_none=True))
-            output = OotdDiffusionOutputData(urls=output_list)
+            output_list = await self.client.async_run(ref, virtual_try_on_params.model_dump(exclude_none=True))
+            output = VirtualTryOnOutputData(urls=output_list)
             return output
         except Exception as e:
             logger.error(str(e))
