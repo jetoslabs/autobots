@@ -28,7 +28,7 @@ async def test_face_swap_happy_path(set_test_settings):
     assert output.code == 200
 
 @pytest.mark.asyncio
-async def test_ootd_diffusion_happy_path(set_test_settings):
+async def test_virtual_try_on_happy_path(set_test_settings):
     params = VirtualTryOnDiffusionInParams(
         model_image="https://raw.githubusercontent.com/viktorfa/oot_diffusion/main/oot_diffusion/assets/model_1.png",
         garment_image="https://replicate.delivery/pbxt/KTgyzr0WNtcgwN82xEEcc3zoydD8ooXPzMHC18fKZSWu9W5I/blue_jacket.webp"

@@ -19,7 +19,7 @@ class Img2ImgRunModelVirtualTryOn(BaseModel):
     seed: Optional[int] = Field(default=None, ge=0, le=18446744073709552000,
                                   description="seed")
 
-class ActionImg2ImgOotd(
+class ActionImg2ImgVirtualTryOn(
     IAction[VirtualTryOnDiffusionInParams, VirtualTryOnDiffusionInParams, VirtualTryOnDiffusionInParams, Img2ImgRunModelVirtualTryOn, VirtualTryOnOutputData]
 ):
     type = ActionType.img2img_virtual_try_on

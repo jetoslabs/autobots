@@ -22,7 +22,7 @@ class VirtualTryOnOutputData(BaseModel):
 
 
 class VirtualTryOn:
-    model = "viktorfa/virtual_try_on"
+    model = "viktorfa/oot_diffusion"
 
     def __init__(self, client: replicate.client.Client):
         self.client = client

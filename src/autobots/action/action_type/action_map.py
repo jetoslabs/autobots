@@ -5,7 +5,7 @@ from src.autobots.action.action_type.action_audio2text.action_audio2text_transla
 from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from src.autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
-from src.autobots.action.action_type.action_img2img.action_img2img_virtual_try_on import ActionImg2ImgOotd
+from src.autobots.action.action_type.action_img2img.action_img2img_virtual_try_on import ActionImg2ImgVirtualTryOn
 from src.autobots.action.action_type.action_img2img.action_img2img_variation_openai import ActionImg2ImgVariationOpenai
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.action_multimodal_assistant_openai import \
     ActionMultimodalAssistantOpenai
@@ -49,7 +49,7 @@ ACTION_MAP = {
     ActionType.image_mixer_stable_diffusion: ActionImageMixerStableDiffusion,
     ActionType.img2img_edit_openai: ActionImg2ImgEditOpenai,
     ActionType.img2img_variation_openai: ActionImg2ImgVariationOpenai,
-    ActionType.img2img_virtual_try_on: ActionImg2ImgOotd,
+    ActionType.img2img_virtual_try_on: ActionImg2ImgVirtualTryOn,
     # text2video
     ActionType.text2video_stable_diffusion: ActionText2VideoStableDiffusion,
     ActionType.text2video_search_video: ActionText2VideoSearchVideo,

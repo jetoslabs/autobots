@@ -29,7 +29,7 @@ router.include_router(api_actions_text2img_midjourney.router, tags=[f"{prefix}/t
 router.include_router(image_mixer_stable_diffusion.router, tags=[f"{prefix}/img2img"])
 router.include_router(api_actions_img2img_edit_openai.router, tags=[f"{prefix}/img2img"])
 router.include_router(api_actions_img2img_variation_openai.router, tags=[f"{prefix}/img2img"])
-router.include_router(api_actions_img2img_ootd.router, tags=[f"{prefix}/img2img"])
+router.include_router(api_actions_img2img_virtual_try_on.router, tags=[f"{prefix}/img2img"])
 # text2video
 router.include_router(api_actions_text2video_stable_diffusion.router, tags=[f"{prefix}/text2video"])
 # text2audio
