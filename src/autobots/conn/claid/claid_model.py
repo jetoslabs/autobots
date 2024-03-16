@@ -1,5 +1,5 @@
 from pydantic import Field
-from typing import Union, Literal, Dict, List
+from typing import Union, Literal, Dict, List, Optional
 from pydantic import BaseModel
 
 
@@ -73,7 +73,7 @@ class ClaidObject(BaseModel):
     format: str
     width: int
     height: int
-    tmp_url: str = None
+    tmp_url: Optional[str] = None
 
 
 class ClaidResult(BaseModel):

@@ -14,6 +14,12 @@ class ClaidConfig(BaseModel):
                                              description="Claid apikey used for request authorization.")
     claid_url: Optional[str] = Field(default="http://api.claid.ai",
                                              description="Claid URL used for request authorization.")
+    s3_input_folder_url: str = Field(default=SettingsProvider.sget().CLAID_INPUT_FOLDER_S3_URI,
+                                     description="S3 folder for input images")
+    s3_output_folder_url: str = Field(default=SettingsProvider.sget().CLAID_OUTPUT_FOLDER_S3_URI,
+                                     description="S3 folder for output images")
+    s3_input_file_url: str = Field(default=SettingsProvider.sget().CLAID_INPUT_FILE_S3_URI,
+                                     description="S3 folder for input image file")
 
 def filterNullValues(obj: Any) -> Any:
     """
@@ -34,18 +40,15 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
         "Authorization": f"Bearer {claidConfig.claid_apikey}"
     }
 
-    # Hardcoding input and output URLs for now
-    input_url = 'storage://mystorage/input/'
-    output_url = 'storage://mystorage/output/'
+    req['input'] = claidConfig.s3_input_folder_url
+    req['output'] = claidConfig.s3_output_folder_url
 
-    req['input'] = input_url
-    req['output'] = output_url
 
     response = requests.post(url, json=req, headers=headers)
     response_json = response.json()
     try:
         response = ClaidResponse.model_validate(response_json)
-        if(response.data.status == 'ACCEPTED'):
+        if(response.data.status == 'ACCEPTED' or response.data.status == 'PROCESSING' ):
             retry_count = 0
             while True:
                 job_res: Union[ClaidResponse, ClaidErrorResponse] = await fetchResultsFromResultUrl(response.data.result_url)
@@ -87,10 +90,10 @@ async def photoshoot(req : ClaidPhotoShootRequestModel) -> ClaidPhotoShootOutput
     }
     # Hardcoding input and output URLs for now
     if req.output is not None:
-        req.output.destination = "storage://mystorage/output/"
+        req.output.destination = claidConfig.s3_output_folder_url
 
     if req.object is not None:
-        req.object.image_url = "storage://mystorage/input/photo1.jpeg"
+        req.object.image_url = claidConfig.s3_input_file_url
 
     output = req.output.dict(exclude_none=True)
     object = req.object.dict(exclude_none=True)

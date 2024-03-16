@@ -41,7 +41,7 @@ class ActionImg2ImgPhotoshootClaid(
     async def run_action(self, action_input: ClaidPhotoShootRequestModel) -> ClaidPhotoShootOutputModel:
         claidAi = get_calid_ai()
         try:
-            res: ClaidResponse = claidAi.photoshoot(action_input)
+            res: ClaidResponse = await claidAi.photoshoot(action_input)
         except ValidationError as e:
             logger.error(str(e))
         except Exception as e:

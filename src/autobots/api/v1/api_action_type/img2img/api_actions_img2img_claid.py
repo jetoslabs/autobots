@@ -1,5 +1,5 @@
 from uuid import UUID
-
+import json
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
@@ -63,15 +63,18 @@ async def run_action_img2img_bulk_edit_claid(
         action_input: ClaidRequestModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
-) -> ClaidResponse:
+) :
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         action = await UserActions(user=user_orm, db=db).get_action(action_id)
         bulk_edit_claid = ActionImg2BulkEditClaid(
             ClaidRequestModel.model_validate(action_input.model_dump(exclude_none=True))
         )
-        resp = await bulk_edit_claid.run_action(action_input.model_dump(exclude_none=True))
-        return resp
+        resp  = await bulk_edit_claid.run_action(action_input.model_dump(exclude_none=True))
+        response :ClaidResponse = resp.content
+        respose: ClaidResponse.model_validate(json.loads(resp.text))
+        return response
+
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(500)
