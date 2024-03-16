@@ -9,6 +9,7 @@ from src.autobots.conn.stable_diffusion.text2video.text2video_model import Text2
 from src.autobots.core.settings import SettingsProvider
 
 
+@pytest.mark.skip(reason="Paused Stable Diffusion")
 @pytest.mark.asyncio
 async def test_text2img_happy_path(set_test_settings):
     prompt = "Ultra real Sport shoes advertisement"
@@ -33,7 +34,7 @@ async def test_image_mixer_happy_path(set_test_settings):
     res: StableDiffusionRes = await st.image_mixer(req)
     assert (len(res.urls) >= 1 or res.fetch_url is not None)
 
-
+@pytest.mark.skip(reason="Paused Stable Diffusion")
 @pytest.mark.asyncio
 async def test_img2img_happy_path(set_test_settings):
     prompt = "a cat sitting on a bench"
@@ -46,6 +47,7 @@ async def test_img2img_happy_path(set_test_settings):
 
 
 # @pytest.mark.skip(reason="Stable Diffusion text 2 video api is broken")
+@pytest.mark.skip(reason="Paused Stable Diffusion")
 @pytest.mark.asyncio
 async def test_text2video_happy_path(set_test_settings):
     prompt = "Ultra real athlete running in urban environment TV quality"
