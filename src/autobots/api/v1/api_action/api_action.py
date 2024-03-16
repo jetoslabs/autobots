@@ -104,11 +104,12 @@ async def delete_action(
 async def run_action(
         id: str,
         input: Dict[str, Any],
+        action_result_id: str = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> Any:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input)
+    resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input, action_result_id)
     return resp
 
 
@@ -117,6 +118,7 @@ async def async_run_action(
         id: str,
         input: Dict[str, Any],
         background_tasks: BackgroundTasks,
+        action_result_id: str = None,
         webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db),
@@ -125,6 +127,6 @@ async def async_run_action(
     user_actions = UserActions(user_orm, db)
     action_doc = await user_actions.get_action(id)
     user_action_result = UserActionResult(user_orm, db)
-    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result, background_tasks, webhook)
+    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result, action_result_id, background_tasks, webhook)
     return action_result_doc
 

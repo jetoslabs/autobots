@@ -1,7 +1,6 @@
-from typing import Literal
+from typing import Literal, Iterable
 
-from openai.types.beta.threads.run_create_params import ToolAssistantToolsCode, ToolAssistantToolsRetrieval, \
-    ToolAssistantToolsFunction
+from openai.types.beta import AssistantToolParam
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 
 from src.autobots.conn.openai.openai_common_models import OpenaiExtraValues
@@ -13,8 +12,7 @@ class ThreadRunCreate(OpenaiExtraValues):
     instructions: str | None = None
     metadata: object | None = None
     model: str | None = None
-    tools: list[
-               ToolAssistantToolsCode | ToolAssistantToolsRetrieval | ToolAssistantToolsFunction] | None = None
+    tools: Iterable[AssistantToolParam] | None = None
 
 
 class ThreadRunRetrieve(OpenaiExtraValues):

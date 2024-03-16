@@ -7,7 +7,9 @@ from pymongo.database import Database
 from src.autobots.action.action.action_crud import ActionCRUD
 from src.autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
     ActionUpdate, ActionDocUpdate
-from src.autobots.action.action_type.action_factory import ActionFactory
+from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc
+from src.autobots.action.action_result.user_action_result import UserActionResult
+from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.user.user_orm_model import UserORM
 
@@ -17,6 +19,7 @@ class UserActions:
     def __init__(self, user: UserORM, db: Database):
         self.user = user
         self.user_id = str(user.id)
+        self.db = db
         self.action_crud = ActionCRUD(db)
 
     async def create_action(
@@ -88,11 +91,11 @@ class UserActions:
         action_docs = await self.action_crud.find(action_doc_find)
         if len(action_docs) != 1:
             raise HTTPException(405, "Action cannot be run")
-        resp = await ActionFactory.run_action(action_docs[0], input)
-        return resp
+        resp: RunActionObj = await ActionFactory.run_action(action_docs[0], input)
+        return resp.output_dict
 
     async def run_action_v1(
-            self, action_id: str, input: Dict[str, Any]
+            self, action_id: str, input: Dict[str, Any], action_result_id: str = None
     ) -> ActionDoc:
         if action_id == "":
             action_doc = ActionDoc(
@@ -106,13 +109,21 @@ class UserActions:
             raise HTTPException(405, "Action not found")
         action_doc = action_docs[0]
         action_doc.input = input
-        resp = await ActionFactory.run_action(action_doc, input)
-        action_doc.output = resp
+
+        if action_result_id is not None:
+            user_action_result = UserActionResult(self.user, self.db)
+            action_result_doc:  ActionResultDoc | None = await user_action_result.get_action_result(action_result_id)
+            if action_result_doc is None:
+                raise HTTPException(405, "Action Result not found")
+            # action_result_doc.result.input
+
+        resp: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        action_doc.output = resp.output_dict
         return action_doc
 
     @staticmethod
     async def run_action_doc(action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
         action_doc.input = input
-        resp = await ActionFactory.run_action(action_doc, input)
-        action_doc.output = resp
+        resp: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        action_doc.output = resp.output_dict
         return action_doc

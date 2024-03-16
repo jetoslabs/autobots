@@ -58,10 +58,14 @@ class UserActionGraphResult:
         return None
 
     async def update_action_graph_result(
-            self, action_result_id: str, action_update: ActionGraphResultUpdate
+            self, action_graph_result_id: str, action_graph_update: ActionGraphResultUpdate
     ) -> ActionGraphResultDoc:
         try:
-            event_result_doc_update = EventResultDocUpdate(id=action_result_id, user_id=self.user_id, **action_update.model_dump())
+            event_result_doc_update = EventResultDocUpdate(
+                id=action_graph_result_id,
+                user_id=self.user_id,
+                **action_graph_update.model_dump()
+            )
             event_result_doc = await self.event_result_crud.update_one(event_result_doc_update)
             action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
             return action_graph_result_doc

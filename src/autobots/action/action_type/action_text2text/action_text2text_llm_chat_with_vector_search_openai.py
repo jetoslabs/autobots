@@ -1,6 +1,6 @@
 from typing import Optional, Type
 
-from openai.types.chat import ChatCompletionUserMessageParam
+from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam
 from pydantic import BaseModel
 
 from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
@@ -71,6 +71,24 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
         ).hydrate(
             datastore_id=action_config.datastore_id
         )
+
+    @staticmethod
+    async def update_config_with_prev_IO(
+            curr_config: ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,
+            prev_input: TextObj | None = None,
+            prev_output: TextObjs | None = None,
+    ) -> ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig:
+        #     ChatCompletionUserMessageParam,
+        #     ChatCompletionAssistantMessageParam,
+        if not prev_input or not prev_output or prev_input.text == "" or len(prev_output.texts) == 0 :
+            return curr_config
+        updated_messages = (
+                curr_config.chat_req.messages +
+                [ChatCompletionUserMessageParam(role="user", content=prev_input.text)] +
+                [ChatCompletionAssistantMessageParam(role="assistant", content=prev_output_text_obj.text) for prev_output_text_obj in prev_output.texts]
+        )
+        curr_config.chat_req.messages = updated_messages
+        return curr_config
 
     async def run_action(self, action_input: TextObj) -> TextObjs | None:
         # text_objs = TextObjs(texts=[])

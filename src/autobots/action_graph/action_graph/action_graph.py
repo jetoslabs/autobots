@@ -43,6 +43,12 @@ class ActionGraph:
         else:
             # find and use Action Graph Result
             action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
+            # Change status back to processing
+            action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(status=EventResultStatus.processing)
+            action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
+                action_graph_result_id,
+                action_graph_result_update
+            )
 
         if background_tasks:
             background_tasks.add_task(

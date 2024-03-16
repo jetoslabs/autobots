@@ -5,7 +5,7 @@ import time
 from pydantic import ValidationError
 
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, DiscordJobsApiResponse, \
-    DiscordErrorResponse, DiscordImagineApiResponse
+    DiscordErrorResponse, DiscordImagineApiResponse, DiscordButtonJobResponse
 from loguru import logger
 from typing import Optional
 from pydantic import BaseModel, Field
@@ -45,7 +45,7 @@ async def imagineApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordEr
     response_json = response.json()
     try:
         if response_json["code"] != 200:
-            logger.error(f"Mid journey text2img error: {response_json['message']}")
+            logger.error(f"Mid journey text2img error: {response_json['error']}")
             err = DiscordErrorResponse.model_validate(response_json)
             return err
         else:
@@ -70,6 +70,51 @@ async def imagineApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordEr
     except ValidationError or TypeError:
         logger.error(f"Mid journey text2img validation error for response: {response_json}")
 
+async def buttonApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
+    useApiConfig = UseApiConfig()
+    url = useApiConfig.useapi_net_endpoint_url + 'v2/jobs/button'
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {useApiConfig.use_api_net_token}"
+    }
+    body = {
+        "jobid": f"{req.job_id}",
+        "button": f"{req.button}"
+    }
+
+    response = requests.request("POST", url, headers=headers, json=body)
+    if response.status_code != 200:
+        logger.error(f"Mid journey text2img error: {response.status_code}")
+
+    response_json = response.json()
+    try:
+        if response_json["code"] != 200:
+            logger.error(f"Mid journey text2img error in button api: {response_json['message']}")
+            err = DiscordErrorResponse.model_validate(response_json)
+            return err
+        else:
+            res = DiscordButtonJobResponse.model_validate(response_json)
+            retry_count = 0
+            while True:
+                job_res = await jobApi(res.jobid)
+                if job_res.code == 200 and job_res.status == 'completed':
+                    return job_res
+                else:
+                    retry_count += 1
+                    if retry_count >= 15:  # Maximum of 5 retries
+                        logger.error("Maximum retry limit reached")
+                        break  # Exit the loop if maximum retry limit is reached
+                    logger.warning(f"Retrying jobApi, attempt {retry_count}")
+                    time.sleep(15)
+
+            logger.error(f"Mid journey text2img error for job id: {res.jobid}")
+            response_json = {"error"}
+            err = DiscordErrorResponse(error="Mid Journey job fetch failed", code=500).dict()
+            return err
+
+    except ValidationError or TypeError:
+        logger.error(f"Mid journey text2img validation error for button api response: {response_json}")
 
 async def jobApi(jobId) -> DiscordJobsApiResponse | DiscordErrorResponse:
 
