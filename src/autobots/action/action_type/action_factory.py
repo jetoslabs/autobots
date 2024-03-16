@@ -122,10 +122,11 @@ class ActionFactory:
             prev_output = action.get_output_type().model_validate(action_doc.output)
         except Exception:
             logger.warning("Unable to gather prev_input or prev_output")
-        updated_config = await action.update_config_with_prev_IO(config, prev_input, prev_output)
 
+        updated_config = await action.update_config_with_prev_IO(config, prev_input, prev_output)
         input = action.get_input_type().model_validate(action_input_dict)
         output = await action(updated_config).run_action(input)
+
         return RunActionObj(
             config_dict=updated_config.model_dump(exclude_none=True),
             input_dict=input.model_dump(exclude_none=True),
@@ -182,6 +183,7 @@ class ActionFactory:
             # Run the action
             run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
             # Action is a success
+            # Update ActionDoc model config, input and output
             action_result_doc.status = EventResultStatus.success
             action_result_doc.error_message = None
             action_result_doc.result.config = run_action_obj.config_dict

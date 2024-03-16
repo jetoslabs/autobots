@@ -131,6 +131,8 @@ jobs:
         run: >
           ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i ./lightsail.pem $LIGHTSAIL_USER@$LIGHTSAIL_IP -p 22 
           docker run -d --name autobots -p 80:80 
+          --memory=5g 
+          --memory-swap=10g
           --net-alias autobots 
           --network autobots-network 
           -e ENV=$ENV

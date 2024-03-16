@@ -3,6 +3,7 @@ from ddtrace import patch
 from fastapi import FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from src.autobots import SettingsProvider
 from src.autobots.api.ui import ui
@@ -13,6 +14,8 @@ from src.autobots.subscription.api_usage_dispatch import usage_info_dispatch
 
 patch(fastapi=True)
 app = FastAPI(lifespan=lifespan, **FastAPIDesc().model_dump())
+
+app.mount("/static", StaticFiles(directory="src/autobots/ui/static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,

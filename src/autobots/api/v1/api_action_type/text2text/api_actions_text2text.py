@@ -14,6 +14,7 @@ from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_
 from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ReadUrlConfig
 from src.autobots.action.action_type.action_text2text.action_text2text_search_map import SearchMapsConfig
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import SearchWebConfig
+from src.autobots.action.action_type.action_text2text.action_text2text_user_input import UserInputParams
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
@@ -132,3 +133,28 @@ async def create_action_text2text_search_maps(
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(500)
+
+
+class ActionCreateText2TextUserInput(ActionCreate):
+    type: ActionType = ActionType.text2text_user_input
+    config: UserInputParams
+
+
+@router.post("/text2text/user_input")
+async def create_action_text2text_user_input(
+        action_create: ActionCreateText2TextUserInput,
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+        db: Database = Depends(get_mongo_db)
+) -> ActionDoc:
+    try:
+        user_orm = UserORM(id=UUID(user_res.user.id))
+        action_doc = await UserActions(user_orm, db).create_action(
+            ActionCreate(**action_create.model_dump(exclude_none=True))
+        )
+        return action_doc
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(500)
+
