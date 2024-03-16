@@ -58,6 +58,12 @@ class ActionText2textUserInput(IAction[UserInputParams, UserInputParams, TextObj
                 text_objs.texts.append(TextObj(text=f"file_name: {file_name}\nfile_data: {file_text}"))
         return text_objs
 
+    @staticmethod
+    async def update_config(config: TextObjs, config_update: UserInputParams) -> TextObjs:
+        text_objs = await ActionText2textUserInput.create_config(config_update)
+        return text_objs
+
+
     async def run_action(self, action_input: UserInputParams) -> TextObjs:
         text_objs = self.action_config
         if action_input.text:
