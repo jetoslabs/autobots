@@ -4,7 +4,9 @@ from src.autobots.action.action_type.action_audio2text.action_audio2text_transla
     ActionAudio2TextTranslationOpenai
 from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
+from src.autobots.action.action_type.action_img2img.action_img2img_bulkedit_claid import ActionImg2BulkEditClaid
 from src.autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
+from src.autobots.action.action_type.action_img2img.action_img2img_photoshoot_claid import ActionImg2ImgPhotoshootClaid
 from src.autobots.action.action_type.action_img2img.action_img2img_variation_openai import ActionImg2ImgVariationOpenai
 from src.autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
 from src.autobots.action.action_type.action_text2img.action_text2img_dalle_openai_v2 import ActionGenImageDalleOpenAiV2
@@ -42,6 +44,9 @@ ACTION_MAP_COPY = {
     ActionType.image_mixer_stable_diffusion: ActionImageMixerStableDiffusion,
     ActionType.img2img_edit_openai: ActionImg2ImgEditOpenai,
     ActionType.img2img_variation_openai: ActionImg2ImgVariationOpenai,
+    ActionType.img2img_bulk_edit_claid: ActionImg2BulkEditClaid,
+    ActionType.img2img_photoshoot_claid: ActionImg2ImgPhotoshootClaid,
+
     # text2video
     ActionType.text2video_stable_diffusion: ActionText2VideoStableDiffusion,
     ActionType.text2video_search_video: ActionText2VideoSearchVideo,
