@@ -63,7 +63,6 @@ class ActionText2textUserInput(IAction[UserInputParams, UserInputParams, TextObj
         text_objs = await ActionText2textUserInput.create_config(config_update)
         return text_objs
 
-
     async def run_action(self, action_input: UserInputParams) -> TextObjs:
         text_objs = self.action_config
         if action_input.text:
