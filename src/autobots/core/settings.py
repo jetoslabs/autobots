@@ -72,6 +72,10 @@ class Settings(BaseSettings):
     DISCORD_CHANNEL_ID: str
     USEAPI_NET_TOKEN: str
     USEAPI_NET_END_POINT_URL: str
+    CLAID_API_KEY: str
+    CLAID_INPUT_FOLDER_S3_URI: str
+    CLAID_OUTPUT_FOLDER_S3_URI: str
+    CLAID_INPUT_FILE_S3_URI: str
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
