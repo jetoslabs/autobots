@@ -3,18 +3,23 @@ from typing import Union, Literal, Dict, List, Optional
 from pydantic import BaseModel
 
 
+class Intensity(BaseModel):
+    intensity: int = 0
+class Stitching(BaseModel):
+    stitching: bool = False
 class Adjustments(BaseModel):
-    hdr: int = 0
+    hdr: Union[int, Intensity, Stitching] = 0
     exposure: int = 1
     saturation: int = 1
     contrast: int = 1
     sharpness: int = 1
 
+class Crop(BaseModel):
+    crop: Literal["center", "smart"] = "smart"
 class Resizing(BaseModel):
     width: str = None
     height: str = None
-    fit: Literal["bounds", "cover", "canvas", "outpaint", "crop"] = "bounds"
-    crop: str = None
+    fit: Union[Literal["bounds", "cover", "canvas", "outpaint"], Crop] = "bounds"
 
 
 class BackgroundRemove(BaseModel):
@@ -28,13 +33,15 @@ class BackgroundBlur(BaseModel):
     level: Literal["low", "medium", "high"] = "low"
 
 class Background(BaseModel):
-    remove: BackgroundRemove = None
-    blur: BackgroundBlur = None
+    remove: Union[bool, BackgroundRemove] = None
+    blur: Union[bool,BackgroundBlur] = None
     color: str = None
 
-
-class Operations(BaseModel):
+class Restorations(BaseModel):
     decompress: str = None
+    upscale: str = None
+class Operations(BaseModel):
+    restorations: Restorations = None
     upscale: str = None
     resizing: Resizing = None
     adjustments: Adjustments = None
