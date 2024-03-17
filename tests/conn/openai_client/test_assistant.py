@@ -1,7 +1,7 @@
 import time
 
 import pytest
-from openai.types.beta import assistant_create_params
+from openai.types.beta import CodeInterpreterToolParam, RetrievalToolParam
 
 from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantCreate, AssistantDelete
 
@@ -27,8 +27,8 @@ async def test_assistant_happy_path(set_test_settings):
             instructions="Generate sql query only",
             file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
             tools=[
-                assistant_create_params.ToolAssistantToolsCode(type="code_interpreter"),
-                assistant_create_params.ToolAssistantToolsRetrieval(type="retrieval")
+                CodeInterpreterToolParam(type="code_interpreter"),
+                RetrievalToolParam(type="retrieval")
             ]
         )
         assistant = await assistant_client.create(assistant_create)
