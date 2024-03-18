@@ -34,6 +34,26 @@ class UnstructuredIO:
             api_key_auth=unstructured_api_key,
         )
 
+    async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:
+        strings = []
+        try:
+            req = await self._build_PartitionParameters(file, chunk_size=chunk_size)
+            res: PartitionResponse | None = await self._get_PartitionResponse(file, req)
+            elements = await self.get_file_partition_elements(res)
+
+            for element in elements:
+                strings.append(element.text)
+
+            if chunk_size == 0:
+                # return full text if chunk_size is 0
+                string = "".join(strings)
+                return [string]
+            else:
+                return strings
+        except Exception as e:
+            logger.error(str(e))
+        return strings
+
     async def _build_PartitionParameters(self, file: UploadFile, chunk_size: int = 500) -> shared.PartitionParameters:
         req = shared.PartitionParameters(
             # Note that this currently only supports a single file
@@ -63,9 +83,9 @@ class UnstructuredIO:
         return res
         # res_str = ("\n\n".join([str(el) for el in res.elements]))
 
-    async def get_file_partition_elements(self, res: PartitionResponse | None) -> List[PartitionResponseElement]:
+    async def get_file_partition_elements(self, partition_response: PartitionResponse | None) -> List[PartitionResponseElement]:
         elements = []
-        for element_dict in res.elements:
+        for element_dict in partition_response.elements:
             try:
                 element = PartitionResponseElement.model_validate(element_dict)
                 elements.append(element)
@@ -74,15 +94,6 @@ class UnstructuredIO:
             except Exception as e:
                 logger.error(str(e))
         return elements
-
-    async def get_file_chunks(self, file: UploadFile, chunk_size: int = 500) -> List[str]:
-        req = await self._build_PartitionParameters(file, chunk_size=chunk_size)
-        res: PartitionResponse | None = await self._get_PartitionResponse(file, req)
-        elements = await self.get_file_partition_elements(res)
-        strings = []
-        for element in elements:
-            strings.append(element.text)
-        return strings
 
 
 @lru_cache
