@@ -31,8 +31,8 @@ async def get_jwt_payload(request: Request) -> Optional[JwtPayload]:
     jwt_payload = None
     try:
         token = None
-        if request and "Authorization" in dict(request.headers).keys():
-            access_token = str(request.headers["Authorization"])
+        if request and "authorization" in dict(request.headers).keys():
+            access_token = str(request.headers["authorization"])
             token = access_token.split(" ")[1].removesuffix("\"")
         elif request and "cookie" in dict(request.headers).keys():
             access_token = str(request.headers["cookie"])
