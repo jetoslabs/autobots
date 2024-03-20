@@ -14,7 +14,7 @@ class Scheduler():
     _scheduler = AsyncIOScheduler()
 
     @staticmethod
-    def add_scheduled_action_graph(
+    def add_schedule(
             func: Any,
             trigger: Trigger,
             args: list | tuple = None,

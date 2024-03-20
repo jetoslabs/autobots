@@ -18,7 +18,7 @@ class MockAction():
 async def test_cron_trigger_happy_path(set_test_settings):
     Scheduler.start()
     text_obj = TextObj(text=f"xyz+{time.time()}")
-    job = Scheduler.add_scheduled_action_graph(
+    job = Scheduler.add_schedule(
         MockAction().run_async,
         # trigger=IntervalTrigger(seconds=300),
         trigger=CronTrigger(minute="*/2"),
