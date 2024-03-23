@@ -1,4 +1,5 @@
 from typing import List, Optional
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, BackgroundTasks
 from pymongo.database import Database
@@ -100,5 +101,31 @@ class UserActionGraphs:
             action_graph_result_id=action_graph_result_id,
             background_tasks=background_tasks,
             webhook=webhook
+        )
+        return resp
+
+    @staticmethod
+    async def run_scheduled_action_graph(
+            action_graph_id: str,
+            user_id: str,
+            input: TextObj,
+            background_tasks: BackgroundTasks = BackgroundTasks(),
+            action_graph_result_id: Optional[str] = None,
+            webhook: Webhook | None = None,
+            db: Database = next(get_mongo_db())
+    ) -> ActionGraphResultDoc | None:
+        user_orm = UserORM(id=UUID(user_id))
+        user_actions = UserActions(user_orm, db)
+        user_actions_market = UserActionsMarket(user_orm, db)
+        user_action_graph_result = UserActionGraphResult(user_orm, db)
+        resp = await UserActionGraphs(user=user_orm, db=db).run_in_background(
+            user_actions,
+            user_actions_market,
+            user_action_graph_result,
+            action_graph_id,
+            input,
+            action_graph_result_id,
+            background_tasks,
+            webhook
         )
         return resp
