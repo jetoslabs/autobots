@@ -26,4 +26,4 @@ class CronTrigger(BaseModel):
     jitter: str | None = None
 
 
-Trigger = Union[CronTrigger, IntervalTrigger]
+Trigger = Union[IntervalTrigger, CronTrigger]

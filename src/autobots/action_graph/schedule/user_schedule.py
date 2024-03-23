@@ -81,7 +81,7 @@ class UserSchedule:
                 if schedule_update.user_input:
                     modify_schedule_dict["kwargs"]["user_input"] = schedule_update.user_input
 
-            modified_job = Schedule().modify_schedule(job_id=existing_job.id, **modify_schedule_dict) # noqa F841
+            modified_job = Schedule().modify_schedule(job_id=existing_job.id, **modify_schedule_dict)  # noqa F841
 
             schedule_doc_update = ScheduleDocUpdate(
                 user_id=self.user_id,
@@ -94,7 +94,7 @@ class UserSchedule:
             logger.error(str(e))
             raise
 
-
-
-
-
+    async def delete_user_schedule(self, schedule_id: str) -> int:
+        schedule_doc_find = ScheduleDocFind(user_id=self.user_id, id=schedule_id)
+        delete_result = await self.schedule_crud.delete_many(schedule_doc_find)
+        return delete_result.deleted_count
