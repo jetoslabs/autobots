@@ -9,7 +9,7 @@ class LoguruHandler(logging.Handler):
         super().__init__()
         # Replace the default Python root logger with Loguru
         logging.root.handlers = [logging.NullHandler()]
-        logging.root.setLevel(logging.DEBUG)
+        logging.root.setLevel(logging.INFO)
         logging.propagate = False  # Disable propagation to prevent duplicate logs
 
     def emit(self, record):
