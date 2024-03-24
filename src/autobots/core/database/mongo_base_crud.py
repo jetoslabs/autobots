@@ -1,5 +1,6 @@
 from typing import TypeVar, Generic, List, Type
 
+import pymongo
 from bson import ObjectId
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -40,7 +41,7 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         if len(find_params) == 0:
             return []
 
-        cursor = self.document.find(find_params).sort("created_at", -1)
+        cursor = self.document.find(find_params).sort([("updated_at", pymongo.DESCENDING), ("created_at", pymongo.DESCENDING)])
         docs = []
 
         skipped = 0
