@@ -14,6 +14,8 @@ from src.autobots.core.database.mongo_base import get_mongo_client
 
 
 class Schedule:
+    JOBSTORE = "default" # 'default' is the default jobstore, if env var, then remove all jobstores before adding this one
+    EXECUTOR = "default"
     _scheduler: AsyncIOScheduler | None = None
 
     def create_schedule(
@@ -28,8 +30,8 @@ class Schedule:
             coalesce: bool = undefined,
             max_instances: int = undefined,
             next_run_time: datetime = undefined,
-            jobstore: str = 'default',
-            executor: str = 'default',
+            jobstore: str = JOBSTORE,
+            executor: str = EXECUTOR,
             replace_existing: bool = False,
     ) -> Job:
         job = Schedule._scheduler.add_job(
@@ -77,9 +79,10 @@ class Schedule:
         if Schedule._scheduler is None:
             try:
                 jobstores = {
-                    'default': MongoDBJobStore(
+                    # 'default' is the default jobstore, if env var, then remove all jobstores before adding this one
+                    Schedule.JOBSTORE: MongoDBJobStore(
                         database=SettingsProvider().sget().MONGO_DATABASE,
-                        collection='apscheduler_jobs',
+                        collection=SettingsProvider().sget().SCHEDULE_JOBSTORE_MONGO_DB_COLLECTION_NAME,
                         client=get_mongo_client(),
                     )
                 }

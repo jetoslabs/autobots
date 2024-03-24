@@ -66,6 +66,8 @@ class Settings(BaseSettings):
 
     DATASTORE_IDENTIFIER: str = "datastore"
 
+    SCHEDULE_JOBSTORE_MONGO_DB_COLLECTION_NAME: str = "_APSCHEDULER_JOBS"
+
 
     DISCORD_SERVER_ID: str
     DISCORD_TOKEN: str
