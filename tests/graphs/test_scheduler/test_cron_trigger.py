@@ -61,5 +61,5 @@ async def test_cron_trigger_happy_path(set_test_settings):
         assert len(jobs) == 0
 
     finally:
-        Schedule.stop_scheduler()
+        # Schedule.stop_scheduler()
         assert True
