@@ -28,7 +28,7 @@ class UserSchedule:
                     "action_graph_id": schedule_create.action_graph_id,
                     "user_id": self.user_id,
                     "input": schedule_create.user_input,
-                    "db": self.db
+                    # "db": self.db
                 },
                 trigger=schedule_create.trigger,
                 name=schedule_create.name,
