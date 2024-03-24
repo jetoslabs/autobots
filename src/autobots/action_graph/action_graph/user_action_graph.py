@@ -109,7 +109,7 @@ class UserActionGraphs:
             action_graph_id: str,
             user_id: str,
             input: TextObj,
-            background_tasks: BackgroundTasks = BackgroundTasks(),
+            # background_tasks: BackgroundTasks = None, # Using Background thread will crash app
             action_graph_result_id: Optional[str] = None,
             webhook: Webhook | None = None,
             db: Database = next(get_mongo_db())
@@ -119,13 +119,13 @@ class UserActionGraphs:
         user_actions_market = UserActionsMarket(user_orm, db)
         user_action_graph_result = UserActionGraphResult(user_orm, db)
         resp = await UserActionGraphs(user=user_orm, db=db).run_in_background(
-            user_actions,
-            user_actions_market,
-            user_action_graph_result,
-            action_graph_id,
-            input,
-            action_graph_result_id,
-            background_tasks,
-            webhook
+            user_actions=user_actions,
+            user_actions_market=user_actions_market,
+            user_action_graph_result=user_action_graph_result,
+            action_graph_id=action_graph_id,
+            input=input,
+            action_graph_result_id=action_graph_result_id,
+            # background_tasks,
+            webhook=webhook
         )
         return resp
