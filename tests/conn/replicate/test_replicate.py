@@ -1,5 +1,6 @@
 import pytest
 
+from src.autobots.conn.replicate.virtual_try_on.virtual_try_on import VirtualTryOnDiffusionInParams
 from src.autobots.conn.replicate.replicate import get_replicate
 from src.autobots.conn.replicate.yan_ops.yan_ops_face_swap import YanOpsFaceSwapParams
 
@@ -25,3 +26,12 @@ async def test_face_swap_happy_path(set_test_settings):
     output = await get_replicate().yan_ops_face_swap.run(params)
     assert output
     assert output.code == 200
+
+@pytest.mark.asyncio
+async def test_virtual_try_on_happy_path(set_test_settings):
+    params = VirtualTryOnDiffusionInParams(
+        model_image="https://raw.githubusercontent.com/viktorfa/oot_diffusion/main/oot_diffusion/assets/model_1.png",
+        garment_image="https://replicate.delivery/pbxt/KTgyzr0WNtcgwN82xEEcc3zoydD8ooXPzMHC18fKZSWu9W5I/blue_jacket.webp"
+    )
+    output = await get_replicate().virtual_try_on.run(params)
+    assert len(output.urls) > 0
