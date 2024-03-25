@@ -66,12 +66,18 @@ class Settings(BaseSettings):
 
     DATASTORE_IDENTIFIER: str = "datastore"
 
+    SCHEDULE_JOBSTORE_MONGO_DB_COLLECTION_NAME: str = "_APSCHEDULER_JOBS"
+
 
     DISCORD_SERVER_ID: str
     DISCORD_TOKEN: str
     DISCORD_CHANNEL_ID: str
     USEAPI_NET_TOKEN: str
     USEAPI_NET_END_POINT_URL: str
+    CLAID_API_KEY: str
+    CLAID_INPUT_FOLDER_S3_URI: str
+    CLAID_OUTPUT_FOLDER_S3_URI: str
+    CLAID_INPUT_FILE_S3_URI: str
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
@@ -83,6 +89,7 @@ class Settings(BaseSettings):
     API_ACTION_RESULTS: str = "/action_results"
     API_ACTION_GRAPHS: str = "/action_graphs"
     API_ACTION_GRAPHS_RESULTS: str = "/action_graphs_results"
+    API_SCHEDULES: str = "/schedules"
     API_DATASTORE: str = "/datastore"
     API_OPENAI_FILES: str = "/openai_files"
     API_ACTION_CHATS: str = "/action_chats"

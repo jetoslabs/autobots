@@ -28,6 +28,8 @@ class ActionType(str, Enum):
     img2img_virtual_try_on = "img2img_virtual_try_on"
     img2img_edit_openai = "img2img_edit_openai"
     img2img_variation_openai = "img2img_variation_openai"
+    img2img_bulk_edit_claid = "img2img_bulk_edit_claid"
+    img2img_photoshoot_claid = "img2img_photoshoot_claid"
 
     # text2video
     text2video_stable_diffusion = "text2video_stable_diffusion"

@@ -5,7 +5,7 @@ from fastapi import BackgroundTasks, HTTPException
 from loguru import logger
 from pydantic import BaseModel
 
-from src.autobots.action.action.action_doc_model import ActionDoc
+from src.autobots.action.action.action_doc_model import ActionDoc, ActionResult
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
     ActionResultUpdate
@@ -189,6 +189,10 @@ class ActionFactory:
             action_result_doc.result.config = run_action_obj.config_dict
             action_result_doc.result.input = run_action_obj.input_dict
             action_result_doc.result.output = run_action_obj.output_dict
+            if action_result_doc.result.results is None:
+                action_result_doc.result.results = []
+            action_result_doc.result.results.append(
+                ActionResult(input=run_action_obj.input_dict, output=run_action_obj.output_dict))
             logger.bind(action_result_doc=action_result_doc).info("Action run success")
         except Exception as e:
             # Action resulted in an error

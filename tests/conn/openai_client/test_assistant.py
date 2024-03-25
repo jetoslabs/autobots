@@ -25,7 +25,7 @@ async def test_assistant_happy_path(set_test_settings):
             name="test_assistant",
             model="gpt-4-turbo-preview",
             instructions="Generate sql query only",
-            file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
+            # file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
             tools=[
                 CodeInterpreterToolParam(type="code_interpreter"),
                 RetrievalToolParam(type="retrieval")

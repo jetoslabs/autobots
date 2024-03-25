@@ -4,7 +4,7 @@ from src.autobots import SettingsProvider
 from src.autobots.api.v1.api_action_type.audio2text import api_actions_audio2text_transcription_openai
 from src.autobots.api.v1.api_action_type.audio2text import api_actions_audio2text_translation_openai
 from src.autobots.api.v1.api_action_type.img2img import api_actions_img2img_edit_openai, image_mixer_stable_diffusion, \
-    api_actions_img2img_variation_openai, api_actions_img2img_virtual_try_on
+    api_actions_img2img_variation_openai, api_actions_img2img_virtual_try_on, api_actions_img2img_claid
 from src.autobots.api.v1.api_action_type.multimodal import api_actions_multimodal
 from src.autobots.api.v1.api_action_type.text2audio import api_actions_text2audio_speech_openai
 from src.autobots.api.v1.api_action_type.text2img import api_actions_text2img_stable_diffusion
@@ -29,6 +29,7 @@ router.include_router(api_actions_text2img_midjourney.router, tags=[f"{prefix}/t
 router.include_router(image_mixer_stable_diffusion.router, tags=[f"{prefix}/img2img"])
 router.include_router(api_actions_img2img_edit_openai.router, tags=[f"{prefix}/img2img"])
 router.include_router(api_actions_img2img_variation_openai.router, tags=[f"{prefix}/img2img"])
+router.include_router(api_actions_img2img_claid.router, tags=[f"{prefix}/img2img"])
 router.include_router(api_actions_img2img_virtual_try_on.router, tags=[f"{prefix}/img2img"])
 # text2video
 router.include_router(api_actions_text2video_stable_diffusion.router, tags=[f"{prefix}/text2video"])

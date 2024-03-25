@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -41,6 +41,11 @@ class ActionDocUpdate(ActionUpdate):
     user_id: str
 
 
+class ActionResult(BaseModel):
+    input: Optional[Dict[str, Any]] = None
+    output: Optional[Dict[str, Any]] = None
+
+
 class ActionCreate(BaseModel):
     """
     base class to be utilized by concrete action types to create action
@@ -51,6 +56,7 @@ class ActionCreate(BaseModel):
     user_manual: str = ""
     type: ActionType
     config: Dict[str, Any] = {}
+    results: List[ActionResult] | None = []
     input: Optional[Dict[str, Any]] = None
     output: Optional[Dict[str, Any]] = None
     is_published: bool = False

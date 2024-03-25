@@ -65,7 +65,7 @@ class ActionCRUD:
                 action_doc = ActionDoc.model_validate(doc)
                 action_docs.append(action_doc)
             except Exception as e:
-                logger.bind(action_doc=action_doc).error(f"Error while parsing action doc: {e}, skipping to next")
+                logger.bind(action_doc=doc).error(f"Error while parsing action doc: {e}, skipping to next")
 
         return action_docs
 
