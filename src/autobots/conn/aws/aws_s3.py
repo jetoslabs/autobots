@@ -107,17 +107,28 @@ def get_aws_s3(
         region_name: str,
         aws_access_key_id: str,
         aws_secret_access_key: str,
-        bucket_name: str
+        bucket_name: str,
+        object_prefix: str = ""
 ) -> AwsS3:
     return AwsS3(
         region_name=region_name,
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
-        bucket_name=bucket_name
+        bucket_name=bucket_name,
+        object_prefix=object_prefix
     )
 
 @lru_cache
+def get_s3_for_image_upload(settings: Settings = SettingsProvider.sget(), object_prefix: str = "") -> AwsS3:
+
+    s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
+                    settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME,
+                    object_prefix)
+    return s3
+
+@lru_cache
 def get_public_s3(settings: Settings = SettingsProvider.sget()) -> AwsS3:
+
     s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
                     settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME)
     return s3

@@ -1,3 +1,5 @@
+import uuid
+from io import BytesIO
 from typing import Annotated, List
 from uuid import UUID
 
@@ -16,6 +18,7 @@ from src.autobots.datastore.datastore_meta_doc_model import DatastoreMetaDoc
 from src.autobots.datastore.datastore_result.datastore_result_doc_model import DatastoreResultDoc
 from src.autobots.datastore.user_datastore import UserDatastore
 from src.autobots.user.user_orm_model import UserORM
+from src.autobots.conn.aws.aws_s3 import get_s3_for_image_upload
 
 router = APIRouter(prefix=SettingsProvider.sget().API_DATASTORE, tags=[SettingsProvider.sget().API_DATASTORE])
 
@@ -100,6 +103,27 @@ async def upload_files(
         logger.error(str(e))
         raise HTTPException(500, "Error while storing files in datastore")
 
+@router.post("/{id}/store_image_to_s3")
+async def upload_image_files_to_s3(
+        files: Annotated[List[UploadFile], File(description="file as UploadFile")],
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token)
+) -> List[HttpUrl]:
+    try:
+        user = UserORM(id=UUID(user_res.user.id))
+        random_uuid = uuid.uuid4()
+        s3 = get_s3_for_image_upload(object_prefix=f'images/claid/{user.id}/{random_uuid}')
+
+        result = []
+        for file in files:
+            # Convert BinaryIO to BytesIO
+            bytes_io = BytesIO(await file.read())
+            object_url = s3.put_file_obj(file_obj=bytes_io, filename=file.filename)
+            result.append(object_url)
+        return result
+
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(500, "Error while storing files in datastore")
 
 @router.post("/{id}/store_urls")
 async def store_urls(
