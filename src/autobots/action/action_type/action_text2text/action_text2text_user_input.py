@@ -12,7 +12,7 @@ from src.autobots.action.action_type.action_types import ActionType
 
 class FileParams(BaseModel):
     filename: str
-    content_base64: str
+    content: str
 
 
 class UserInputParams(BaseModel):
@@ -54,7 +54,8 @@ class ActionText2textUserInput(IAction[UserInputParams, UserInputParams, TextObj
         if config_create.files:
             for file in config_create.files:
                 file_name = file.filename
-                file_text = await ActionText2textUserInput.b64_decode(file.content_base64)
+                # file_text = await ActionText2textUserInput.b64_decode(file.content_base64)
+                file_text = file.content
                 text_objs.texts.append(TextObj(text=f"file_name: {file_name}\nfile_data: {file_text}"))
         return text_objs
 
@@ -70,7 +71,8 @@ class ActionText2textUserInput(IAction[UserInputParams, UserInputParams, TextObj
         if action_input.files:
             for file in action_input.files:
                 file_name = file.filename
-                file_text = await ActionText2textUserInput.b64_decode(file.content_base64)
+                # file_text = await ActionText2textUserInput.b64_decode(file.content_base64)
+                file_text = file.content
                 text_objs.texts.append(TextObj(text=f"file_name: {file_name}\nfile_data: {file_text}"))
         return text_objs
 
