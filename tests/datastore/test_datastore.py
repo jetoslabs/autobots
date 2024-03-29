@@ -5,7 +5,7 @@ from fastapi import UploadFile
 
 from src.autobots.conn.aws.s3 import get_s3
 from src.autobots.conn.pinecone.pinecone import get_pinecone
-from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
+from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io, PartitionParametersParams
 from src.autobots.datastore.datastore import Datastore
 
 
@@ -67,7 +67,13 @@ async def test_put_files_happy_path(set_test_settings):
     try:
         with open(filename, mode='rb') as file:
             upload_file = UploadFile(filename=filename, file=file)
-            await datastore.put_files([upload_file], chunk_size=50)
+            partition_parameters_params = PartitionParametersParams(
+                combine_under_n_chars=50,
+                strategy="hi_res",
+                hi_res_model_name="yolox_quantized",
+                pdf_infer_table_structure=True
+            )
+            await datastore.put_files([upload_file], partition_parameters_params)
 
         results: List[str] = await datastore.search(query, 2)
 

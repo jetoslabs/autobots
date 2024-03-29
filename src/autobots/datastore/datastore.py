@@ -13,7 +13,7 @@ from src.autobots.conn.aws.s3 import S3
 from src.autobots.conn.pinecone.pinecone import Pinecone
 from src.autobots.conn.selenium.selenium import get_selenium, Selenium
 from src.autobots.core.settings import SettingsProvider
-from src.autobots.conn.unstructured_io.unstructured_io import UnstructuredIO
+from src.autobots.conn.unstructured_io.unstructured_io import UnstructuredIO, PartitionParametersParams
 from src.autobots.core.utils import gen_hash, gen_random_str
 from src.autobots.datastore.data_provider import DataProvider
 from src.autobots.event_result.event_result_model import EventResultStatus
@@ -104,10 +104,10 @@ class Datastore:
             result.append(DatastoreResult(resource=data, status=EventResultStatus.error))
         return result
 
-    async def put_files(self, files: List[UploadFile], chunk_size: int = 500) -> List[DatastoreResult]:
+    async def put_files(self, files: List[UploadFile], partition_parameters_params: PartitionParametersParams) -> List[DatastoreResult]:
         result = []
         for file in files:
-            datastore_result = await self.put_file(file, chunk_size)
+            datastore_result = await self.put_file(file, partition_parameters_params)
             result.append(datastore_result)
             # try:
             #     logger.debug(f"Processing file: {file.filename}")
@@ -121,11 +121,11 @@ class Datastore:
         return result
 
     @retry(exceptions=Exception, tries=3, delay=30)
-    async def put_file(self, file: UploadFile, chunk_size: int = 500) -> DatastoreResult:
+    async def put_file(self, file: UploadFile, partition_parameters_params: PartitionParametersParams) -> DatastoreResult:
         datastore_result: DatastoreResult
         try:
             logger.debug(f"Processing file: {file.filename}")
-            file_chunks: List[str] = await self.unstructured.get_file_chunks(file, chunk_size=chunk_size)
+            file_chunks: List[str] = await self.unstructured.get_file_chunks(file, partition_parameters_params)
             logger.debug(f"Total chunks in file: {file.filename} is {len(file_chunks)}")
             await self._put_file_chunks(file, file_chunks)
             datastore_result = DatastoreResult(resource=file.filename, status=EventResultStatus.success)
@@ -137,8 +137,8 @@ class Datastore:
 
     async def put_urls(self,
                        urls: List[HttpUrl],
+                       partition_parameters_params: PartitionParametersParams,
                        chunk_func: Callable[[str], AsyncGenerator[str, None]] = DataProvider.read_data_line_by_line,
-                       chunk_token_size: int = 512
                        ) -> List[DatastoreResult]:
         result = []
         # create new temp directory
@@ -160,8 +160,10 @@ class Datastore:
                     file.write(bytes(html_data, encoding='utf-8'))
                 # put file in datastore
                 with open(full_path_name, "rb") as file:
-                    await self.put_files(files=[UploadFile(filename=full_path_name, file=file)],
-                                         chunk_size=chunk_token_size)
+                    await self.put_files(
+                        files=[UploadFile(filename=full_path_name, file=file)],
+                        partition_parameters_params=partition_parameters_params
+                    )
                 result.append(DatastoreResult(resource=str(url), status=EventResultStatus.success))
             except Exception as e:
                 logger.error(f"Error: processing URL: {str(url)}, error: {str(e)}")
