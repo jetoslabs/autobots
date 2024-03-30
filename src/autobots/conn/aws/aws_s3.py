@@ -30,54 +30,12 @@ class AwsS3:
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key
         )
-        self.s3 = s3
+        # self.s3 = s3
         self.object_prefix = f"{object_prefix}/" if object_prefix != "" else object_prefix
         self.bucket = s3.Bucket(bucket_name)
 
     def set_object_prefix(self, object_prefix: str) -> None:
         self.object_prefix = object_prefix
-
-    async def upload_file(self, filename: str, file_path: str) -> bool:
-        key = f"{self.object_prefix}{filename}"
-        try:
-            self.s3.Object(self.bucket.name, key).upload_file(file_path)
-            return True
-        except Exception as e:
-            logger.error(str(e))
-        return False
-
-    async def download_file(self, filename: str, download_path: str) -> bool:
-        key = f"{self.object_prefix}{filename}"
-        download_path = f"{download_path}/{key}"
-        try:
-            self.s3.Object(self.bucket.name, key).download_file(download_path)
-        except Exception as e:
-            logger.error(str(e))
-        return False
-
-    async def upload_fileobj(self, filename: str, fileobj: IO | StreamingBody | StreamingBody) -> bool:
-        """
-        Uploads any file type
-        """
-        key = f"{self.object_prefix}{filename}"
-        try:
-            self.s3.Object(self.bucket.name, key).upload_fileobj(fileobj)
-            return True
-        except Exception as e:
-            logger.error(str(e))
-        return False
-
-    async def download_fileobj(self, filename: str, fileobj: IO | StreamingBody | StreamingBody) -> bool:
-        """
-        Downloads any file type
-        """
-        key = f"{self.object_prefix}{filename}"
-        try:
-            self.s3.Object(self.bucket.name, key).download_fileobj(fileobj)
-            return True
-        except Exception as e:
-            logger.error(str(e))
-        return False
 
     async def put(self, data: str, filename: str) -> int:
         object_path = self.object_prefix + filename
@@ -90,12 +48,41 @@ class AwsS3:
         return -1
 
     async def put_file_obj(self, file_obj: BytesIO, filename: str) -> HttpUrl:
+        """ TO BE DEPRECATED, use put_file_obj_v1 instead """
         object_path = self.object_prefix + filename
         try:
             length = len(file_obj.getvalue())
             self.bucket.upload_fileobj(file_obj, object_path)
             object_url = await self.get_object_url(object_path)
             logger.debug(f"File written to s3, filename: {object_url}, size: {length}")
+            return object_url
+        except Exception as e:
+            logger.error(str(e))
+        return ""
+
+    async def upload_fileobj(self, file_obj: IO | StreamingBody | StreamingBody, filename: str) -> HttpUrl:
+        """
+        Uploads any file type
+        """
+        object_path = self.object_prefix + filename
+        try:
+            self.bucket.upload_fileobj(file_obj, object_path)
+            object_url = await self.get_object_url(object_path)
+            logger.debug(f"Fileobj written to s3, filename: {object_url}")
+            return object_url
+        except Exception as e:
+            logger.error(str(e))
+        return ""
+
+    async def download_fileobj(self, filename: str, fileobj: IO | StreamingBody | StreamingBody) -> HttpUrl:
+        """
+        Downloads any file type
+        """
+        object_path = self.object_prefix + filename
+        try:
+            self.bucket.download_fileobj(object_path, fileobj)
+            object_url = await self.get_object_url(object_path)
+            logger.debug(f"Fileobj Downloaded, filename: {object_url}")
             return object_url
         except Exception as e:
             logger.error(str(e))
@@ -148,6 +135,12 @@ class AwsS3:
         """
         return HttpUrl(f"https://{self.bucket.name}.s3.amazonaws.com/{key}")
 
+    async def get_s3_uri(self, key: str) -> HttpUrl:
+        """
+        key is the complete object_path
+        """
+        return HttpUrl(f"s3://{self.bucket.name}/{key}")
+
 
 @lru_cache
 def get_aws_s3(
@@ -179,4 +172,3 @@ def get_public_s3(settings: Settings = SettingsProvider.sget()) -> AwsS3:
     s3 = get_aws_s3(settings.AWS_S3_BUCKET_REGION, settings.AWS_ACCESS_KEY_ID,
                     settings.AWS_SECRET_ACCESS_KEY, settings.AWS_S3_PUBLIC_BUCKET_NAME)
     return s3
-
