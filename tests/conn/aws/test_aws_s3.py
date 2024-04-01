@@ -1,4 +1,5 @@
-import aiofiles.os
+import os
+
 import pytest
 from fastapi import UploadFile
 
@@ -32,7 +33,7 @@ async def test_aws_s3_fileobj_pdf(set_test_settings):
         assert str(e) is None
 
     # Delete from file system
-    await aiofiles.os.remove(download_file_path)
+    os.remove(download_file_path)
     # Delete file is S3
     await s3.delete(filename)
 

@@ -15,17 +15,6 @@ files = [
 pycares = ">=4.0.0"
 
 [[package]]
-name = "aiofiles"
-version = "23.2.1"
-description = "File support for asyncio."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "aiofiles-23.2.1-py3-none-any.whl", hash = "sha256:19297512c647d4b27a2cf7c34caa7e405c0d60b5560618a29a9fe027b18b0107"},
-    {file = "aiofiles-23.2.1.tar.gz", hash = "sha256:84ec2218d8419404abcb9f0c02df3f34c6e0a68ed41072acfb1cef5cbc29051a"},
-]
-
-[[package]]
 name = "aiohttp"
 version = "3.9.3"
 description = "Async http client/server framework (asyncio)"
@@ -4447,4 +4436,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "18218061d1f905f1389458fe422e3a3a627a07f37ef3ec2e13d66794775dac2b"
+content-hash = "69cdca0eb5320ef4692d3b5830070da97f6ffa7a68d9fa49868b42b6b225413f"
