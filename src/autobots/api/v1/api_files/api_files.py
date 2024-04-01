@@ -44,7 +44,7 @@ async def get_files(
 
 @router.delete("/")
 async def delete_files(
-        files: List[str],
+        filenames: List[str],
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
 ) -> List[str]:
     user = UserORM(id=UUID(user_res.user.id))
@@ -52,19 +52,20 @@ async def delete_files(
     settings = SettingsProvider.sget()
     user_files = UserFiles(user, s3, settings)
 
-    deleted = await user_files.delete_files(files)
+    deleted = await user_files.delete_files(filenames)
+    await user_files.delete_downloaded_files(filenames)
     return deleted
 
 
-@router.post("/download")
-async def download_files(
-        files: List[str],
-        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-) -> List[str]:
-    user = UserORM(id=UUID(user_res.user.id))
-    s3 = get_s3()
-    settings = SettingsProvider.sget()
-    user_files = UserFiles(user, s3, settings)
-
-    downloaded = await user_files.download_files(files)
-    return downloaded
+# @router.post("/download")
+# async def download_files(
+#         files: List[str],
+#         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+# ) -> List[str]:
+#     user = UserORM(id=UUID(user_res.user.id))
+#     s3 = get_s3()
+#     settings = SettingsProvider.sget()
+#     user_files = UserFiles(user, s3, settings)
+#
+#     downloaded = await user_files.download_files(files)
+#     return downloaded
