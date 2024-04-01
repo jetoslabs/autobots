@@ -1,6 +1,6 @@
 from functools import lru_cache
 from io import BytesIO
-from typing import List, IO
+from typing import List, IO, Optional
 
 import boto3
 from botocore.response import StreamingBody
@@ -30,12 +30,17 @@ class AwsS3:
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key
         )
-        # self.s3 = s3
-        self.object_prefix = f"{object_prefix}/" if object_prefix != "" else object_prefix
         self.bucket = s3.Bucket(bucket_name)
+        # self.s3 = s3
+        # self.object_prefix = f"{object_prefix}" if object_prefix != "" else object_prefix
+        self.object_prefix = None
+        self.set_object_prefix(object_prefix)
 
     def set_object_prefix(self, object_prefix: str) -> None:
-        self.object_prefix = object_prefix
+        if object_prefix.endswith("/"):
+            self.object_prefix = object_prefix
+        else:
+            self.object_prefix = object_prefix + "/"
 
     async def put(self, data: str, filename: str) -> int:
         object_path = self.object_prefix + filename
@@ -64,7 +69,7 @@ class AwsS3:
         """
         Uploads any file type
         """
-        object_path = self.object_prefix + filename
+        object_path = f"{self.object_prefix}{filename}"
         try:
             self.bucket.upload_fileobj(file_obj, object_path)
             object_url = await self.get_object_url(object_path)
@@ -86,7 +91,7 @@ class AwsS3:
             return object_url
         except Exception as e:
             logger.error(str(e))
-        return ""
+            raise
 
     async def get(self, filename: str) -> str:
         object_path = self.object_prefix + filename
@@ -112,8 +117,8 @@ class AwsS3:
         except Exception as e:
             logger.error(str(e))
 
-    async def list(self, prefix: str, limit: int = 300) -> List[ObjectSummary]:
-        prefix = self.object_prefix + prefix
+    async def list(self, prefix: Optional[str] = None, limit: int = 300) -> List[ObjectSummary]:
+        prefix = self.object_prefix + prefix if prefix else self.object_prefix
         s3_objects = []
         size = 0
         for s3_object in self.bucket.objects.filter(Prefix=prefix):
