@@ -25,7 +25,7 @@ async def test_files_happy_path(set_test_settings):
             await user_files.upload_files([upload_file])
             assert True
 
-        data = await user_files.download_files([filename])
+        data = anext(user_files.download_file_and_yield([filename]))
         assert data is not None
 
         await user_files.delete_files([filename])
