@@ -41,6 +41,7 @@ replicate = "0.24.0"
 discord = "2.3.2"
 requests = "2.31.0"
 apscheduler = "^3.10.4"
+werkzeug = "^3.0.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest-asyncio = "0.23.5"

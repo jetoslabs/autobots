@@ -3,7 +3,6 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, UploadFile, File
-from pydantic import HttpUrl
 
 from src.autobots import SettingsProvider
 from src.autobots.auth.security import get_user_from_access_token
@@ -19,7 +18,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_FILES, tags=[SettingsProvi
 async def upload_files(
         files: Annotated[List[UploadFile], File(description="Multiple files as UploadFile")],
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-) -> List[HttpUrl]:
+) -> List[str]:
     user = UserORM(id=UUID(user_res.user.id))
     s3 = get_s3()
     settings = SettingsProvider.sget()
