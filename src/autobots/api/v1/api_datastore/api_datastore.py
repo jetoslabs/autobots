@@ -1,6 +1,6 @@
 import uuid
 from io import BytesIO
-from typing import Annotated, List
+from typing import Annotated, List, Literal
 from uuid import UUID
 
 import gotrue
@@ -13,6 +13,7 @@ from src.autobots import SettingsProvider
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
+from src.autobots.conn.unstructured_io.unstructured_io import PartitionParametersParams
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.datastore.datastore_meta_doc_model import DatastoreMetaDoc
 from src.autobots.datastore.datastore_result.datastore_result_doc_model import DatastoreResultDoc
@@ -91,13 +92,26 @@ async def upload_files(
         datastore_id: str,
         files: Annotated[list[UploadFile], File(description="Multiple files as UploadFile")],
         chunk_size: int = 500,
+        ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ):
     try:
         user = UserORM(id=UUID(user_res.user.id))
         user_datastore = await UserDatastore(user, db).hydrate(datastore_id)
-        await user_datastore.put_files(files, chunk_size=chunk_size)
+
+        hi_res_model_name = "yolox"
+        if ocr_detail == "low": hi_res_model_name = "yolox_quantized" # noqa E701
+        elif ocr_detail == "medium": hi_res_model_name = "yolox" # noqa E701
+        elif ocr_detail == "high": hi_res_model_name = "chipper" # noqa E701
+
+        partition_parameters_params = PartitionParametersParams(
+            combine_under_n_chars=chunk_size,
+            strategy="hi_res",
+            hi_res_model_name=hi_res_model_name,
+            pdf_infer_table_structure=True
+        )
+        await user_datastore.put_files(files, partition_parameters_params)
         return {"done": "ok"}
     except Exception as e:
         logger.error(str(e))
@@ -129,14 +143,28 @@ async def upload_image_files_to_s3(
 async def store_urls(
         datastore_id: str,
         urls: List[HttpUrl],
-        chunk_token_size: int = 512,
+        chunk_size: int = 500,
+        ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ):
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore = await UserDatastore(user_orm, db).hydrate(datastore_id)
-        await user_datastore.put_urls(urls=urls, chunk_token_size=chunk_token_size)
+
+        hi_res_model_name = "yolox"
+        if ocr_detail == "low": hi_res_model_name = "yolox_quantized" # noqa E701
+        elif ocr_detail == "medium": hi_res_model_name = "yolox" # noqa E701
+        elif ocr_detail == "high": hi_res_model_name = "chipper" # noqa E701
+
+        partition_parameters_params = PartitionParametersParams(
+            combine_under_n_chars=chunk_size,
+            strategy="hi_res",
+            hi_res_model_name=hi_res_model_name,
+            pdf_infer_table_structure=True
+        )
+
+        await user_datastore.put_urls(urls=urls, partition_parameters_params=partition_parameters_params)
         return {"done": "ok"}
     except Exception as e:
         logger.error(str(e))
@@ -196,13 +224,13 @@ async def store_data_async(
         user = UserORM(id=UUID(user_res.user.id))
         user_datastore = UserDatastore(user, db)
         datastore_result_doc = await user_datastore.put_resource_async(
-            datastore_id,
-            text.text,
-            None,
-            None,
-            chunk_size,
-            background_tasks,
-            webhook
+            datastore_id=datastore_id,
+            data=text.text,
+            files=None,
+            urls=None,
+            chunk_size=chunk_size,
+            background_tasks=background_tasks,
+            webhook=webhook
         )
         return datastore_result_doc
     except Exception as e:
@@ -217,6 +245,7 @@ async def store_files_async(
         files: Annotated[list[UploadFile], File(description="Multiple files as UploadFile")],
         webhook: Webhook | None = None,
         chunk_size: int = 500,
+        ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> DatastoreResultDoc | None:
@@ -224,13 +253,14 @@ async def store_files_async(
         user = UserORM(id=UUID(user_res.user.id))
         user_datastore = UserDatastore(user, db)
         datastore_result_doc = await user_datastore.put_resource_async(
-            datastore_id,
-            None,
-            files,
-            None,
-            chunk_size,
-            background_tasks,
-            webhook
+            datastore_id=datastore_id,
+            data=None,
+            files=files,
+            urls=None,
+            chunk_size=chunk_size,
+            ocr_detail=ocr_detail,
+            background_tasks=background_tasks,
+            webhook=webhook
         )
         return datastore_result_doc
     except Exception as e:
@@ -245,6 +275,7 @@ async def store_urls_async(
         urls: List[HttpUrl],
         webhook: Webhook | None = None,
         chunk_size: int = 500,
+        ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> DatastoreResultDoc | None:
@@ -252,13 +283,14 @@ async def store_urls_async(
         user = UserORM(id=UUID(user_res.user.id))
         user_datastore = UserDatastore(user, db)
         datastore_result_doc = await user_datastore.put_resource_async(
-            datastore_id,
-            None,
-            None,
-            urls,
-            chunk_size,
-            background_tasks,
-            webhook
+            datastore_id=datastore_id,
+            data=None,
+            files=None,
+            urls=urls,
+            chunk_size=chunk_size,
+            ocr_detail=ocr_detail,
+            background_tasks=background_tasks,
+            webhook=webhook
         )
         return datastore_result_doc
     except Exception as e:

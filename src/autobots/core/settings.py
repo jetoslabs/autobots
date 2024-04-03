@@ -56,6 +56,9 @@ class Settings(BaseSettings):
 
     AWS_S3_PUBLIC_BUCKET_NAME: str
     AWS_S3_PUBLIC_BUCKET_IMAGE_FOLDER: str
+    AWS_S3_FILES_FOLDER: str = "files"
+
+    TEMPORARY_DIR: str = "to_del"
 
     PINECONE_ENVIRONMENT: str = None
     PINECONE_API_KEY: str = None
@@ -67,7 +70,6 @@ class Settings(BaseSettings):
     DATASTORE_IDENTIFIER: str = "datastore"
 
     SCHEDULE_JOBSTORE_MONGO_DB_COLLECTION_NAME: str = "_APSCHEDULER_JOBS"
-
 
     DISCORD_SERVER_ID: str
     DISCORD_TOKEN: str
@@ -91,6 +93,7 @@ class Settings(BaseSettings):
     API_ACTION_GRAPHS_RESULTS: str = "/action_graphs_results"
     API_SCHEDULES: str = "/schedules"
     API_DATASTORE: str = "/datastore"
+    API_FILES: str = "/files"
     API_OPENAI_FILES: str = "/openai_files"
     API_ACTION_CHATS: str = "/action_chats"
     API_AGENTS: str = "/agents"
