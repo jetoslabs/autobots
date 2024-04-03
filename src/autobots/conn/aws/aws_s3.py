@@ -146,6 +146,12 @@ class AwsS3:
         """
         return HttpUrl(f"s3://{self.bucket.name}/{key}")
 
+    async def get_filename(self, key: str) -> str:
+        """
+        key is the s3 object_path
+        """
+        return key.split("/")[-1]
+
 
 @lru_cache
 def get_aws_s3(
