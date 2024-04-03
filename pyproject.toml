@@ -54,7 +54,7 @@ pg8000 = "1.30.5"
 [tool.ruff]
 fix = true
 line-length = 88  # defaults to 88
-ignore = ["E501"]
+lint.ignore = ["E501"]
 
 [build-system]
 requires = ["poetry-core"]

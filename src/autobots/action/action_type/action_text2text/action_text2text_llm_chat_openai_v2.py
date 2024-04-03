@@ -8,7 +8,7 @@ from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputTyp
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.conn.openai.openai_chat.chat_model import Message, ChatReq, Role
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
 
 
@@ -62,7 +62,8 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, T
         text_objs = TextObjs(texts=[])
         try:
             if action_input and action_input.text != "":
-                message = Message(role=Role.user.value, content=action_input.text)
+                # message = Message(role=Role.user.value, content=action_input.text)
+                message = ChatCompletionUserMessageParam(role=Role.user.value, content=action_input.text)
                 self.action_config.messages = self.action_config.messages + [message]
             chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config)
             # remove input message from Config messages
