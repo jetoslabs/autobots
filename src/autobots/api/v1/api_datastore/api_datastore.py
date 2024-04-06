@@ -131,7 +131,7 @@ async def upload_image_files_to_s3(
         for file in files:
             # Convert BinaryIO to BytesIO
             bytes_io = BytesIO(await file.read())
-            object_url = s3.put_file_obj(file_obj=bytes_io, filename=file.filename)
+            object_url = await s3.put_file_obj(file_obj=bytes_io, filename=file.filename)
             result.append(object_url)
         return result
 
