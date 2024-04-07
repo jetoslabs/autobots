@@ -26,6 +26,7 @@ class ActionGraph:
             user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
             action_graph_result_id: Optional[str] = None,
+            action_graph_node_id: Optional[str] = None,
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
@@ -58,6 +59,7 @@ class ActionGraph:
                 action_graph_input_dict,
                 action_graph_result_doc,
                 user_action_graph_result,
+                action_graph_node_id,
                 webhook
             )
         else:
@@ -67,6 +69,7 @@ class ActionGraph:
                 action_graph_input_dict,
                 action_graph_result_doc,
                 user_action_graph_result,
+                action_graph_node_id,
                 webhook
             )
 
@@ -79,6 +82,7 @@ class ActionGraph:
             action_graph_input_dict: Dict[str, Any],
             action_graph_result_doc: ActionGraphResultDoc,
             user_action_graph_result: UserActionGraphResult,
+            action_graph_node_id: Optional[str] = None,
             webhook: Webhook | None = None
     ):
         # TODO: check if action_graph_result_doc status is success, if success then return.
@@ -95,24 +99,27 @@ class ActionGraph:
 
         review_required_nodes: List[str] = []
 
+        # if action_graph_result_doc and action_graph_node_id:
+        #     ...TODO: node rerun
+
         try:
             while len(action_response) + len(review_required_nodes) != len(total_nodes):
-                for node, values in inverted_map.items():
+                for node, upstream_nodes in inverted_map.items():
                     if await ActionGraph.is_work_done([node], action_response) or \
-                            not await ActionGraph.is_work_done(values, action_response):
+                            not await ActionGraph.is_work_done(upstream_nodes, action_response):
                         continue
                     # Check if user review required
                     is_any_dependent_require_review = False
-                    for value in values:
-                        if node_details_map and node_details_map.get(value) and node_details_map.get(value).data.user_review_required and not node_details_map.get(value).data.user_review_done:
-                            review_required_nodes.append(value)
+                    for upstream_node in upstream_nodes:
+                        if node_details_map and node_details_map.get(upstream_node) and node_details_map.get(upstream_node).data.user_review_required and not node_details_map.get(upstream_node).data.user_review_done:
+                            review_required_nodes.append(upstream_node)
                             is_any_dependent_require_review = True
                     if is_any_dependent_require_review:
                         continue
 
-                    if len(values) == 0:
+                    if len(upstream_nodes) == 0:
                         # Run action with no dependency
-                        action_result = await ActionGraph.run_action(
+                        action_result: ActionDoc = await ActionGraph.run_action(
                             user_actions,
                             user_actions_market,
                             node_action_map.get(node),
@@ -122,8 +129,8 @@ class ActionGraph:
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
                         # Run action with at least 1 dependency
-                        action_input = await ActionGraph.to_input(values, action_response)
-                        action_result = await ActionGraph.run_action(
+                        action_input = await ActionGraph.to_input(upstream_nodes, action_response)
+                        action_result: ActionDoc = await ActionGraph.run_action(
                             user_actions,
                             user_actions_market,
                             node_action_map.get(node),
@@ -185,7 +192,7 @@ class ActionGraph:
             user_action_market: UserActionsMarket,
             action_id: str,
             action_graph_input: TextObj
-    ):
+    ) -> ActionDoc:
         exception = None
         try:
             action_result = await user_actions.run_action_v1(action_id, action_graph_input.model_dump())

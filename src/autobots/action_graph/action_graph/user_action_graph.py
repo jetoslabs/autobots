@@ -85,6 +85,7 @@ class UserActionGraphs:
             action_graph_id: str,
             input: TextObj,
             action_graph_result_id: Optional[str] = None,
+            action_graph_node_id: Optional[str] = None,
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
@@ -99,6 +100,7 @@ class UserActionGraphs:
             user_actions_market=user_actions_market,
             user_action_graph_result=user_action_graph_result,
             action_graph_result_id=action_graph_result_id,
+            action_graph_node_id=action_graph_node_id,
             background_tasks=background_tasks,
             webhook=webhook
         )

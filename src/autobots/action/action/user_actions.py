@@ -5,8 +5,9 @@ from loguru import logger
 from pymongo.database import Database
 
 from src.autobots.action.action.action_crud import ActionCRUD
-from src.autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
-    ActionUpdate, ActionDocUpdate
+from src.autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, \
+    ActionCreate, \
+    ActionUpdate, ActionDocUpdate, ActionResult
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc
 from src.autobots.action.action_result.user_action_result import UserActionResult
 from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
@@ -117,13 +118,19 @@ class UserActions:
                 raise HTTPException(405, "Action Result not found")
             # action_result_doc.result.input
 
-        resp: RunActionObj = await ActionFactory.run_action(action_doc, input)
-        action_doc.output = resp.output_dict
+        run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        action_doc.output = run_obj.output_dict
+        if action_doc.results is None:
+            action_doc.results = []
+        action_doc.results.append(ActionResult(input=run_obj.input_dict, output=run_obj.output_dict))
         return action_doc
 
     @staticmethod
     async def run_action_doc(action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
         action_doc.input = input
-        resp: RunActionObj = await ActionFactory.run_action(action_doc, input)
-        action_doc.output = resp.output_dict
+        run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        action_doc.output = run_obj.output_dict
+        if action_doc.results is None:
+            action_doc.results = []
+        action_doc.results.append(ActionResult(input=run_obj.input_dict, output=run_obj.output_dict))
         return action_doc
