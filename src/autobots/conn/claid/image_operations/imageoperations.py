@@ -76,8 +76,8 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
             logger.error(f"Claid bulkedit error: {response.status}")
             return response
 
-    except ValidationError or TypeError as e:
-        logger.error(f"Claid validtion error for response: {response_json} : {e}")
+    except (ValidationError, TypeError) as e:
+        logger.error(f"Claid validation error for response: {response_json} : {e}")
 
     return response
 

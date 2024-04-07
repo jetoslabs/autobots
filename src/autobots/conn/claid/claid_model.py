@@ -5,8 +5,12 @@ from pydantic import BaseModel
 
 class Intensity(BaseModel):
     intensity: int = 0
+
+
 class Stitching(BaseModel):
     stitching: bool = False
+
+
 class Adjustments(BaseModel):
     hdr: Union[int, Intensity, Stitching] = 0
     exposure: int = 1
@@ -14,8 +18,11 @@ class Adjustments(BaseModel):
     contrast: int = 1
     sharpness: int = 1
 
+
 class Crop(BaseModel):
     crop: Literal["center", "smart"] = "smart"
+
+
 class Resizing(BaseModel):
     width: str = None
     height: str = None
@@ -32,14 +39,18 @@ class BackgroundBlur(BaseModel):
     type: Literal["regular", "lens"] = "regular"
     level: Literal["low", "medium", "high"] = "low"
 
+
 class Background(BaseModel):
     remove: Union[bool, BackgroundRemove] = None
-    blur: Union[bool,BackgroundBlur] = None
+    blur: Union[bool, BackgroundBlur] = None
     color: str = None
+
 
 class Restorations(BaseModel):
     decompress: str = None
     upscale: str = None
+
+
 class Operations(BaseModel):
     restorations: Restorations = None
     upscale: str = None
@@ -48,7 +59,6 @@ class Operations(BaseModel):
     background: Background = None
     padding: str = None
     privacy: Dict[str, bool] = None
-
 
 
 class OutputFormat(BaseModel):
@@ -69,9 +79,15 @@ class Output(BaseModel):
 
 
 class ClaidRequestModel(BaseModel):
-    input: str
-    operations: Operations
+    input: str | None = None
+    operations: Operations | None = None
     output: str
+
+
+class ClaidInputModel(BaseModel):
+    input: str
+    operations: Operations | None = None
+
 
 class ClaidObject(BaseModel):
     ext: str
@@ -88,19 +104,19 @@ class ClaidResult(BaseModel):
     output_object: ClaidObject
 
 
-
 class ClaidResponseData(BaseModel):
     id: int
     status: str
     created_at: str
     request: ClaidRequestModel
     errors: List[str] = None
-    result_url : str = None
+    result_url: str = None
     results: List[ClaidResult] = None
 
 
 class ClaidResponse(BaseModel):
     data: ClaidResponseData
+
 
 class ErrorDetails(BaseModel):
     name: List[str]
@@ -112,6 +128,7 @@ class ClaidErrorResponse(BaseModel):
     error_type: str
     error_message: str
     error_details: ErrorDetails = None
+
 
 class PhotoshootPosition(BaseModel):
     x: float = 0.5
@@ -128,9 +145,9 @@ class PhotoshootObject(BaseModel):
 
 class PhotoshootScene(BaseModel):
     template_url: str = None
-    template_mode: Literal["transform" ,  "lock"] = None
+    template_mode: Literal["transform", "lock"] = None
     color: str = None
-    view: Literal["top" ,  "front"] = None
+    view: Literal["top", "front"] = None
     prompt: str = None
     negative_prompt: str = None
 
@@ -146,10 +163,11 @@ class ClaidPhotoShootRequestModel(BaseModel):
     object: PhotoshootObject
     scene: PhotoshootScene
 
+
 class ClaidPhotoShootOutputDataModel(BaseModel):
     input: ClaidObject
     output: List[ClaidObject]
+
+
 class ClaidPhotoShootOutputModel(BaseModel):
     data: ClaidPhotoShootOutputDataModel
-
-
