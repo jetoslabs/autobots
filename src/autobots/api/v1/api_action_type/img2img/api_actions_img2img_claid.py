@@ -12,7 +12,7 @@ from src.autobots.action.action_type.action_img2img.action_img2img_photoshoot_cl
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, ClaidPhotoShootRequestModel, \
-    ClaidPhotoShootOutputModel
+    ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM
 
@@ -88,7 +88,7 @@ async def run_action_img2img_bulk_edit_claid(
 @router.post("/img2img/claid/photoshoot/{action_id}/run")
 async def run_action_img2img_photoshoot_claid(
         action_id: str,
-        action_input: ClaidPhotoShootRequestModel,
+        action_input: ClaidPhotoShootInputModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: Database = Depends(get_mongo_db)
 ) -> ClaidPhotoShootOutputModel:

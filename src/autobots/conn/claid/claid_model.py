@@ -138,8 +138,8 @@ class PhotoshootPosition(BaseModel):
 class PhotoshootObject(BaseModel):
     image_url: str
     placement_type: Literal["absolute", "original"] = "original"
-    rotation_degree: int = 0
-    scale: float = 1.0
+    rotation_degree: int | None = None
+    scale: float | None = None
     position: PhotoshootPosition | None = None
 
 
@@ -154,14 +154,17 @@ class PhotoshootScene(BaseModel):
 
 class PhotoshootOutput(BaseModel):
     destination: str
-    number_of_images: int | None = None
-    format: str | None = None
+    number_of_images: int = 1
+    format: str = "jpeg"
 
 
 class ClaidPhotoShootRequestModel(BaseModel):
     output: PhotoshootOutput
+
+class ClaidPhotoShootInputModel(BaseModel):
     object: PhotoshootObject
-    scene: PhotoshootScene
+    scene: PhotoshootScene | None = None
+    output: PhotoshootOutput | None = None
 
 
 class ClaidPhotoShootOutputDataModel(BaseModel):
