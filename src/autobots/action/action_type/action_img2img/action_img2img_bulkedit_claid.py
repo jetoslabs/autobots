@@ -1,6 +1,7 @@
 from typing import Type, Optional
 from loguru import logger
 from pydantic import BaseModel, Field, ValidationError
+import json
 
 from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
@@ -44,8 +45,9 @@ class ActionImg2BulkEditClaid(
             self.action_config.operations = action_input.operations
 
         try:
-            res = await claidai.bulkEdit(self.action_config.model_dump(exclude_none=True))
-            return res
+            res= await claidai.bulkEdit(self.action_config.model_dump(exclude_none=True))
+            response = ClaidResponse.model_validate(json.loads(res.text))
+            return response
         except ValidationError as e:
             logger.error(str(e))
         except Exception as e:
