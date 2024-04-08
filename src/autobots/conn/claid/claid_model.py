@@ -24,8 +24,8 @@ class Crop(BaseModel):
 
 
 class Resizing(BaseModel):
-    width: str = None
-    height: str = None
+    width: str | None = None
+    height: str | None = None
     fit: Union[Literal["bounds", "cover", "canvas", "outpaint"], Crop] = "bounds"
 
 
@@ -41,30 +41,30 @@ class BackgroundBlur(BaseModel):
 
 
 class Background(BaseModel):
-    remove: Union[bool, BackgroundRemove] = None
-    blur: Union[bool, BackgroundBlur] = None
-    color: str = None
+    remove: Union[bool, BackgroundRemove] | None = None
+    blur: Union[bool, BackgroundBlur] | None= None
+    color: str | None = None
 
 
 class Restorations(BaseModel):
-    decompress: str = None
-    upscale: str = None
+    decompress: str | None= None
+    upscale: str | None = None
 
 
 class Operations(BaseModel):
-    restorations: Restorations = None
-    upscale: str = None
-    resizing: Resizing = None
-    adjustments: Adjustments = None
-    background: Background = None
-    padding: str = None
-    privacy: Dict[str, bool] = None
+    restorations: Restorations | None = None
+    upscale: str | None = None
+    resizing: Resizing | None = None
+    adjustments: Adjustments | None = None
+    background: Background | None = None
+    padding: str | None = None
+    privacy: Dict[str, bool] | None = None
 
 
 class OutputFormat(BaseModel):
     type: Literal["jpeg", "png", "webp", "avif"]
-    quality: int = None
-    progressive: bool = None
+    quality: int | None = None
+    progressive: bool | None = None
 
 
 class OutputCompression(BaseModel):
@@ -73,8 +73,8 @@ class OutputCompression(BaseModel):
 
 
 class Output(BaseModel):
-    destination: str = None
-    metadata: Dict[str, int] = None
+    destination: str | None = None
+    metadata: Dict[str, int] | None = None
     format: Union[Literal["jpeg", "png", "webp", "avif"], OutputFormat, OutputCompression] = None
 
 
@@ -96,7 +96,7 @@ class ClaidObject(BaseModel):
     format: str
     width: int
     height: int
-    tmp_url: Optional[str] = None
+    tmp_url: Optional[str] | None = None
 
 
 class ClaidResult(BaseModel):
@@ -109,9 +109,9 @@ class ClaidResponseData(BaseModel):
     status: str
     created_at: str
     request: ClaidRequestModel
-    errors: List[str] = None
-    result_url: str = None
-    results: List[ClaidResult] = None
+    errors: List[str] | None = None
+    result_url: str | None = None
+    results: List[ClaidResult] | None = None
 
 
 class ClaidResponse(BaseModel):
@@ -127,7 +127,7 @@ class ClaidErrorResponse(BaseModel):
     error_code: str
     error_type: str
     error_message: str
-    error_details: ErrorDetails = None
+    error_details: ErrorDetails | None = None
 
 
 class PhotoshootPosition(BaseModel):
@@ -140,22 +140,22 @@ class PhotoshootObject(BaseModel):
     placement_type: Literal["absolute", "original"] = "original"
     rotation_degree: int = 0
     scale: float = 1.0
-    position: PhotoshootPosition = None
+    position: PhotoshootPosition | None = None
 
 
 class PhotoshootScene(BaseModel):
-    template_url: str = None
-    template_mode: Literal["transform", "lock"] = None
-    color: str = None
-    view: Literal["top", "front"] = None
-    prompt: str = None
-    negative_prompt: str = None
+    template_url: str | None = None
+    template_mode: Literal["transform", "lock"] | None = None
+    color: str | None = None
+    view: Literal["top", "front"] | None = None
+    prompt: str | None = None
+    negative_prompt: str | None = None
 
 
 class PhotoshootOutput(BaseModel):
     destination: str
-    number_of_images: int = None
-    format: str = None
+    number_of_images: int | None = None
+    format: str | None = None
 
 
 class ClaidPhotoShootRequestModel(BaseModel):
