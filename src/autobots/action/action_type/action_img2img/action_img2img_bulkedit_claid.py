@@ -44,7 +44,7 @@ class ActionImg2BulkEditClaid(
             self.action_config.operations = action_input.operations
 
         try:
-            res = await claidai.bulkEdit(self.action_config)
+            res = await claidai.bulkEdit(self.action_config.model_dump(exclude_none=True))
             return res
         except ValidationError as e:
             logger.error(str(e))
