@@ -244,7 +244,7 @@ class ActionGraph:
 
         # Run action with no dependency
         node_action_doc = action_response.get(action_graph_node_id)
-        _: ActionDoc = await ActionGraph.run_action_doc(
+        action_result: ActionDoc = await ActionGraph.run_action_doc( # noqa F841
             user_actions,
             node_action_doc,
             action_graph_input_dict
