@@ -4,7 +4,7 @@ from pydantic import ValidationError
 import time
 
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidErrorResponse, ClaidResponse, \
-    ClaidPhotoShootRequestModel, ClaidPhotoShootOutputModel
+    ClaidPhotoShootRequestModel, ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
 from typing import Optional, Any, Union
 from pydantic import BaseModel, Field
 from src.autobots.core.settings import SettingsProvider
@@ -76,12 +76,12 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
             logger.error(f"Claid bulkedit error: {response.status}")
             return response
 
-    except ValidationError or TypeError as e:
-        logger.error(f"Claid validtion error for response: {response_json} : {e}")
+    except (ValidationError, TypeError) as e:
+        logger.error(f"Claid validation error for response: {response_json} : {e}")
 
     return response
 
-async def photoshoot(req : ClaidPhotoShootRequestModel) -> ClaidPhotoShootOutputModel| ClaidErrorResponse:
+async def photoshoot(req : ClaidPhotoShootInputModel) -> ClaidPhotoShootOutputModel| ClaidErrorResponse:
     claidConfig = ClaidConfig()
     url = claidConfig.claid_url + '/v1-ea/scene/create'
     headers = {
@@ -107,7 +107,7 @@ async def photoshoot(req : ClaidPhotoShootRequestModel) -> ClaidPhotoShootOutput
     response = requests.post(url, json=request_payload, headers=headers)
 
     try:
-        response = ClaidPhotoShootOutputModel.model_validate(response.json())
+        response : ClaidPhotoShootOutputModel = ClaidPhotoShootOutputModel.model_validate(response.json())
         return response
 
     except ValidationError or TypeError as e:

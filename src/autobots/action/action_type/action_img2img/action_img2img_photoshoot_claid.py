@@ -7,11 +7,11 @@ from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigTyp
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_calid_ai
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, \
-    ClaidPhotoShootOutputModel, ClaidPhotoShootRequestModel
+    ClaidPhotoShootOutputModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel
 
 
 class ActionImg2ImgPhotoshootClaid(
-    IAction[ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootOutputModel]
+    IAction[ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel, ClaidPhotoShootOutputModel]
 ):
     type = ActionType.img2img_photoshoot_claid
 
@@ -29,7 +29,7 @@ class ActionImg2ImgPhotoshootClaid(
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return ClaidPhotoShootRequestModel
+        return ClaidPhotoShootInputModel
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
@@ -38,13 +38,14 @@ class ActionImg2ImgPhotoshootClaid(
     def __init__(self, action_config: ClaidPhotoShootRequestModel):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: ClaidPhotoShootRequestModel) -> ClaidPhotoShootOutputModel:
+    async def run_action(self, action_input: ClaidPhotoShootInputModel) -> ClaidPhotoShootOutputModel:
         claidAi = get_calid_ai()
+        if self.action_config.output:
+            action_input.output = self.action_config.output
         try:
-            res: ClaidResponse = await claidAi.photoshoot(action_input)
+            res: ClaidPhotoShootOutputModel = await claidAi.photoshoot(action_input)
         except ValidationError as e:
             logger.error(str(e))
         except Exception as e:
             logger.error(str(e))
-
         return res
