@@ -13,6 +13,7 @@ from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc
     ActionGraphResultCreate, ActionGraphResultUpdate
 from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from src.autobots.api.webhook import Webhook
+from src.autobots.core.profiler.profiler import Profiler
 from src.autobots.event_result.event_result_model import EventResultStatus
 
 
@@ -183,6 +184,9 @@ class ActionGraph:
                         )
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
+
+                        memory_profile = await Profiler.profile_memory()
+                        logger.bind(memory_profile=memory_profile).info(f"Memory profile for Action run {action_result.name}:{action_result.version}")
 
                     # Update action result graph
                     action_graph_result_doc.result.output[node] = action_response[node]
