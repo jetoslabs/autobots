@@ -60,7 +60,7 @@ class UserActions:
                 raise HTTPException(500, "Error in finding action")
             return action_docs[0]
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
         return None
 
     async def update_action(

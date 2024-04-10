@@ -185,7 +185,7 @@ class ActionGraph:
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
 
-                        memory_profile = await Profiler.profile_memory()
+                        memory_profile = await Profiler.do_memory_profile()
                         logger.bind(memory_profile=memory_profile).info(f"Memory profile for Action run {action_result.name}:{action_result.version}")
 
                     # Update action result graph
@@ -218,7 +218,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            logger.bind(action_graph_id=action_graph_result_doc.result.id).error(f"Error while graph run, {str(e)}")
+            logger.bind(action_graph_id=action_graph_result_doc.result.id).exception(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
