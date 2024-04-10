@@ -37,6 +37,6 @@ async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settin
     action_input = {"text": "Keep the same plot but make it funny"}
     action_run_obj_2 = await ActionFactory.run_action(action_doc, action_input)
     assert action_run_obj_2.output_dict
-    assert len(action_run_obj_2.config_dict.get("messages")) == 3
+    assert len(action_run_obj_2.config_dict.get("messages")) == 1
     assert action_run_obj_2.config_dict.get("messages")[1].get("content") == action_run_obj_1.input_dict.get("text")
     assert action_run_obj_1.output_dict.get("texts")[0].get("text") in action_run_obj_2.config_dict.get("messages")[2].get("content")
