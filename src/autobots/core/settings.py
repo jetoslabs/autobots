@@ -80,6 +80,7 @@ class Settings(BaseSettings):
     CLAID_INPUT_FOLDER_S3_URI: str
     CLAID_OUTPUT_FOLDER_S3_URI: str
     CLAID_INPUT_FILE_S3_URI: str
+    SERP_API_KEY: str
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
