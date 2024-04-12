@@ -1,7 +1,6 @@
 import pytest
 from src.autobots.conn.claid.claid import UseClaidAiApi
-from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponseData, Operations, Output, \
-    BackgroundRemove, Background, ClaidResponse, ClaidPhotoShootRequestModel, PhotoshootOutput, PhotoshootObject, \
+from src.autobots.conn.claid.claid_model import ClaidPhotoShootRequestModel, PhotoshootOutput, PhotoshootObject, \
     PhotoshootScene, ClaidPhotoShootOutputModel
 
 
@@ -21,8 +20,7 @@ async def test_photoshoot(set_test_settings):
         )
     )
     uca = UseClaidAiApi()
-    res : ClaidPhotoShootOutputModel = await uca.photoshoot(claid_request)
-    print(res)
+    res: ClaidPhotoShootOutputModel = await uca.photoshoot(claid_request)
     assert (res)
 
 
