@@ -3,7 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate, ActionCreate
@@ -40,7 +40,7 @@ async def get_action_type_objects(
 async def create_action(
         action_create: ActionCreate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserActions(user=user_orm, db=db).create_action(action_create)
@@ -52,7 +52,7 @@ async def list_actions(
         id: str = None, name: str = None, version: float = None, type: ActionType = None, is_published: bool = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ActionDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_find = ActionFind(id=id, name=name, version=version, type=type, is_published=is_published)
@@ -64,7 +64,7 @@ async def list_actions(
 async def get_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserActions(user=user_orm, db=db).get_action(id)
@@ -76,7 +76,7 @@ async def update_action(
         id: str,
         action_update: ActionUpdate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserActions(user=user_orm, db=db).update_action(id, action_update)
@@ -87,7 +87,7 @@ async def update_action(
 async def delete_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user=user_orm, db=db)
@@ -106,7 +106,7 @@ async def run_action(
         input: Dict[str, Any],
         action_result_id: str = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> Any:
     user_orm = UserORM(id=UUID(user_res.user.id))
     resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input, action_result_id)
@@ -121,7 +121,7 @@ async def async_run_action(
         action_result_id: str = None,
         webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db),
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db),
 ) -> ActionResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)

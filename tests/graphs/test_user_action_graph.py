@@ -1,8 +1,8 @@
 import uuid
 
 import pytest
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from openai.types.chat import ChatCompletionUserMessageParam
-from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.user_actions import UserActions
@@ -111,7 +111,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-async def create_action_persona(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
+async def create_action_persona(user_actions: UserActions, db: AsyncIOMotorDatabase, rand: str) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="persona_" + rand,
         config=ChatReq(messages=[ChatCompletionUserMessageParam(
@@ -126,7 +126,7 @@ async def create_action_persona(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
-async def create_action_manager(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
+async def create_action_manager(user_actions: UserActions, db: AsyncIOMotorDatabase, rand: str) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="manager_" + rand,
         config=ChatReq(messages=[ChatCompletionUserMessageParam(
@@ -141,7 +141,7 @@ async def create_action_manager(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
-async def create_action_product(user_actions: UserActions, db: Database, rand: str) -> ActionDoc:
+async def create_action_product(user_actions: UserActions, db: AsyncIOMotorDatabase, rand: str) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="market researcher_" + rand,
         config=ChatReq(messages=[ChatCompletionUserMessageParam(
@@ -156,7 +156,7 @@ async def create_action_product(user_actions: UserActions, db: Database, rand: s
 
 
 @pytest.mark.asyncio
-async def create_action_creative(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
+async def create_action_creative(user_actions: UserActions, db: AsyncIOMotorDatabase, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="creative_" + rand,
         config=ChatReq(messages=[ChatCompletionUserMessageParam(
@@ -171,7 +171,7 @@ async def create_action_creative(user_actions: UserActions, db: Database, rand: 
 
 
 @pytest.mark.asyncio
-async def create_action_jingle(user_actions: UserActions, db: Database, rand: str = gen_random_str()) -> ActionDoc:
+async def create_action_jingle(user_actions: UserActions, db: AsyncIOMotorDatabase, rand: str = gen_random_str()) -> ActionDoc:
     action_create = ActionCreateText2TextLlmChatOpenai(
         name="jingle_" + rand,
         config=ChatReq(messages=[ChatCompletionUserMessageParam(

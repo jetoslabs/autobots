@@ -4,7 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action_graph.schedule.schedule_doc_model import ScheduleCreate, ScheduleDoc, ScheduleFind, \
@@ -21,7 +21,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_SCHEDULES, tags=[SettingsP
 async def create_schedule(
         schedule_create: ScheduleCreate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ScheduleDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -37,7 +37,7 @@ async def list_schedules(
         id: str = None, name: str = None, action_graph_id: str = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ScheduleDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     find = ScheduleFind(id=id, name=name, action_graph_id=action_graph_id)
@@ -49,7 +49,7 @@ async def list_schedules(
 async def get_schedule(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ScheduleDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserSchedule(user=user_orm, db=db).get_user_schedule(id)
@@ -61,7 +61,7 @@ async def update_schedule(
         id: str,
         schedule_update: ScheduleUpdate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ScheduleDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserSchedule(user=user_orm, db=db).update_user_schedule(id, schedule_update)
@@ -72,7 +72,7 @@ async def update_schedule(
 async def delete_schedule(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ScheduleDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_schedule = UserSchedule(user=user_orm, db=db)

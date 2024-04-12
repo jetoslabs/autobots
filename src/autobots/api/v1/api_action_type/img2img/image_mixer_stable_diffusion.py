@@ -3,7 +3,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
@@ -22,7 +22,7 @@ router = APIRouter()
 async def create_action_image_mixer_stable_diffusion(
         action_create: ActionCreateImageMixerStableDiffusion,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -40,7 +40,7 @@ async def run_action_image_mixer_stable_diffusion(
         action_id: str,
         action_input: ImageMixerRunModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> StableDiffusionRes:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

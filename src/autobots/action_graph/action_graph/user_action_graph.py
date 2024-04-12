@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, BackgroundTasks
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.action.action.user_actions import UserActions
@@ -22,13 +22,13 @@ from src.autobots.user.user_orm_model import UserORM
 
 class UserActionGraphs:
 
-    def __init__(self, user: UserORM, db: Database):
+    def __init__(self, user: UserORM, db: AsyncIOMotorDatabase):
         self.user = user
         self.user_id = str(user.id)
         self.db = db
 
     async def create(
-            self, action_graph_create: ActionGraphCreate, db: Database = Depends(get_mongo_db)
+            self, action_graph_create: ActionGraphCreate, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
     ) -> ActionGraphDoc:
         action_graph_doc_create = ActionGraphDocCreate(user_id=self.user_id, **action_graph_create.model_dump())
         action_graph_doc = await ActionGraphCRUD(db).insert_one(action_graph_doc_create)
@@ -36,7 +36,7 @@ class UserActionGraphs:
 
     async def list(
             self, action_graph_find: ActionGraphFind,
-            db: Database = Depends(get_mongo_db),
+            db: AsyncIOMotorDatabase = Depends(get_mongo_db),
             limit: int = 100, offset: int = 0
     ) -> List[ActionGraphDoc]:
         action_graph_doc_find = ActionGraphDocFind(user_id=self.user_id, **action_graph_find.model_dump())
@@ -44,7 +44,7 @@ class UserActionGraphs:
         return action_graph_docs
 
     async def get(
-            self, action_graph_id: str, db: Database = Depends(get_mongo_db)
+            self, action_graph_id: str, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
     ) -> ActionGraphDoc:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
         action_graph_docs = await ActionGraphCRUD(db).find(action_graph_doc_find)
@@ -53,7 +53,7 @@ class UserActionGraphs:
         return action_graph_docs[0]
 
     async def update(
-            self, action_graph_id: str, action_graph_update: ActionGraphUpdate, db: Database = Depends(get_mongo_db)
+            self, action_graph_id: str, action_graph_update: ActionGraphUpdate, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
     ) -> ActionGraphDoc:
         action_graph_doc_update = ActionGraphDocUpdate(id=action_graph_id, user_id=self.user_id,
                                                        **action_graph_update.model_dump())
@@ -61,7 +61,7 @@ class UserActionGraphs:
         return action_graph_doc
 
     async def delete(
-            self, action_graph_id: str, db: Database = Depends(get_mongo_db)
+            self, action_graph_id: str, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
     ) -> int:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
         delete_result = await ActionGraphCRUD(db).delete_many(action_graph_doc_find)
@@ -114,7 +114,7 @@ class UserActionGraphs:
             # background_tasks: BackgroundTasks = None, # Using Background thread will crash app
             action_graph_result_id: Optional[str] = None,
             webhook: Webhook | None = None,
-            db: Database = next(get_mongo_db())
+            db: AsyncIOMotorDatabase = next(get_mongo_db())
     ) -> ActionGraphResultDoc | None:
         user_orm = UserORM(id=UUID(user_id))
         user_actions = UserActions(user_orm, db)

@@ -10,7 +10,7 @@ from loguru import logger
 
 from src.autobots import SettingsProvider
 from src.autobots.action_graph.schedule.trigger import Trigger
-from src.autobots.core.database.mongo_base import get_mongo_client
+from src.autobots.core.database.mongo_base import get_pymongo_client
 
 
 class Schedule:
@@ -83,7 +83,8 @@ class Schedule:
                     Schedule.JOBSTORE: MongoDBJobStore(
                         database=SettingsProvider().sget().MONGO_DATABASE,
                         collection=SettingsProvider().sget().SCHEDULE_JOBSTORE_MONGO_DB_COLLECTION_NAME,
-                        client=get_mongo_client(),
+                        # APScheduler is only compatible with PyMongo library, lookout for future updates
+                        client=get_pymongo_client(),
                     )
                 }
                 Schedule._scheduler = AsyncIOScheduler(jobstores=jobstores)

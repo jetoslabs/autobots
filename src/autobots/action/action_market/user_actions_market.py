@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 
 from fastapi import HTTPException, BackgroundTasks
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.action_crud import ActionCRUD
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionUpdate
@@ -17,7 +17,7 @@ from src.autobots.user.user_orm_model import UserORM
 
 class UserActionsMarket:
 
-    def __init__(self, user: UserORM, db: Database):
+    def __init__(self, user: UserORM, db: AsyncIOMotorDatabase):
         self.user = user
         self.user_id = str(user.id)
         self.action_crud = ActionCRUD(db)

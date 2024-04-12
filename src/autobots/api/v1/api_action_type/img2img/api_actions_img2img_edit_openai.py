@@ -3,8 +3,8 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from openai.types import ImagesResponse
-from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.user_actions import UserActions
@@ -29,7 +29,7 @@ class ActionCreateImg2ImgEditOpenai(ActionCreate):
 async def create_img2img_edit_openai(
         action_create: ActionCreateImg2ImgEditOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

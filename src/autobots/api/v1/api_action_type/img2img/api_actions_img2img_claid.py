@@ -3,8 +3,10 @@ import json
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
-from pymongo.database import Database
 from typing import Optional
+
+from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_type.action_img2img.action_img2img_bulkedit_claid import ActionImg2BulkEditClaid
@@ -34,7 +36,7 @@ class ActionCreateImg2ImgPhotoShootClaid(ActionCreate):
 async def create_action_img2img_bulk_edit_claid(
         action_create: ActionCreateImg2ImgBulkEditClaid,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -50,7 +52,7 @@ async def create_action_img2img_bulk_edit_claid(
 async def create_action_img2img_photoshoot_claid(
         action_create: ActionCreateImg2ImgPhotoShootClaid,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -68,7 +70,7 @@ async def run_action_img2img_bulk_edit_claid(
         action_id: str,
         action_input: ClaidRequestModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) :
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -90,7 +92,7 @@ async def run_action_img2img_photoshoot_claid(
         action_id: str,
         action_input: ClaidPhotoShootRequestModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ClaidPhotoShootOutputModel:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

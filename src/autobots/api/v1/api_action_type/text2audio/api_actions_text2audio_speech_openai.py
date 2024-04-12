@@ -5,7 +5,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.common_action_models import TextObj
@@ -31,7 +31,7 @@ class ActionCreateText2AudioSpeechOpenai(ActionCreate):
 async def create_action_text2audio_speech_openai(
         action_create: ActionCreateText2AudioSpeechOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

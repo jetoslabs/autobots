@@ -6,8 +6,8 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import HttpUrl
-from pymongo.database import Database
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.common_action_models import TextObj
@@ -28,7 +28,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_DATASTORE, tags=[SettingsP
 async def create_datastore(
         name: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DatastoreMetaDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -43,7 +43,7 @@ async def create_datastore(
 async def list_datastore(
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[DatastoreMetaDoc]:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -58,7 +58,7 @@ async def list_datastore(
 async def get_datastore(
         name: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DatastoreMetaDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -75,7 +75,7 @@ async def store_text(
         text: TextObj,
         chunk_token_size: int = 512,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ):
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -94,16 +94,19 @@ async def upload_files(
         chunk_size: int = 500,
         ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ):
     try:
         user = UserORM(id=UUID(user_res.user.id))
         user_datastore = await UserDatastore(user, db).hydrate(datastore_id)
 
         hi_res_model_name = "yolox"
-        if ocr_detail == "low": hi_res_model_name = "yolox_quantized" # noqa E701
-        elif ocr_detail == "medium": hi_res_model_name = "yolox" # noqa E701
-        elif ocr_detail == "high": hi_res_model_name = "chipper" # noqa E701
+        if ocr_detail == "low":
+            hi_res_model_name = "yolox_quantized"  # noqa E701
+        elif ocr_detail == "medium":
+            hi_res_model_name = "yolox"  # noqa E701
+        elif ocr_detail == "high":
+            hi_res_model_name = "chipper"  # noqa E701
 
         partition_parameters_params = PartitionParametersParams(
             combine_under_n_chars=chunk_size,
@@ -116,6 +119,7 @@ async def upload_files(
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(500, "Error while storing files in datastore")
+
 
 @router.post("/{id}/store_image_to_s3")
 async def upload_image_files_to_s3(
@@ -139,6 +143,7 @@ async def upload_image_files_to_s3(
         logger.error(str(e))
         raise HTTPException(500, "Error while storing files in datastore")
 
+
 @router.post("/{id}/store_urls")
 async def store_urls(
         datastore_id: str,
@@ -146,16 +151,19 @@ async def store_urls(
         chunk_size: int = 500,
         ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ):
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         user_datastore = await UserDatastore(user_orm, db).hydrate(datastore_id)
 
         hi_res_model_name = "yolox"
-        if ocr_detail == "low": hi_res_model_name = "yolox_quantized" # noqa E701
-        elif ocr_detail == "medium": hi_res_model_name = "yolox" # noqa E701
-        elif ocr_detail == "high": hi_res_model_name = "chipper" # noqa E701
+        if ocr_detail == "low":
+            hi_res_model_name = "yolox_quantized"  # noqa E701
+        elif ocr_detail == "medium":
+            hi_res_model_name = "yolox"  # noqa E701
+        elif ocr_detail == "high":
+            hi_res_model_name = "chipper"  # noqa E701
 
         partition_parameters_params = PartitionParametersParams(
             combine_under_n_chars=chunk_size,
@@ -177,7 +185,7 @@ async def search(
         query: TextObj,
         top_k: int = 10,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[str]:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -193,7 +201,7 @@ async def search(
 async def delete_datastore(
         datastore_id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DatastoreMetaDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -218,7 +226,7 @@ async def store_data_async(
         webhook: Webhook | None = None,
         chunk_size: int = 500,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DatastoreResultDoc | None:
     try:
         user = UserORM(id=UUID(user_res.user.id))
@@ -247,7 +255,7 @@ async def store_files_async(
         chunk_size: int = 500,
         ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DatastoreResultDoc | None:
     try:
         user = UserORM(id=UUID(user_res.user.id))
@@ -277,7 +285,7 @@ async def store_urls_async(
         chunk_size: int = 500,
         ocr_detail: Literal["low", "medium", "high"] = "low",
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DatastoreResultDoc | None:
     try:
         user = UserORM(id=UUID(user_res.user.id))
@@ -302,7 +310,7 @@ async def store_urls_async(
 async def get_datastore_put_result(
         datastore_put_result_id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ):
     try:
         user = UserORM(id=UUID(user_res.user.id))

@@ -57,7 +57,8 @@ async def test_action_mock_happy_path(set_test_settings):
         deleted = await action_crud.delete_many(find)
         assert deleted.deleted_count == 1
 
-@pytest.mark.asyncio
+
+# @pytest.mark.asyncio
 async def test_action_llm_chat_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)

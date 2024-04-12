@@ -4,7 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.common_action_models import TextObj
@@ -27,7 +27,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_ACTION_GRAPHS, tags=[Setti
 async def create_action_graph(
         action_graph_create: ActionGraphCreate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -43,7 +43,7 @@ async def list_action_graphs(
         id: str = None, name: str = None, version: float = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ActionGraphDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     find = ActionGraphFind(id=id, name=name, version=version)
@@ -55,7 +55,7 @@ async def list_action_graphs(
 async def get_action_graph(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserActionGraphs(user=user_orm, db=db).get(id, db)
@@ -67,7 +67,7 @@ async def update_action_graph(
         id: str,
         action_graph_update: ActionGraphUpdate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserActionGraphs(user=user_orm, db=db).update(id, action_graph_update, db)
@@ -78,7 +78,7 @@ async def update_action_graph(
 async def delete_action_graph(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graphs = UserActionGraphs(user=user_orm, db=db)
@@ -112,7 +112,7 @@ async def async_run_action_graph(
         action_graph_node_id: Optional[str] = None,
         webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc | None:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)

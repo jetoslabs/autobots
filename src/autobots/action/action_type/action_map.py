@@ -8,6 +8,7 @@ from src.autobots.action.action_type.action_img2img.action_img2img_bulkedit_clai
 from src.autobots.action.action_type.action_img2img.action_img2img_edit_openai import ActionImg2ImgEditOpenai
 from src.autobots.action.action_type.action_img2img.action_img2img_photoshoot_claid import ActionImg2ImgPhotoshootClaid
 from src.autobots.action.action_type.action_img2img.action_img2img_variation_openai import ActionImg2ImgVariationOpenai
+from src.autobots.action.action_type.action_mock.action_mock import MockAction
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.action_multimodal_assistant_openai import \
     ActionMultimodalAssistantOpenai
 from src.autobots.action.action_type.action_text2audio.action_text2audio_speech_openai import ActionText2AudioSpeechOpenai
@@ -64,5 +65,5 @@ ACTION_MAP = {
     ActionType.audio2text_transcription_openai: ActionAudio2TextTranscriptionOpenai,
     ActionType.audio2text_translation_openai: ActionAudio2TextTranslationOpenai,
     # mock
-    # ActionType.mock_action: "mock_action"
+    ActionType.mock_action: MockAction
 }
