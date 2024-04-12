@@ -1,12 +1,12 @@
 import pytest
 from src.autobots.conn.claid.claid import UseClaidAiApi
-from src.autobots.conn.claid.claid_model import ClaidPhotoShootRequestModel, PhotoshootOutput, PhotoshootObject, \
-    PhotoshootScene, ClaidPhotoShootOutputModel
+from src.autobots.conn.claid.claid_model import PhotoshootOutput, PhotoshootObject, \
+    PhotoshootScene, ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
 
 
 @pytest.mark.asyncio
 async def test_photoshoot(set_test_settings):
-    claid_request = ClaidPhotoShootRequestModel(
+    claid_request = ClaidPhotoShootInputModel(
         output=PhotoshootOutput(
             destination="storage://teststorage/output/"
         ),

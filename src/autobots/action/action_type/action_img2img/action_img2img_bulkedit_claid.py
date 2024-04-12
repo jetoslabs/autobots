@@ -1,16 +1,16 @@
-from typing import Type, Optional
+from typing import Type
 from loguru import logger
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_calid_ai
-from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, ClaidErrorResponse
+from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, ClaidErrorResponse, ClaidInputModel
 
 
 class ActionImg2BulkEditClaid(
-    IAction[ClaidRequestModel, ClaidRequestModel, ClaidRequestModel, ClaidRequestModel, ClaidResponse]
+    IAction[ClaidRequestModel, ClaidRequestModel, ClaidRequestModel, ClaidInputModel, ClaidResponse]
 ):
     type = ActionType.img2img_bulk_edit_claid
 
@@ -28,7 +28,7 @@ class ActionImg2BulkEditClaid(
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return ClaidRequestModel
+        return ClaidInputModel
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
@@ -37,10 +37,14 @@ class ActionImg2BulkEditClaid(
     def __init__(self, action_config: ClaidRequestModel):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse:
+    async def run_action(self, action_input: ClaidInputModel) -> ClaidResponse | ClaidErrorResponse:
+
         claidai = get_calid_ai()
+        if action_input.operations:
+            self.action_config.operations = action_input.operations
+
         try:
-            res = await claidai.bulkEdit(action_input)
+            res = await claidai.bulkEdit(self.action_config)
             return res
         except ValidationError as e:
             logger.error(str(e))
