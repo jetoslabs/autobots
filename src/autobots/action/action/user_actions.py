@@ -38,8 +38,8 @@ class UserActions:
             logger.error(str(e))
             raise
         except Exception as e:
-            logger.error(str(e))
-        return None
+            logger.exception(str(e))
+            raise
 
     async def list_actions(
             self, action_find: ActionFind,

@@ -39,5 +39,5 @@ async def create_action_multimodal_assistant_openai(
         )
         return action_doc
     except Exception as e:
-        logger.error(str(e))
-        raise HTTPException(500)
+        logger.exception(str(e))
+        raise HTTPException(500, detail=str(e))
