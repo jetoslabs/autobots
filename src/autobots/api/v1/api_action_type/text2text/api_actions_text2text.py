@@ -4,7 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -35,7 +35,7 @@ class ActionCreateText2TextLlmChatOpenai(ActionCreate):
 async def create_action_text2text_llm_chat_openai(
         action_create: ActionCreateText2TextLlmChatOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -52,7 +52,7 @@ async def create_action_text2text_llm_chat_openai(
 async def create_action_text2text_llm_chat_with_vector_search_openai(
         action_create: ActionCreateText2TextLlmChatWithVectorSearchOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -74,7 +74,7 @@ class ActionCreateText2TextReadUrl(ActionCreate):
 async def create_action_text2text_read_url(
         action_create: ActionCreateText2TextReadUrl,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -96,7 +96,7 @@ class ActionCreateText2TextSearchWeb(ActionCreate):
 async def create_action_text2text_search_web(
         action_create: ActionCreateText2TextSearchWeb,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -120,7 +120,7 @@ class ActionCreateText2TextSearchMaps(ActionCreate):
 async def create_action_text2text_search_maps(
         action_create: ActionCreateText2TextSearchMaps,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -144,7 +144,7 @@ class ActionCreateText2TextUserInput(ActionCreate):
 async def create_action_text2text_user_input(
         action_create: ActionCreateText2TextUserInput,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

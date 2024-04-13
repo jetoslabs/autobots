@@ -3,7 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
@@ -36,7 +36,7 @@ async def list_action_graph_result(
         # action_graph_id: str = None, action_graph_name: str = None, action_graph_version: float = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ActionGraphResultDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graph_result = UserActionGraphResult(user_orm, db)
@@ -52,7 +52,7 @@ async def list_action_graph_result(
 async def get_action_graph_result(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_result_doc = await UserActionGraphResult(user_orm, db).get_action_graph_result(id)
@@ -64,7 +64,7 @@ async def update_action_graph_result(
         id: str,
         action_graph_result_update: ActionGraphResultUpdate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graph_result = UserActionGraphResult(user_orm, db)
@@ -76,7 +76,7 @@ async def update_action_graph_result(
 async def delete_action_graph_result(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_result = UserActionGraphResult(user_orm, db)

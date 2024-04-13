@@ -2,8 +2,9 @@ from typing import List
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException
-from pymongo.collection import Collection, ReturnDocument
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from pymongo import DESCENDING
+from pymongo.collection import ReturnDocument
 from pymongo.results import DeleteResult
 
 from src.autobots.action.action_chat.chat_doc_model import ChatDoc, ChatDocCreate, ChatDocFind, ChatDocUpdate
@@ -13,17 +14,17 @@ from src.autobots.core.database.mongo_base import get_mongo_db
 
 class ChatCRUD:
 
-    def __init__(self, db: Database = Depends(get_mongo_db)):
-        self.document: Collection = db[ChatDoc.__collection__]
+    def __init__(self, db: AsyncIOMotorDatabase = Depends(get_mongo_db)):
+        self.document: AsyncIOMotorCollection = db[ChatDoc.__collection__]
 
     async def insert_one(self, chat: ChatDocCreate) -> ChatDoc:
-        insert_result = self.document.insert_one(chat.model_dump())
+        insert_result = await self.document.insert_one(chat.model_dump())
         inserted_chat = await self._find_by_object_id(insert_result.inserted_id)
         return inserted_chat
 
     async def _find_by_object_id(self, id: str) -> ChatDoc:
         object_id = ObjectId(id)
-        doc = self.document.find_one({"_id": object_id})
+        doc = await self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
         return ChatDoc.model_validate(doc)
 
@@ -40,12 +41,13 @@ class ChatCRUD:
         if len(find_params) == 0:
             return []
 
-        cursor = self.document.find(find_params).sort("created_at", -1)
+        cursor = self.document.find(find_params)
+        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset).limit(limit)
         chat_docs = []
 
         skipped = 0
         filled = 0
-        for doc in cursor:
+        async for doc in cursor:
             # skipping records
             if skipped < offset * limit:
                 skipped = skipped + 1
@@ -70,7 +72,7 @@ class ChatCRUD:
                 else:
                     find_params[key] = value
 
-        delete_result = self.document.delete_many(find_params)
+        delete_result = await self.document.delete_many(find_params)
         return delete_result
 
     async def update_one(self, chat_doc_update: ChatDocUpdate) -> ChatDoc:
@@ -84,7 +86,7 @@ class ChatCRUD:
         if not update_params["_id"] and not update_params["user_id"]:
             raise HTTPException(405, "Cannot find chat to update")
 
-        updated_chat_doc = self.document.find_one_and_update(
+        updated_chat_doc = await self.document.find_one_and_update(
             filter={"_id": update_params.get("_id"), "user_id": chat_doc_update.user_id},
             update={"$set": update_params},
             return_document=ReturnDocument.AFTER

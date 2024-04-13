@@ -2,9 +2,8 @@ from typing import List
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException
-from pymongo import ReturnDocument
-from pymongo.collection import Collection
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from pymongo import ReturnDocument, DESCENDING
 from pymongo.results import DeleteResult
 
 from src.autobots.core.database.mongo_base import get_mongo_db
@@ -14,21 +13,21 @@ from src.autobots.action_graph.action_graph.action_graph_doc_model import Action
 
 class ActionGraphCRUD:
 
-    def __init__(self, db: Database = Depends(get_mongo_db)):
-        self.document: Collection = db[ActionGraphDoc.__collection__]
+    def __init__(self, db: AsyncIOMotorDatabase = Depends(get_mongo_db)):
+        self.document: AsyncIOMotorCollection = db[ActionGraphDoc.__collection__]
 
     async def insert_one(self, action_graph: ActionGraphDocCreate) -> ActionGraphDoc:
         action_graph_find = ActionGraphDocFind(name=action_graph.name, version=action_graph.version, user_id=action_graph.user_id)
         actions_graph_found = await self.find(action_graph_find)
         if len(actions_graph_found) > 0:
             raise HTTPException(400, "Action name and version not unique")
-        insert_result = self.document.insert_one(action_graph.model_dump())
+        insert_result = await self.document.insert_one(action_graph.model_dump())
         inserted_action_graph = await self._find_by_object_id(insert_result.inserted_id)
         return inserted_action_graph
 
     async def _find_by_object_id(self, id: str) -> ActionGraphDoc:
         object_id = ObjectId(id)
-        doc = self.document.find_one({"_id": object_id})
+        doc = await self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
         return ActionGraphDoc.model_validate(doc)
 
@@ -45,12 +44,13 @@ class ActionGraphCRUD:
         if len(find_params) == 0:
             return []
 
-        cursor = self.document.find(find_params).sort("created_at", -1)
+        cursor = self.document.find(find_params)
+        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset).limit(limit)
         action_graph_docs = []
 
         skipped = 0
         filled = 0
-        for doc in cursor:
+        async for doc in cursor:
             # skipping records
             if skipped < offset * limit:
                 skipped = skipped + 1
@@ -75,7 +75,7 @@ class ActionGraphCRUD:
                 else:
                     find_params[key] = value
 
-        delete_result = self.document.delete_many(find_params)
+        delete_result = await self.document.delete_many(find_params)
         return delete_result
 
     async def update_one(self, action_graph_doc_update: ActionGraphDocUpdate) -> ActionGraphDoc:
@@ -89,7 +89,7 @@ class ActionGraphCRUD:
         if not update_params["_id"] and not update_params["user_id"]:
             raise HTTPException(405, "Cannot find action to update")
 
-        updated_action_graph_doc = self.document.find_one_and_update(
+        updated_action_graph_doc = await self.document.find_one_and_update(
             filter={"_id": update_params.get("_id"), "user_id": action_graph_doc_update.user_id},
             update={"$set": update_params},
             return_document=ReturnDocument.AFTER

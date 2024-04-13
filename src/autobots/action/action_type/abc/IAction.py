@@ -1,7 +1,9 @@
 from abc import abstractmethod
-from typing import TypeVar, Generic, Type
+from typing import TypeVar, Generic, Type, List
 
 from pydantic import BaseModel
+
+from src.autobots.action.action.action_doc_model import ActionResult
 
 ActionConfigCreateType = TypeVar("ActionConfigCreateType", bound=BaseModel)
 ActionConfigUpdateType = TypeVar("ActionConfigUpdateType", bound=BaseModel)
@@ -53,11 +55,18 @@ class IAction(
     async def delete_config(config: ActionConfigType) -> ActionConfigType:
         return config
 
+    # @staticmethod
+    # async def update_config_with_prev_IO(
+    #         curr_config: ActionConfigType,
+    #         prev_input: ActionInputType | None = None,
+    #         prev_output: ActionOutputType | None = None,
+    # ) -> ActionConfigType:
+    #     return curr_config
+
     @staticmethod
-    async def update_config_with_prev_IO(
+    async def update_config_with_prev_results(
             curr_config: ActionConfigType,
-            prev_input: ActionInputType | None = None,
-            prev_output: ActionOutputType | None = None,
+            prev_results: List[ActionResult]
     ) -> ActionConfigType:
         return curr_config
 

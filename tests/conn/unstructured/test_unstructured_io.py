@@ -13,7 +13,7 @@ async def test_unstructured_io_whole_file_happy_path(set_test_settings):
         partition_parameters_params = PartitionParametersParams(
             combine_under_n_chars=0,
             strategy="hi_res",
-            hi_res_model_name="chipper",
+            hi_res_model_name="yolox",
             pdf_infer_table_structure=True
         )
         chunks = await ui_client.get_file_chunks(

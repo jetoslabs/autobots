@@ -2,8 +2,8 @@ from typing import List, Literal
 
 from fastapi import HTTPException, UploadFile, BackgroundTasks
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import HttpUrl
-from pymongo.database import Database
 from pymongo.results import DeleteResult
 
 from src.autobots.api.webhook import Webhook
@@ -22,7 +22,7 @@ from src.autobots.user.user_orm_model import UserORM
 
 class UserDatastore():
 
-    def __init__(self, user: UserORM, db: Database, s3: S3 = get_s3(), pinecone: Pinecone = get_pinecone()):
+    def __init__(self, user: UserORM, db: AsyncIOMotorDatabase, s3: S3 = get_s3(), pinecone: Pinecone = get_pinecone()):
         self.datastore = Datastore(s3, pinecone, get_unstructured_io())
         self.user = user
         self.db = db

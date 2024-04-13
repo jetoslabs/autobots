@@ -115,15 +115,8 @@ class ActionFactory:
             logger.error(f"Action {action_doc.type} not found in ACTION_MAP")
             raise Exception(f"Action {action_doc.type} not found in ACTION_MAP")
         config = action.get_config_type().model_validate(action_doc.config)
-        prev_input = None
-        prev_output = None
-        try:
-            prev_input = action.get_input_type().model_validate(action_doc.input)
-            prev_output = action.get_output_type().model_validate(action_doc.output)
-        except Exception:
-            logger.warning("Unable to gather prev_input or prev_output")
-
-        updated_config = await action.update_config_with_prev_IO(config, prev_input, prev_output)
+        prev_results: List[ActionResult] | None = action_doc.results
+        updated_config = await action.update_config_with_prev_results(config, prev_results)
         input = action.get_input_type().model_validate(action_input_dict)
         output = await action(updated_config).run_action(input)
 

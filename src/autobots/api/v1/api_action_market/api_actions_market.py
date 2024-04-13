@@ -3,7 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, BackgroundTasks
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.action_doc_model import ActionDoc
@@ -24,7 +24,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_ACTIONS_MARKET, tags=[Sett
 async def create_market_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_actions = UserActionsMarket(user_orm, db)
@@ -38,7 +38,7 @@ async def list_market_actions(
         version: float = None, type: ActionType = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ActionDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_actions = UserActionsMarket(user_orm, db)
@@ -54,7 +54,7 @@ async def list_market_actions(
 async def get_market_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc | None:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions_market = UserActionsMarket(user_orm, db)
@@ -66,7 +66,7 @@ async def get_market_action(
 async def delete_market_action(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions_market = UserActionsMarket(user_orm, db)
@@ -79,7 +79,7 @@ async def run_market_action(
         id: str,
         input: Dict[str, Any],
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_action = UserActionsMarket(user_orm, db)
@@ -94,7 +94,7 @@ async def async_run_action(
         background_tasks: BackgroundTasks,
         webhook: Webhook | None = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db),
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db),
 ) -> ActionResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_action = UserActionsMarket(user_orm, db)

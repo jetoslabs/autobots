@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import HTTPException
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, \
     ActionResultUpdate, ActionResultCreate
@@ -14,7 +14,7 @@ from src.autobots.user.user_orm_model import UserORM
 
 class UserActionResult:
 
-    def __init__(self, user: UserORM,  db: Database):
+    def __init__(self, user: UserORM,  db: AsyncIOMotorDatabase):
         self.user = user
         self.user_id = str(user.id)
         self.event_result_crud = EventResultCRUD(db)
