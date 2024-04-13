@@ -23,6 +23,7 @@ class OpenaiAssistants():
             return assistant
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def retrieve(self, assistant_retrieve: AssistantRetrieve) -> Assistant | None:
         try:
