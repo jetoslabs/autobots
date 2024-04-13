@@ -1,4 +1,4 @@
-from typing import Literal, Iterable
+from typing import Literal, Iterable, Dict
 
 from openai.types.beta import AssistantToolParam
 
@@ -25,7 +25,7 @@ class AssistantCreate(OpenaiExtraValues):
     description: str | None = None
     file_ids: list[str] | None = None
     instructions: str | None = None
-    metadata: object | None = None
+    metadata: Dict[str, str] | None = None
     name: str | None = None
     tools: Iterable[AssistantToolParam] | None = None
 
