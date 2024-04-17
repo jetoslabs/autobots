@@ -9,7 +9,7 @@ from src.autobots.action.action_type.abc.IAction import IAction, ActionInputType
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.assistant_openai_model import \
     AssistantOpenaiConfigCreate, AssistantOpenaiConfigUpdate, AssistantOpenaiConfig
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantDelete
+from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantDelete, AssistantUpdate
 from src.autobots.conn.openai.openai_assistants.openai_thread_messages.openai_thread_messages_model import \
     ThreadMessagesCreate, ThreadMessageList
 from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread_runs_model import ThreadRunCreate, \
@@ -53,8 +53,8 @@ class ActionMultimodalAssistantOpenai(
     @staticmethod
     async def update_config(config: AssistantOpenaiConfig, config_update: AssistantOpenaiConfigUpdate) -> AssistantOpenaiConfig:
         assistant_client = get_openai().openai_assistants
-        assistant_update = config_update
-        assistant = assistant_client.update(assistant_update)
+        assistant_update = AssistantUpdate(assistant_id=config.id, **config_update.model_dump(exclude_none=True))
+        assistant = await assistant_client.update(assistant_update)
         return assistant
 
     @staticmethod
