@@ -1,18 +1,24 @@
+import json
 from typing import Dict, List, Set, Any, Optional
 
 from fastapi import BackgroundTasks, HTTPException
 from loguru import logger
+from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import HttpUrl
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.user_actions_market import UserActionsMarket
+from src.autobots.action.action_type.action_map import ACTION_MAP
+from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
+    ActionText2TextLlmChatOpenai
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
 from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
     ActionGraphResultCreate, ActionGraphResultUpdate
 from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from src.autobots.api.webhook import Webhook
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.profiler.profiler import Profiler
 from src.autobots.event_result.event_result_model import EventResultStatus
 
@@ -175,7 +181,8 @@ class ActionGraph:
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
                         # Run action with at least 1 dependency
-                        action_input = await ActionGraph.to_input(upstream_nodes, action_response)
+                        curr_action = await ActionGraph.get_action(user_actions, user_actions_market, node_action_map.get(node))
+                        action_input = await ActionGraph.to_input(upstream_nodes, curr_action.type, action_response)
                         action_result: ActionDoc = await ActionGraph.run_action(
                             user_actions,
                             user_actions_market,
@@ -286,6 +293,24 @@ class ActionGraph:
             raise HTTPException(405, f"{exception.detail} and {e}")
 
     @staticmethod
+    async def get_action(
+            user_actions: UserActions,
+            user_action_market: UserActionsMarket,
+            action_id: str,
+    ) -> ActionDoc:
+        exception = None
+        try:
+            action = await user_actions.get_action(action_id)
+            return action
+        except HTTPException as e:
+            exception = e
+        try:
+            action = await user_action_market.get_market_action(action_id)
+            return action
+        except Exception as e:
+            raise HTTPException(405, f"{exception.detail} and {e}")
+
+    @staticmethod
     async def run_action_doc(
             user_actions: UserActions,
             action_doc: ActionDoc,
@@ -329,10 +354,23 @@ class ActionGraph:
         return True
 
     @staticmethod
-    async def to_input(values: List[str], action_response: Dict[str, ActionDoc]) -> TextObj:
+    async def to_input(
+            upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
+    ) -> TextObj | Dict[str, Any]:
         input_msg = ""
-        for value in values:
-            action_doc = action_response.get(value)
+
+        # curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type, action_response)
+        # return curr_action_input
+        # TODO bring this block back
+        for upstream_node in upstream_nodes:
+            upstream_action_doc = action_response.get(upstream_node)
+            upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
+            if upstream_action_output_type != TextObjs and upstream_action_output_type != TextObj:
+                curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type, action_response)
+                return curr_action_input
+
+        for upstream_node in upstream_nodes:
+            action_doc = action_response.get(upstream_node)
             action_outputs = action_doc.output
             try:
                 # check if action_output is TextObjs
@@ -359,3 +397,35 @@ class ActionGraph:
 
         text_obj = TextObj(text=input_msg)
         return text_obj
+
+    @staticmethod
+    async def gen_input(
+            upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
+    ) -> Dict[str, Any]:
+        llm_input = ("You are an expert in json."
+                     "Create result json for a given model json schema for result, "
+                     "from the input(s) data and its/their json model schema\n\n")
+        for upstream_node in upstream_nodes:
+            upstream_action_doc = action_response.get(upstream_node)
+            upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
+            upstream_action_output_model_schema = upstream_action_output_type.model_json_schema()
+            upstream_action_output = upstream_action_doc.output
+            llm_input += f"#####\nInput model schema:\n{upstream_action_output_model_schema}\n\nInput data:\n{upstream_action_output}\n\n"
+
+        curr_action_input_type = ACTION_MAP.get(current_node_action_type).get_input_type()
+        curr_action_input_model_schema = curr_action_input_type.model_json_schema()
+        llm_input += f"#####\nOutput model schema:\n{curr_action_input_model_schema}\n\n"
+        llm_input += ("Based on the inputs, give me the output data. You have to provide only the output in JSON "
+                      "format and nothing else. DO NOT start the output with json and end with . Start straight with "
+                      "{ and end with }.")
+
+        chat_req = ChatReq(
+            messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)]
+        )
+        run_input = TextObj(text=llm_input)
+        text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(run_input)
+        output_json = text_objs.texts[0].text
+        json_dict = json.loads(output_json)
+        return json_dict
+
+
