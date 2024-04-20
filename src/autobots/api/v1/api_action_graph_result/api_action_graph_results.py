@@ -34,7 +34,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_ACTION_GRAPHS_RESULTS,
 async def list_action_graph_result(
         id: str = None, status: EventResultStatus = None, is_saved: bool = None,
         # action_graph_id: str = None, action_graph_name: str = None, action_graph_version: float = None,
-        limit: int = 100, offset: int = 0,
+        limit: int = 20, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ActionGraphResultDoc]:
