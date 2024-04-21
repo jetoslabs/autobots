@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, List, Type
+from typing import TypeVar, Generic, List, Type, Dict, Any
 
 from bson import ObjectId
 from fastapi import HTTPException
@@ -11,6 +11,13 @@ DocType = TypeVar("DocType", bound=BaseModel)
 DocCreateType = TypeVar("DocCreateType", bound=BaseModel)
 DocFindType = TypeVar("DocFindType", bound=BaseModel)
 DocUpdateType = TypeVar("DocUpdateType", bound=BaseModel)
+
+
+class DocFindPage(BaseModel):
+    docs: List[DocType]
+    total_count: int
+    limit: int
+    offset: int
 
 
 class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
@@ -30,19 +37,32 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         doc["_id"] = str(doc.get("_id"))
         return self.doc_model.model_validate(doc)
 
+    async def find_page(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> DocFindPage:
+        find_params = await self._build_find_params(doc_find)
+        if len(find_params) == 0:
+            return DocFindPage(docs=[], total_count=0, limit=limit, offset=offset)
+
+        cursor = self.document.find(find_params)
+        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset * limit).limit(limit)
+        docs = []
+
+        async for doc in cursor:
+            # Mongo Result field _id has ObjectId, converting it to str for pydantic model
+            doc["_id"] = str(doc.get("_id"))
+            doc_type = self.doc_model.model_validate(doc)
+            docs.append(doc_type)
+
+        total_count = await self.count(find_params=find_params)
+
+        return DocFindPage(docs=docs, total_count=total_count, limit=limit, offset=offset)
+
     async def find(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> List[DocType]:
-        find_params = {}
-        for key, value in doc_find.model_dump().items():
-            if value is not None:
-                if key == "id":
-                    find_params["_id"] = ObjectId(value)
-                else:
-                    find_params[key] = value
+        find_params = await self._build_find_params(doc_find)
         if len(find_params) == 0:
             return []
 
         cursor = self.document.find(find_params)
-        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset).limit(limit)
+        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset * limit).limit(limit)
         docs = []
 
         async for doc in cursor:
@@ -53,14 +73,12 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
 
         return docs
 
+    async def count(self, find_params: Dict[str, Any]) -> int:
+        count = await self.document.count_documents(find_params)
+        return count
+
     async def delete_many(self, doc_find: DocFindType) -> DeleteResult:
-        find_params = {}
-        for key, value in doc_find.model_dump().items():
-            if value is not None:
-                if key == "id":
-                    find_params["_id"] = ObjectId(value)
-                else:
-                    find_params[key] = value
+        find_params = await self._build_find_params(doc_find)
 
         delete_result = await self.document.delete_many(find_params)
         return delete_result
@@ -89,6 +107,12 @@ class CRUDBase(Generic[DocType, DocCreateType, DocFindType, DocUpdateType]):
         doc_type = self.doc_model.model_validate(updated_action_doc)
         return doc_type
 
-
-
-
+    async def _build_find_params(self, doc_find: DocFindType) -> Dict[str, Any]:
+        find_params = {}
+        for key, value in doc_find.model_dump().items():
+            if value is not None:
+                if key == "id":
+                    find_params["_id"] = ObjectId(value)
+                else:
+                    find_params[key] = value
+        return find_params

@@ -1,4 +1,3 @@
-from typing import List
 from uuid import UUID
 
 import gotrue
@@ -7,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
-    ActionGraphResultUpdate
+    ActionGraphResultUpdate, ActionGraphResultDocsFound
 from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
@@ -37,14 +36,15 @@ async def list_action_graph_result(
         limit: int = 20, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
-) -> List[ActionGraphResultDoc]:
+# ) -> List[ActionGraphResultDoc]:
+) -> ActionGraphResultDocsFound:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graph_result = UserActionGraphResult(user_orm, db)
     action_result_find = EventResultFind(
         id=id, status=status, is_saved=is_saved,
         # action_id=action_id, action_name=action_name, action_version=action_version, action_type=action_type
     )
-    action_result_docs = await user_action_graph_result.list_action_graph_result(action_result_find, limit, offset)
+    action_result_docs = await user_action_graph_result.list_page_action_graph_result(action_result_find, limit, offset)
     return action_result_docs
 
 
