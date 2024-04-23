@@ -301,6 +301,8 @@ class ActionGraph:
         exception = None
         try:
             action = await user_actions.get_action(action_id)
+            if action is None:
+                raise HTTPException(404, "Action not found")
             return action
         except HTTPException as e:
             exception = e

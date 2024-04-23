@@ -57,7 +57,7 @@ class UserActions:
             action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
             action_docs = await self.action_crud.find(action_doc_find)
             if len(action_docs) != 1:
-                raise HTTPException(500, "Error in finding action")
+                raise HTTPException(404, "Error in finding action")
             return action_docs[0]
         except Exception as e:
             logger.exception(str(e))
