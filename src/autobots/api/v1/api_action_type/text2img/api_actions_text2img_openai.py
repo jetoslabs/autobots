@@ -3,8 +3,8 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from openai.types import ImagesResponse
-from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.common_action_models import TextObj
@@ -23,7 +23,7 @@ router = APIRouter()
 async def create_text2img_dalle_openai(
         action_create: ActionCreateGenImageDalleOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -41,7 +41,7 @@ async def run_text2img_dalle_openai(
         action_id: str,
         action_input: TextObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ImagesResponse:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import Field
+from pydantic import Field, ConfigDict
 from src.autobots import SettingsProvider
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime
@@ -7,15 +7,17 @@ from datetime import datetime
 
 class DiscordReqModel(BaseModel):
     prompt: Optional[str] = Field("", description="Text prompt with description of the things" +
-                                         " you want in the image to be generated.")
+                                                  " you want in the image to be generated.")
     job_id: Optional[str] = Field(default="", description="Job id to fetch")
-    button: Optional[str] = Field(default="", description= "Button to run the action")
+    button: Optional[str] = Field(default="", description="Button to run the action")
+
+
 class DiscordJobReqModel(BaseModel):
-   useapi_net_endpoint_url: str =  Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
-                     description="USE_API end point")
-   use_api_net_token: str = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
-                               description="Your discord channel id used for request authorization.")
-   job_id: str = Field(description="Job id to fetch")
+    useapi_net_endpoint_url: str = Field(default=SettingsProvider.sget().USEAPI_NET_END_POINT_URL,
+                                         description="USE_API end point")
+    use_api_net_token: str = Field(default=SettingsProvider.sget().USEAPI_NET_TOKEN,
+                                   description="Your discord channel id used for request authorization.")
+    job_id: str = Field(description="Job id to fetch")
 
 
 class DiscordChild(BaseModel):
@@ -51,20 +53,20 @@ class DiscordJobsApiResponse(BaseModel):
     maxJobs: Optional[int]
     messageId: Optional[str]
     replyUrl: Optional[str] = None
-    replyRef:Optional[str] = None
+    replyRef: Optional[str] = None
     content: Optional[str]
     timestamp: Optional[datetime]
     attachments: Optional[List[DiscordAttachment]] = None
     code: int
     message: Optional[str] = None
 
-    class Config:
-        populate_by_name = True  # This allows extra fields in the response
+    model_config = ConfigDict(populate_by_name=True)  # This allows extra fields in the response
 
 
 class DiscordErrorResponse(BaseModel):
     error: str
     code: int
+
 
 class DiscordImagineApiResponse(BaseModel):
     jobid: Optional[str]
@@ -85,9 +87,8 @@ class DiscordImagineApiResponse(BaseModel):
     message: Optional[str] = None
     code: int
 
+    model_config = ConfigDict(populate_by_name=True)  # This allows extra fields in the response
 
-    class Config:
-        populate_by_name = True  # This allows extra fields in the response
 
 class DiscordButtonJobResponse(BaseModel):
     jobid: Optional[str]
@@ -110,6 +111,4 @@ class DiscordButtonJobResponse(BaseModel):
     executingJobs: Optional[dict] = None
     code: Optional[int]
 
-    class Config:
-        populate_by_name = True  # This allows extra fields in the response
-
+    model_config = ConfigDict(populate_by_name=True)  # This allows extra fields in the response

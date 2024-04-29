@@ -4,8 +4,8 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from openai.types.audio import Transcription
-from pymongo.database import Database
 
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionDoc
 from src.autobots.action.action.user_actions import UserActions
@@ -30,7 +30,7 @@ class ActionCreateAudio2TextTranscriptionOpenai(ActionCreate):
 async def create_action_audio2text_transcription_openai(
         action_create: ActionCreateAudio2TextTranscriptionOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))

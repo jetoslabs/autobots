@@ -4,7 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionCreate
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -30,7 +30,7 @@ class ActionCreateMultimodalAssistantOpenai(ActionCreate):
 async def create_action_multimodal_assistant_openai(
         action_create: ActionCreateMultimodalAssistantOpenai,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
@@ -39,5 +39,5 @@ async def create_action_multimodal_assistant_openai(
         )
         return action_doc
     except Exception as e:
-        logger.error(str(e))
-        raise HTTPException(500)
+        logger.exception(str(e))
+        raise HTTPException(500, detail=str(e))

@@ -23,36 +23,42 @@ class OpenaiAssistants():
             return assistant
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def retrieve(self, assistant_retrieve: AssistantRetrieve) -> Assistant | None:
         try:
             return await self.client.beta.assistants.retrieve(**assistant_retrieve.model_dump(exclude_unset=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def list(self, assistant_list: AssistantList) -> AsyncPaginator[Assistant, AsyncCursorPage[Assistant]]:
         try:
             return await self.client.beta.assistants.list(**assistant_list.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def delete(self, assistant_delete: AssistantDelete) -> AssistantDeleted | None:
         try:
             return await self.client.beta.assistants.delete(**assistant_delete.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def update(self, assistant_update: AssistantUpdate) -> Assistant | None:
         try:
             return await self.client.beta.assistants.update(**assistant_update.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def create_file(self, assistant_file_input: AssistantFileInput) -> AssistantFile | None:
         try:
             return await self.client.beta.assistants.files.create(**assistant_file_input.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def retrieve_file(self, assistant_file_input: AssistantFileInput) -> AssistantFile | None:
         try:
@@ -60,12 +66,14 @@ class OpenaiAssistants():
                 **assistant_file_input.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def delete_file(self, assistant_file_input: AssistantFileInput) -> FileDeleteResponse | None:
         try:
             return await self.client.beta.assistants.files.delete(**assistant_file_input.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise
 
     async def list_files(self, assistant_file_input: AssistantFileListInput) -> AsyncPaginator[
                                                                                     AssistantFile, AsyncCursorPage[
@@ -74,3 +82,4 @@ class OpenaiAssistants():
             return await self.client.beta.assistants.files.list(**assistant_file_input.model_dump(exclude_none=True))
         except Exception as e:
             logger.error(str(e))
+            raise

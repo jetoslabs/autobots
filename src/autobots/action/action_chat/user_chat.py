@@ -2,10 +2,10 @@ from typing import List
 
 from fastapi import HTTPException
 from loguru import logger
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from openai.types.chat import ChatCompletionUserMessageParam
-from pymongo.database import Database
 
-from src.autobots.action.action_type.action_factory import ActionFactory
+from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_chat.chat_crud import ChatCRUD
@@ -22,7 +22,7 @@ class UserChat():
     """
     DEFAULT_TITLE = "New Chat"
 
-    def __init__(self, user: UserORM, db: Database):
+    def __init__(self, user: UserORM, db: AsyncIOMotorDatabase):
         self.user = user
         self.user_id = str(user.id)
         self.chat_crud = ChatCRUD(db)
@@ -76,7 +76,8 @@ class UserChat():
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
 
-        resp_text_objs: TextObjs = await ActionFactory.run_action(chat_doc.action, input.model_dump())
+        run_obj: RunActionObj = await ActionFactory.run_action(chat_doc.action, input.model_dump())
+        resp_text_objs: TextObjs = TextObjs.model_validate(run_obj.output_dict)
 
         messages = []
         input_message = Message(role=Role.user, content=input.text)

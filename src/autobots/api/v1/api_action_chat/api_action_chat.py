@@ -3,7 +3,7 @@ from uuid import UUID
 
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.common_action_models import TextObj
@@ -22,7 +22,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_ACTION_CHATS, tags=[Settin
 async def create_chat(
         action_id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ChatDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_doc = await UserActions(user=user_orm, db=db).get_action(action_id)
@@ -36,7 +36,7 @@ async def list_chat(
         id: str = None, title: str = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> List[ChatDoc]:
     user_orm = UserORM(id=UUID(user_res.user.id))
     chat_find = ChatFind(id=id, title=title)
@@ -48,7 +48,7 @@ async def list_chat(
 async def get_chat(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ChatDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     chat_doc = await UserChat(user=user_orm, db=db).get_chat(id)
@@ -60,7 +60,7 @@ async def update_chat(
         id: str,
         chat_update: ChatUpdate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ChatDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     chat_doc = await UserChat(user=user_orm, db=db).update_chat(id, chat_update)
@@ -71,7 +71,7 @@ async def update_chat(
 async def delete_chat(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ChatDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_chat = UserChat(user=user_orm, db=db)
@@ -89,7 +89,7 @@ async def chat(
         id: str,
         input: TextObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-        db: Database = Depends(get_mongo_db)
+        db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> str:
     user_orm = UserORM(id=UUID(user_res.user.id))
     resp = await UserChat(user=user_orm, db=db).chat(id, input)

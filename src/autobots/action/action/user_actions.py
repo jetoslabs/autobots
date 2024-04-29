@@ -2,11 +2,12 @@ from typing import List, Any, Dict
 
 from fastapi import HTTPException
 from loguru import logger
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.action_crud import ActionCRUD
-from src.autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, ActionCreate, \
-    ActionUpdate, ActionDocUpdate
+from src.autobots.action.action.action_doc_model import ActionFind, ActionDocFind, ActionDoc, ActionDocCreate, \
+    ActionCreate, \
+    ActionUpdate, ActionDocUpdate, ActionResult
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc
 from src.autobots.action.action_result.user_action_result import UserActionResult
 from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
@@ -16,7 +17,7 @@ from src.autobots.user.user_orm_model import UserORM
 
 class UserActions:
 
-    def __init__(self, user: UserORM, db: Database):
+    def __init__(self, user: UserORM, db: AsyncIOMotorDatabase):
         self.user = user
         self.user_id = str(user.id)
         self.db = db
@@ -38,8 +39,8 @@ class UserActions:
             logger.error(str(e))
             raise
         except Exception as e:
-            logger.error(str(e))
-        return None
+            logger.exception(str(e))
+            raise
 
     async def list_actions(
             self, action_find: ActionFind,
@@ -56,10 +57,10 @@ class UserActions:
             action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
             action_docs = await self.action_crud.find(action_doc_find)
             if len(action_docs) != 1:
-                raise HTTPException(500, "Error in finding action")
+                raise HTTPException(404, "Error in finding action")
             return action_docs[0]
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
         return None
 
     async def update_action(
@@ -117,13 +118,19 @@ class UserActions:
                 raise HTTPException(405, "Action Result not found")
             # action_result_doc.result.input
 
-        resp: RunActionObj = await ActionFactory.run_action(action_doc, input)
-        action_doc.output = resp.output_dict
+        run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        action_doc.output = run_obj.output_dict
+        if action_doc.results is None:
+            action_doc.results = []
+        action_doc.results.append(ActionResult(input=run_obj.input_dict, output=run_obj.output_dict))
         return action_doc
 
     @staticmethod
     async def run_action_doc(action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
         action_doc.input = input
-        resp: RunActionObj = await ActionFactory.run_action(action_doc, input)
-        action_doc.output = resp.output_dict
+        run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        action_doc.output = run_obj.output_dict
+        if action_doc.results is None:
+            action_doc.results = []
+        action_doc.results.append(ActionResult(input=run_obj.input_dict, output=run_obj.output_dict))
         return action_doc

@@ -3,8 +3,8 @@ from typing import List
 from bson import ObjectId
 from fastapi import Depends, HTTPException
 from loguru import logger
-from pymongo.collection import Collection, ReturnDocument
-from pymongo.database import Database
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from pymongo import DESCENDING, ReturnDocument
 from pymongo.results import DeleteResult
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionDocCreate, ActionDocFind, ActionDocUpdate
@@ -13,21 +13,21 @@ from src.autobots.core.database.mongo_base import get_mongo_db
 
 class ActionCRUD:
 
-    def __init__(self, db: Database = Depends(get_mongo_db)):
-        self.document: Collection = db[ActionDoc.__collection__]
+    def __init__(self, db: AsyncIOMotorDatabase = Depends(get_mongo_db)):
+        self.document: AsyncIOMotorCollection = db[ActionDoc.__collection__]
 
     async def insert_one(self, action: ActionDocCreate) -> ActionDoc:
         action_find = ActionDocFind(name=action.name, version=action.version, user_id=action.user_id)
         actions_found = await self.find(action_find)
         if len(actions_found) > 0:
             raise HTTPException(400, "Action name and version not unique")
-        insert_result = self.document.insert_one(action.model_dump())
+        insert_result = await self.document.insert_one(action.model_dump())
         inserted_action = await self._find_by_object_id(insert_result.inserted_id)
         return inserted_action
 
     async def _find_by_object_id(self, id: str) -> ActionDoc:
         object_id = ObjectId(id)
-        doc = self.document.find_one({"_id": object_id})
+        doc = await self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
         return ActionDoc.model_validate(doc)
 
@@ -44,12 +44,13 @@ class ActionCRUD:
         if len(find_params) == 0:
             return []
 
-        cursor = self.document.find(find_params).sort("created_at", -1)
+        cursor = self.document.find(find_params)
+        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset).limit(limit)
         action_docs = []
 
         skipped = 0
         filled = 0
-        for doc in cursor:
+        async for doc in cursor:
             action_doc = None
             try:
                 # skipping records
@@ -78,7 +79,7 @@ class ActionCRUD:
                 else:
                     find_params[key] = value
 
-        delete_result = self.document.delete_many(find_params)
+        delete_result = await self.document.delete_many(find_params)
         return delete_result
 
     async def update_one(self, action_doc_update: ActionDocUpdate) -> ActionDoc:
@@ -92,7 +93,7 @@ class ActionCRUD:
         if not update_params["_id"] and not update_params["user_id"]:
             raise HTTPException(405, "Cannot find action to update")
 
-        updated_action_doc = self.document.find_one_and_update(
+        updated_action_doc = await self.document.find_one_and_update(
             filter={"_id": update_params.get("_id"), "user_id": action_doc_update.user_id},
             update={"$set": update_params},
             return_document=ReturnDocument.AFTER

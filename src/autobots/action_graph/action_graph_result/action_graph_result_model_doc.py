@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Optional, List
+
+from pydantic import BaseModel
 
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
 from src.autobots.event_result.event_result_model import EventResultUpdate, EventResultCreate, EventType, EventResultDoc
@@ -18,3 +20,10 @@ class ActionGraphResultCreate(EventResultCreate):
 
 class ActionGraphResultDoc(EventResultDoc):
     result: ActionGraphDoc
+
+
+class ActionGraphResultDocsFound(BaseModel):
+    docs: List[ActionGraphResultDoc]
+    total_count: int
+    limit: int
+    offset: int
