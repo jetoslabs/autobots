@@ -358,19 +358,19 @@ class ActionGraph:
     @staticmethod
     async def to_input(
             upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
-    ) -> TextObj | Dict[str, Any]:
+    ) -> TextObj | Any:
         input_msg = ""
 
         # curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type, action_response)
         # return curr_action_input
-        # TODO bring this block back
+        # Use llm to build input obj
         for upstream_node in upstream_nodes:
             upstream_action_doc = action_response.get(upstream_node)
             upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
             if upstream_action_output_type != TextObjs and upstream_action_output_type != TextObj:
                 curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type, action_response)
                 return curr_action_input
-
+        # Use manual code to build input obj
         for upstream_node in upstream_nodes:
             action_doc = action_response.get(upstream_node)
             action_outputs = action_doc.output
@@ -404,7 +404,7 @@ class ActionGraph:
     async def gen_input(
             upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
     ) -> Dict[str, Any]:
-        llm_input = ("You are an expert in json."
+        llm_input = ("You are an expert programmer and logician."
                      "Create result json for a given model json schema for result, "
                      "from the input(s) data and its/their json model schema\n\n")
         for upstream_node in upstream_nodes:
@@ -417,17 +417,20 @@ class ActionGraph:
         curr_action_input_type = ACTION_MAP.get(current_node_action_type).get_input_type()
         curr_action_input_model_schema = curr_action_input_type.model_json_schema()
         llm_input += f"#####\nOutput model schema:\n{curr_action_input_model_schema}\n\n"
-        llm_input += ("Based on the inputs, give me the output data. You have to provide only the output in JSON "
-                      "format and nothing else. DO NOT start the output with json and end with . Start straight with "
-                      "{ and end with }.")
+        llm_input += ("Add all inputs to give me the output data that adheres to Output model schema. You have to provide only the output in JSON. "
+                      "Start straight with { and end with }.")
 
         chat_req = ChatReq(
-            messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)]
+            model="gpt-4-turbo",
+            messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
+            response_format={"type": "json_object"}
         )
         run_input = TextObj(text=llm_input)
         text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(run_input)
         output_json = text_objs.texts[0].text
         json_dict = json.loads(output_json)
-        return json_dict
+        curr_action_input_obj = curr_action_input_type.model_validate(json_dict)
+        return curr_action_input_obj
+        # return json_dict
 
 
