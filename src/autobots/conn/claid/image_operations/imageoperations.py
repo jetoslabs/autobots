@@ -40,11 +40,19 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
         "Authorization": f"Bearer {claidConfig.claid_apikey}"
     }
 
-    req['input'] = claidConfig.s3_input_folder_url
-    req['output'] = claidConfig.s3_output_folder_url
+    input = claidConfig.s3_input_folder_url
+    output = claidConfig.s3_output_folder_url
 
 
-    response = requests.post(url, json=req, headers=headers)
+    operations = req.operations.dict(exclude_none=True)
+    request_payload = {
+        "input": input,
+        "output": output,
+        "operations": operations
+    }
+
+
+    response = requests.post(url, json=request_payload, headers=headers)
     response_json = response.json()
     try:
         response = ClaidResponse.model_validate(response_json)
@@ -91,6 +99,7 @@ async def photoshoot(req : ClaidPhotoShootInputModel) -> ClaidPhotoShootOutputMo
     # Hardcoding input and output URLs for now
     if req.output is not None:
         req.output.destination = claidConfig.s3_output_folder_url
+        req.output.format = "jpeg"
 
     if req.object is not None:
         req.object.image_url = claidConfig.s3_input_file_url
