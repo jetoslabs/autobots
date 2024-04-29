@@ -42,8 +42,8 @@ class BackgroundBlur(BaseModel):
 
 class Background(BaseModel):
     remove: Union[bool, BackgroundRemove] | None = None
-    blur: Union[bool, BackgroundBlur] | None= None
-    color: str | None = None
+    blur: Union[bool, BackgroundBlur] | None = None
+    color: str | None = "transparent"
 
 
 class Restorations(BaseModel):
@@ -75,7 +75,7 @@ class OutputCompression(BaseModel):
 class Output(BaseModel):
     destination: str | None = None
     metadata: Dict[str, int] | None = None
-    format: Union[Literal["jpeg", "png", "webp", "avif"], OutputFormat, OutputCompression] = None
+    format: Union[Literal["jpeg", "png", "webp", "avif"], OutputFormat, OutputCompression] = "png"
 
 
 class ClaidRequestModel(BaseModel):
