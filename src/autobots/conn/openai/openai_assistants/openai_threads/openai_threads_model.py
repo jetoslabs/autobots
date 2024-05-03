@@ -16,6 +16,7 @@ class ThreadCreateAndRun(OpenaiExtraValues):
 
 class ThreadCreate(OpenaiExtraValues):
     messages: List[thread_create_params.Message] | None = None
+    tool_resources: thread_create_params.ToolResources | None = None
     metadata: Optional[object] | None = None
 
 
@@ -25,6 +26,7 @@ class ThreadRetrieve(OpenaiExtraValues):
 
 class ThreadUpdate(OpenaiExtraValues):
     thread_id: str
+    tool_resources: thread_create_params.ToolResources | None = None
     metadata: Optional[object] | None = None
 
 
