@@ -1,7 +1,7 @@
 import time
 
 import pytest
-from openai.types.beta import CodeInterpreterToolParam, RetrievalToolParam
+from openai.types.beta import CodeInterpreterToolParam, FileSearchToolParam
 
 from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantCreate, AssistantDelete
 
@@ -28,7 +28,7 @@ async def test_assistant_happy_path(set_test_settings):
             # file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
             tools=[
                 CodeInterpreterToolParam(type="code_interpreter"),
-                RetrievalToolParam(type="retrieval")
+                FileSearchToolParam(type="file_search")
             ]
         )
         assistant = await assistant_client.create(assistant_create)

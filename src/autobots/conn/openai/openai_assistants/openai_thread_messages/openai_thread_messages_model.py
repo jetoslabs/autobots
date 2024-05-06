@@ -1,46 +1,52 @@
-from typing import Literal
+from typing import Literal, Iterable
 
+from openai.types.beta.threads import message_create_params
 from pydantic import BaseModel
 
 
 class ThreadMessagesCreate(BaseModel):
     thread_id: str
+    role: Literal["user", "assistant"] = "user"
     content: str
-    role: Literal["user"] = "user"
-    file_ids: list[str] | None = None
+    attachments: Iterable[message_create_params.Attachment] | None = None
     metadata: object | None = None
 
 
 class ThreadMessagesRetrieve(BaseModel):
-    message_id: str
     thread_id: str
+    message_id: str
 
 
 class ThreadMessageUpdate(BaseModel):
-    message_id: str
     thread_id: str
+    message_id: str
     metadata: object | None = None
 
 
 class ThreadMessageList(BaseModel):
     thread_id: str
-    after: str | None = None
-    before: str | None = None
     limit: int | None = None
     order: Literal["asc", "desc"] | None = None
+    after: str | None = None
+    before: str | None = None
+    run_id: str | None = None
 
 
-class ThreadMessageFileRetrieve(BaseModel):
-    file_id: str
+class ThreadMessageDelete(BaseModel):
     thread_id: str
     message_id: str
 
 
-class ThreadMessageFileList(BaseModel):
-    thread_id: str
-    message_id: str
-    after: str | None = None
-    before: str | None = None
-    limit: int | None = None
-    order: Literal["asc", "desc"] | None = None
+# class ThreadMessageFileRetrieve(BaseModel):
+#     file_id: str
+#     thread_id: str
+#     message_id: str
 
+
+# class ThreadMessageFileList(BaseModel):
+#     thread_id: str
+#     message_id: str
+#     after: str | None = None
+#     before: str | None = None
+#     limit: int | None = None
+#     order: Literal["asc", "desc"] | None = None
