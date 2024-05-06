@@ -7,6 +7,8 @@ from openai.types.chat import ChatCompletionMessageParam, completion_create_para
     ChatCompletionToolParam
 from pydantic import BaseModel, ConfigDict
 
+from src.autobots.conn.openai.openai_models import OPENAI_MODELS
+
 
 class Role(str, Enum):
     system = "system"
@@ -21,25 +23,7 @@ class Message(BaseModel):
 
 class ChatReq(BaseModel):
     messages: List[ChatCompletionMessageParam]
-    model: Literal[
-        "gpt-4-0125-preview",
-        "gpt-4-turbo-preview",
-        "gpt-4-1106-preview",
-        "gpt-4-vision-preview",
-        "gpt-4",
-        "gpt-4-0314",
-        "gpt-4-0613",
-        "gpt-4-32k",
-        "gpt-4-32k-0314",
-        "gpt-4-32k-0613",
-        "gpt-3.5-turbo",
-        "gpt-3.5-turbo-16k",
-        "gpt-3.5-turbo-0301",
-        "gpt-3.5-turbo-0613",
-        "gpt-3.5-turbo-1106",
-        "gpt-3.5-turbo-0125",
-        "gpt-3.5-turbo-16k-0613",
-        ] = "gpt-3.5-turbo-16k-0613"
+    model: OPENAI_MODELS = "gpt-4-turbo"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None
     # functions: List[completion_create_params.Function] = None
