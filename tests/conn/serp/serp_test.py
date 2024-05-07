@@ -3,7 +3,7 @@ from src.autobots.conn.claid.claid import UseClaidAiApi
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponseData, Operations, Output, \
     BackgroundRemove, Background, ClaidResponse, ClaidPhotoShootRequestModel, PhotoshootOutput, PhotoshootObject, \
     PhotoshootScene, ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
-from src.autobots.conn.serp.ads.ads import LocalAds, SerpRequest
+from src.autobots.conn.serp.ads.ads import Ads, SerpRequest
 from src.autobots.conn.serp.serp import UseSerpApi
 
 
@@ -14,7 +14,7 @@ async def test_local_ads(set_test_settings):
         location = "delhi"
     )
     usa = UseSerpApi()
-    res : LocalAds = await usa.getLocalAds(serp_request)
+    res : Ads = await usa.getLocalAds(serp_request)
     print(res)
     assert (res)
 

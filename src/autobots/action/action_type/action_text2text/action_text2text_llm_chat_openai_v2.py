@@ -10,6 +10,8 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.function.function_factory import FunctionFactory
+from src.autobots.function.function_map import FUNCTION_MAP
 
 
 class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
@@ -71,8 +73,18 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, T
             if not chat_res:
                 return text_objs
             # resp = Message.model_validate(chat_res.choices[0].message)
+
+            #calling functions if response contains tool_calls
             for choice in chat_res.choices:
-                text_objs.texts.append(TextObj(text=choice.message.content))
+                for tool_functions in choice.message.tool_calls:
+                    resp = await FunctionFactory.run_function(FUNCTION_MAP[tool_functions.function.name], tool_functions.function.name, tool_functions.function.arguments)
+                    text_objs.texts.append(TextObj(text=str(resp)))
+                    print(resp)
+
+
+            for choice in chat_res.choices:
+                if choice.message.content is not None:
+                   text_objs.texts.append(TextObj(text=choice.message.content))
             return text_objs
         except ValidationError as e:
             logger.error(str(e))

@@ -1,3 +1,6 @@
+import inspect
+import json
+
 
 class FunctionFactory:
 
@@ -22,7 +25,15 @@ class FunctionFactory:
         # Print the function name
         print(f"Running function: {name}")
 
-        # Execute the function with specified arguments
-        result = func(*args, **kwargs)
+        func_signature = inspect.signature(func)
+
+        args_dict = json.loads(args[0])
+
+        # Create an instance of the Pydantic model using the filtered arguments
+        arg_instance = func_signature.parameters['req'].annotation(**args_dict)
+
+        # Execute the function with the argument instance
+        result = await func(arg_instance)
 
         return result
+
