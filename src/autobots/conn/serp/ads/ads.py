@@ -13,6 +13,9 @@ class SerpRequest(BaseModel):
     query: str
     location: str
 
+class SerpShoppingRequest(BaseModel):
+    query: str
+
 class Product(BaseModel):
     title: str | None
     link: str | None
@@ -61,6 +64,38 @@ class OrganicResult(BaseModel):
 class OrganicResults(BaseModel):
     organic_results: List[OrganicResult]
 
+class Extensions(BaseModel):
+    extension: dict | str | None = None
+
+class FeaturedShoppingResult(BaseModel):
+    position: int | None = None
+    title: str | None = None
+    link: str | None = None
+    product_link: str | None = None
+    product_id: str | None = None
+    serpapi_product_api: str | None = None
+    source: str | None = None
+    price: str | None = None
+    extracted_price: float | None = None
+    old_price: Optional[str] | None = None
+    extracted_old_price: Optional[float] | None = None
+    second_hand_condition: Optional[str] | None = None
+    rating: float | None = None
+    reviews: int | None = None
+    extensions: List[str] | None
+    thumbnail: str | None = None
+    tag: str | None = None
+    delivery: str | None = None
+    store_rating: Optional[float] | None = None
+    store_reviews: Optional[int] | None = None
+    remark: Optional[str] | None = None
+    number_of_comparisons: Optional[str] | None = None
+    comparison_link: Optional[str] | None = None
+    serpapi_product_api_comparisons: Optional[str] | None = None
+
+class FeaturedShoppingResults(BaseModel):
+    featured_shopping_results: List[FeaturedShoppingResult]
+
 
 async def get_local_ads(req: SerpRequest) -> Ads:
     serpApiConfig = SerpConfig()
@@ -104,22 +139,21 @@ async def get_organic_results(req: SerpRequest) -> OrganicResults:
     else:
         return None  # Return None if ads key is not found
 
-# async def get_ads(req: SerpRequest) -> LocalAds:
-#     serpApiConfig = SerpConfig()
-#     params = {
-#         "q": req.query,
-#         "location": req.location,
-#         "hl": "en",
-#         "gl": "us",
-#         "api_key": serpApiConfig.serp_apikey
-#     }
-#
-#     search = GoogleSearch(params)
-#     results = search.get_dict()
-#
-#     # Check if ads key exists in results
-#     if "ads" in results:
-#         return LocalAds(**results["ads"])
-#     else:
-#         return None  # Return None if ads key is not found
+async def get_shopping_results(req: SerpShoppingRequest) :
+    serpApiConfig = SerpConfig()
+    params = {
+        "q": req.query,
+        "api_key": serpApiConfig.serp_apikey,
+        "engine": "google_shopping"
+    }
+
+    search = GoogleSearch(params)
+    results = search.get_dict()
+
+    # Check if ads key exists in results
+    if "featured_shopping_results" in results:
+        featured_shopping_results = results["featured_shopping_results"]
+        return FeaturedShoppingResults.model_validate({"featured_shopping_results" : featured_shopping_results})
+    else:
+        return None  # Return None if ads key is not found
 
