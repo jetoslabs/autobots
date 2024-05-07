@@ -37,6 +37,30 @@ class Ad(BaseModel):
 class Ads(BaseModel):
     ads: List[Ad]
 
+class InlineSitelinks(BaseModel):
+    title: str | None = None
+    link: str | None = None
+
+class Sitelinks(BaseModel):
+    inline: List[InlineSitelinks] | None = None
+
+class OrganicResult(BaseModel):
+    position: int | None = None
+    title: str | None = None
+    link: str | None = None
+    redirect_link: str | None = None
+    displayed_link: str | None = None
+    thumbnail: str | None = None
+    favicon: str | None = None
+    snippet: str | None = None
+    snippet_highlighted_words: List[str] | None = None
+    sitelinks: Optional[Sitelinks] | None = None
+    source: str | None = None
+    date: Optional[str] | None = None
+
+class OrganicResults(BaseModel):
+    organic_results: List[OrganicResult]
+
 
 async def get_local_ads(req: SerpRequest) -> Ads:
     serpApiConfig = SerpConfig()
@@ -59,26 +83,27 @@ async def get_local_ads(req: SerpRequest) -> Ads:
     else:
         return None  # Return None if ads key is not found
 
-#
-# async def get_organic_ads(req: SerpRequest) -> LocalAds:
-#     serpApiConfig = SerpConfig()
-#     params = {
-#         "q": req.query,
-#         "location": req.location,
-#         "hl": "hi",
-#         "gl": "in",
-#         "api_key": serpApiConfig.serp_apikey
-#     }
-#
-#     search = GoogleSearch(params)
-#     results = search.get_dict()
-#
-#     # Check if ads key exists in results
-#     if "ads" in results:
-#         return LocalAds(**results["ads"])
-#     else:
-#         return None  # Return None if ads key is not found
-#
+async def get_organic_results(req: SerpRequest) -> OrganicResults:
+    serpApiConfig = SerpConfig()
+    params = {
+        "q": req.query,
+        "location": req.location,
+        "hl": "en",
+        "gl": "us",
+        "api_key": serpApiConfig.serp_apikey
+    }
+
+    search = GoogleSearch(params)
+    results = search.get_dict()
+
+    # Check if ads key exists in results
+    if "organic_results" in results:
+        organic_results = results["organic_results"]
+        resp = OrganicResults.model_validate({"organic_results" : organic_results})
+        return resp
+    else:
+        return None  # Return None if ads key is not found
+
 # async def get_ads(req: SerpRequest) -> LocalAds:
 #     serpApiConfig = SerpConfig()
 #     params = {
