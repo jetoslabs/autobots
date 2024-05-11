@@ -9,7 +9,7 @@ from src.autobots.conn.duckduckgo.duckduckgo_region_model import Region
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="DuckDuckGo text search not working")
+# @pytest.mark.skip(reason="DuckDuckGo text search not working")
 async def test_search_text_happy_path(set_test_settings):
     search_params = SearchTextParams(
         keywords="where is Arsenal Football club located",
