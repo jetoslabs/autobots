@@ -1,13 +1,13 @@
 from typing import Literal, Iterable, Dict, Optional
 
+from openai.types import ChatModel
 from openai.types.beta import AssistantToolParam, AssistantResponseFormatOptionParam, assistant_create_params
 
 from src.autobots.conn.openai.openai_common_models import OpenaiExtraValues
-from src.autobots.conn.openai.openai_models import OPENAI_MODELS
 
 
 class AssistantCreate(OpenaiExtraValues):
-    model: OPENAI_MODELS = "gpt-4-turbo"
+    model: ChatModel = "gpt-4-turbo"
     name: str | None = None
     description: str | None = None
     instructions: str | None = None
@@ -36,7 +36,7 @@ class AssistantDelete(AssistantRetrieve):
 
 class AssistantUpdate(OpenaiExtraValues):
     assistant_id: str
-    model: OPENAI_MODELS | None = None
+    model: ChatModel | None = None
     name: str | None = None
     description: str | None = None
     instructions: str | None = None

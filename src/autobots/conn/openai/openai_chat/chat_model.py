@@ -3,11 +3,10 @@ from typing import List, Union, Literal, Optional, Dict
 
 import httpx
 from openai._types import Headers, Query, Body
+from openai.types import ChatModel
 from openai.types.chat import ChatCompletionMessageParam, completion_create_params, ChatCompletionToolChoiceOptionParam, \
     ChatCompletionToolParam
 from pydantic import BaseModel, ConfigDict
-
-from src.autobots.conn.openai.openai_models import OPENAI_MODELS
 
 
 class Role(str, Enum):
@@ -23,7 +22,7 @@ class Message(BaseModel):
 
 class ChatReq(BaseModel):
     messages: List[ChatCompletionMessageParam]
-    model: OPENAI_MODELS = "gpt-4-turbo"
+    model: ChatModel = "gpt-4-turbo"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None
     # functions: List[completion_create_params.Function] = None

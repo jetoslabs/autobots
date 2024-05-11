@@ -1,18 +1,17 @@
 from typing import Literal, Iterable, Dict
 
+from openai.types import ChatModel
 from openai.types.beta import AssistantToolParam, AssistantResponseFormatOptionParam, AssistantToolChoiceOptionParam, \
     thread_create_and_run_params
 from openai.types.beta.threads import run_create_params
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 from pydantic import BaseModel
 
-from src.autobots.conn.openai.openai_models import OPENAI_MODELS
-
 
 class ThreadRunCreate(BaseModel):
     thread_id: str
     assistant_id: str
-    model: OPENAI_MODELS | None = None
+    model: ChatModel | None = None
     additional_instructions: str | None = None
     additional_messages: Iterable[run_create_params.AdditionalMessage] | None = None
     instructions: str | None = None
@@ -34,7 +33,7 @@ class ThreadRunCreateAndRun(BaseModel):
     max_completion_tokens: int | None = None
     max_prompt_tokens: int | None = None
     metadata: Dict[str, str] | None = None
-    model: OPENAI_MODELS | None = None
+    model: ChatModel | None = None
     response_format: AssistantResponseFormatOptionParam | None = None
     stream: Literal[False] | Literal[True] | None = None
     temperature: float | None = None
