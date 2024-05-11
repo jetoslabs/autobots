@@ -25,6 +25,7 @@ class ActionDataTypes(BaseModel):
     input: Dict[str, Any] | None = None
     output: Dict[str, Any] | None = None
 
+
 class RunActionObj(BaseModel):
     config_dict: Dict[str, Any]
     input_dict: Dict[str, Any]
@@ -76,7 +77,8 @@ class ActionFactory:
             config_create = action_class.get_config_create_type().model_validate(action_config_create)
             config = await action_class.create_config(config_create)
             return config
-        except Exception:
+        except Exception as e:
+            logger.error(str(e))
             raise
 
     @staticmethod
@@ -91,7 +93,8 @@ class ActionFactory:
             config_update = action_class.get_config_update_type().model_validate(action_config_update)
             updated_config = await action_class.update_config(config, config_update)
             return updated_config
-        except Exception:
+        except Exception as e:
+            logger.error(str(e))
             raise
 
     @staticmethod
@@ -105,26 +108,31 @@ class ActionFactory:
             config = action_class.get_config_type().model_validate(action_config)
             deleted_config = await action_class.delete_config(config)
             return deleted_config
-        except Exception:
+        except Exception as e:
+            logger.error(str(e))
             raise
 
     @staticmethod
     async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> RunActionObj:
-        action = ACTION_MAP.get(action_doc.type)
-        if not action:
-            logger.error(f"Action {action_doc.type} not found in ACTION_MAP")
-            raise Exception(f"Action {action_doc.type} not found in ACTION_MAP")
-        config = action.get_config_type().model_validate(action_doc.config)
-        prev_results: List[ActionResult] | None = action_doc.results
-        updated_config = await action.update_config_with_prev_results(config, prev_results)
-        input = action.get_input_type().model_validate(action_input_dict)
-        output = await action(updated_config).run_action(input)
+        try:
+            action = ACTION_MAP.get(action_doc.type)
+            if not action:
+                logger.error(f"Action {action_doc.type} not found in ACTION_MAP")
+                raise Exception(f"Action {action_doc.type} not found in ACTION_MAP")
+            config = action.get_config_type().model_validate(action_doc.config)
+            prev_results: List[ActionResult] | None = action_doc.results
+            updated_config = await action.update_config_with_prev_results(config, prev_results)
+            input = action.get_input_type().model_validate(action_input_dict)
+            output = await action(updated_config).run_action(input)
 
-        return RunActionObj(
-            config_dict=updated_config.model_dump(exclude_none=True),
-            input_dict=input.model_dump(exclude_none=True),
-            output_dict=output.model_dump(exclude_none=True),
-        )
+            return RunActionObj(
+                config_dict=updated_config.model_dump(exclude_none=True),
+                input_dict=input.model_dump(exclude_none=True),
+                output_dict=output.model_dump(exclude_none=True),
+            )
+        except Exception as e:
+            logger.error(str(e))
+            raise
 
     @staticmethod
     async def run_action_in_background(
@@ -156,7 +164,8 @@ class ActionFactory:
         if background_tasks:
             # Run in background
             background_tasks.add_task(
-                ActionFactory._run_action_as_background_task, action_input_dict, action_result_doc, user_action_result, webhook
+                ActionFactory._run_action_as_background_task, action_input_dict, action_result_doc, user_action_result,
+                webhook
             )
         else:
             # For testing
