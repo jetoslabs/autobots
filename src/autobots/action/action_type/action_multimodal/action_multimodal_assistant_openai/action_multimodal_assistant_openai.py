@@ -2,6 +2,7 @@ import time
 from typing import Type, List
 
 from loguru import logger
+from openai.types.beta import Assistant
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_type.abc.IAction import IAction, ActionInputType, ActionOutputType, ActionConfigType, \
@@ -47,15 +48,15 @@ class ActionMultimodalAssistantOpenai(
     async def create_config(config_create: AssistantOpenaiConfigCreate) -> AssistantOpenaiConfig:
         assistant_client = get_openai().openai_assistants
         # create assistant
-        assistant: AssistantOpenaiConfig = await assistant_client.create(config_create)
-        return assistant
+        assistant: Assistant = await assistant_client.create(config_create)
+        return AssistantOpenaiConfig.model_validate(assistant.model_dump())
 
     @staticmethod
     async def update_config(config: AssistantOpenaiConfig, config_update: AssistantOpenaiConfigUpdate) -> AssistantOpenaiConfig:
         assistant_client = get_openai().openai_assistants
         assistant_update = AssistantUpdate(assistant_id=config.id, **config_update.model_dump(exclude_none=True))
-        assistant = await assistant_client.update(assistant_update)
-        return assistant
+        assistant: Assistant = await assistant_client.update(assistant_update)
+        return AssistantOpenaiConfig.model_validate(assistant.model_dump())
 
     @staticmethod
     async def delete_config(config: AssistantOpenaiConfig) -> AssistantOpenaiConfig:
