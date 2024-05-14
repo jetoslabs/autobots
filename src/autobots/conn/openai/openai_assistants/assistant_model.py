@@ -7,7 +7,7 @@ from src.autobots.conn.openai.openai_common_models import OpenaiExtraValues
 
 
 class AssistantCreate(OpenaiExtraValues):
-    model: ChatModel = "gpt-4-turbo"
+    model: ChatModel = "gpt-4o"
     name: str | None = None
     description: str | None = None
     instructions: str | None = None
