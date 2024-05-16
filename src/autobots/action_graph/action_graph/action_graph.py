@@ -19,6 +19,8 @@ from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc
 from src.autobots.action_graph.action_graph_result.user_action_graph_result import UserActionGraphResult
 from src.autobots.api.webhook import Webhook
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
+from src.autobots.core.logging.app_code import AppCode
+from src.autobots.core.logging.log_binder import LogBinder
 from src.autobots.core.profiler.profiler import Profiler
 from src.autobots.event_result.event_result_model import EventResultStatus
 
@@ -38,49 +40,59 @@ class ActionGraph:
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
         action_graph_result_doc: ActionGraphResultDoc | None = None
-        if not action_graph_result_id:
-            # Create initial Action Graph Result if not provided
-            action_graph_doc.input = action_graph_input_dict
-            action_graph_doc.output = {}
-            action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
-                status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
-            )
-            action_graph_result_doc = await user_action_graph_result.create_action_graph_result(action_graph_result_create)
-            if webhook:
-                await webhook.send(action_graph_result_doc.model_dump())
-        else:
-            # find and use Action Graph Result
-            action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
-            # Change status back to processing
-            action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(status=EventResultStatus.processing)
-            action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
-                action_graph_result_id,
-                action_graph_result_update
-            )
+        try:
+            if not action_graph_result_id:
+                # Create initial Action Graph Result if not provided
+                action_graph_doc.input = action_graph_input_dict
+                action_graph_doc.output = {}
+                action_graph_result_create: ActionGraphResultCreate = ActionGraphResultCreate(
+                    status=EventResultStatus.processing, result=action_graph_doc, is_saved=False
+                )
+                action_graph_result_doc = await user_action_graph_result.create_action_graph_result(
+                    action_graph_result_create)
+                if webhook:
+                    await webhook.send(action_graph_result_doc.model_dump())
+            else:
+                # find and use Action Graph Result
+                action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
+                # Change status back to processing
+                action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
+                    status=EventResultStatus.processing)
+                action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
+                    action_graph_result_id,
+                    action_graph_result_update
+                )
 
-        if background_tasks:
-            background_tasks.add_task(
-                ActionGraph._run_as_background_task,
-                user_actions,
-                user_actions_market,
-                action_graph_input_dict,
-                action_graph_result_doc,
-                user_action_graph_result,
-                action_graph_node_id,
-                webhook
-            )
-        else:
-            action_graph_result_doc = await ActionGraph._run_as_background_task(
-                user_actions,
-                user_actions_market,
-                action_graph_input_dict,
-                action_graph_result_doc,
-                user_action_graph_result,
-                action_graph_node_id,
-                webhook
-            )
+            if background_tasks:
+                background_tasks.add_task(
+                    ActionGraph._run_as_background_task,
+                    user_actions,
+                    user_actions_market,
+                    action_graph_input_dict,
+                    action_graph_result_doc,
+                    user_action_graph_result,
+                    action_graph_node_id,
+                    webhook
+                )
+            else:
+                action_graph_result_doc = await ActionGraph._run_as_background_task(
+                    user_actions,
+                    user_actions_market,
+                    action_graph_input_dict,
+                    action_graph_result_doc,
+                    user_action_graph_result,
+                    action_graph_node_id,
+                    webhook
+                )
 
-        return action_graph_result_doc
+            return action_graph_result_doc
+        except Exception as e:
+            bind_dict = (LogBinder().with_app_code(AppCode.ACTION_GRAPH_RUN)
+                         .with_action_graph_id(action_graph_doc.id)
+                         .with_action_graph_run_id(action_graph_result_doc.id)
+                         .get_bind_dict())
+            logger.bind(**bind_dict).error(f"ActionGraph run failed due to {e}")
+            raise
 
     @staticmethod
     async def _run_as_background_task(
@@ -94,17 +106,6 @@ class ActionGraph:
     ):
         # TODO: check if action_graph_result_doc status is success, if success then return.
         # TODO: This behaviour should be accompanied by status change on action_graph_result_doc update
-
-        # graph_map = action_graph_result_doc.result.graph
-        # node_action_map = action_graph_result_doc.result.nodes
-        # node_details_map = action_graph_result_doc.result.node_details
-        # action_response: Dict[str, ActionDoc] = action_graph_result_doc.result.output
-        # action_graph_input = TextObj.model_validate(action_graph_input_dict)
-
-        # total_nodes = await ActionGraph.get_nodes(graph_map)
-        # inverted_map = await ActionGraph.invert_map(graph_map)
-
-        # review_required_nodes: List[str] = []
 
         # ACTION GRAPH RESULT - NODE RERUN
         if action_graph_node_id:
@@ -138,6 +139,10 @@ class ActionGraph:
             user_action_graph_result: UserActionGraphResult,
             webhook: Webhook | None = None
     ) -> ActionGraphResultDoc:
+        bind_dict = (LogBinder().with_app_code(AppCode.ACTION_GRAPH_RUN)
+                     .with_action_graph_id(action_graph_result_doc.result.id)
+                     .with_action_graph_run_id(action_graph_result_doc.id)
+                     .get_bind_dict())
         graph_map = action_graph_result_doc.result.graph
         node_action_map = action_graph_result_doc.result.nodes
         node_details_map = action_graph_result_doc.result.node_details
@@ -181,7 +186,8 @@ class ActionGraph:
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
                         # Run action with at least 1 dependency
-                        curr_action = await ActionGraph.get_action(user_actions, user_actions_market, node_action_map.get(node))
+                        curr_action = await ActionGraph.get_action(user_actions, user_actions_market,
+                                                                   node_action_map.get(node))
                         action_input = await ActionGraph.to_input(upstream_nodes, curr_action.type, action_response)
                         action_result: ActionDoc = await ActionGraph.run_action(
                             user_actions,
@@ -193,7 +199,8 @@ class ActionGraph:
                         action_response[node] = ActionDoc.model_validate(action_result)
 
                         memory_profile = await Profiler.do_memory_profile()
-                        logger.bind(memory_profile=memory_profile).info(f"Memory profile for Action run {action_result.name}:{action_result.version}")
+                        logger.bind(memory_profile=memory_profile).info(
+                            f"Memory profile for Action run {action_result.name}:{action_result.version}")
 
                     # Update action result graph
                     action_graph_result_doc.result.output[node] = action_response[node]
@@ -225,7 +232,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            logger.bind(action_graph_id=action_graph_result_doc.result.id).exception(f"Error while graph run, {str(e)}")
+            logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
@@ -238,8 +245,7 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        (logger.bind(action_graph_result_id=action_graph_result_doc.id,action_graph_id=action_graph_result_doc.result.id)
-         .info("Completed Action Graph _run_as_background_task"))
+        logger.bind(**bind_dict).info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
 
     @staticmethod
@@ -255,23 +261,34 @@ class ActionGraph:
 
         # Run action with no dependency
         node_action_doc = action_response.get(action_graph_node_id)
-        action_result: ActionDoc = await ActionGraph.run_action_doc( # noqa F841
-            user_actions,
-            node_action_doc,
-            action_graph_input_dict
-        )
-        # Update action result graph
-        action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
-            result=action_graph_result_doc.result
-        )
-        action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
-            action_graph_result_doc.id,
-            action_graph_result_update
-        )
-        if webhook:
-            await webhook.send(action_graph_result_doc.model_dump())
 
-        return action_graph_result_doc
+        bind_dict = (LogBinder().with_app_code(AppCode.ACTION_GRAPH_RUN)
+                     .with_action_graph_id(action_graph_result_doc.result.id)
+                     .with_action_graph_run_id(action_graph_result_doc.id)
+                     .with_action_id(node_action_doc.id)
+                     .get_bind_dict())
+        try:
+            action_result: ActionDoc = await ActionGraph.run_action_doc(  # noqa F841
+                user_actions,
+                node_action_doc,
+                action_graph_input_dict
+            )
+            # Update action result graph
+            action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
+                result=action_graph_result_doc.result
+            )
+            action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
+                action_graph_result_doc.id,
+                action_graph_result_update
+            )
+            if webhook:
+                await webhook.send(action_graph_result_doc.model_dump())
+
+            return action_graph_result_doc
+        except Exception as e:
+            logger.bind(**bind_dict).info(f"Error in rerun node of Action Graph: {str(e)}")
+            return action_graph_result_doc
+
 
     @staticmethod
     async def run_action(
@@ -368,7 +385,8 @@ class ActionGraph:
             upstream_action_doc = action_response.get(upstream_node)
             upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
             if upstream_action_output_type != TextObjs and upstream_action_output_type != TextObj:
-                curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type, action_response)
+                curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type,
+                                                                action_response)
                 return curr_action_input
         # Use manual code to build input obj
         for upstream_node in upstream_nodes:
@@ -417,8 +435,9 @@ class ActionGraph:
         curr_action_input_type = ACTION_MAP.get(current_node_action_type).get_input_type()
         curr_action_input_model_schema = curr_action_input_type.model_json_schema()
         llm_input += f"#####\nOutput model schema:\n{curr_action_input_model_schema}\n\n"
-        llm_input += ("Add all inputs to give me the output data that adheres to Output model schema. You have to provide only the output in JSON. "
-                      "Start straight with { and end with }.")
+        llm_input += (
+            "Add all inputs to give me the output data that adheres to Output model schema. You have to provide only the output in JSON. "
+            "Start straight with { and end with }.")
 
         chat_req = ChatReq(
             model="gpt-4-turbo",
@@ -432,5 +451,3 @@ class ActionGraph:
         curr_action_input_obj = curr_action_input_type.model_validate(json_dict)
         return curr_action_input_obj
         # return json_dict
-
-

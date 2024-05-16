@@ -105,8 +105,8 @@ class UserFiles:
             if filename:
                 assert "/" not in filename or "\\" not in filename
                 assert ".." not in filename
-                filename_parts = filename.split(".")
-                assert len(filename_parts) == 2
+                # filename_parts = filename.split(".")
+                # assert len(filename_parts) == 2
                 secure_filename = werkzeug.utils.secure_filename(filename)
                 return secure_filename
         except Exception:

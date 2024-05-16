@@ -22,7 +22,7 @@ class Message(BaseModel):
 
 class ChatReq(BaseModel):
     messages: List[ChatCompletionMessageParam]
-    model: ChatModel = "gpt-4-turbo"
+    model: ChatModel = "gpt-4o"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None
     # functions: List[completion_create_params.Function] = None

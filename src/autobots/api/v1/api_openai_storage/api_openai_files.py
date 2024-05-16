@@ -11,7 +11,7 @@ from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_files.openai_files_model import FileCreate, FileList, FileRetrieve, FileContent, \
     FileDelete
 
-router = APIRouter(prefix=SettingsProvider.sget().API_OPENAI_FILES, tags=[SettingsProvider.sget().API_OPENAI_FILES])
+router = APIRouter(prefix=f"{SettingsProvider.sget().API_OPENAI_STORAGE}/files", tags=[SettingsProvider.sget().API_OPENAI_STORAGE])
 
 
 @router.post("/")
@@ -26,8 +26,7 @@ async def upload_file(
     # background_tasks.add_task(openai_file_client.create, file_create)
     file_create = FileCreate(
         file=(file.filename, await file.read(), file.content_type),
-        purpose="assistants",
-        extra_query={"user_id": user_res.user.id}
+        purpose="assistants"
     )
     file_obj = await openai_file_client.create(file_create)
     return file_obj

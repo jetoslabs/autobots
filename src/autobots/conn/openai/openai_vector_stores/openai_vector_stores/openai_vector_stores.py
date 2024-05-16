@@ -1,3 +1,5 @@
+from typing import List
+
 from loguru import logger
 from openai import AsyncOpenAI
 from openai._base_client import AsyncPaginator
@@ -23,12 +25,17 @@ class OpenaiVectorStores:
             logger.error(str(e))
             raise
 
-    async def list(self, list_vector_store: ListVectorStore) -> AsyncPaginator[VectorStore, AsyncCursorPage[VectorStore]]:
+    async def list(self, list_vector_store: ListVectorStore) -> List[VectorStore]:
         try:
-            vector_store = await self.client.beta.vector_stores.list(
-                **list_vector_store.model_dump(exclude_none=True)
-            )
-            return vector_store
+            vector_stores_cursor: AsyncPaginator[VectorStore, AsyncCursorPage[VectorStore]]\
+                = await self.client.beta.vector_stores.list(**list_vector_store.model_dump(exclude_none=True))
+            # return vector_store
+            vector_stores = []
+            async for vector_store in vector_stores_cursor:
+                if len(vector_stores) >= list_vector_store.limit:
+                    break
+                vector_stores.append(vector_store)
+            return vector_stores
         except Exception as e:
             logger.error(str(e))
             raise

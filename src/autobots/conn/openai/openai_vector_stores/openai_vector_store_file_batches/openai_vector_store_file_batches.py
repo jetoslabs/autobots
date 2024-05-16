@@ -1,3 +1,5 @@
+from typing import List
+
 from loguru import logger
 from openai import AsyncOpenAI
 from openai._base_client import AsyncPaginator
@@ -23,14 +25,18 @@ class OpenaiVectorStoreFileBatches:
             logger.error(str(e))
             raise
 
-    async def list(self, list_vector_store_files_in_batch: ListVectorStoreFilesInBatch) -> AsyncPaginator[
-        VectorStoreFile, AsyncCursorPage[VectorStoreFile]
-    ]:
+    async def list(self, list_vector_store_files_in_batch: ListVectorStoreFilesInBatch) -> List[VectorStoreFile]:
         try:
-            cancel_vector_store_file_batches = await self.client.beta.vector_stores.file_batches.list_files(
-                **list_vector_store_files_in_batch.model_dump(exclude_none=True)
-            )
-            return cancel_vector_store_file_batches
+            vector_store_files_cursor: AsyncPaginator[VectorStoreFile, AsyncCursorPage[VectorStoreFile]] \
+                = await self.client.beta.vector_stores.file_batches.list_files(
+                    **list_vector_store_files_in_batch.model_dump(exclude_none=True)
+                )
+            vector_store_files = []
+            async for vector_store_file in vector_store_files_cursor:
+                if len(vector_store_files) >= list_vector_store_files_in_batch.limit:
+                    break
+                vector_store_files.append(vector_store_file)
+            return vector_store_files
         except Exception as e:
             logger.error(str(e))
             raise
