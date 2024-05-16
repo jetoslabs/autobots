@@ -15,7 +15,7 @@ class FileCreate(OpenaiExtraValues):
         str | None, IO[bytes] | bytes | PathLike[str] | PathLike] | tuple[
               str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None] | tuple[
               str | None, IO[bytes] | bytes | PathLike[str] | PathLike, str | None, Mapping[str, str]]
-    purpose: Literal["fine-tune", "assistants"]
+    purpose: Literal["assistants", "batch", "fine-tune"]
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

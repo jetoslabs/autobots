@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     API_SCHEDULES: str = "/schedules"
     API_DATASTORE: str = "/datastore"
     API_FILES: str = "/files"
-    API_OPENAI_FILES: str = "/openai_files"
+    API_OPENAI_STORAGE: str = "/openai_storage"
     API_ACTION_CHATS: str = "/action_chats"
     API_AGENTS: str = "/agents"
     API_GRAPHS: str = "/graphs"
