@@ -3,7 +3,7 @@ from src.autobots.conn.claid.claid import UseClaidAiApi
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponseData, Operations, Output, \
     BackgroundRemove, Background, ClaidResponse, ClaidPhotoShootRequestModel, PhotoshootOutput, PhotoshootObject, \
     PhotoshootScene, ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
-from src.autobots.conn.serp.ads.ads import Ads, SerpRequest
+from src.autobots.conn.serp.serp_ads.serp_ads import Ads, SerpRequest
 from src.autobots.conn.serp.serp import UseSerpApi
 
 

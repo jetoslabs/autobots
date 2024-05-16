@@ -1,5 +1,5 @@
 from functools import lru_cache
-from src.autobots.conn.serp.ads.ads import get_local_ads, SerpRequest, Ads
+from src.autobots.conn.serp.serp_ads.serp_ads import get_local_ads, SerpRequest, Ads
 
 
 class UseSerpApi:
