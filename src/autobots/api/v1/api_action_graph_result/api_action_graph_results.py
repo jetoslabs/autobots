@@ -56,6 +56,8 @@ async def get_action_graph_result(
 ) -> ActionGraphResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_result_doc = await UserActionGraphResult(user_orm, db).get_action_graph_result(id)
+    if action_result_doc is None:
+        raise HTTPException(404, "Action graph result not found")
     return action_result_doc
 
 

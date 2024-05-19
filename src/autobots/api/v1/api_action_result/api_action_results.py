@@ -1,4 +1,3 @@
-from typing import List
 from uuid import UUID
 
 import gotrue
@@ -6,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots import SettingsProvider
-from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultUpdate
+from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultUpdate, ActionResultDocsFound
 from src.autobots.action.action_result.user_action_result import UserActionResult
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
@@ -35,7 +34,7 @@ async def list_action_result(
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
-) -> List[ActionResultDoc]:
+) -> ActionResultDocsFound:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_result = UserActionResult(user_orm, db)
     action_result_find = EventResultFind(
@@ -54,6 +53,8 @@ async def get_action_result(
 ) -> ActionResultDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     action_result_doc = await UserActionResult(user_orm, db).get_action_result(id)
+    if action_result_doc is None:
+        raise HTTPException(status_code=404, detail="Action result not found")
     return action_result_doc
 
 

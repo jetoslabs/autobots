@@ -1,11 +1,10 @@
 from typing import List
 
-from fastapi import HTTPException
 from loguru import logger
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action_graph.action_graph_result.action_graph_result_model_doc import ActionGraphResultDoc, \
-    ActionGraphResultCreate, ActionGraphResultUpdate, ActionGraphResultDocsFound
+    ActionGraphResultCreate, ActionGraphResultUpdate, ActionGraphResultDocsFound, ActionGraphResultLiteDoc
 from src.autobots.event_result.event_result_crud import EventResultCRUD
 from src.autobots.event_result.event_result_model import EventResultDocCreate, EventResultFind, EventResultDocFind, \
     EventResultDocUpdate, EventType
@@ -38,8 +37,8 @@ class UserActionGraphResult:
         doc_find_page = await self.event_result_crud.find_page(event_result_doc_find, limit, offset)
         action_graph_result_docs = []
         for event_result_doc in doc_find_page.docs:
-            action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
-            action_graph_result_docs.append(action_graph_result_doc)
+            action_graph_result_lite_doc = ActionGraphResultLiteDoc.model_validate(event_result_doc.model_dump())
+            action_graph_result_docs.append(action_graph_result_lite_doc)
         return ActionGraphResultDocsFound(
             docs=action_graph_result_docs,
             total_count=doc_find_page.total_count,
@@ -65,10 +64,9 @@ class UserActionGraphResult:
     ) -> ActionGraphResultDoc | None:
         try:
             event_result_doc_find = EventResultDocFind(id=action_graph_result_id, user_id=self.user_id)
-            event_result_docs = await self.event_result_crud.find(event_result_doc_find)
-            if len(event_result_docs) != 1:
-                raise HTTPException(500, "Error in finding result")
-            event_result_doc = event_result_docs[0]
+            event_result_doc = await self.event_result_crud.find_one(event_result_doc_find)
+            if event_result_doc is None:
+                return None
             action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())
             return action_graph_result_doc
         except Exception as e:
