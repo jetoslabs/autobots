@@ -1,8 +1,10 @@
+from typing import Dict, Any
+
 from src.autobots.core.logging.app_code import AppCode
 
 
 class LogBinder:
-    bind_dict = {}
+    bind_dict: Dict[str, Any] = {}
 
     def __init__(self):
         self.bind_dict["app"] = "autobots"
@@ -31,6 +33,6 @@ class LogBinder:
         self.bind_dict["action_run_id"] = action_run_id
         return self
 
-    def get_bind_dict(self):
+    def get_bind_dict(self) -> Dict[str, Any]:
         return self.bind_dict
 

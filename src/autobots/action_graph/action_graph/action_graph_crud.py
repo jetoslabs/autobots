@@ -7,25 +7,30 @@ from pymongo import ReturnDocument, DESCENDING
 from pymongo.results import DeleteResult
 
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphDocCreate, ActionGraphDocFind, \
-    ActionGraphDocUpdate
+from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphDocCreate, \
+    ActionGraphDocFind, \
+    ActionGraphDocUpdate, ActionGraphLiteDoc
+from src.autobots.core.database.mongo_base_crud import CRUDBase
 
 
-class ActionGraphCRUD:
+class ActionGraphCRUD(
+    CRUDBase[ActionGraphDoc, ActionGraphLiteDoc, ActionGraphDocCreate, ActionGraphDocFind, ActionGraphDocUpdate]):
 
     def __init__(self, db: AsyncIOMotorDatabase = Depends(get_mongo_db)):
         self.document: AsyncIOMotorCollection = db[ActionGraphDoc.__collection__]
+        super().__init__(ActionGraphDoc, ActionGraphLiteDoc, self.document)
 
     async def insert_one(self, action_graph: ActionGraphDocCreate) -> ActionGraphDoc:
-        action_graph_find = ActionGraphDocFind(name=action_graph.name, version=action_graph.version, user_id=action_graph.user_id)
+        action_graph_find = ActionGraphDocFind(name=action_graph.name, version=action_graph.version,
+                                               user_id=action_graph.user_id)
         actions_graph_found = await self.find(action_graph_find)
         if len(actions_graph_found) > 0:
             raise HTTPException(400, "Action name and version not unique")
         insert_result = await self.document.insert_one(action_graph.model_dump())
-        inserted_action_graph = await self._find_by_object_id(insert_result.inserted_id)
+        inserted_action_graph = await self.get_by_object_id(insert_result.inserted_id)
         return inserted_action_graph
 
-    async def _find_by_object_id(self, id: str) -> ActionGraphDoc:
+    async def get_by_object_id(self, id: str) -> ActionGraphDoc:
         object_id = ObjectId(id)
         doc = await self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
@@ -103,4 +108,3 @@ class ActionGraphCRUD:
 
     async def upsert(self, ):
         pass
-

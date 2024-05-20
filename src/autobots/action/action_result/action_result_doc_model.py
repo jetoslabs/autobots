@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Optional, List
+
+from pydantic import BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionDoc
-from src.autobots.event_result.event_result_model import EventResultCreate, EventResultUpdate, EventResultDoc, EventType
+from src.autobots.event_result.event_result_model import EventResultCreate, EventResultUpdate, EventResultDoc, \
+    EventType, EventResultLiteDoc
 
 
 class ActionResultUpdate(EventResultUpdate):
@@ -18,3 +21,14 @@ class ActionResultCreate(EventResultCreate):
 
 class ActionResultDoc(EventResultDoc):
     result: ActionDoc
+
+
+class ActionResultLiteDoc(EventResultLiteDoc):
+    pass
+
+
+class ActionResultDocsFound(BaseModel):
+    docs: List[ActionResultLiteDoc]
+    total_count: int
+    limit: int
+    offset: int
