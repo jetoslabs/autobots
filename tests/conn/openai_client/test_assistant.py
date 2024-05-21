@@ -1,8 +1,11 @@
 import time
+from typing import List
 
 import pytest
 from openai.types.beta import CodeInterpreterToolParam, FileSearchToolParam
+from openai.types.beta.threads import Message
 
+from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantCreate, AssistantDelete
 
 from src.autobots.conn.openai.openai_assistants.openai_thread_messages.openai_thread_messages_model import \
@@ -11,6 +14,7 @@ from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread
     ThreadRunRetrieve
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_model import ThreadCreate, ThreadDelete
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
 
 
 @pytest.mark.asyncio
@@ -24,7 +28,7 @@ async def test_assistant_happy_path(set_test_settings):
         assistant_create = AssistantCreate(
             name="test_assistant",
             model="gpt-4-turbo-preview",
-            instructions="Generate sql query only",
+            instructions="Generate downloadable json file for each request.",
             # file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
             tools=[
                 CodeInterpreterToolParam(type="code_interpreter"),
@@ -40,7 +44,7 @@ async def test_assistant_happy_path(set_test_settings):
         thread = await assistant_client.threads.create(thread_create)
         global_thread_id = thread.id
         # add message
-        thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id, content="who has the highest number of blogs")
+        thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id, content="Write an essay on AI Agents. Store it in a file")
         thread_message = await assistant_client.threads.messages.create(thread_message_create_1) # noqa F841
         # run thread
         tools = [tool.model_dump() for tool in assistant.tools]
@@ -62,8 +66,26 @@ async def test_assistant_happy_path(set_test_settings):
         thread_message_list = ThreadMessageList(thread_id=run_retrieved.thread_id)
         messages = await assistant_client.threads.messages.list(thread_message_list)
         assert len(messages.data) >= 2
-    except Exception:
-        assert False
+
+        message: Message = messages.data[0]
+        texts: List[TextObj] = []
+        if message.attachments is not None and len(message.attachments) > 0:
+            openai_files_client = get_openai().openai_files
+            for attachment in message.attachments:
+                file_id = attachment.file_id
+                binary_res = await openai_files_client.retrieve_content(file_content=FileContent(file_id=file_id))
+                binary_content = binary_res.content
+                content = bytes.decode(binary_content)
+                text_obj = TextObj(text=content)
+                texts.append(text_obj)
+        else:
+            for content in message.content:
+                text_obj = TextObj(text=content.text.value)
+                texts.append(text_obj)
+        assert len(texts) > 0
+
+    except Exception as e:
+        assert e is None
     finally:
         # delete thread
         thread_delete = ThreadDelete(thread_id=global_thread_id)
