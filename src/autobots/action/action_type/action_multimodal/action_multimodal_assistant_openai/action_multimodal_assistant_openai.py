@@ -19,6 +19,7 @@ from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_model import ThreadCreate
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
+from src.autobots.core.logging.log_binder import LogBinder
 
 
 class ActionMultimodalAssistantOpenai(
@@ -103,6 +104,7 @@ class ActionMultimodalAssistantOpenai(
             if message.attachments is not None and len(message.attachments) > 0:
                 openai_files_client = get_openai().openai_files
                 for attachment in message.attachments:
+                    logger.bind(**LogBinder().with_kwargs(file_id=attachment.file_id).get_bind_dict()).debug("Reading OpenAI file")
                     file_id = attachment.file_id
                     binary_res = await openai_files_client.retrieve_content(file_content=FileContent(file_id=file_id))
                     binary_content = binary_res.content
