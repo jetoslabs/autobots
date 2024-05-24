@@ -59,7 +59,7 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
             limit: int = 100,
             offset: int = 0
     ) -> DocFindPage:
-        find_params = await self._build_filter(doc_find)
+        find_params = await self._build_filter(doc_find, or_find_queries)
         if isinstance(find_params, Exception) or len(find_params) == 0:
             return DocFindPage(docs=[], total_count=0, limit=limit, offset=offset)
 
@@ -166,7 +166,7 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
             query_filter["$or"] = [filter1]
             for query in or_find_queries:
                 filter2 = await self._build_find_params(query)
-                query_filter["$or"] = query_filter["$or"] + [filter2]
+                query_filter["$or"] += [filter2]
         return query_filter
 
     async def _build_find_params(

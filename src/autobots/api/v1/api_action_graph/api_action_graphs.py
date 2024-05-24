@@ -48,7 +48,7 @@ async def list_action_graphs(
 ) -> ActionGraphDocsFound:
     user_orm = UserORM(id=UUID(user_res.user.id))
     find = ActionGraphFind(id=id, name=name, version=version, is_published=is_published)
-    action_docs = await UserActionGraphs(user=user_orm, db=db).list(find, limit, offset)
+    action_docs = await UserActionGraphs(user=user_orm, db=db).list_owned_or_published(find, limit, offset)
     return action_docs
 
 
@@ -59,7 +59,7 @@ async def get_action_graph(
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActionGraphs(user=user_orm, db=db).get(id)
+    action_doc = await UserActionGraphs(user=user_orm, db=db).get_owned_or_published(id)
     if not action_doc:
         raise HTTPException(404, detail="Action graph not found")
     return action_doc

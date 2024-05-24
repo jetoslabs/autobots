@@ -45,6 +45,11 @@ class ActionGraphDocFind(ActionGraphFind):
     user_id: str
 
 
+class ActionGraphPublishedDocFind(ActionGraphDocFind):
+    user_id: str | None = None
+    is_published: bool = True
+
+
 class ActionGraphUpdate(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
