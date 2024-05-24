@@ -32,7 +32,7 @@ async def create_action_graph(
 ) -> ActionGraphDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        resp = await UserActionGraphs(user=user_orm, db=db).create(action_graph_create, db)
+        resp = await UserActionGraphs(user=user_orm, db=db).create(action_graph_create)
         return resp
     except Exception as e:
         logger.error(str(e))
@@ -73,7 +73,7 @@ async def update_action_graph(
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActionGraphs(user=user_orm, db=db).update(id, action_graph_update, db)
+    action_doc = await UserActionGraphs(user=user_orm, db=db).update(id, action_graph_update)
     return action_doc
 
 
@@ -85,10 +85,10 @@ async def delete_action_graph(
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graphs = UserActionGraphs(user=user_orm, db=db)
-    action_doc = await user_action_graphs.get(id, db)
+    action_doc = await user_action_graphs.get(id)
     if action_doc is None:
         raise HTTPException(404, "Action not found")
-    deleted_count = await user_action_graphs.delete(id, db)
+    deleted_count = await user_action_graphs.delete(id)
     if deleted_count != 1:
         raise HTTPException(500, "Error in deleting action")
     return action_doc
