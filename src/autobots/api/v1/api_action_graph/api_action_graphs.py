@@ -41,13 +41,13 @@ async def create_action_graph(
 
 @router.get("/")
 async def list_action_graphs(
-        id: str = None, name: str = None, version: float = None,
+        id: str = None, name: str = None, version: float = None, is_published: bool = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDocsFound:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    find = ActionGraphFind(id=id, name=name, version=version)
+    find = ActionGraphFind(id=id, name=name, version=version, is_published=is_published)
     action_docs = await UserActionGraphs(user=user_orm, db=db).list(find, limit, offset)
     return action_docs
 

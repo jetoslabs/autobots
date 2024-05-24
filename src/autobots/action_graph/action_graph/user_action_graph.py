@@ -41,7 +41,14 @@ class UserActionGraphs:
             limit: int = 100, offset: int = 0
     ) -> ActionGraphDocsFound:
         action_graph_doc_find = ActionGraphDocFind(user_id=self.user_id, **action_graph_find.model_dump())
-        paged_docs = await self.action_graph_crud.find_page(action_graph_doc_find, limit, offset)
+        action_graph_find.is_published = True
+        or_action_graph_doc_find = ActionGraphDocFind(**action_graph_find.model_dump())
+        paged_docs = await self.action_graph_crud.find_page(
+            doc_find=action_graph_doc_find,
+            or_find_queries=[or_action_graph_doc_find],
+            limit=limit,
+            offset=offset
+        )
         action_graph_docs = []
         for action_graph_doc in paged_docs.docs:
             action_graph_docs.append(ActionGraphLiteDoc.model_validate(action_graph_doc))

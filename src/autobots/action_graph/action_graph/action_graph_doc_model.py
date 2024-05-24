@@ -35,6 +35,7 @@ class ActionGraphFind(BaseModel):
     name: Optional[str] = None
     version: Optional[float] = None
     description: Optional[str] = None
+    is_published: Optional[bool] = None
 
 
 class ActionGraphDocFind(ActionGraphFind):
@@ -60,6 +61,7 @@ class ActionGraphUpdate(BaseModel):
     start_node_id: str | None = None
     input: Optional[TextObj] = None
     output: Optional[Dict[str, ActionDoc]] = None
+    is_published: Optional[bool] = None
 
 
 class ActionGraphDocUpdate(ActionGraphUpdate):
@@ -87,6 +89,7 @@ class ActionGraphCreate(BaseModel):
     start_node_id: str | None = None
     input: Optional[TextObj] = None
     output: Optional[Dict[str, ActionDoc]] = None
+    is_published: bool = False
 
 
 class ActionGraphDocCreate(ActionGraphCreate):

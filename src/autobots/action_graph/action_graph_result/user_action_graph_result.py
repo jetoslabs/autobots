@@ -34,7 +34,7 @@ class UserActionGraphResult:
     ) -> ActionGraphResultDocsFound:
         action_graph_result_find.type = EventType.action_graph_run
         event_result_doc_find = EventResultDocFind(user_id=self.user_id, **action_graph_result_find.model_dump())
-        doc_find_page = await self.event_result_crud.find_page(event_result_doc_find, limit, offset)
+        doc_find_page = await self.event_result_crud.find_page(doc_find=event_result_doc_find, limit=limit, offset=offset)
         action_graph_result_docs = []
         for event_result_doc in doc_find_page.docs:
             action_graph_result_lite_doc = ActionGraphResultLiteDoc.model_validate(event_result_doc.model_dump())
