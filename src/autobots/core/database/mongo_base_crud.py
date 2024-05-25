@@ -33,17 +33,17 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
 
     async def insert_one(self, create_doc: DocCreateType) -> DocType:
         insert_result = await self.document.insert_one(create_doc.model_dump())
-        inserted_result = await self.find_by_id(insert_result.inserted_id)
+        inserted_result = await self._find_by_id(insert_result.inserted_id)
         return inserted_result
 
-    async def find_by_id(self, id: str) -> DocType:
+    async def _find_by_id(self, id: str) -> DocType:
         object_id = ObjectId(id)
         doc = await self.document.find_one({"_id": object_id})
         doc["_id"] = str(doc.get("_id"))
         return self.doc_model.model_validate(doc)
 
-    async def find_one(self, doc_find: DocFindType) -> DocType | None:
-        find_params = await self._build_find_params(doc_find)
+    async def find_one(self, doc_find: DocFindType, or_find_queries: List[DocFindType] | None = None) -> DocType | None:
+        find_params = await self._build_filter(doc_find, or_find_queries)
         if isinstance(find_params, Exception):
             return None
         doc = await self.document.find_one(find_params)
@@ -52,35 +52,49 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         doc["_id"] = str(doc.get("_id"))
         return self.doc_model.model_validate(doc)
 
-    async def find_page(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> DocFindPage:
-        find_params = await self._build_find_params(doc_find)
+    async def find_page(
+            self,
+            doc_find: DocFindType,
+            or_find_queries: List[DocFindType] | None = None,
+            limit: int = 100,
+            offset: int = 0
+    ) -> DocFindPage:
+        find_params = await self._build_filter(doc_find, or_find_queries)
         if isinstance(find_params, Exception) or len(find_params) == 0:
             return DocFindPage(docs=[], total_count=0, limit=limit, offset=offset)
 
-        model_fields = self.lite_doc_model.model_fields.keys()
-        fields_to_select = {}
-        for field in model_fields:
-            fields_to_select[field] = 1
+        docs = await self.find(doc_find=doc_find, or_find_queries=or_find_queries, limit=limit, offset=offset)
 
-        cursor = self.document.find(find_params, fields_to_select).allow_disk_use(True)
-        cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset * limit).limit(limit)
-        docs = []
-
-        async for doc in cursor:
-            try:
-                # Mongo Result field _id has ObjectId, converting it to str for pydantic model
-                doc["_id"] = str(doc.get("_id"))
-                doc_type = self.lite_doc_model.model_validate(doc)
-                docs.append(doc_type)
-            except Exception as e:
-                logger.bind(**LogBinder().with_kwargs(doc_find=doc_find, doc=doc).get_bind_dict()).error(str(e))
+        # model_fields = self.lite_doc_model.model_fields.keys()
+        # fields_to_select = {}
+        # for field in model_fields:
+        #     fields_to_select[field] = 1
+        #
+        # cursor = self.document.find(find_params, fields_to_select).allow_disk_use(True)
+        # cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset * limit).limit(limit)
+        # docs = []
+        #
+        # async for doc in cursor:
+        #     try:
+        #         # Mongo Result field _id has ObjectId, converting it to str for pydantic model
+        #         doc["_id"] = str(doc.get("_id"))
+        #         doc_type = self.lite_doc_model.model_validate(doc)
+        #         docs.append(doc_type)
+        #     except Exception as e:
+        #         logger.bind(**LogBinder().with_kwargs(doc_find=doc_find, doc=doc).get_bind_dict()).error(str(e))
 
         total_count = await self.count(find_params=find_params)
 
         return DocFindPage(docs=docs, total_count=total_count, limit=limit, offset=offset)
 
-    async def find(self, doc_find: DocFindType, limit: int = 100, offset: int = 0) -> List[DocType]:
-        find_params = await self._build_find_params(doc_find)
+    async def find(
+            self,
+            doc_find: DocFindType,
+            or_find_queries: List[DocFindType] | None = None,
+            limit: int = 100,
+            offset: int = 0
+    ) -> List[DocType]:
+        find_params = await self._build_filter(doc_find, or_find_queries)
         if isinstance(find_params, Exception) or len(find_params) == 0:
             return []
 
@@ -89,7 +103,8 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         for field in model_fields:
             fields_to_select[field] = 1
 
-        cursor = self.document.find(find_params, fields_to_select).allow_disk_use(True)
+        cursor = self.document.find(find_params, fields_to_select)
+        cursor.allow_disk_use(True)
         cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset * limit).limit(limit)
         docs = []
 
@@ -109,7 +124,7 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         return count
 
     async def delete_many(self, doc_find: DocFindType) -> DeleteResult | Exception:
-        find_params = await self._build_find_params(doc_find)
+        find_params = await self._build_filter(doc_find)
         if isinstance(find_params, Exception):
             return find_params
 
@@ -140,7 +155,23 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         doc_type = self.doc_model.model_validate(updated_action_doc)
         return doc_type
 
-    async def _build_find_params(self, doc_find: DocFindType) -> Dict[str, Any] | Exception:
+    async def _build_filter(
+            self, doc_find: DocFindType, or_find_queries: List[DocFindType] | None = None
+    ) -> Dict[str, Any] | Exception:
+        query_filter = {}
+        filter1 = await self._build_find_params(doc_find)
+        if doc_find and (not or_find_queries or len(or_find_queries) == 0):
+            query_filter = filter1
+        elif or_find_queries and len(or_find_queries) > 0:
+            query_filter["$or"] = [filter1]
+            for query in or_find_queries:
+                filter2 = await self._build_find_params(query)
+                query_filter["$or"] += [filter2]
+        return query_filter
+
+    async def _build_find_params(
+            self, doc_find: DocFindType
+    ) -> Dict[str, Any] | Exception:
         try:
             find_params = {}
             for key, value in doc_find.model_dump().items():

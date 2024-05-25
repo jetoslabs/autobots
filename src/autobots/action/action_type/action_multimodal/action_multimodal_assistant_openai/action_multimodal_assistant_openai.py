@@ -3,6 +3,7 @@ from typing import Type, List
 
 from loguru import logger
 from openai.types.beta import Assistant
+from openai.types.beta.threads import Message
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_type.abc.IAction import IAction, ActionInputType, ActionOutputType, ActionConfigType, \
@@ -17,6 +18,8 @@ from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread
     ThreadRunRetrieve
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_model import ThreadCreate
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
+from src.autobots.core.logging.log_binder import LogBinder
 
 
 class ActionMultimodalAssistantOpenai(
@@ -52,7 +55,8 @@ class ActionMultimodalAssistantOpenai(
         return AssistantOpenaiConfig.model_validate(assistant.model_dump())
 
     @staticmethod
-    async def update_config(config: AssistantOpenaiConfig, config_update: AssistantOpenaiConfigUpdate) -> AssistantOpenaiConfig:
+    async def update_config(config: AssistantOpenaiConfig,
+                            config_update: AssistantOpenaiConfigUpdate) -> AssistantOpenaiConfig:
         assistant_client = get_openai().openai_assistants
         assistant_update = AssistantUpdate(assistant_id=config.id, **config_update.model_dump(exclude_none=True))
         assistant: Assistant = await assistant_client.update(assistant_update)
@@ -93,12 +97,24 @@ class ActionMultimodalAssistantOpenai(
                 raise Exception(f"Assistant run status: {run_retrieved.status}")
             thread_message_list = ThreadMessageList(thread_id=run_retrieved.thread_id)
             messages = await assistant_client.threads.messages.list(thread_message_list)
+            # last generated message is on the top
+            message: Message = messages.data[0]
             # create return object
-            message = messages.data[0]  # last generated message is on the top
             texts: List[TextObj] = []
-            for content in message.content:
-                text_obj = TextObj(text=content.text.value)
-                texts.append(text_obj)
+            if message.attachments is not None and len(message.attachments) > 0:
+                openai_files_client = get_openai().openai_files
+                for attachment in message.attachments:
+                    logger.bind(**LogBinder().with_kwargs(file_id=attachment.file_id).get_bind_dict()).debug("Reading OpenAI file")
+                    file_id = attachment.file_id
+                    binary_res = await openai_files_client.retrieve_content(file_content=FileContent(file_id=file_id))
+                    binary_content = binary_res.content
+                    content = bytes.decode(binary_content)
+                    text_obj = TextObj(text=content)
+                    texts.append(text_obj)
+            else:
+                for content in message.content:
+                    text_obj = TextObj(text=content.text.value)
+                    texts.append(text_obj)
             return TextObjs(texts=texts)
         except Exception as e:
             logger.error(str(e))

@@ -49,7 +49,7 @@ def supabase_decode_access_token(token: str, audience: str = None) -> gotrue.Use
         # Decoding token using supabase to get user
         user_res: gotrue.UserResponse = get_supabase().client.auth.get_user(token)
         if not user_res.user.email:
-            raise HTTPException(403, "Could not validate credentials")
+            raise Exception(403, "Could not validate credentials")
         return user_res
 
     except AuthApiError | Exception as e:
