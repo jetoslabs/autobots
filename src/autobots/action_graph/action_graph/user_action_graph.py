@@ -16,7 +16,7 @@ from src.autobots.action_graph.action_graph.action_graph_crud import ActionGraph
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate, ActionGraphDoc, \
     ActionGraphDocCreate, \
     ActionGraphFind, ActionGraphDocFind, ActionGraphUpdate, ActionGraphDocUpdate, ActionGraphDocsFound, \
-    ActionGraphLiteDoc
+    ActionGraphLiteDoc, ActionGraphPublishedDocFind
 
 from src.autobots.user.user_orm_model import UserORM
 
@@ -36,12 +36,18 @@ class UserActionGraphs:
         action_graph_doc = await self.action_graph_crud.insert_one(action_graph_doc_create)
         return action_graph_doc
 
-    async def list(
+    async def list_owned_or_published(
             self, action_graph_find: ActionGraphFind,
             limit: int = 100, offset: int = 0
     ) -> ActionGraphDocsFound:
         action_graph_doc_find = ActionGraphDocFind(user_id=self.user_id, **action_graph_find.model_dump())
-        paged_docs = await self.action_graph_crud.find_page(action_graph_doc_find, limit, offset)
+        action_graph_published_doc_find = ActionGraphPublishedDocFind()
+        paged_docs = await self.action_graph_crud.find_page(
+            doc_find=action_graph_doc_find,
+            or_find_queries=[action_graph_published_doc_find],
+            limit=limit,
+            offset=offset
+        )
         action_graph_docs = []
         for action_graph_doc in paged_docs.docs:
             action_graph_docs.append(ActionGraphLiteDoc.model_validate(action_graph_doc))
@@ -52,11 +58,12 @@ class UserActionGraphs:
             offset=paged_docs.offset
         )
 
-    async def get(
+    async def get_owned_or_published(
             self, action_graph_id: str
     ) -> ActionGraphDoc | None:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
-        action_graph_doc = await self.action_graph_crud.find_one(action_graph_doc_find)
+        action_graph_published_doc_find = ActionGraphPublishedDocFind()
+        action_graph_doc = await self.action_graph_crud.find_one(action_graph_doc_find, [action_graph_published_doc_find])
         return action_graph_doc
 
     async def update(
@@ -96,7 +103,7 @@ class UserActionGraphs:
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
-        action_graph_doc = await self.get(action_graph_id)
+        action_graph_doc = await self.get_owned_or_published(action_graph_id)
         if not action_graph_doc:
             raise HTTPException(405, "Action Graph cannot be run")
 

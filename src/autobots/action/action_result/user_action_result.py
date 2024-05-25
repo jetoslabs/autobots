@@ -34,7 +34,7 @@ class UserActionResult:
         action_result_find.type = EventType.action_run
         event_result_doc_find = EventResultDocFind(user_id=self.user_id,
                                                    **action_result_find.model_dump(exclude_none=True))
-        event_result_docs_page = await self.event_result_crud.find_page(event_result_doc_find, limit, offset)
+        event_result_docs_page = await self.event_result_crud.find_page(doc_find=event_result_doc_find, limit=limit, offset=offset)
         action_result_docs = []
         for event_result_doc in event_result_docs_page.docs:
             action_result_doc = ActionResultLiteDoc.model_validate(event_result_doc.model_dump())
