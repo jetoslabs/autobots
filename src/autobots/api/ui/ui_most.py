@@ -15,6 +15,7 @@ router = APIRouter()
 
 templates = Jinja2Templates(directory="src/autobots/ui/templates")
 
+
 @router.post("/cookie")
 async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     settings = SettingsProvider.sget()
@@ -141,11 +142,11 @@ async def page_logs(request: Request, user: UserResponse | None = Depends(get_us
 
 
 @router.get("/user")
-async def page_user(request: Request, user: UserResponse | None = Depends(get_user_from_cookie)):
+async def page_user(request: Request, user_res: UserResponse | None = Depends(get_user_from_cookie)):
     settings = SettingsProvider.sget()
-    if user:
+    if user_res:
         return templates.TemplateResponse("user.html",
-                                          {"request": request, "user": user, "version": settings.VERSION})
+                                          {"request": request, "user_res": user_res, "version": settings.VERSION})
     else:
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
         return response
