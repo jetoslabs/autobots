@@ -2,6 +2,7 @@ import requests
 from loguru import logger
 from pydantic import ValidationError
 import time
+import re
 
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidErrorResponse, ClaidResponse, \
     ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
@@ -43,8 +44,17 @@ async def bulkEdit(req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse
         "Authorization": f"Bearer {claidConfig.claid_apikey}"
     }
 
-    input = claidConfig.s3_input_folder_url
-    output = claidConfig.s3_output_folder_url
+    input = req.input
+
+    # Define a regular expression pattern to extract user_id and uuid
+    pattern = r"app-myautobots-public-dev/claid/([^/]+)/([^/]+)/input/([^/]+)\.\w+"
+    match = re.match(pattern, url)
+    user_id = match.group(1)
+    uuid = match.group(2)
+    image_name = match.group(3)
+
+    output = claidConfig.s3_output_folder_url + user_id + '/' + uuid + '/output/'
+    output_image_url = "https://app-myautobots-public-dev/claid/" +  user_id + '/' + uuid + '/output/' + image_name;
 
     operations = req.operations.dict(exclude_none=True)
     request_payload = {
