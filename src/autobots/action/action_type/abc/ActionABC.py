@@ -69,14 +69,4 @@ class ActionABC(
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType:
         raise NotImplementedError
 
-    @staticmethod
-    @abstractmethod
-    async def func_action(action_config: ActionConfigType, action_input: ActionInputType) -> ActionOutputType:
-        """
-        Sample implementation
-        action = Action(action_config)
-        action_output = action.run_action(action_input)
-        return action_output
-        """
-        raise NotImplementedError
 
