@@ -5,7 +5,7 @@ from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssi
 from pydantic import ValidationError
 
 from src.autobots.action.action.action_doc_model import ActionResult
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -13,7 +13,7 @@ from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
 
 
-class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
+class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
     type = ActionType.text2text_llm_chat_openai
 
     @staticmethod

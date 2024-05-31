@@ -4,7 +4,7 @@ from loguru import logger
 from openai.types.audio import Transcription
 from pydantic import HttpUrl, ValidationError, BaseModel
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
@@ -16,7 +16,7 @@ class AudioRes(BaseModel):
 
 
 class ActionAudio2TextTranscriptionOpenai(
-    IAction[TranscriptionReq, TranscriptionReq, TranscriptionReq, AudioRes, Transcription]
+    ActionABC[TranscriptionReq, TranscriptionReq, TranscriptionReq, AudioRes, Transcription]
 ):
     type = ActionType.audio2text_transcription_openai
 

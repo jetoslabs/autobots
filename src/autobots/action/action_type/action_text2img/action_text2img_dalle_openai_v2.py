@@ -2,7 +2,7 @@ from typing import Optional, Type
 
 from openai.types import ImagesResponse
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action.action_doc_model import ActionCreate
 from src.autobots.action.action_type.action_types import ActionType
@@ -18,7 +18,7 @@ class ActionCreateGenImageDalleOpenai(ActionCreate):
     output: Optional[ImagesResponse] = None
 
 
-class ActionGenImageDalleOpenAiV2(IAction[ImageReq, ImageReq, ImageReq, TextObj, ImagesResponse]):
+class ActionGenImageDalleOpenAiV2(ActionABC[ImageReq, ImageReq, ImageReq, TextObj, ImagesResponse]):
     type = ActionType.text2img_dalle_openai
 
     @staticmethod

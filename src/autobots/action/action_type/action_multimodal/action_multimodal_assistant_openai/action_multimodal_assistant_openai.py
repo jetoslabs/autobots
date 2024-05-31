@@ -6,7 +6,7 @@ from openai.types.beta import Assistant
 from openai.types.beta.threads import Message
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionInputType, ActionOutputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.assistant_openai_model import \
     AssistantOpenaiConfigCreate, AssistantOpenaiConfigUpdate, AssistantOpenaiConfig
@@ -23,7 +23,7 @@ from src.autobots.core.logging.log_binder import LogBinder
 
 
 class ActionMultimodalAssistantOpenai(
-    IAction[AssistantOpenaiConfigCreate, AssistantOpenaiConfigUpdate, AssistantOpenaiConfig, TextObj, TextObjs]
+    ActionABC[AssistantOpenaiConfigCreate, AssistantOpenaiConfigUpdate, AssistantOpenaiConfig, TextObj, TextObjs]
 ):
     type = ActionType.multimodal_assistant_openai
 

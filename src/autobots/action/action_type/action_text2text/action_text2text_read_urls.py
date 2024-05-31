@@ -4,7 +4,7 @@ from loguru import logger
 from pydantic import BaseModel, ValidationError, HttpUrl
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.selenium.selenium import get_selenium
@@ -15,7 +15,7 @@ class ReadUrlConfig(BaseModel):
     attribute: str = ""
 
 
-class ActionText2TextReadUrl(IAction[ReadUrlConfig, ReadUrlConfig, ReadUrlConfig, TextObj, TextObjs]):#TODO: add `s` at the end
+class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConfig, TextObj, TextObjs]):#TODO: add `s` at the end
     type = ActionType.text2text_read_url #TODO: add `s` at the end
 
     @staticmethod

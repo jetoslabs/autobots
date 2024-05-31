@@ -4,7 +4,7 @@ from loguru import logger
 from pydantic import BaseModel, ValidationError
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
@@ -16,7 +16,7 @@ class SearchMapsConfig(BaseModel):
     search_params: SearchMapsParams
 
 
-class ActionText2TextSearchMaps(IAction[SearchMapsConfig, SearchMapsConfig, SearchMapsConfig, TextObj, TextObjs]):
+class ActionText2TextSearchMaps(ActionABC[SearchMapsConfig, SearchMapsConfig, SearchMapsConfig, TextObj, TextObjs]):
     type = ActionType.text2text_search_maps
 
     @staticmethod

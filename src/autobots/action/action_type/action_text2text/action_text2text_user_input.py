@@ -5,7 +5,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionInputType, ActionOutputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 
@@ -20,7 +20,7 @@ class UserInputParams(BaseModel):
     files: List[FileParams] | None = None
 
 
-class ActionText2textUserInput(IAction[UserInputParams, UserInputParams, TextObjs, UserInputParams, TextObjs]):
+class ActionText2textUserInput(ActionABC[UserInputParams, UserInputParams, TextObjs, UserInputParams, TextObjs]):
     type = ActionType.text2text_user_input
 
     @staticmethod

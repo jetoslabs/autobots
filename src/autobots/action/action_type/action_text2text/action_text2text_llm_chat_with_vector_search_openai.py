@@ -3,7 +3,7 @@ from typing import Optional, Type, List
 from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam
 from pydantic import BaseModel
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionResult
 from src.autobots.action.action_type.action_types import ActionType
@@ -29,7 +29,7 @@ class ActionCreateText2TextLlmChatWithVectorSearchOpenai(ActionCreate):
 
 
 class ActionText2TextLlmChatWithVectorSearchOpenai(
-    IAction[
+    ActionABC[
         ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,
         ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,
         ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig,

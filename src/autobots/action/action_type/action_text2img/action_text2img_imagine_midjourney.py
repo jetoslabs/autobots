@@ -3,7 +3,7 @@ from typing import Optional, Type
 from pydantic import BaseModel, Field
 
 from src.autobots.action.action.action_doc_model import ActionCreate
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.useapi.useapi import get_use_api_net
@@ -22,7 +22,7 @@ class ActionCreateText2ImgImagineMidJourney(ActionCreate):
 
 
 class ActionText2ImgMidjourney(
-    IAction[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
+    ActionABC[DiscordReqModel, DiscordReqModel, DiscordReqModel, Text2ImgRunModel, DiscordJobsApiResponse]):
     type = ActionType.text2img_imagine_midjourney_ai
 
     @staticmethod

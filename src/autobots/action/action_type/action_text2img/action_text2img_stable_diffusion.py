@@ -3,7 +3,7 @@ from typing import Optional, Type
 from pydantic import BaseModel, Field
 
 from src.autobots.action.action.action_doc_model import ActionCreate
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -32,7 +32,7 @@ class ActionCreateText2ImgStableDiffusion(ActionCreate):
     output: Optional[StableDiffusionRes] = None
 
 
-class ActionText2ImgStableDiffusion(IAction[Text2ImgReqModel, Text2ImgReqModel, Text2ImgReqModel, Text2ImgRunModel, StableDiffusionRes]):
+class ActionText2ImgStableDiffusion(ActionABC[Text2ImgReqModel, Text2ImgReqModel, Text2ImgReqModel, Text2ImgRunModel, StableDiffusionRes]):
     type = ActionType.text2img_stable_diffusion
 
     @staticmethod

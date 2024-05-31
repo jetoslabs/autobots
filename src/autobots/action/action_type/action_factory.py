@@ -10,7 +10,7 @@ from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.action.action_result.action_result_doc_model import ActionResultDoc, ActionResultCreate, \
     ActionResultUpdate
 from src.autobots.action.action_result.user_action_result import UserActionResult
-from src.autobots.action.action_type.abc.IAction import ActionConfigType
+from src.autobots.action.action_type.abc.ActionABC import ActionConfigType
 from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook

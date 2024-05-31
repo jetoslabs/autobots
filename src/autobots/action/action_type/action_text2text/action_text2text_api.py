@@ -5,7 +5,7 @@ import httpx
 from httpx._types import RequestData, PrimitiveData
 from pydantic import BaseModel, ConfigDict
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionInputType, ActionOutputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 
 
@@ -47,7 +47,7 @@ class APIResponse(BaseModel):
 
 
 class ActionText2textAPI(
-    IAction[APIRequest, APIRequest, APIRequest, APIRequestData, APIResponse]
+    ActionABC[APIRequest, APIRequest, APIRequest, APIRequestData, APIResponse]
 ):
 
     @staticmethod

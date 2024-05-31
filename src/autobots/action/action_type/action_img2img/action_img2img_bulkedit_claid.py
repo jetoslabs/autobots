@@ -2,7 +2,7 @@ from typing import Type
 from loguru import logger
 from pydantic import ValidationError
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_calid_ai
@@ -10,7 +10,7 @@ from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse
 
 
 class ActionImg2BulkEditClaid(
-    IAction[ClaidRequestModel, ClaidRequestModel, ClaidRequestModel, ClaidInputModel, ClaidResponse]
+    ActionABC[ClaidRequestModel, ClaidRequestModel, ClaidRequestModel, ClaidInputModel, ClaidResponse]
 ):
     type = ActionType.img2img_bulk_edit_claid
 

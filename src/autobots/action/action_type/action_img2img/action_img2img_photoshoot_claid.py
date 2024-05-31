@@ -2,16 +2,15 @@ from typing import Type
 from loguru import logger
 from pydantic import ValidationError
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_calid_ai
-from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, \
-    ClaidPhotoShootOutputModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel
+from src.autobots.conn.claid.claid_model import ClaidPhotoShootOutputModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel
 
 
 class ActionImg2ImgPhotoshootClaid(
-    IAction[ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel, ClaidPhotoShootOutputModel]
+    ActionABC[ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel, ClaidPhotoShootOutputModel]
 ):
     type = ActionType.img2img_photoshoot_claid
 
