@@ -19,7 +19,7 @@ class Pinecone:
             api_key: str,
             environment: str,
             open_ai: OpenAI = get_openai(),
-            index_name: str = "index-1536",
+            index_name: str = "serverless-index-1536",
             dimension: int = 1536,
     ):
         if not api_key or not environment:
