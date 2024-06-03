@@ -1,5 +1,7 @@
 import pytest as pytest
-from openai.types.chat import ChatCompletion, ChatCompletionUserMessageParam, ChatCompletionSystemMessageParam
+from langjam.openai.openai_function.openai_function import OpenaiFunction
+from openai.types.chat import ChatCompletion, ChatCompletionUserMessageParam, ChatCompletionSystemMessageParam, \
+    ChatCompletionToolParam
 
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.conn.openai.openai_client import get_openai
@@ -55,3 +57,10 @@ async def test_chat_stream_happy_path(set_test_settings):
             collected_words = collected_words + part.choices[0].delta.content.lower()
 
     assert "newton" in collected_words
+
+
+@pytest.mark.asyncio
+async def test_openai_function(set_test_settings):
+    chat_completion_tool_param: ChatCompletionToolParam = \
+        await OpenaiFunction.get_defination(get_openai().openai_chat.chat, "LLM Chat")
+    assert chat_completion_tool_param

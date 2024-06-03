@@ -7,9 +7,9 @@ from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.core.database.mongo_base_crud import CRUDBase
 
 
-class ScheduleCRUD(CRUDBase[ScheduleDoc, ScheduleDocCreate, ScheduleDocFind, ScheduleDocUpdate]):
+class ScheduleCRUD(CRUDBase[ScheduleDoc, ScheduleDoc, ScheduleDocCreate, ScheduleDocFind, ScheduleDocUpdate]):
 
     def __init__(self, db: AsyncIOMotorDatabase = Depends(get_mongo_db)):
         document: AsyncIOMotorCollection = db[ScheduleDoc.__collection__]
-        super().__init__(ScheduleDoc, document)
+        super().__init__(ScheduleDoc, ScheduleDoc, document)
 

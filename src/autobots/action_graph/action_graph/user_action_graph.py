@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, BackgroundTasks
+from fastapi import HTTPException, BackgroundTasks
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.common_action_models import TextObj
@@ -15,7 +15,8 @@ from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.action_graph.action_graph.action_graph_crud import ActionGraphCRUD
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphCreate, ActionGraphDoc, \
     ActionGraphDocCreate, \
-    ActionGraphFind, ActionGraphDocFind, ActionGraphUpdate, ActionGraphDocUpdate
+    ActionGraphFind, ActionGraphDocFind, ActionGraphUpdate, ActionGraphDocUpdate, ActionGraphDocsFound, \
+    ActionGraphLiteDoc, ActionGraphPublishedDocFind
 
 from src.autobots.user.user_orm_model import UserORM
 
@@ -26,45 +27,58 @@ class UserActionGraphs:
         self.user = user
         self.user_id = str(user.id)
         self.db = db
+        self.action_graph_crud = ActionGraphCRUD(self.db)
 
     async def create(
-            self, action_graph_create: ActionGraphCreate, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
+            self, action_graph_create: ActionGraphCreate
     ) -> ActionGraphDoc:
         action_graph_doc_create = ActionGraphDocCreate(user_id=self.user_id, **action_graph_create.model_dump())
-        action_graph_doc = await ActionGraphCRUD(db).insert_one(action_graph_doc_create)
+        action_graph_doc = await self.action_graph_crud.insert_one(action_graph_doc_create)
         return action_graph_doc
 
-    async def list(
+    async def list_owned_or_published(
             self, action_graph_find: ActionGraphFind,
-            db: AsyncIOMotorDatabase = Depends(get_mongo_db),
             limit: int = 100, offset: int = 0
-    ) -> List[ActionGraphDoc]:
+    ) -> ActionGraphDocsFound:
         action_graph_doc_find = ActionGraphDocFind(user_id=self.user_id, **action_graph_find.model_dump())
-        action_graph_docs = await ActionGraphCRUD(db).find(action_graph_doc_find, limit, offset)
-        return action_graph_docs
+        action_graph_published_doc_find = ActionGraphPublishedDocFind()
+        paged_docs = await self.action_graph_crud.find_page(
+            doc_find=action_graph_doc_find,
+            or_find_queries=[action_graph_published_doc_find],
+            limit=limit,
+            offset=offset
+        )
+        action_graph_docs = []
+        for action_graph_doc in paged_docs.docs:
+            action_graph_docs.append(ActionGraphLiteDoc.model_validate(action_graph_doc))
+        return ActionGraphDocsFound(
+            docs=action_graph_docs,
+            total_count=paged_docs.total_count,
+            limit=paged_docs.limit,
+            offset=paged_docs.offset
+        )
 
-    async def get(
-            self, action_graph_id: str, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
-    ) -> ActionGraphDoc:
+    async def get_owned_or_published(
+            self, action_graph_id: str
+    ) -> ActionGraphDoc | None:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
-        action_graph_docs = await ActionGraphCRUD(db).find(action_graph_doc_find)
-        if len(action_graph_docs) != 1:
-            raise HTTPException(500, "Error in finding action")
-        return action_graph_docs[0]
+        action_graph_published_doc_find = ActionGraphPublishedDocFind()
+        action_graph_doc = await self.action_graph_crud.find_one(action_graph_doc_find, [action_graph_published_doc_find])
+        return action_graph_doc
 
     async def update(
-            self, action_graph_id: str, action_graph_update: ActionGraphUpdate, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
+            self, action_graph_id: str, action_graph_update: ActionGraphUpdate
     ) -> ActionGraphDoc:
         action_graph_doc_update = ActionGraphDocUpdate(id=action_graph_id, user_id=self.user_id,
                                                        **action_graph_update.model_dump())
-        action_graph_doc = await ActionGraphCRUD(db).update_one(action_graph_doc_update)
+        action_graph_doc = await self.action_graph_crud.update_one(action_graph_doc_update)
         return action_graph_doc
 
     async def delete(
-            self, action_graph_id: str, db: AsyncIOMotorDatabase = Depends(get_mongo_db)
+            self, action_graph_id: str
     ) -> int:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
-        delete_result = await ActionGraphCRUD(db).delete_many(action_graph_doc_find)
+        delete_result = await self.action_graph_crud.delete_many(action_graph_doc_find)
         return delete_result.deleted_count
 
     # async def run(
@@ -89,7 +103,7 @@ class UserActionGraphs:
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
-        action_graph_doc = await self.get(action_graph_id, self.db)
+        action_graph_doc = await self.get_owned_or_published(action_graph_id)
         if not action_graph_doc:
             raise HTTPException(405, "Action Graph cannot be run")
 

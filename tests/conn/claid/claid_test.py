@@ -5,6 +5,7 @@ from src.autobots.conn.claid.claid_model import PhotoshootOutput, PhotoshootObje
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Claid is very costly")
 async def test_photoshoot(set_test_settings):
     claid_request = ClaidPhotoShootInputModel(
         output=PhotoshootOutput(

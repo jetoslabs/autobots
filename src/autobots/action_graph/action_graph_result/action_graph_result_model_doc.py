@@ -1,9 +1,10 @@
 from typing import Optional, List
 
-from pydantic import BaseModel
 
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
-from src.autobots.event_result.event_result_model import EventResultUpdate, EventResultCreate, EventType, EventResultDoc
+from src.autobots.core.database.mongo_base_crud import DocFindPage
+from src.autobots.event_result.event_result_model import EventResultUpdate, EventResultCreate, EventType, \
+    EventResultDoc, EventResultLiteDoc
 
 
 class ActionGraphResultUpdate(EventResultUpdate):
@@ -22,8 +23,9 @@ class ActionGraphResultDoc(EventResultDoc):
     result: ActionGraphDoc
 
 
-class ActionGraphResultDocsFound(BaseModel):
-    docs: List[ActionGraphResultDoc]
-    total_count: int
-    limit: int
-    offset: int
+class ActionGraphResultLiteDoc(EventResultLiteDoc):
+    pass
+
+
+class ActionGraphResultDocsFound(DocFindPage):
+    docs: List[ActionGraphResultLiteDoc]

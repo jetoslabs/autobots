@@ -15,6 +15,7 @@ router = APIRouter()
 
 templates = Jinja2Templates(directory="src/autobots/ui/templates")
 
+
 @router.post("/cookie")
 async def cookie(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     settings = SettingsProvider.sget()

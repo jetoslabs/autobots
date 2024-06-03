@@ -60,6 +60,19 @@ class EventResultDocCreate(EventResultCreate):
     updated_at: datetime = datetime.now()
 
 
+class EventResultLiteDoc(BaseModel):
+    id: str = Field(..., alias='_id')
+    user_id: str
+    type: EventType
+    status: EventResultStatus
+    error_message: Optional[TextObj] = None
+    is_saved: bool = False
+    created_at: datetime = datetime.now()
+    updated_at: datetime = datetime.now()
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
 class EventResultDoc(EventResultDocCreate):
     __collection__ = "EventResults"
 

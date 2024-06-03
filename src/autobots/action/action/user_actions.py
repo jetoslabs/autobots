@@ -107,7 +107,7 @@ class UserActions:
         action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
         action_docs = await self.action_crud.find(action_doc_find)
         if len(action_docs) != 1:
-            raise HTTPException(405, "Action not found")
+            raise HTTPException(404, "Action not found")
         action_doc = action_docs[0]
         action_doc.input = input
 
@@ -115,8 +115,7 @@ class UserActions:
             user_action_result = UserActionResult(self.user, self.db)
             action_result_doc:  ActionResultDoc | None = await user_action_result.get_action_result(action_result_id)
             if action_result_doc is None:
-                raise HTTPException(405, "Action Result not found")
-            # action_result_doc.result.input
+                raise HTTPException(404, "Action Result not found")
 
         run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
         action_doc.output = run_obj.output_dict

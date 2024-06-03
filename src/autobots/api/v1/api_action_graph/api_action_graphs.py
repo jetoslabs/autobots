@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 import gotrue
@@ -15,7 +15,8 @@ from src.autobots.action_graph.action_graph_result.user_action_graph_result impo
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
-from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, ActionGraphFind, ActionGraphUpdate
+from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, \
+    ActionGraphFind, ActionGraphUpdate, ActionGraphDocsFound
 from src.autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
 
 from src.autobots.user.user_orm_model import UserORM
@@ -31,7 +32,7 @@ async def create_action_graph(
 ) -> ActionGraphDoc:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
-        resp = await UserActionGraphs(user=user_orm, db=db).create(action_graph_create, db)
+        resp = await UserActionGraphs(user=user_orm, db=db).create(action_graph_create)
         return resp
     except Exception as e:
         logger.error(str(e))
@@ -40,14 +41,14 @@ async def create_action_graph(
 
 @router.get("/")
 async def list_action_graphs(
-        id: str = None, name: str = None, version: float = None,
+        id: str = None, name: str = None, version: float = None, is_published: bool = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
-) -> List[ActionGraphDoc]:
+) -> ActionGraphDocsFound:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    find = ActionGraphFind(id=id, name=name, version=version)
-    action_docs = await UserActionGraphs(user=user_orm, db=db).list(find, db, limit, offset)
+    find = ActionGraphFind(id=id, name=name, version=version, is_published=is_published)
+    action_docs = await UserActionGraphs(user=user_orm, db=db).list_owned_or_published(find, limit, offset)
     return action_docs
 
 
@@ -58,7 +59,9 @@ async def get_action_graph(
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActionGraphs(user=user_orm, db=db).get(id, db)
+    action_doc = await UserActionGraphs(user=user_orm, db=db).get_owned_or_published(id)
+    if not action_doc:
+        raise HTTPException(404, detail="Action graph not found")
     return action_doc
 
 
@@ -70,7 +73,7 @@ async def update_action_graph(
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
-    action_doc = await UserActionGraphs(user=user_orm, db=db).update(id, action_graph_update, db)
+    action_doc = await UserActionGraphs(user=user_orm, db=db).update(id, action_graph_update)
     return action_doc
 
 
@@ -82,10 +85,10 @@ async def delete_action_graph(
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graphs = UserActionGraphs(user=user_orm, db=db)
-    action_doc = await user_action_graphs.get(id, db)
+    action_doc = await user_action_graphs.get(id)
     if action_doc is None:
-        raise HTTPException(400, "Action not found")
-    deleted_count = await user_action_graphs.delete(id, db)
+        raise HTTPException(404, "Action not found")
+    deleted_count = await user_action_graphs.delete(id)
     if deleted_count != 1:
         raise HTTPException(500, "Error in deleting action")
     return action_doc
