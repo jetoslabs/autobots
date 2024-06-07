@@ -64,7 +64,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
             nodes=node_map,
             graph=action_graph
         )
-        action_graph_doc = await user_action_graph.create(action_graph_create, db)
+        action_graph_doc = await user_action_graph.create(action_graph_create)
 
         # run action graph
         user_input = TextObj(text="Campaign for Nike shoes during Diwali Festival")
@@ -96,7 +96,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
 
         # cleanup action graph
         await user_action_graph_result.delete_action_graph_result(action_graph_doc.id)
-        await user_action_graph.delete(action_graph_doc.id, db)
+        await user_action_graph.delete(action_graph_doc.id)
 
     except Exception as e:
         assert e is not None

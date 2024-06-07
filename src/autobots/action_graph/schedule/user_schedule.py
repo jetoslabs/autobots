@@ -48,7 +48,7 @@ class UserSchedule:
 
     async def list_user_schedule(self, schedule_find: ScheduleFind, limit: int = 100, offset: int = 0) -> List[ScheduleDoc]:
         schedule_doc_find = ScheduleDocFind(user_id=self.user_id, **schedule_find.model_dump())
-        schedule_docs = await self.schedule_crud.find(schedule_doc_find, limit, offset)
+        schedule_docs = await self.schedule_crud.find(schedule_doc_find, limit=limit, offset=offset)
         return schedule_docs
 
     async def get_user_schedule(self, schedule_id: str) -> ScheduleDoc:
