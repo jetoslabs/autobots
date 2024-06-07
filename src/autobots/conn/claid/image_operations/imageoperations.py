@@ -115,6 +115,7 @@ async def photoshoot(req: ClaidPhotoShootInputModel) -> ClaidPhotoShootOutputMod
     if req.output is not None:
         req.output.destination = claidConfig.s3_output_folder_url
         req.output.format = "jpeg"
+        req.output.number_of_images = 1
 
     if req.object is not None:
         req.object.image_url = claidConfig.s3_input_file_url
