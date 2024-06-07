@@ -85,7 +85,7 @@ async def delete_action_graph(
 ) -> ActionGraphDoc:
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_action_graphs = UserActionGraphs(user=user_orm, db=db)
-    action_doc = await user_action_graphs.get(id)
+    action_doc = await user_action_graphs.get_owned(id)
     if action_doc is None:
         raise HTTPException(404, "Action not found")
     deleted_count = await user_action_graphs.delete(id)
