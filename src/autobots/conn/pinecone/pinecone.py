@@ -54,6 +54,7 @@ class Pinecone:
                 vector = (vector_id, embedding_data.embedding, metadata)
                 upsert_res = self.index.upsert(vectors=[vector], namespace=namespace)
                 upserted.append(upsert_res)
+            time.sleep(15)  # waiting for pinecone to store data
         except Exception as e:
             logger.error(str(e))
             raise
