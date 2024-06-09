@@ -208,3 +208,4 @@ jobs:
           CLAID_INPUT_FOLDER_S3_URI: ${{ secrets.CLAID_INPUT_FOLDER_S3_URI }}
           CLAID_OUTPUT_FOLDER_S3_URI: ${{ secrets.CLAID_OUTPUT_FOLDER_S3_URI }}
           CLAID_INPUT_FILE_S3_URI: ${{ secrets.CLAID_INPUT_FILE_S3_URI }}
+          SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
