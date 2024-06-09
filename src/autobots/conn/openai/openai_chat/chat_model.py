@@ -37,7 +37,7 @@ class ChatReq(BaseModel):
     stream: Optional[Literal[False]] | Literal[True] = False
     temperature: Optional[float] = 0.8
     tool_choice: ChatCompletionToolChoiceOptionParam | None = None
-    tools: List[ChatCompletionToolParam] | None = None
+    tools: List[ChatCompletionToolParam] | List[str] | None = None
     top_logprobs: Optional[int] = None
     top_p: Optional[float] = None
     user: str | None = None

@@ -5,7 +5,7 @@ from loguru import logger
 from pydantic import HttpUrl, ValidationError, BaseModel
 
 from src.autobots.action.action.common_action_models import TextObj
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.aws.aws_s3 import get_public_s3
@@ -18,7 +18,7 @@ class AudioRes(BaseModel):
     url: str
 
 
-class ActionText2AudioSpeechOpenai(IAction[SpeechReq, SpeechReq, SpeechReq, TextObj, AudioRes]):
+class ActionText2AudioSpeechOpenai(ActionABC[SpeechReq, SpeechReq, SpeechReq, TextObj, AudioRes]):
     type = ActionType.text2audio_speech_openai
 
     @staticmethod

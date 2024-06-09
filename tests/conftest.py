@@ -13,6 +13,7 @@ from src.autobots.main import app
 def event_loop():
     loop = get_event_loop()
     yield loop
+    loop.close()
 
 # pytestmark = pytest.mark.asyncio(scope="session")  # If in root conftest.py then Session scope
 

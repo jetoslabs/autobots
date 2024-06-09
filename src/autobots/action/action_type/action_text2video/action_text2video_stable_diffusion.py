@@ -3,7 +3,7 @@ from typing import Optional, Type
 from pydantic import BaseModel, Field
 
 from src.autobots.action.action.action_doc_model import ActionCreate
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -28,7 +28,7 @@ class ActionCreateText2VideoStableDiffusion(ActionCreate):
 
 
 class ActionText2VideoStableDiffusion(
-    IAction[Text2VideoReqModel, Text2VideoReqModel, Text2VideoReqModel, Text2VideoRunModel, StableDiffusionRes]
+    ActionABC[Text2VideoReqModel, Text2VideoReqModel, Text2VideoReqModel, Text2VideoRunModel, StableDiffusionRes]
 ):
     type = ActionType.text2video_stable_diffusion
 

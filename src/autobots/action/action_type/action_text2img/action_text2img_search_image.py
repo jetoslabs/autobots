@@ -4,7 +4,7 @@ from loguru import logger
 from pydantic import BaseModel, ValidationError
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
@@ -15,7 +15,7 @@ class SearchImageConfig(BaseModel):
     search_params: SearchImageParams
 
 
-class ActionText2ImgSearchImage(IAction[SearchImageConfig, SearchImageConfig, SearchImageConfig, TextObj, TextObjs]):
+class ActionText2ImgSearchImage(ActionABC[SearchImageConfig, SearchImageConfig, SearchImageConfig, TextObj, TextObjs]):
     type = ActionType.text2img_search_image
 
     @staticmethod

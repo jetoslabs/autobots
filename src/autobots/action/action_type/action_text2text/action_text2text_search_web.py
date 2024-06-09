@@ -4,7 +4,7 @@ from loguru import logger
 from pydantic import BaseModel, ValidationError
 
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
@@ -16,7 +16,7 @@ class SearchWebConfig(BaseModel):
     search_params: SearchTextParams
 
 
-class ActionText2TextSearchWeb(IAction[SearchWebConfig, SearchWebConfig, SearchWebConfig, TextObj, TextObjs]):
+class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, SearchWebConfig, TextObj, TextObjs]):
     type = ActionType.text2text_search_web
 
     @staticmethod
@@ -39,7 +39,7 @@ class ActionText2TextSearchWeb(IAction[SearchWebConfig, SearchWebConfig, SearchW
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: TextObj):
+    def __init__(self, action_config: SearchWebConfig):
         super().__init__(action_config)
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
@@ -62,3 +62,10 @@ class ActionText2TextSearchWeb(IAction[SearchWebConfig, SearchWebConfig, SearchW
             logger.error(str(e))
         except Exception as e:
             logger.error(str(e))
+
+    @staticmethod
+    async def create_and_run_action(action_config: SearchWebConfig) -> TextObjs:
+        action = ActionText2TextSearchWeb(action_config)
+        action_input = TextObj(text="")
+        text_objs = await action.run_action(action_input)
+        return text_objs

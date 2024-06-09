@@ -3,7 +3,7 @@ from typing import Dict, Any, Type
 from pydantic import BaseModel
 
 from src.autobots.action.action.common_action_models import TextObjs
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper.io_mapper import IOMapperConfig, IOMapper
 from src.autobots.action.action_type.action_types import ActionType
@@ -14,7 +14,7 @@ class IOMapperInput(BaseModel):
     input_action_type: ActionType | None = None
 
 
-class ActionText2TextIOMapper(IAction[IOMapperConfig, IOMapperConfig, IOMapperConfig, IOMapperInput, TextObjs]):
+class ActionText2TextIOMapper(ActionABC[IOMapperConfig, IOMapperConfig, IOMapperConfig, IOMapperInput, TextObjs]):
     type = ActionType.text2text_io_mapper
 
     @staticmethod

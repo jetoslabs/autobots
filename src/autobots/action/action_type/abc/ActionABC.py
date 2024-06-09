@@ -12,8 +12,11 @@ ActionInputType = TypeVar("ActionInputType", bound=BaseModel)
 ActionOutputType = TypeVar("ActionOutputType", bound=BaseModel)
 
 
-class IAction(
-    Generic[ActionConfigCreateType, ActionConfigUpdateType, ActionConfigType, ActionInputType, ActionOutputType]):
+class ActionABC(
+    Generic[
+        ActionConfigCreateType, ActionConfigUpdateType, ActionConfigType, ActionInputType, ActionOutputType
+    ]
+):
 
     def __init__(self, action_config: ActionConfigType):
         self.action_config = action_config
@@ -55,14 +58,6 @@ class IAction(
     async def delete_config(config: ActionConfigType) -> ActionConfigType:
         return config
 
-    # @staticmethod
-    # async def update_config_with_prev_IO(
-    #         curr_config: ActionConfigType,
-    #         prev_input: ActionInputType | None = None,
-    #         prev_output: ActionOutputType | None = None,
-    # ) -> ActionConfigType:
-    #     return curr_config
-
     @staticmethod
     async def update_config_with_prev_results(
             curr_config: ActionConfigType,
@@ -73,3 +68,9 @@ class IAction(
     @abstractmethod
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType:
         raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    async def create_and_run_action(action_config: ActionConfigType) -> ActionOutputType:
+        raise NotImplementedError
+

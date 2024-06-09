@@ -1,11 +1,14 @@
 from typing import Type, List
 
 from loguru import logger
-from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam
+from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam, \
+    ChatCompletionToolParam
 from pydantic import ValidationError
 
+from autobots.llm.tools.tool_factory import ToolFactory
+from autobots.llm.tools.tools_map import TOOLS_MAP
 from src.autobots.action.action.action_doc_model import ActionResult
-from src.autobots.action.action_type.abc.IAction import IAction, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -13,7 +16,7 @@ from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
 
 
-class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
+class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
     type = ActionType.text2text_llm_chat_openai
 
     @staticmethod
@@ -80,6 +83,9 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, T
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
+            tool_defs = await self.replace_action_tools_with_tools_defs()
+            self.action_config.tools = tool_defs
+
             if action_input and action_input.text != "":
                 # message = Message(role=Role.user.value, content=action_input.text)
                 message = ChatCompletionUserMessageParam(role=Role.user.value, content=action_input.text)
@@ -95,3 +101,13 @@ class ActionText2TextLlmChatOpenai(IAction[ChatReq, ChatReq, ChatReq, TextObj, T
             return text_objs
         except ValidationError as e:
             logger.error(str(e))
+
+    async def replace_action_tools_with_tools_defs(self) -> List[ChatCompletionToolParam] | None:
+        action_tools = []
+        for action_tool in self.action_config.tools:
+            if isinstance(action_tool, str):
+                if action_tool in TOOLS_MAP:
+                    action_tools.append(action_tool)
+        tool_defs = await ToolFactory.get_tool_definations(action_tools)
+        return tool_defs
+

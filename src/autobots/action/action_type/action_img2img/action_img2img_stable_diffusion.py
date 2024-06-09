@@ -2,7 +2,7 @@ from typing import Type, Optional
 
 from pydantic import BaseModel, Field
 
-from src.autobots.action.action_type.abc.IAction import IAction, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
@@ -32,7 +32,7 @@ class Img2ImgRunModel(BaseModel):
 
 
 class ActionImg2ImgStableDiffusion(
-    IAction[SDImg2ImgReqModel, SDImg2ImgReqModel, SDImg2ImgReqModel, Img2ImgRunModel, StableDiffusionRes]
+    ActionABC[SDImg2ImgReqModel, SDImg2ImgReqModel, SDImg2ImgReqModel, Img2ImgRunModel, StableDiffusionRes]
 ):
     type = ActionType.img2img_stable_diffusion
 
