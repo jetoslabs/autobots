@@ -34,7 +34,7 @@ class UserDatastoreResult:
             limit: int = 100, offset: int = 0
     ) -> List[DatastoreResultDoc]:
         event_result_doc_find = EventResultDocFind(user_id=self.user_id, **datastore_result_find.model_dump())
-        event_result_docs = await self.event_result_crud.find(event_result_doc_find, limit, offset)
+        event_result_docs = await self.event_result_crud.find(event_result_doc_find, limit=limit, offset=offset)
         datastore_result_docs = []
         for event_result_doc in event_result_docs:
             datastore_result_doc = DatastoreResultDoc.model_validate(event_result_doc.model_dump())

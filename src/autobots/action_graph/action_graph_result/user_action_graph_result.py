@@ -55,7 +55,7 @@ class UserActionGraphResult:
     ) -> List[ActionGraphResultDoc]:
         action_graph_result_find.type = EventType.action_graph_run
         event_result_doc_find = EventResultDocFind(user_id=self.user_id, **action_graph_result_find.model_dump())
-        event_result_docs = await self.event_result_crud.find(event_result_doc_find, limit, offset)
+        event_result_docs = await self.event_result_crud.find(event_result_doc_find, limit=limit, offset=offset)
         action_graph_result_docs = []
         for event_result_doc in event_result_docs:
             action_graph_result_doc = ActionGraphResultDoc.model_validate(event_result_doc.model_dump())

@@ -58,11 +58,18 @@ class UserActionGraphs:
             offset=paged_docs.offset
         )
 
+    async def get_owned(
+            self, action_graph_id: str
+    ) -> ActionGraphDoc | None:
+        action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
+        action_graph_doc = await self.action_graph_crud.find_one(action_graph_doc_find)
+        return action_graph_doc
+
     async def get_owned_or_published(
             self, action_graph_id: str
     ) -> ActionGraphDoc | None:
         action_graph_doc_find = ActionGraphDocFind(id=action_graph_id, user_id=self.user_id)
-        action_graph_published_doc_find = ActionGraphPublishedDocFind()
+        action_graph_published_doc_find = ActionGraphPublishedDocFind(id=action_graph_id)
         action_graph_doc = await self.action_graph_crud.find_one(action_graph_doc_find, [action_graph_published_doc_find])
         return action_graph_doc
 
