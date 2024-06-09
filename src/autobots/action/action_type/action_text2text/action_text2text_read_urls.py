@@ -66,3 +66,9 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
             logger.error(str(e))
         except Exception as e:
             logger.error(str(e))
+
+    @staticmethod
+    async def create_and_run_action(action_config: ReadUrlConfig) -> TextObjs:
+        action = ActionText2TextReadUrl(action_config)
+        action_input = TextObj(text="")
+        return await action.run_action(action_input)

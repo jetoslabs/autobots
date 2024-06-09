@@ -37,13 +37,15 @@ class OpenAIFunctionDefinitionGen:
         # Fields of one function param (param is pydantic obj)
         param_type = model_json_schema["type"]
         properties = await OpenAIFunctionDefinitionGen._get_properties(model_json_schema)
-        required = model_json_schema["required"]
+        required = model_json_schema.get("required") if "required" in model_json_schema else None
 
-        parameters_dict: FunctionParameters = {
-            "type": param_type,
-            "properties": properties,
-            "required": required
-        }
+        parameters_dict: FunctionParameters = {}
+        if param_type:
+            parameters_dict["type"] = param_type
+        if properties:
+            parameters_dict["properties"] = properties
+        if required:
+            parameters_dict["required"] = required
         # parameters_obj = FunctionParameters(**parameters_dict)
         return parameters_dict
 

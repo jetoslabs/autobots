@@ -39,7 +39,7 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: TextObj):
+    def __init__(self, action_config: SearchWebConfig):
         super().__init__(action_config)
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
@@ -62,3 +62,10 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
             logger.error(str(e))
         except Exception as e:
             logger.error(str(e))
+
+    @staticmethod
+    async def create_and_run_action(action_config: SearchWebConfig) -> TextObjs:
+        action = ActionText2TextSearchWeb(action_config)
+        action_input = TextObj(text="")
+        text_objs = await action.run_action(action_input)
+        return text_objs
