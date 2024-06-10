@@ -91,7 +91,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
                 message = ChatCompletionUserMessageParam(role=Role.user.value, content=action_input.text)
                 self.action_config.messages = self.action_config.messages + [message]
             chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config)
-            # remove input message from Config messages
+            # remove input message from Config messages #TODO: dont remove
             self.action_config.messages.pop()
             if not chat_res:
                 return text_objs

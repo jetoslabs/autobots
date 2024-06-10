@@ -163,6 +163,16 @@ class RelatedSearch(BaseModel):
     serpapi_link: Optional[HttpUrl] = None
 
 
+class NewsResult(BaseModel):
+    position: Optional[int] = None
+    title: Optional[str] = None
+    link: Optional[HttpUrl] = None
+    source: Optional[str] = None
+    date: Optional[str] = None
+    snippet: Optional[str] = None
+    thumbnail: Optional[str] = None
+
+
 class RefineThisSearchItem(BaseModel):
     query: Optional[str] = None
     link: Optional[HttpUrl] = None
@@ -214,6 +224,7 @@ class SearchResponse(BaseModel):
     buying_guide: Optional[BuyingGuide] = None
     organic_results: Optional[List[OrganicResult]] = None
     related_searches: Optional[List[RelatedSearch]] = None
+    news_results: Optional[List[NewsResult]] = None
     refine_this_search: Optional[List[RefineThisSearch]] = None
     categories: Optional[List[Category]] = None
     pagination: Optional[Pagination] = None
