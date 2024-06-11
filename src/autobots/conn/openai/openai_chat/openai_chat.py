@@ -37,12 +37,14 @@ class OpenaiChat:
             logger.error(str(e))
             raise
 
-    async def chat_loop(self, chat_req: ChatReq) -> ChatCompletion:
+    async def chat_loop(self, chat_req: ChatReq) -> ChatCompletion | AsyncStream[ChatCompletionChunk]:
         # is_continue: bool = True
         while True:
             chat_completion: ChatCompletion = await self.client.chat.completions.create(
                 **chat_req.model_dump(exclude_none=True)
             )
+            if isinstance(chat_completion, AsyncStream):
+                return chat_completion
             choice = chat_completion.choices[-1]
             if choice.finish_reason == "stop":
                 return chat_completion
