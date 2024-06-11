@@ -16,7 +16,7 @@ from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, \
-    ActionGraphFind, ActionGraphUpdate, ActionGraphDocsFound
+    ActionGraphFind, ActionGraphUpdate, ActionGraphDocsFound, ActionGraphPublishedDocFind
 from src.autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
 
 from src.autobots.user.user_orm_model import UserORM
@@ -42,13 +42,17 @@ async def create_action_graph(
 @router.get("/")
 async def list_action_graphs(
         id: str = None, name: str = None, version: float = None, is_published: bool = None,
+        is_published_by_others: bool = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphDocsFound:
     user_orm = UserORM(id=UUID(user_res.user.id))
     find = ActionGraphFind(id=id, name=name, version=version, is_published=is_published)
-    action_docs = await UserActionGraphs(user=user_orm, db=db).list_owned_or_published(find, limit, offset)
+    or_find = None
+    if is_published_by_others:
+        or_find = [ActionGraphPublishedDocFind()]
+    action_docs = await UserActionGraphs(user=user_orm, db=db).list_owned_or_published(find, or_find, limit, offset)
     return action_docs
 
 
