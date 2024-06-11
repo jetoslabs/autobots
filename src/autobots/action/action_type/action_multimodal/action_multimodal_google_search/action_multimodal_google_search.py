@@ -2,12 +2,12 @@ from typing import Type
 
 from loguru import logger
 
-from autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionOutputType, ActionInputType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionOutputType, ActionInputType, \
     ActionConfigUpdateType, ActionConfigCreateType
-from autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search_model import \
+from src.autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search_model import \
     ActionMultimodalGoogleSearchConfig, ActionMultimodalGoogleSearchInput, ActionMultimodalGoogleSearchOutput
-from autobots.action.action_type.action_types import ActionType
-from autobots.conn.serp.serp import get_serp
+from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.conn.serp.serp import get_serp
 
 
 class ActionMultimodalGoogleSearch(

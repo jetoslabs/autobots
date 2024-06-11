@@ -1,7 +1,7 @@
 import pytest
 
-from autobots.conn.serp.serp import get_serp
-from autobots.conn.serp.serp_search_request import SerpGoogleSearchParams
+from src.autobots.conn.serp.serp import get_serp
+from src.autobots.conn.serp.serp_search_request import SerpGoogleSearchParams
 
 
 @pytest.mark.asyncio

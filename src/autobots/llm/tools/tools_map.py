@@ -2,9 +2,9 @@ from typing import Literal
 
 from typing_extensions import TypedDict, Required
 
-from autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search import \
+from src.autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search import \
     ActionMultimodalGoogleSearch
-from autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
+from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
 
 
