@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from fastapi import HTTPException, BackgroundTasks
@@ -38,13 +38,13 @@ class UserActionGraphs:
 
     async def list_owned_or_published(
             self, action_graph_find: ActionGraphFind,
+            or_action_graph_find: List[ActionGraphFind | ActionGraphPublishedDocFind] | None = None,
             limit: int = 100, offset: int = 0
     ) -> ActionGraphDocsFound:
         action_graph_doc_find = ActionGraphDocFind(user_id=self.user_id, **action_graph_find.model_dump())
-        action_graph_published_doc_find = ActionGraphPublishedDocFind()
         paged_docs = await self.action_graph_crud.find_page(
             doc_find=action_graph_doc_find,
-            or_find_queries=[action_graph_published_doc_find],
+            or_find_queries=or_action_graph_find,
             limit=limit,
             offset=offset
         )
