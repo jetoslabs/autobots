@@ -39,7 +39,7 @@ class ToolFactory:
             action = TOOLS_MAP.get(tool_name)
             config = action.get_config_type().model_validate(json.loads(tool_args))
             output = await action.create_and_run_action(config)
-            output_str = json.dumps(output.model_dump())
+            output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
             tool_output = output_str
         except Exception as e:
             logger.error(str(e))

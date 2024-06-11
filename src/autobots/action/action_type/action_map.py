@@ -1,3 +1,5 @@
+from autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search import \
+    ActionMultimodalGoogleSearch
 from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import \
     ActionAudio2TextTranscriptionOpenai
 from src.autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
@@ -36,6 +38,7 @@ from src.autobots.action.action_type.action_types import ActionType
 ACTION_MAP = {
     # multimodal
     ActionType.multimodal_assistant_openai: ActionMultimodalAssistantOpenai,
+    ActionType.multimodal_google_search: ActionMultimodalGoogleSearch,
     # text2text
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,

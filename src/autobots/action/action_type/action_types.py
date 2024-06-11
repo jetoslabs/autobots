@@ -4,6 +4,7 @@ from enum import Enum
 class ActionType(str, Enum):
     # multimodal
     multimodal_assistant_openai = "multimodal_assistant_openai"
+    multimodal_google_search = "multimodal_google_search"
 
     # text2text
     text2text_llm_chat_openai = "text2text_llm_chat_openai"
