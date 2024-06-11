@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from autobots.conn.serp.serp_google_search import SerpGoogleSearch
+from src.autobots.conn.serp.serp_google_search import SerpGoogleSearch
 from src.autobots.core.settings import Settings, SettingsProvider
 
 

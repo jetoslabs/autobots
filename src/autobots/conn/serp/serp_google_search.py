@@ -1,8 +1,8 @@
 from loguru import logger
 from serpapi import GoogleSearch
 
-from autobots.conn.serp.serp_google_search_response_model import SearchResponse
-from autobots.conn.serp.serp_search_request import SerpGoogleSearchParams
+from src.autobots.conn.serp.serp_google_search_response_model import SearchResponse
+from src.autobots.conn.serp.serp_search_request import SerpGoogleSearchParams
 
 
 class SerpGoogleSearch:

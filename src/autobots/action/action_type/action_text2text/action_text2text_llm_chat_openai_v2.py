@@ -5,8 +5,8 @@ from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssi
     ChatCompletionToolParam
 from pydantic import ValidationError
 
-from autobots.llm.tools.tool_factory import ToolFactory
-from autobots.llm.tools.tools_map import TOOLS_MAP
+from src.autobots.llm.tools.tool_factory import ToolFactory
+from src.autobots.llm.tools.tools_map import TOOLS_MAP
 from src.autobots.action.action.action_doc_model import ActionResult
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType

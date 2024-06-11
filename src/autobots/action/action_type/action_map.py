@@ -1,4 +1,4 @@
-from autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search import \
+from src.autobots.action.action_type.action_multimodal.action_multimodal_google_search.action_multimodal_google_search import \
     ActionMultimodalGoogleSearch
 from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_openai import \
     ActionAudio2TextTranscriptionOpenai
