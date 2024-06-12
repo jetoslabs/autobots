@@ -15,6 +15,7 @@ from src.autobots.action.action.user_actions import UserActions
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.user.user_orm_model import UserORM
 
 router = APIRouter(prefix=SettingsProvider.sget().API_ACTIONS, tags=[SettingsProvider.sget().API_ACTIONS])
@@ -34,6 +35,14 @@ async def get_action_type_objects(
 ) -> ActionDataTypes:
     data_types = await ActionFactory.get_data_types(action_type)
     return data_types
+
+
+@router.get("/tools")
+async def list_action_tools(
+        user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+) -> List[str]:
+    tools = await ToolFactory.get_tools()
+    return tools
 
 
 @router.post("/")
@@ -127,6 +136,6 @@ async def async_run_action(
     user_actions = UserActions(user_orm, db)
     action_doc = await user_actions.get_action(id)
     user_action_result = UserActionResult(user_orm, db)
-    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result, action_result_id, background_tasks, webhook)
+    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result,
+                                                                       action_result_id, background_tasks, webhook)
     return action_result_doc
-
