@@ -42,7 +42,7 @@ async def create_action_graph(
 @router.get("/")
 async def list_action_graphs(
         id: str = None, name: str = None, version: float = None, is_published: bool = None,
-        is_published_by_others: bool = None,
+        is_published_by_others: bool = True,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
