@@ -85,7 +85,7 @@ class ActionMultimodalAssistantOpenai(
             tools = [tool.model_dump() for tool in assistant.tools]
             thread_run_create = ThreadRunCreate(thread_id=thread.id, assistant_id=assistant.id,
                                                 instructions=assistant.instructions, tools=tools)
-            run = await assistant_client.threads.runs.create_and_poll(thread_run_create)
+            run = await assistant_client.threads.runs.create(thread_run_create)
             # get run status - loop until status completed
             thread_run_retrieve = ThreadRunRetrieve(thread_id=run.thread_id, run_id=run.id)
             run_retrieved = await assistant_client.threads.runs.retrieve(thread_run_retrieve)
