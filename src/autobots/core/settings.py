@@ -111,7 +111,7 @@ class SettingsProvider:
 
     @staticmethod
     @lru_cache
-    def set_env_file(_env_file: str = '.env.dev') -> None:
+    def set_env_file(_env_file: str = '.env.local') -> None:
         SettingsProvider._env_file = _env_file
 
     @staticmethod

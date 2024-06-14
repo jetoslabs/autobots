@@ -102,14 +102,16 @@ class ClaidImageOperations:
             "Authorization": f"Bearer {self.claid_config.claid_apikey}"
         }
 
-        output = req.output.model_dump(exclude_none=True)
-        object = req.object.model_dump(exclude_none=True)
-        scene = req.scene.model_dump(exclude_none=True)
-        request_payload = {
-            "output": output,
-            "object": object,
-            "scene": scene
-        }
+        request_payload = {}
+        if req.output:
+            output_dict = req.output.model_dump(exclude_none=True)
+            request_payload['output'] = output_dict
+        if req.object:
+            object_dict = req.object.model_dump(exclude_none=True)
+            request_payload['object'] = object_dict
+        if req.scene:
+            scene_dict = req.scene.model_dump(exclude_none=True)
+            request_payload['scene'] = scene_dict
 
         response: Response = requests.post(url, json=request_payload, headers=headers)
         response_content_json: Dict[str, Any] = response.json()

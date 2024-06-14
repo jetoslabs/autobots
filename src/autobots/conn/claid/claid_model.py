@@ -147,7 +147,7 @@ class PhotoshootScene(BaseModel):  # PhotoshootTemplateBasedScene
     template_url: str | None = None
     color: str | None = None
     view: Literal["top", "front"] | None = None
-    prompt: str | None = None
+    prompt: str
     template_mode: Literal["transform", "lock"] | None = None
     # error if view is used without template_url
 
@@ -164,7 +164,7 @@ class ClaidPhotoShootRequestModel(BaseModel):
 
 class ClaidPhotoShootInputModel(BaseModel):
     object: PhotoshootObject
-    scene: PhotoshootScene | None = None
+    scene: PhotoshootScene
     output: PhotoshootOutput | None = None
 
 

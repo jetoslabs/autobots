@@ -1,57 +1,85 @@
-from typing import Type
+from typing import Type, Literal
 from loguru import logger
 from openai.types import ImagesResponse, Image
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel
 
-from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
+from src.autobots import SettingsProvider
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, \
+    ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_claid
-from src.autobots.conn.claid.claid_model import ClaidPhotoShootRequestModel, \
-    ClaidPhotoShootInputModel, ClaidErrorResponse
+from src.autobots.conn.claid.claid_model import ClaidPhotoShootInputModel, ClaidErrorResponse, PhotoshootObject, PhotoshootScene, PhotoshootOutput
+from src.autobots.core.utils import gen_uuid
+
+
+class ActionConfigPhotoshootClaid(BaseModel):
+    number_of_images: int = 1
+    format: Literal["jpeg", "png", "webp", "avif"] = "jpeg"
+
+
+class ActionInputPhotoshootClaid(BaseModel):
+    object: PhotoshootObject
+    scene: PhotoshootScene
+    output: ActionConfigPhotoshootClaid | None = None
 
 
 class ActionImg2ImgPhotoshootClaid(
-    ActionABC[ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootRequestModel, ClaidPhotoShootInputModel, ImagesResponse]
+    ActionABC[
+        ActionConfigPhotoshootClaid, ActionConfigPhotoshootClaid, ActionConfigPhotoshootClaid, ActionInputPhotoshootClaid, ImagesResponse]
 ):
     type = ActionType.img2img_photoshoot_claid
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
-        return ClaidPhotoShootRequestModel
+        return ActionConfigPhotoshootClaid
 
     @staticmethod
     def get_config_update_type() -> Type[ActionConfigUpdateType]:
-        return ClaidPhotoShootRequestModel
+        return ActionConfigPhotoshootClaid
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        return ClaidPhotoShootRequestModel
+        return ActionConfigPhotoshootClaid
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return ClaidPhotoShootInputModel
+        return ActionInputPhotoshootClaid
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
         return ImagesResponse
 
-    def __init__(self, action_config: ClaidPhotoShootRequestModel):
+    def __init__(self, action_config: ActionConfigPhotoshootClaid):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: ClaidPhotoShootInputModel) -> ImagesResponse | Exception:
+    async def run_action(self, action_input: ActionInputPhotoshootClaid) -> ImagesResponse | Exception:
         claid_ai = get_claid()
-        if self.action_config.output:
-            action_input.output = self.action_config.output
+        if action_input.output and action_input.output.number_of_images:
+            self.action_config.number_of_images = action_input.output.number_of_images
+        if action_input.output and action_input.output.format:
+            self.action_config.format = action_input.output.format
+        settings = SettingsProvider.sget()
+        destination_s3_path = f"{settings.CLAID_SIDE_S3_BUCKET}{settings.CLAID_PATH_PREFIX}{gen_uuid()}/output/"
+
+        claid_photoshoot_input_model = ClaidPhotoShootInputModel(
+            object=action_input.object,
+            scene=action_input.scene,
+            output=PhotoshootOutput(
+                destination=destination_s3_path,
+                number_of_images=self.action_config.number_of_images,
+                format=self.action_config.format,
+            )
+        )
         try:
-            res = await claid_ai.photoshoot(action_input)
+            res = await claid_ai.photoshoot(claid_photoshoot_input_model)
             if isinstance(res, ClaidErrorResponse):
                 return Exception(res.model_dump(exclude_none=True))
             elif isinstance(res, Exception):
                 return res
             elif isinstance(res, list):
                 images = [Image(url=image_url) for image_url in res]
-                image_res = ImagesResponse(created=1, images=images)
+                image_res = ImagesResponse(created=1, data=images)
                 return image_res
         except ValidationError | Exception as e:
             logger.error(str(e))
