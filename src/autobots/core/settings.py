@@ -77,9 +77,8 @@ class Settings(BaseSettings):
     USEAPI_NET_TOKEN: str
     USEAPI_NET_END_POINT_URL: str
     CLAID_API_KEY: str
-    CLAID_INPUT_FOLDER_S3_URI: str
-    CLAID_OUTPUT_FOLDER_S3_URI: str
-    CLAID_INPUT_FILE_S3_URI: str
+    CLAID_SIDE_S3_BUCKET: str
+    CLAID_PATH_PREFIX: str
 
     SERP_API_KEY: str
 
