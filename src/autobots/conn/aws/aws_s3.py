@@ -104,7 +104,9 @@ class AwsS3:
             logger.error(str(e))
 
     async def delete(self, filename: str) -> list[DeletedObjectTypeDef]:
-        object_path = self.object_prefix + filename
+        object_path = filename
+        if filename and not filename.startswith(self.object_prefix):
+            object_path = self.object_prefix + filename
         try:
             delete_res = self.bucket.delete_objects(Delete={
                 "Objects": [
@@ -118,7 +120,8 @@ class AwsS3:
             logger.error(str(e))
 
     async def list(self, prefix: Optional[str] = None, limit: int = 300) -> List[ObjectSummary]:
-        prefix = self.object_prefix + prefix if prefix else self.object_prefix
+        if prefix and not prefix.startswith(self.object_prefix):
+            prefix = self.object_prefix + prefix
         s3_objects = []
         size = 0
         for s3_object in self.bucket.objects.filter(Prefix=prefix):
@@ -128,11 +131,16 @@ class AwsS3:
             s3_objects.append(s3_object)
         return s3_objects
 
-    async def delete_prefix(self, prefix: str):
-        prefix = self.object_prefix + prefix
+    async def delete_prefix(self, prefix: str) -> List[DeletedObjectTypeDef]:
+        if prefix and not prefix.startswith(self.object_prefix):
+            prefix = self.object_prefix + prefix
         s3_objects = await self.list(prefix=prefix)
+        deleted = []
         for s3_object in s3_objects:
-            await self.delete(s3_object.key)
+            # partial_key = s3_object.key.replace(self.object_prefix, "")
+            deleted_in_this_iter = await self.delete(s3_object.key)
+            deleted += deleted_in_this_iter
+        return deleted
 
     async def get_object_url(self, key: str) -> HttpUrl:
         """

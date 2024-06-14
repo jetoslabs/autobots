@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.conn.claid.claid import get_calid_ai
+from src.autobots.conn.claid.claid import get_claid
 from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, ClaidErrorResponse, ClaidInputModel
 
 
@@ -39,12 +39,12 @@ class ActionImg2BulkEditClaid(
 
     async def run_action(self, action_input: ClaidInputModel) -> ClaidResponse | ClaidErrorResponse:
 
-        claidai = get_calid_ai()
+        claidai = get_claid()
         if action_input.operations:
             self.action_config.operations = action_input.operations
 
         try:
-            res = await claidai.bulkEdit(self.action_config)
+            res = await claidai.bulk_edit(self.action_config)
             return res
         except ValidationError as e:
             logger.error(str(e))
