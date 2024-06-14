@@ -12,19 +12,6 @@ from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidErrorRes
 from typing import Any, Dict
 
 
-# class ClaidConfig(BaseModel):
-#     settings = SettingsProvider.sget()
-#     claid_apikey: Optional[str] = Field(default=settings.CLAID_API_KEY,
-#                                         description="Claid apikey used for request authorization.")
-#     claid_url: Optional[str] = Field(default="http://api.claid.ai",
-#                                      description="Claid URL used for request authorization.")
-#     s3_input_folder_url_prefix: str = Field(default=f"{settings.CLAID_SIDE_S3_BUCKET}{settings.CLAID_PATH_PREFIX}",
-#                                             description="S3 folder for input images")
-#     s3_output_folder_url_prefix: str = Field(default=f"{settings.CLAID_SIDE_S3_BUCKET}{settings.CLAID_PATH_PREFIX}",
-#                                              description="S3 folder for output images")
-#     # s3_input_file_url: str = Field(default=SettingsProvider.sget().CLAID_INPUT_FILE_S3_URI,
-#     #                                description="S3 folder for input image file")
-
 class ClaidImageOperations:
     def __init__(self, claid_config: ClaidConfig):
         self.claid_config = claid_config
@@ -60,7 +47,7 @@ class ClaidImageOperations:
         output = claid_config.s3_output_folder_url + user_id + '/' + uuid + '/output/'
         output_image_url = "https://app-myautobots-public-dev/claid/" + user_id + '/' + uuid + '/output/' + image_name
         output_image_url
-        
+
         operations = req.operations.dict(exclude_none=True)
         request_payload = {
             "input": input,
