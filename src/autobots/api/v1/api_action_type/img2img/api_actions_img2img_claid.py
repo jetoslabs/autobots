@@ -106,7 +106,9 @@ async def run_action_img2img_photoshoot_claid(
             ClaidPhotoShootRequestModel.model_validate(action.model_dump(exclude_none=True).get('config'))
         )
         resp = await photoshoot_claid.run_action(action_input)
+        if isinstance(resp, Exception):
+            raise resp
         return resp
     except Exception as e:
         logger.exception(str(e))
-        raise HTTPException(500)
+        raise HTTPException(status_code=500, detail=str(e))

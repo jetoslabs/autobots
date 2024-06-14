@@ -1,5 +1,4 @@
-from pydantic import Field
-from typing import Union, Literal, Dict, List, Optional
+from typing import Union, Literal, Dict, List, Optional, Any
 from pydantic import BaseModel
 
 
@@ -47,7 +46,7 @@ class Background(BaseModel):
 
 
 class Restorations(BaseModel):
-    decompress: str | None= None
+    decompress: str | None = None
     upscale: str | None = None
 
 
@@ -124,10 +123,10 @@ class ErrorDetails(BaseModel):
 
 
 class ClaidErrorResponse(BaseModel):
-    error_code: str
+    error_code: str = ""
     error_type: str
     error_message: str
-    error_details: ErrorDetails | None = None
+    error_details: ErrorDetails | Dict[str, Any] = {}
 
 
 class PhotoshootPosition(BaseModel):
@@ -143,23 +142,25 @@ class PhotoshootObject(BaseModel):
     position: PhotoshootPosition | None = None
 
 
-class PhotoshootScene(BaseModel):
+class PhotoshootScene(BaseModel):  # PhotoshootTemplateBasedScene
+    negative_prompt: str | None = None
     template_url: str | None = None
-    template_mode: Literal["transform", "lock"] | None = None
     color: str | None = None
     view: Literal["top", "front"] | None = None
     prompt: str | None = None
-    negative_prompt: str | None = None
+    template_mode: Literal["transform", "lock"] | None = None
+    # error if view is used without template_url
 
 
 class PhotoshootOutput(BaseModel):
     destination: str
     number_of_images: int = 1
-    format: str = "jpeg"
+    format: Literal["jpeg", "png", "webp", "avif"] = "jpeg"
 
 
 class ClaidPhotoShootRequestModel(BaseModel):
     output: PhotoshootOutput
+
 
 class ClaidPhotoShootInputModel(BaseModel):
     object: PhotoshootObject
