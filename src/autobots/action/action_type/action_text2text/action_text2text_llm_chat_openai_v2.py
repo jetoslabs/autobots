@@ -92,7 +92,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
                 self.action_config.messages = self.action_config.messages + [message]
             chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config)
             # remove input message from Config messages #TODO: dont remove
-            self.action_config.messages.pop()
+            # self.action_config.messages.pop()
             if not chat_res:
                 return text_objs
             # resp = Message.model_validate(chat_res.choices[0].message)
