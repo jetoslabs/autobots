@@ -10,7 +10,7 @@ from src.autobots.conn.claid.claid_model import PhotoshootOutput, PhotoshootObje
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="Claid is very costly")
-async def test_photoshoot(set_test_settings):
+async def test_claid_photoshoot(set_test_settings):
     user_name = "user_test"
     unique = "123"
     uca = get_claid()
