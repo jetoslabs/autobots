@@ -5,6 +5,8 @@ from openai.types.chat import ChatCompletion, ChatCompletionChunk, ChatCompletio
 from retry import retry
 
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
+from src.autobots.core.logging.app_code import AppCode
+from src.autobots.core.logging.log_binder import LogBinder
 from src.autobots.llm.tools.tool_factory import ToolFactory
 
 
@@ -23,7 +25,8 @@ class OpenaiChat:
             chat_req.tool_choice = None
             chat_req.tools = None
             chat_req.top_logprobs = None
-            logger.warning(f"Openai Chat model {chat_req.model} does not accept some params, removing them before calling Openai API")
+            logger.warning(
+                f"Openai Chat model {chat_req.model} does not accept some params, removing them before calling Openai API")
         try:
             logger.trace("Starting OpenAI Chat, try: 1")
             # res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(exclude_none=True))
@@ -60,6 +63,12 @@ class OpenaiChat:
                     # run tool
                     tool_output_str: str = await ToolFactory.run_tool(name, args)
                     tool_output_message = ChatCompletionUserMessageParam(role="user", content=tool_output_str)
+                    logger.bind(
+                        **LogBinder()
+                        .with_app_code(AppCode.ACTION)
+                        .with_kwargs({"tool": name, "tool_output":tool_output_str})
+                        .get_bind_dict()
+                    ).debug(f"Ran tool in {OpenaiChat.__name__}")
                     chat_req.messages.append(tool_output_message)
                     # await self.chat_loop(chat_req)
                 except Exception as e:
