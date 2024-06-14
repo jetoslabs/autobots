@@ -169,9 +169,8 @@ jobs:
           -e USEAPI_NET_TOKEN=$USEAPI_NET_TOKEN 
           -e USEAPI_NET_END_POINT_URL=$USEAPI_NET_END_POINT_URL
           -e CLAID_API_KEY=$CLAID_API_KEY 
-          -e CLAID_INPUT_FOLDER_S3_URI=$CLAID_INPUT_FOLDER_S3_URI
-          -e CLAID_OUTPUT_FOLDER_S3_URI=$CLAID_OUTPUT_FOLDER_S3_URI
-          -e CLAID_INPUT_FILE_S3_URI=$CLAID_INPUT_FILE_S3_URI
+          -e CLAID_SIDE_S3_BUCKET=$CLAID_SIDE_S3_BUCKET
+          -e CLAID_PATH_PREFIX=$CLAID_PATH_PREFIX
           -e SERP_API_KEY=$SERP_API_KEY
           registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
@@ -209,7 +208,6 @@ jobs:
           USEAPI_NET_TOKEN: ${{ secrets.USEAPI_NET_TOKEN }}
           USEAPI_NET_END_POINT_URL: ${{ secrets.USEAPI_NET_END_POINT_URL }}
           CLAID_API_KEY: ${{ secrets.CLAID_API_KEY }}
-          CLAID_INPUT_FOLDER_S3_URI: ${{ secrets.CLAID_INPUT_FOLDER_S3_URI }}
-          CLAID_OUTPUT_FOLDER_S3_URI: ${{ secrets.CLAID_OUTPUT_FOLDER_S3_URI }}
-          CLAID_INPUT_FILE_S3_URI: ${{ secrets.CLAID_INPUT_FILE_S3_URI }}
+          CLAID_SIDE_S3_BUCKET: ${{ secrets.CLAID_SIDE_S3_BUCKET }}
+          CLAID_PATH_PREFIX: ${{ secrets.CLAID_PATH_PREFIX }}
           SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
