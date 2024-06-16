@@ -23,8 +23,8 @@ class Crop(BaseModel):
 
 
 class Resizing(BaseModel):
-    width: str | None = None
-    height: str | None = None
+    width: int | None = None
+    height: int | None = None
     fit: Union[Literal["bounds", "cover", "canvas", "outpaint"], Crop] = "bounds"
 
 
@@ -77,14 +77,14 @@ class Output(BaseModel):
     format: Union[Literal["jpeg", "png", "webp", "avif"], OutputFormat, OutputCompression] = "png"
 
 
-class ClaidRequestModel(BaseModel):
-    input: str | None = None
+class ClaidBulkEditRequestModel(BaseModel):
+    input: List[str] | None = None
     operations: Operations | None = None
     output: str
 
 
 class ClaidInputModel(BaseModel):
-    input: str
+    input: List[str]
     operations: Operations | None = None
 
 
@@ -107,13 +107,13 @@ class ClaidResponseData(BaseModel):
     id: int
     status: str
     created_at: str
-    request: ClaidRequestModel
+    request: ClaidBulkEditRequestModel
     errors: List[str] | None = None
     result_url: str | None = None
     results: List[ClaidResult] | None = None
 
 
-class ClaidResponse(BaseModel):
+class ClaidBulkEditResponse(BaseModel):
     data: ClaidResponseData
 
 

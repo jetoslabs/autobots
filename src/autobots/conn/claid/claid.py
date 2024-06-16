@@ -1,12 +1,11 @@
 from functools import lru_cache
 from typing import List
-import json
 
 from pydantic import HttpUrl
 
 from src.autobots.conn.aws.aws_s3 import get_public_s3, AwsS3
 from src.autobots.conn.claid.claid_config_model import ClaidConfig
-from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidErrorResponse, ClaidResponse, \
+from src.autobots.conn.claid.claid_model import ClaidBulkEditRequestModel, ClaidErrorResponse, ClaidBulkEditResponse, \
     ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel
 from src.autobots.conn.claid.image_operations.imageoperations import ClaidImageOperations
 from src.autobots.core.settings import Settings, SettingsProvider
@@ -22,20 +21,15 @@ class Claid:
     async def photoshoot(self, req: ClaidPhotoShootInputModel) -> List[HttpUrl] | ClaidErrorResponse | Exception:
         res = await self.image_operations.photoshoot(req)
         if isinstance(res, ClaidPhotoShootOutputModel):
-            s3_https_output_folder = req.output.destination.replace(
-                self.claid_config.claid_side_s3_bucket, ""
-            ).replace(
-                self.claid_config.claid_side_folder_url_prefix, ""
-            )
+            s3_https_output_folder = req.output.destination.replace(self.claid_config.claid_side_s3_bucket, "")
             obj_summaries = await self.s3.list(prefix=s3_https_output_folder)
             output_image_urls = [f"{self.claid_config.https_path_s3_bucket}{obj_summary.key}" for obj_summary in obj_summaries]
             return output_image_urls
         return res
 
-    async def bulk_edit(self, req: ClaidRequestModel) -> ClaidResponse | ClaidErrorResponse:
-        res: ClaidResponse | ClaidErrorResponse = await self.image_operations.bulk_edit(req)
-        response = ClaidResponse.model_validate(json.loads(res.text))
-        return response
+    async def bulk_edit(self, req: ClaidBulkEditRequestModel) -> ClaidBulkEditResponse | ClaidErrorResponse | Exception:
+        res = await self.image_operations.bulk_edit(req)
+        return res
 
 
 @lru_cache

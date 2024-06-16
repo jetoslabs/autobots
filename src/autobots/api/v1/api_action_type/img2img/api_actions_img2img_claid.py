@@ -13,7 +13,7 @@ from src.autobots.action.action_type.action_img2img.action_img2img_bulkedit_clai
 from src.autobots.action.action_type.action_img2img.action_img2img_photoshoot_claid import ActionImg2ImgPhotoshootClaid
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.auth.security import get_user_from_access_token
-from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, ClaidPhotoShootRequestModel, \
+from src.autobots.conn.claid.claid_model import ClaidBulkEditRequestModel, ClaidBulkEditResponse, ClaidPhotoShootRequestModel, \
     ClaidPhotoShootOutputModel, ClaidPhotoShootInputModel, ClaidInputModel
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.user.user_orm_model import UserORM
@@ -22,10 +22,10 @@ router = APIRouter()
 
 
 class ActionCreateImg2ImgBulkEditClaid(ActionCreate):
-    config: ClaidRequestModel
+    config: ClaidBulkEditRequestModel
     type: ActionType = ActionType.img2img_bulk_edit_claid
-    input: Optional[ClaidRequestModel] = None
-    output: Optional[ClaidResponse] = None
+    input: Optional[ClaidBulkEditRequestModel] = None
+    output: Optional[ClaidBulkEditResponse] = None
 
 
 class ActionCreateImg2ImgPhotoShootClaid(ActionCreate):
@@ -75,16 +75,16 @@ async def run_action_img2img_bulk_edit_claid(
         action_input: ClaidInputModel,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
-) -> ClaidResponse:
+) -> ClaidBulkEditResponse:
     try:
         user_orm = UserORM(id=UUID(user_res.user.id))
         action = await UserActions(user=user_orm, db=db).get_action(action_id)
         bulk_edit_claid = ActionImg2BulkEditClaid(
-            ClaidRequestModel.model_validate(action.model_dump(exclude_none=True).get('config'))
+            ClaidBulkEditRequestModel.model_validate(action.model_dump(exclude_none=True).get('config'))
         )
         resp = await bulk_edit_claid.run_action(action_input)
-        response: ClaidResponse = resp.content
-        response = ClaidResponse.model_validate(json.loads(resp.text))
+        response: ClaidBulkEditResponse = resp.content
+        response = ClaidBulkEditResponse.model_validate(json.loads(resp.text))
         return response
 
     except Exception as e:
