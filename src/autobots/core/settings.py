@@ -134,5 +134,5 @@ class SettingsProvider:
     @staticmethod
     def check_for_none(settings: Settings):
         for field in settings.__dict__.keys():
-            if settings.__dict__[field] is None:
-                logger.warning(f"Field: {field} is not set")
+            if settings.__dict__[field] is None or settings.__dict__[field] == "":
+                logger.error(f"Field: {field} is not set")

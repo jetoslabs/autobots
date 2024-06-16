@@ -6,25 +6,25 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_claid
-from src.autobots.conn.claid.claid_model import ClaidRequestModel, ClaidResponse, ClaidErrorResponse, ClaidInputModel
+from src.autobots.conn.claid.claid_model import ClaidBulkEditRequestModel, ClaidBulkEditResponse, ClaidErrorResponse, ClaidInputModel
 
 
 class ActionImg2BulkEditClaid(
-    ActionABC[ClaidRequestModel, ClaidRequestModel, ClaidRequestModel, ClaidInputModel, ClaidResponse]
+    ActionABC[ClaidBulkEditRequestModel, ClaidBulkEditRequestModel, ClaidBulkEditRequestModel, ClaidInputModel, ClaidBulkEditResponse]
 ):
     type = ActionType.img2img_bulk_edit_claid
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
-        return ClaidRequestModel
+        return ClaidBulkEditRequestModel
 
     @staticmethod
     def get_config_update_type() -> Type[ActionConfigUpdateType]:
-        return ClaidRequestModel
+        return ClaidBulkEditRequestModel
 
     @staticmethod
     def get_config_type() -> Type[ActionConfigType]:
-        return ClaidRequestModel
+        return ClaidBulkEditRequestModel
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
@@ -32,12 +32,12 @@ class ActionImg2BulkEditClaid(
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        return ClaidResponse
+        return ClaidBulkEditResponse
 
-    def __init__(self, action_config: ClaidRequestModel):
+    def __init__(self, action_config: ClaidBulkEditRequestModel):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: ClaidInputModel) -> ClaidResponse | ClaidErrorResponse:
+    async def run_action(self, action_input: ClaidInputModel) -> ClaidBulkEditResponse | ClaidErrorResponse:
 
         claidai = get_claid()
         if action_input.operations:
