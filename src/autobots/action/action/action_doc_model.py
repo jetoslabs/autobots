@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.information.updated_at import UpdatedAt
 
 
 class ActionFind(BaseModel):
@@ -36,7 +37,7 @@ class ActionUpdate(BaseModel):
     is_published: Optional[bool] = None
 
 
-class ActionDocUpdate(ActionUpdate):
+class ActionDocUpdate(ActionUpdate, UpdatedAt):
     id: str
     user_id: str
 
@@ -62,7 +63,7 @@ class ActionCreate(BaseModel):
     is_published: bool = False
 
 
-class ActionDocCreate(ActionCreate):
+class ActionDocCreate(ActionCreate, UpdatedAt):
     """
     Add in user id to enforce multi-tenancy
     """

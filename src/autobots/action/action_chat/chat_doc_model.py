@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.conn.openai.openai_chat.chat_model import Message
+from src.autobots.information.updated_at import UpdatedAt
 
 
 class ChatFind(BaseModel):
@@ -32,7 +33,7 @@ class ChatCreate(BaseModel):
     messages: List[Message]
 
 
-class ChatDocCreate(ChatCreate):
+class ChatDocCreate(ChatCreate, UpdatedAt):
     title: Optional[str]
     user_id: str
     created_at: datetime = datetime.now()

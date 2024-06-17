@@ -2,10 +2,12 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from pydantic import Field, BaseModel, ConfigDict
+from pydantic_extra_types.pendulum_dt import DateTime
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.core.database.mongo_base_crud import DocFindPage
+from src.autobots.information.updated_at import UpdatedAt
 
 
 class Position(BaseModel):
@@ -69,10 +71,10 @@ class ActionGraphUpdate(BaseModel):
     is_published: Optional[bool] = None
 
 
-class ActionGraphDocUpdate(ActionGraphUpdate):
+class ActionGraphDocUpdate(ActionGraphUpdate, UpdatedAt):
     id: str
     user_id: str
-    updated_at: datetime = datetime.now()
+    # updated_at: datetime = datetime.now()
 
 
 class ActionGraphCreate(BaseModel):
@@ -97,13 +99,13 @@ class ActionGraphCreate(BaseModel):
     is_published: bool = False
 
 
-class ActionGraphDocCreate(ActionGraphCreate):
+class ActionGraphDocCreate(ActionGraphCreate, UpdatedAt):
     """
     Add in user id to enforce multi-tenancy
     """
     user_id: str
     created_at: datetime = datetime.now()
-    updated_at: datetime = datetime.now()
+    # updated_at: datetime = datetime.now()
 
 
 class ActionGraphDoc(ActionGraphDocCreate):
@@ -122,7 +124,7 @@ class ActionGraphLiteDoc(BaseModel):
     is_published: bool = False
     user_id: str
     created_at: datetime
-    updated_at: datetime
+    updated_at: DateTime
 
     model_config = ConfigDict(populate_by_name=True)
 
