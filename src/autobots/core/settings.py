@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     ALLOW_ORIGINS: str = "http://localhost:3000"
     ALLOWED_ORIGINS: List[str] = ALLOW_ORIGINS.split(",")
 
+    TIMEZONE: str = "UTC"
+
     SQLALCHEMY_DATABASE_URL: str
     SQLALCHEMY_DATABASE_SCHEMA: str
 

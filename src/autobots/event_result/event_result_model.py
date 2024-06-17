@@ -3,8 +3,10 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 from pydantic import Field, BaseModel, ConfigDict
+from pydantic_extra_types.pendulum_dt import DateTime
 
 from src.autobots.action.action.common_action_models import TextObj
+from src.autobots.information.updated_at import UpdatedAt
 
 
 class EventType(str, Enum):
@@ -40,10 +42,10 @@ class EventResultUpdate(BaseModel):
     result: Optional[Dict[str, Any]] = None
 
 
-class EventResultDocUpdate(EventResultUpdate):
+class EventResultDocUpdate(EventResultUpdate, UpdatedAt):
     id: str
     user_id: str
-    updated_at: datetime = datetime.now()
+    # updated_at: datetime = datetime.now()
 
 
 class EventResultCreate(BaseModel):
@@ -54,10 +56,10 @@ class EventResultCreate(BaseModel):
     result: Dict[str, Any] = {}
 
 
-class EventResultDocCreate(EventResultCreate):
+class EventResultDocCreate(EventResultCreate, UpdatedAt):
     user_id: str
     created_at: datetime = datetime.now()
-    updated_at: datetime = datetime.now()
+    # updated_at: datetime = datetime.now()
 
 
 class EventResultLiteDoc(BaseModel):
@@ -67,8 +69,8 @@ class EventResultLiteDoc(BaseModel):
     status: EventResultStatus
     error_message: Optional[TextObj] = None
     is_saved: bool = False
-    created_at: datetime = datetime.now()
-    updated_at: datetime = datetime.now()
+    created_at: datetime
+    updated_at: DateTime
 
     model_config = ConfigDict(populate_by_name=True)
 
