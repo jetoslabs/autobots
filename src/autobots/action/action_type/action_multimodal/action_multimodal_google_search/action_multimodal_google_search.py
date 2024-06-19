@@ -22,6 +22,10 @@ class ActionMultimodalGoogleSearch(
     type = ActionType.multimodal_google_search
 
     @staticmethod
+    def get_description() -> str:
+        return "Do a google search"
+
+    @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
         return ActionMultimodalGoogleSearchConfig
 

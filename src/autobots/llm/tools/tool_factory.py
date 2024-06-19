@@ -25,7 +25,7 @@ class ToolFactory:
             try:
                 action = TOOLS_MAP.get(tool_name)
                 func_def = await OpenAIFunctionDefinitionGen.get_function_tool_param(
-                    action.create_and_run_action, action.__doc__
+                    action.create_and_run_action, action.get_description()
                 )
                 func_def.get("function")["name"] = tool_name
                 func_defs.append(func_def)
@@ -40,7 +40,7 @@ class ToolFactory:
             try:
                 action = TOOLS_MAP.get(tool_name)
                 func_def = await OpenAIFunctionDefinitionGen.get_chat_completion_tool_param(
-                    action.create_and_run_action, action.__doc__
+                    action.create_and_run_action, action.get_description()
                 )
                 func_def.get("function")["name"] = tool_name
                 func_defs.append(func_def)

@@ -20,6 +20,10 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
     type = ActionType.text2text_search_web
 
     @staticmethod
+    def get_description() -> str:
+        return "Do a duckduckgo search"
+
+    @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
         return SearchWebConfig
 
