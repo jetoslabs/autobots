@@ -94,6 +94,7 @@ class ActionMultimodalAssistantOpenai(
             thread_run_create = ThreadRunCreate(thread_id=thread.id, assistant_id=assistant.id,
                                                 instructions=assistant.instructions, tools=tools)
             run = await assistant_client.threads.runs.create(thread_run_create)
+            # TODO: store thread_id and run_id for re-run in Output
             # get run status - loop until status completed
             # The status of the run, which can be either:
             #   exit criteria - completed, cancelled, failed, expired
