@@ -33,6 +33,8 @@ from src.autobots.action.action_type.action_text2text.action_text2text_user_inpu
 from src.autobots.action.action_type.action_text2video.action_text2video_search_video import ActionText2VideoSearchVideo
 from src.autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
+from src.autobots.action.action_type.action_video2video.action_video2video_opus import ActionVideo2VideoOpus
+
 from src.autobots.action.action_type.action_types import ActionType
 
 ACTION_MAP = {
@@ -67,6 +69,8 @@ ACTION_MAP = {
     # audio2text
     ActionType.audio2text_transcription_openai: ActionAudio2TextTranscriptionOpenai,
     ActionType.audio2text_translation_openai: ActionAudio2TextTranslationOpenai,
+    #video2video
+    ActionType.video2video_opus: ActionVideo2VideoOpus,
     # mock
     ActionType.mock_action: MockAction
 }

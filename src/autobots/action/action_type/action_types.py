@@ -35,6 +35,8 @@ class ActionType(str, Enum):
     text2video_stable_diffusion = "text2video_stable_diffusion"
     text2video_search_video = "text2video_search_video"
 
+    #video2video
+    video2video_opus = "video2video_opus"
     # text2audio
     text2audio_speech_openai = "text2audio_openai"
 
