@@ -28,5 +28,4 @@ async def test_action_video2video_opus_happy_path(set_test_settings):
     action_output = ActionVideo2VideoOpus.get_output_type().model_validate(
         run_action_object.output_dict
     )
-    print(action_output)
-
+    assert action_output.url is not None
