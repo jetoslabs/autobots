@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from src.autobots.information.updated_at import UpdatedAt
+from src.autobots.data_model.updated_at import UpdatedAt
 
 
 class SimpleObj(UpdatedAt):

@@ -4,7 +4,7 @@ from typing import TypeVar, Generic, Type, List
 from pydantic import BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionResult
-from src.autobots.action.action_type.protocol.protocol_tool import ToolProtocol
+# from src.autobots.action.action_type.toolable_protocol import ToolableProtocol
 
 ActionConfigCreateType = TypeVar("ActionConfigCreateType", bound=BaseModel)
 ActionConfigUpdateType = TypeVar("ActionConfigUpdateType", bound=BaseModel)
@@ -16,7 +16,8 @@ ActionOutputType = TypeVar("ActionOutputType", bound=BaseModel)
 class ActionABC(
     Generic[
         ActionConfigCreateType, ActionConfigUpdateType, ActionConfigType, ActionInputType, ActionOutputType
-    ], ToolProtocol
+    ],
+    # ToolableProtocol
 ):
 
     def __init__(self, action_config: ActionConfigType):
