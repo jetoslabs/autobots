@@ -19,6 +19,10 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
     type = ActionType.text2text_read_url #TODO: add `s` at the end
 
     @staticmethod
+    def get_description() -> str:
+        return "Scrape data from a URL"
+
+    @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
         return ReadUrlConfig
 

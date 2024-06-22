@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 
+from openai.types.beta import FunctionToolParam
 from openai.types.chat import ChatCompletionToolParam
 from openai.types.shared_params import FunctionDefinition, FunctionParameters
 from pydantic import BaseModel
@@ -11,7 +12,15 @@ class OpenAIFunctionDefinitionGen:
     """
 
     @staticmethod
-    async def get_defination(func, description: str) -> ChatCompletionToolParam:
+    async def get_function_tool_param(func, description: str) -> FunctionToolParam:
+        func_name = func.__name__
+        parameters_obj = await OpenAIFunctionDefinitionGen._get_func_parameters(func)
+        function_obj = FunctionDefinition(name=func_name, description=description, parameters=parameters_obj)
+        function_schema = FunctionToolParam(type="function", function=function_obj)
+        return function_schema
+
+    @staticmethod
+    async def get_chat_completion_tool_param(func, description: str) -> ChatCompletionToolParam:
         func_name = func.__name__
         parameters_obj = await OpenAIFunctionDefinitionGen._get_func_parameters(func)
         function_obj = FunctionDefinition(name=func_name, description=description, parameters=parameters_obj)

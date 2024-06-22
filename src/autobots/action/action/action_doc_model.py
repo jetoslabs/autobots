@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.information.updated_at import UpdatedAt
+from src.autobots.data_model.updated_at import UpdatedAt
 
 
 class ActionFind(BaseModel):
