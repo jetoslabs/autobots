@@ -84,6 +84,7 @@ class Settings(BaseSettings):
 
     SERP_API_KEY: str
     OPUS_API_KEY: str
+    CLAUDE_API_KEY: str
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
     API_AUTH: str = "/auth"

@@ -8,6 +8,7 @@ class ActionType(str, Enum):
 
     # text2text
     text2text_llm_chat_openai = "text2text_llm_chat_openai"
+    text2text_llm_chat_claude = "text2text_llm_chat_claude"
     text2text_llm_chat_with_vector_search_openai = "text2text_llm_chat_with_vector_search_openai"
     text2text_read_url = "text2text_read_url"
     text2text_search_web = "text2text_search_web"

@@ -24,6 +24,8 @@ from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper
     ActionText2TextIOMapper
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionText2TextLlmChatOpenai
+from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_claude import \
+    ActionText2TextLlmChatclaude
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
 from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
@@ -43,6 +45,7 @@ ACTION_MAP = {
     ActionType.multimodal_google_search: ActionMultimodalGoogleSearch,
     # text2text
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
+    ActionType.text2text_llm_chat_claude: ActionText2TextLlmChatclaude,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
