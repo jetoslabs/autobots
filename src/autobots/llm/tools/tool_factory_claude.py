@@ -36,7 +36,7 @@ class ToolFactory:
         tool_output = ""
         try:
             action = TOOLS_MAP.get(tool_name)
-            config = action.get_config_type().model_validate(json.loads(tool_args))
+            config = action.get_config_type().model_validate(json.loads(json.dumps(tool_args)))
             output = await action.create_and_run_action(config)
             output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
             tool_output = output_str

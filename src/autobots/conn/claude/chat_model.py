@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class ToolParam(BaseModel):
     name: str
     description: Optional[str] = None
+    input_schema: Optional[Dict] = None
 class Role(str, Enum):
     system = "system"
     user = "user"
@@ -32,7 +33,7 @@ class ChatReq(BaseModel):
     temperature: Optional[float] = 0.8
     max_tokens: Optional[int] = 2000
     top_p: Optional[float] = None
-    tools: List[str] | List[str] | None = None
+    tools: List[ToolParam] | List[str] | None = None
     top_k: Optional[int] = None
     stream: Optional[Literal[False]] | Literal[True] = False
     stop: Union[Optional[str], List[str]] = None

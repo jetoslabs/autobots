@@ -8,7 +8,7 @@ from anthropic.types import (
 from src.autobots.conn.claude.chat_model import ChatReq
 from src.autobots.core.logging.app_code import AppCode
 from src.autobots.core.logging.log_binder import LogBinder
-from src.autobots.llm.tools.tool_factory import ToolFactory
+from src.autobots.llm.tools.tool_factory_claude import ToolFactory
 
 
 class AnthropicChat:
@@ -39,15 +39,15 @@ class AnthropicChat:
             if isinstance(chat_completion, AsyncStream):
                 return chat_completion
                  # Accessing the tool_use content
-            print(chat_completion)
+            # print(chat_completion)
             if chat_completion.stop_reason == "end_turn":
                 return chat_completion
             elif chat_completion.stop_reason == "tool_use":
                 try:
                     # TODO:change calls here
                     tool_use_info = chat_completion.content[-1]
-                    name = tool_use_info["name"] 
-                    args = tool_use_info["input"]
+                    name = tool_use_info.name
+                    args = tool_use_info.input
                     # add tool call to Messages
                     tool_message = MessageParam(
                         role="assistant", content="Tool_call " + name

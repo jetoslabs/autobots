@@ -6,7 +6,6 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claude.chat_model import ChatReq, Message
 from src.autobots.llm.tools.tool_factory_claude import ToolFactory
 
-import asyncio
 @pytest.mark.asyncio
 async def test_action_text2text_llm_chat_claude_rerun_happy_path():
     tools = await ToolFactory.get_tools()
@@ -46,4 +45,3 @@ async def test_action_text2text_llm_chat_claude_rerun_happy_path():
     # assert len(action_run_obj_2.config_dict.get("messages")) > 3
     # assert action_run_obj_2.config_dict.get("messages")[1].get("content") == action_run_obj_1.input_dict.get("text")
     # assert action_run_obj_1.output_dict.get("texts")[0].get("text") in action_run_obj_2.config_dict.get("messages")[-2].get("content")
-asyncio.run(test_action_text2text_llm_chat_claude_rerun_happy_path())
