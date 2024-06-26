@@ -64,7 +64,6 @@ class Opus:
         else:
             # Print an error message if the request failed
             print(f"Failed to create clip. Status code: {response.status_code}")
-            print(response.text)
         return response_data['id']
 
     def query_clip(self, project_id: str):
@@ -91,11 +90,9 @@ class Opus:
             # Parse and print the response JSON data
             response_data = response.json()
             print("Clip details retrieved successfully:")
-            print(json.dumps(response_data, indent=4))
         else:
             # Print an error message if the request failed
             print(f"Failed to retrieve clip. Status code: {response.status_code}")
-            print(response.text)
         return OpusRes(url=response_data[0]['uriForExport'])
 
 # @router.post("/opus")
