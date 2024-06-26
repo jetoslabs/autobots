@@ -211,3 +211,5 @@ jobs:
           CLAID_SIDE_S3_BUCKET: ${{ secrets.CLAID_SIDE_S3_BUCKET }}
           CLAID_PATH_PREFIX: ${{ secrets.CLAID_PATH_PREFIX }}
           SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          OPUS_API_KEY: ${{ secrets.OPUS_API_KEY }}
