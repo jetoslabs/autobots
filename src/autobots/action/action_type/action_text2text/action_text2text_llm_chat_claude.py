@@ -1,6 +1,8 @@
 from typing import Type, List, Dict, Any
 
 from loguru import logger
+import httpx
+from httpx import URL
 
 from pydantic import ValidationError
 # from anthropic.types import Message
@@ -14,7 +16,12 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.claude.chat_model import ChatReq, Role
 from src.autobots.conn.claude.claude_client import get_claude
+import base64
+from src.autobots.conn.aws.aws_s3 import get_s3
+from src.autobots.core.utils import gen_uuid
 
+prefix = "test_"+str(gen_uuid())
+s3 = get_s3(object_prefix=prefix)
 
 class ActionText2TextLlmChatclaude(ActionABC[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
     type = ActionType.text2text_llm_chat_claude
@@ -89,8 +96,26 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
             if action_input and action_input.text != "":
                 # message = Message(role=Role.user.value, content=action_input.text)
                 # message = Message(role=Role.user.value, content=action_input.text)
-                print(self.action_config.messages)
-                self.action_config.messages = [Message(role=Role.user.value, content = self.action_config.messages[0].content + "\n"+action_input.text)]
+                content=[]
+                for filename in action_input.urls:
+                        if filename.startswith('s3://') :  
+                            download_file_path = f'/tmp/{gen_uuid()}'
+                            with open(download_file_path, "wb") as file:
+                                is_downloaded = await s3.download_fileobj(filename, file)
+                            with open(download_file_path, "rb") as image_file:
+                                binary_data = image_file.read()
+                                base_64_encoded_data = base64.b64encode(binary_data)
+                        else:
+                            response= httpx.Client().get(url=URL(filename))
+                            base_64_encoded_data= base64.b64encode(response.content)
+                        base64_string = base_64_encoded_data.decode('utf-8')
+                        content.append({"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": base64_string}})
+                if isinstance(self.action_config.messages[0].content, str):
+                    content.append({"type": "text", "text":self.action_config.messages[0].content + "\n"+action_input.text})
+                else:
+                    content.append({"type": "text", "text":self.action_config.messages[0].content[-1]["text"] + "\n"+action_input.text})
+                self.action_config.messages = [Message(role=Role.user.value, content = content)]
+                
             chat_res = await get_claude().claude_chat.chat(chat_req=self.action_config)
             # remove input message from Config messages #TODO: dont remove
             # self.action_config.messages.pop()

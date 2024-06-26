@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -7,10 +7,12 @@ from pydantic import BaseModel
 
 class TextObj(BaseModel):
     text: str = ""
+    urls: Optional[List[str]] =[]
 
 
 class TextObjs(BaseModel):
     texts: List[TextObj] = []
+    urls: Optional[List[str]] =[]
 
 
 # class ImagesResponse(BaseModel):

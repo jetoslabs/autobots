@@ -16,7 +16,7 @@ class Role(str, Enum):
 
 class Message(BaseModel):
     role: Role
-    content: str
+    content: Union[List[Union[str, dict]], str]
 
 
 class ChatReq(BaseModel):
