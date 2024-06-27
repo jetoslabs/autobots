@@ -24,7 +24,6 @@ tiktoken = "0.7.0"
 pillow = "10.3.0"
 ddtrace = "2.8.4"
 sqlalchemy = "2.0.30"
-psycopg2 = "2.9.9"
 
 supabase = "2.4.5"
 python-jose = "3.3.0"
