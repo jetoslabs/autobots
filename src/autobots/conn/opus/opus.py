@@ -34,7 +34,7 @@ class Opus:
                     {
                         "type": "WEBHOOK",
                         "notifyFailure": True,
-                        "url": "https://dev.api.meetkiwi.ai/opus"
+                        "url": ""
                     }
                 ],
             "curationPref": {
