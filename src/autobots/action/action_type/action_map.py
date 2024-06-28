@@ -24,6 +24,8 @@ from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper
     ActionText2TextIOMapper
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
     ActionText2TextLlmChatOpenai
+from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_claude import \
+    ActionText2TextLlmChatclaude
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
 from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
@@ -33,6 +35,8 @@ from src.autobots.action.action_type.action_text2text.action_text2text_user_inpu
 from src.autobots.action.action_type.action_text2video.action_text2video_search_video import ActionText2VideoSearchVideo
 from src.autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
+from src.autobots.action.action_type.action_video2video.action_video2video_opus import ActionVideo2VideoOpus
+
 from src.autobots.action.action_type.action_types import ActionType
 
 ACTION_MAP = {
@@ -41,6 +45,7 @@ ACTION_MAP = {
     ActionType.multimodal_google_search: ActionMultimodalGoogleSearch,
     # text2text
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
+    ActionType.text2text_llm_chat_claude: ActionText2TextLlmChatclaude,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
@@ -67,6 +72,8 @@ ACTION_MAP = {
     # audio2text
     ActionType.audio2text_transcription_openai: ActionAudio2TextTranscriptionOpenai,
     ActionType.audio2text_translation_openai: ActionAudio2TextTranslationOpenai,
+    #video2video
+    ActionType.video2video_opus: ActionVideo2VideoOpus,
     # mock
     ActionType.mock_action: MockAction
 }

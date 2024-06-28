@@ -49,6 +49,10 @@ class ActionABC(
         raise NotImplementedError
 
     @staticmethod
+    def get_description() -> str:
+        return ""
+    
+    @staticmethod
     async def create_config(config_create: ActionConfigCreateType) -> ActionConfigType | Exception:
         return config_create
 

@@ -48,6 +48,7 @@ celery = "5.4.0"
 asgiref = "3.8.1"
 pendulum = "^3.0.0"
 pydantic-extra-types = "^2.8.2"
+anthropic = "0.29.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-asyncio = "0.23.5"
