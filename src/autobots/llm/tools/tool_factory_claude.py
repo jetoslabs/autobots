@@ -22,7 +22,7 @@ class ToolFactoryClaude:
             try:
                 action = TOOLS_MAP.get(tool_name)
                 func_def = await AnthropicFunctionDefinitionGen.get_defination(
-                    action.create_and_run_action, action.__doc__
+                    action.create_and_run_action, action.get_action_description()
                 )
                 func_def["name"]= tool_name
                 func_def["description"]= tool_name
