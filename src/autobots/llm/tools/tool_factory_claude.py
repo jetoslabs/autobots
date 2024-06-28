@@ -6,7 +6,7 @@ from src.autobots.conn.claude.fn_defn import AnthropicFunctionDefinitionGen
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
 
 
-class ToolFactory:
+class ToolFactoryClaude:
 
     @staticmethod
     async def get_tools() -> List[str]:

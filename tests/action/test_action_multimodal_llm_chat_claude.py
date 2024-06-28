@@ -3,17 +3,17 @@ import pytest
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionResult
 from src.autobots.action.action_type.action_factory import ActionFactory
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.conn.claude.chat_model import ChatReq, Message
-from src.autobots.llm.tools.tool_factory_claude import ToolFactory
+from src.autobots.conn.claude.chat_model import ChatReqClaude, Message
+from src.autobots.llm.tools.tool_factory_claude import ToolFactoryClaude
 @pytest.mark.asyncio
 async def test_action_text2text_llm_chat_claude_rerun_happy_path():
-    tools = await ToolFactory.get_tools()
+    tools = await ToolFactoryClaude.get_tools()
     assert tools is not None
-    tool_defs = await ToolFactory.get_tool_definations(tools)
+    tool_defs = await ToolFactoryClaude.get_tool_definations(tools)
     assert tool_defs is not None
 
 
-    action_config = ChatReq(
+    action_config = ChatReqClaude(
         messages=[
             Message(role="user", content="Be a helpful assistant")
         ],

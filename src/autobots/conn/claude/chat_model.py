@@ -19,7 +19,7 @@ class Message(BaseModel):
     content: Union[List[Union[str, dict]], str]
 
 
-class ChatReq(BaseModel):
+class ChatReqClaude(BaseModel):
     messages: List[Message]
     model: Literal[
         "claude-2",
