@@ -4,6 +4,8 @@ from src.autobots.core.settings import Settings, SettingsProvider
 from httpx import Timeout
 from anthropic import AsyncAnthropic
 from src.autobots.conn.claude.claude_chat import AnthropicChat
+
+
 class Claude:
 
     def __init__(self, *,
@@ -16,7 +18,7 @@ class Claude:
 
 
 @lru_cache
-def get_claude(settings: Settings = SettingsProvider.sget()) -> claude:
+def get_claude(settings: Settings = SettingsProvider.sget()) -> Claude:
     return Claude(
         api_key=settings.CLAUDE_API_KEY,
         timeout=60.0
