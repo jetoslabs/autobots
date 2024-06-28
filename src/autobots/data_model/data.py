@@ -3,6 +3,9 @@ from typing import Any
 from pydantic import BaseModel
 
 
-class Information(BaseModel):
-    data: Any | None = None
+class MetaData(BaseModel):
     meta: Any | None = None
+
+
+class Data(MetaData):
+    pass

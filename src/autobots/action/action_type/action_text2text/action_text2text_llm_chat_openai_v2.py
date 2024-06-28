@@ -109,6 +109,6 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
                 if isinstance(action_tool, str):
                     if action_tool in TOOLS_MAP:
                         action_tools.append(action_tool)
-            tool_defs = await ToolFactory.get_tool_definations(action_tools)
+            tool_defs = await ToolFactory.get_chat_completion_tool_param(action_tools)
             return tool_defs
 

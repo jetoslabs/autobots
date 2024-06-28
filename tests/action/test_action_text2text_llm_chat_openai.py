@@ -12,7 +12,7 @@ from src.autobots.llm.tools.tool_factory import ToolFactory
 async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settings):
     tools = await ToolFactory.get_tools()
     assert tools is not None
-    tool_defs = await ToolFactory.get_tool_definations(tools)
+    tool_defs = await ToolFactory.get_chat_completion_tool_param(tools)
     assert tool_defs is not None
 
 

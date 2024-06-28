@@ -7,7 +7,7 @@ from pydantic_extra_types.pendulum_dt import DateTime
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.core.database.mongo_base_crud import DocFindPage
-from src.autobots.information.updated_at import UpdatedAt
+from src.autobots.data_model.updated_at import UpdatedAt
 
 
 class Position(BaseModel):

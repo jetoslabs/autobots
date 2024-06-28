@@ -6,7 +6,7 @@ from pydantic import Field, BaseModel, ConfigDict
 from pydantic_extra_types.pendulum_dt import DateTime
 
 from src.autobots.action.action.common_action_models import TextObj
-from src.autobots.information.updated_at import UpdatedAt
+from src.autobots.data_model.updated_at import UpdatedAt
 
 
 class EventType(str, Enum):
