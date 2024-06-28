@@ -1,0 +1,3 @@
+
+class KnowledgeService:
+    pass
