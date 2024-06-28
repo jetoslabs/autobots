@@ -35,6 +35,7 @@ class Opus:
                         "type": "WEBHOOK",
                         "notifyFailure": True,
                         "url": ""
+                        # TODO Pass correct url for webhook to work
                     }
                 ],
             "curationPref": {
