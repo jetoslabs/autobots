@@ -68,7 +68,7 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
             logger.error(str(e))
 
     @staticmethod
-    async def create_and_run_action(action_config: SearchWebConfig) -> TextObjs:
+    async def run_tool(action_config: SearchWebConfig) -> TextObjs:
         action = ActionText2TextSearchWeb(action_config)
         action_input = TextObj(text="")
         text_objs = await action.run_action(action_input)

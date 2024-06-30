@@ -59,7 +59,7 @@ class ActionMultimodalGoogleSearch(
         return result_or_exception
 
     @staticmethod
-    async def create_and_run_action(
+    async def run_tool(
             action_config: ActionMultimodalGoogleSearchConfig
     ) -> ActionMultimodalGoogleSearchOutput:
         action = ActionMultimodalGoogleSearch(action_config)

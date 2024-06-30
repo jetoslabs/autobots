@@ -102,7 +102,7 @@ class ActionText2textAPI(
             return e
 
     @staticmethod
-    async def create_and_run_action(action_config: APIRequest) -> APIResponse | Exception:
+    async def run_tool(action_config: APIRequest) -> APIResponse | Exception:
         try:
             config_type = ActionText2textAPI.get_config_type()
             config_dict = ActionText2textAPI.create_config(action_config)
