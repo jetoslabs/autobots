@@ -66,24 +66,45 @@ class SimilarSentenceSplitter:
 
 class SemanticDataProvider(DataProvider):
     
-    def __init__(self, model_name: str = 'all-MiniLM-L6-v2'):
-        super().__init__()
-        self.model = SentenceTransformer(model_name)
-        self.nlp = spacy.load('en_core_web_sm')
-
+    def __init__(self, model_name="all-MiniLM-L6-v2", similarity_threshold=0.2):
+        self.similarity_model = SentenceTransformersSimilarity(model=model_name, similarity_threshold=similarity_threshold)
+        self.sentence_splitter = SpacySentenceSplitter()
+        self.similar_sentence_splitter = SimilarSentenceSplitter(self.similarity_model, self.sentence_splitter)
+    
     async def create_semantic_chunks(self, text: str, chunk_token_size: int = 512) -> AsyncGenerator[str, None]:
-        sentences = [sent.text for sent in self.nlp(text).sents]
-        embeddings = self.model.encode(sentences, convert_to_tensor=True)
-        
+        chunks = self.similar_sentence_splitter.split_text(text)
         chunk = ""
         count = 0
-        for i, sentence in enumerate(sentences):
-            token_count = get_tiktoken().token_count(sentence)
+        for part in chunks:
+            token_count = get_tiktoken().token_count(part)
             if count + token_count > chunk_token_size:
                 yield chunk
                 chunk = ""
                 count = 0
             count += token_count
-            chunk += sentence + " "
+            chunk += part + " "
         if chunk:
             yield chunk
+            
+            
+    #         def __init__(self, model_name: str = 'all-MiniLM-L6-v2'):
+    #     super().__init__()
+    #     self.model = SentenceTransformer(model_name)
+    #     self.nlp = spacy.load('en_core_web_sm')
+
+    # async def create_semantic_chunks(self, text: str, chunk_token_size: int = 512) -> AsyncGenerator[str, None]:
+    #     sentences = [sent.text for sent in self.nlp(text).sents]
+    #     embeddings = self.model.encode(sentences, convert_to_tensor=True)
+        
+    #     chunk = ""
+    #     count = 0
+    #     for i, sentence in enumerate(sentences):
+    #         token_count = get_tiktoken().token_count(sentence)
+    #         if count + token_count > chunk_token_size:
+    #             yield chunk
+    #             chunk = ""
+    #             count = 0
+    #         count += token_count
+    #         chunk += sentence + " "
+    #     if chunk:
+    #         yield chunk

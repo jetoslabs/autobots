@@ -43,19 +43,25 @@ class DataProvider:
         count = 0
         # iter over chunks
         async for part in chunk_func(data):
-            if count >= chunk_token_size:
-                yield chunk
+            token_count = get_tiktoken().token_count(part)
+            if count + token_count > chunk_token_size:
+                processed_chunk = await DataProvider.process_chunk(chunk)
+                yield processed_chunk
                 chunk = ""
                 count = 0
-
-            # count tokens
-            token_count = get_tiktoken().token_count(part)
+            chunk += part
             count += token_count
 
-            chunk += part
-
-        # yield last chunk
-        yield chunk
+        if chunk:
+            processed_chunk = await DataProvider.process_chunk(chunk)
+            yield processed_chunk
+        
+    @staticmethod
+    async def process_chunk(chunk: str) -> str:
+        input_ids = tokenizer(chunk, return_tensors="pt").input_ids.to(device)
+        outputs = model.generate(input_ids, max_new_tokens=512).cpu()
+        output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return output_text
 
 # Initialize model and tokenizer
 model_name = "chentong00/propositionizer-wiki-flan-t5-large"
@@ -66,24 +72,21 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
 
-# Input text
+# Function to create agentic chunks and process them
+async def create_agentic_chunking(input_text: str):
+    data_provider = DataProvider()
+    async for processed_chunk in data_provider.create_data_chunks(input_text, data_provider.read_data_line_by_line):
+        try:
+            prop_list = json.loads(processed_chunk)
+            print(f"Chunk: {chunk}\nProcessed Output: {json.dumps(prop_list, indent=2)}\n")
+        except json.JSONDecodeError:
+            print(f"[ERROR] Failed to parse output text as JSON.\nChunk: {chunk}\nProcessed Output: {processed_chunk}\n")
+
+
 input_text = (
     "I love dogs. They are amazing. Cats must be the easiest pets around. "
     "Tesla robots are advanced now with AI. They will take us to Mars."
 )
 
-# Chunking the input text
-async def process_chunks(input_text: str):
-    data_provider = DataProvider()
-    async for chunk in data_provider.create_data_chunks(input_text, data_provider.read_data_line_by_line):
-        input_ids = tokenizer(chunk, return_tensors="pt").input_ids
-        outputs = model.generate(input_ids.to(device), max_new_tokens=512).cpu()
-        output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        
-        try:
-            prop_list = json.loads(output_text)
-            print(json.dumps(prop_list, indent=2))
-        except json.JSONDecodeError:
-            print("[ERROR] Failed to parse output text as JSON.")
-            print(output_text)
+
 
