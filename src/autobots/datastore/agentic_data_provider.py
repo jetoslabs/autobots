@@ -78,9 +78,9 @@ async def create_agentic_chunking(input_text: str):
     async for processed_chunk in data_provider.create_data_chunks(input_text, data_provider.read_data_line_by_line):
         try:
             prop_list = json.loads(processed_chunk)
-            print(f"Chunk: {chunk}\nProcessed Output: {json.dumps(prop_list, indent=2)}\n")
+            print(f"\nProcessed Output: {json.dumps(prop_list, indent=2)}\n")
         except json.JSONDecodeError:
-            print(f"[ERROR] Failed to parse output text as JSON.\nChunk: {chunk}\nProcessed Output: {processed_chunk}\n")
+            print(f"[ERROR] Failed to parse output text as JSON.\nProcessed Output: {processed_chunk}\n")
 
 
 input_text = (
