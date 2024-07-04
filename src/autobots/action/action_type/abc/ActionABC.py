@@ -16,8 +16,7 @@ ActionOutputType = TypeVar("ActionOutputType", bound=BaseModel)
 class ActionABC(
     Generic[
         ActionConfigCreateType, ActionConfigUpdateType, ActionConfigType, ActionInputType, ActionOutputType
-    ],
-    # ToolableProtocol
+    ]
 ):
 
     def __init__(self, action_config: ActionConfigType):
@@ -73,10 +72,11 @@ class ActionABC(
 
     @abstractmethod
     async def run_action(self, action_input: ActionInputType) -> ActionOutputType | Exception:
+        """To be deprecated in favour of static method run_action"""
         raise NotImplementedError
 
     @staticmethod
     @abstractmethod
-    async def create_and_run_action(action_config: ActionConfigType) -> ActionOutputType | Exception:
+    async def run_tool(action_config: ActionConfigType) -> ActionOutputType | Exception:
         raise NotImplementedError
 

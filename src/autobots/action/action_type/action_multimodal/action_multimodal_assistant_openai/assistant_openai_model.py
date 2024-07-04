@@ -1,4 +1,4 @@
-from typing import Iterable, List
+from typing import Iterable
 
 from openai.types.beta import Assistant, AssistantToolParam
 
@@ -14,7 +14,7 @@ class AssistantOpenaiConfigCreate(AssistantCreate):
 #     pass
 
 class AssistantOpenaiConfigUpdate(AssistantCreate):
-    tools: Iterable[AssistantToolParam] | List[str] | None = None
+    tools: Iterable[AssistantToolParam | str] | None = None
 
 
 class AssistantOpenaiConfig(Assistant):
