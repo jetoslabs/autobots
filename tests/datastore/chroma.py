@@ -2,7 +2,6 @@ import base64
 import logging
 import uuid
 from typing import (
-    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -25,13 +24,14 @@ import chromadb
 import chromadb.config
 import numpy as np
 # if TYPE_CHECKING:
+from pydantic import BaseModel
+
 from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
 
 logger = logging.getLogger()
 DEFAULT_K = 4 
 Matrix = Union[List[List[float]], List[np.ndarray], np.ndarray]
 
-from pydantic import BaseModel
 
 class BaseMedia(BaseModel):
     """Base class for media types. Define any common attributes or methods here."""
