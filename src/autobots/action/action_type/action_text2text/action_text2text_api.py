@@ -7,6 +7,7 @@ from loguru import logger
 from pydantic import BaseModel, ConfigDict
 
 from src.autobots.action.action_type.abc.ActionABC import ActionABC
+from src.autobots.action.action_type.action_types import ActionType
 
 
 class APIRequest(BaseModel):
@@ -49,6 +50,8 @@ class APIResponse(BaseModel):
 class ActionText2textAPI(
     ActionABC[APIRequest, APIRequest, APIRequest, APIInput, APIResponse]
 ):
+    type = ActionType.text2text_api_call
+
     @staticmethod
     def get_description() -> str:
         return "Make an API call"
@@ -115,4 +118,3 @@ class ActionText2textAPI(
         except Exception as e:
             logger.error(str(e))
             return e
-
