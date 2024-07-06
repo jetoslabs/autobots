@@ -1,5 +1,5 @@
 from enum import Enum 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Sequence, Tuple
 from pydantic import Field, root_validator
 from tests.datastore.chroma import Document, Chroma
 from typing import Generic, TypeVar, Dict, Optional, List,  Dict, Any
@@ -27,6 +27,8 @@ class ByteStore:
 
 TKey = TypeVar('TKey')
 TValue = TypeVar('TValue')
+
+
 class BaseStore(Generic[TKey, TValue]):
     """A simple in-memory BaseStore implementation."""
 
@@ -57,7 +59,18 @@ class BaseStore(Generic[TKey, TValue]):
     async def amget(self, keys: List[TKey]) -> List[Optional[TValue]]:
         """Asynchronously retrieve multiple values for the given keys."""
         return self.mget(keys)
+    
+    def mset(self, key_value_pairs: Sequence[Tuple[str, TValue]]) -> None:
+        """Set the values for the given keys.
 
+        Args:
+            key_value_pairs (Sequence[Tuple[str, V]]): A sequence of key-value pairs.
+
+        Returns:
+            None
+        """
+        for key, value in key_value_pairs:
+            self.store[key] = value
 
 def create_kv_docstore(byte_store: ByteStore) -> BaseStore[str, Document]:
     """Create a Key-Value Document Store using a ByteStore as the backend."""
@@ -112,7 +125,10 @@ class MultiVectorRetriever():
     """Keyword arguments to pass to the search function."""
     search_type: SearchType = SearchType.similarity
     """Type of search to perform (similarity / mmr)"""
-
+    def __init__(self,vectorstore,docstore,id_key):
+        self.vectorstore = vectorstore
+        self.docstore=docstore
+        self.id_key=id_key
     @root_validator(pre=True)
     def shim_docstore(cls, values: Dict) -> Dict:
         byte_store = values.get("byte_store")
@@ -124,7 +140,7 @@ class MultiVectorRetriever():
         values["docstore"] = docstore
         return values
 
-    def _get_relevant_documents(
+    async def _get_relevant_documents(
         self, query: str) -> List[Document]:
         """Get documents relevant to a query.
         Args:
@@ -135,10 +151,10 @@ class MultiVectorRetriever():
         """
         if self.search_type == SearchType.mmr:
             sub_docs = self.vectorstore.max_marginal_relevance_search(
-                query, **self.search_kwargs
+                query
             )
         else:
-            sub_docs = self.vectorstore.similarity_search(query, **self.search_kwargs)
+            sub_docs = await self.vectorstore.similarity_search(query)
 
         # We do this to maintain the order of the ids that are returned
         ids = []
@@ -173,3 +189,4 @@ class MultiVectorRetriever():
                 ids.append(d.metadata[self.id_key])
         docs = await self.docstore.amget(ids)
         return [d for d in docs if d is not None]
+    

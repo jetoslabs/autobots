@@ -24,6 +24,7 @@ import chromadb
 import chromadb.config
 import numpy as np
 # if TYPE_CHECKING:
+from src.autobots.conn.openai.openai_embeddings.embedding_model import EmbeddingReq, EmbeddingRes
 from pydantic import BaseModel
 
 from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
@@ -31,7 +32,6 @@ from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
 logger = logging.getLogger()
 DEFAULT_K = 4 
 Matrix = Union[List[List[float]], List[np.ndarray], np.ndarray]
-
 
 class BaseMedia(BaseModel):
     """Base class for media types. Define any common attributes or methods here."""
@@ -88,6 +88,8 @@ def xor_args(*arg_groups: Tuple[str, ...]) -> Callable:
         return wrapper
 
     return decorator
+
+
 
 
 
@@ -375,7 +377,7 @@ class Chroma():
             )
         return ids
 
-    def add_texts(
+    async def add_texts(
         self,
         texts: Iterable[str],
         metadatas: Optional[List[dict]] = None,
@@ -402,7 +404,8 @@ class Chroma():
         embeddings = None
         texts = list(texts)
         if self._embedding_function is not None:
-            embeddings = self._embedding_function.embed_documents(texts)
+            response = await self._embedding_function.embeddings(EmbeddingReq(input=texts))
+            embeddings = [data.embedding for data in response.data]
         if metadatas:
             # fill metadatas with empty dicts if somebody
             # did not specify metadata for all texts
@@ -457,8 +460,22 @@ class Chroma():
                 ids=ids,
             )
         return ids
+    
+    async def add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+        """Run more documents through the embeddings and add to the vectorstore.
 
-    def similarity_search(
+        Args:
+            documents: Documents to add to the vectorstore.
+
+        Returns:
+            List of IDs of the added texts.
+        """
+        # TODO: Handle the case where the user doesn't provide ids on the Collection
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+        return await self.add_texts(texts, metadatas, **kwargs)
+    
+    async def similarity_search(
         self,
         query: str,
         k: int = DEFAULT_K,
@@ -476,7 +493,7 @@ class Chroma():
         Returns:
             List of documents most similar to the query text.
         """
-        docs_and_scores = self.similarity_search_with_score(
+        docs_and_scores = await self.similarity_search_with_score(
             query, k, filter=filter, **kwargs
         )
         return [doc for doc, _ in docs_and_scores]
@@ -542,7 +559,7 @@ class Chroma():
         )
         return _results_to_docs_and_scores(results)
 
-    def similarity_search_with_score(
+    async def similarity_search_with_score(
         self,
         query: str,
         k: int = DEFAULT_K,
@@ -573,7 +590,8 @@ class Chroma():
                 **kwargs,
             )
         else:
-            query_embedding = self._embedding_function.embed_query(query)
+            response= await self._embedding_function.embeddings(EmbeddingReq(input=[query]))
+            query_embedding = response.data[0].embedding
             results = self.__query_collection(
                 query_embeddings=[query_embedding],
                 n_results=k,
@@ -833,7 +851,7 @@ class Chroma():
 
     @classmethod
     def from_texts(
-        cls: Type[Chroma],
+        cls,
         texts: List[str],
         embedding: Optional[Embeddings] = None,
         metadatas: Optional[List[dict]] = None,
@@ -844,7 +862,7 @@ class Chroma():
         client: Optional[chromadb.ClientAPI] = None,
         collection_metadata: Optional[Dict] = None,
         **kwargs: Any,
-    ) -> Chroma:
+    ):
         """Create a Chroma vectorstore from a raw documents.
 
         If a persist_directory is specified, the collection will be persisted there.
@@ -900,7 +918,7 @@ class Chroma():
 
     @classmethod
     def from_documents(
-        cls: Type[Chroma],
+        cls,
         documents: List[Document],
         embedding: Optional[Embeddings] = None,
         ids: Optional[List[str]] = None,
@@ -910,7 +928,7 @@ class Chroma():
         client: Optional[chromadb.ClientAPI] = None,  # Add this line
         collection_metadata: Optional[Dict] = None,
         **kwargs: Any,
-    ) -> Chroma:
+    ):
         """Create a Chroma vectorstore from a list of documents.
 
         If a persist_directory is specified, the collection will be persisted there.
