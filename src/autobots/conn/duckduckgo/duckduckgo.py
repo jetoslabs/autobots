@@ -4,6 +4,7 @@ from typing import List, Optional
 from duckduckgo_search import AsyncDDGS
 from loguru import logger
 from pydantic import BaseModel, HttpUrl
+from retry import retry
 
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams, SearchMapsParams, SearchImageParams, \
     SearchVideoParams
@@ -89,6 +90,7 @@ class SuggestionRes(BaseModel):
 
 class DuckDuckGo:
 
+    @retry(tries=5, delay=5, backoff=10)
     async def search_text(self, search_params: SearchTextParams) -> List[SearchRes]:
         search_res = []
         async with AsyncDDGS() as ddgs:
@@ -103,6 +105,7 @@ class DuckDuckGo:
                 logger.trace(f"Search for {search_params.keywords}: {r}")
         return search_res
 
+    @retry(tries=5, delay=5, backoff=10)
     async def news(self, search_params: SearchTextParams) -> List[NewsRes]:
         news_res = []
         async with AsyncDDGS() as ddgs:
@@ -116,6 +119,7 @@ class DuckDuckGo:
         logger.trace(f"News for {search_params.keywords}: {news_res}")
         return news_res
 
+    @retry(tries=5, delay=5, backoff=10)
     async def answer(self, keywords: str, num_results: int = 3) -> List[AnswerRes]:
         answer_res = []
         async with AsyncDDGS() as ddgs:
@@ -129,6 +133,7 @@ class DuckDuckGo:
                 logger.trace(f"Answer for {keywords}: {r}")
         return answer_res
 
+    @retry(tries=5, delay=5, backoff=10)
     async def search_images(self, search_params: SearchImageParams) -> List[ImageRes]:
         images = []
         async with AsyncDDGS() as ddgs:
@@ -143,6 +148,7 @@ class DuckDuckGo:
                 logger.trace(f"Image for {search_params.keywords}: {r}")
         return images
 
+    @retry(tries=5, delay=5, backoff=10)
     async def search_videos(self, search_params: SearchVideoParams) -> List[VideoRes]:
         videos = []
         async with AsyncDDGS() as ddgs:
@@ -157,6 +163,7 @@ class DuckDuckGo:
                 logger.trace(f"Video for {search_params.keywords}: {r}")
         return videos
 
+    @retry(tries=5, delay=5, backoff=10)
     async def search_maps(self, search_params: SearchMapsParams) -> List[MapRes]:
         maps = []
         # num = 1
@@ -171,6 +178,7 @@ class DuckDuckGo:
                 logger.trace(f"Map search for {search_params.keywords}: {r}")
         return maps
 
+    @retry(tries=5, delay=5, backoff=10)
     async def translate(self, keywords: str, from_: Optional[str] = None, to: str = "en") -> TranslateRes:
         translated: TranslateRes
         async with AsyncDDGS() as ddgs:
@@ -180,6 +188,7 @@ class DuckDuckGo:
                 logger.trace(f"Translated for {keywords}: {r}")
                 return translated
 
+    @retry(tries=5, delay=5, backoff=10)
     async def suggestions(self, keywords: str, num_results: int = 30):
         suggestions = []
         num = 1
