@@ -20,6 +20,7 @@ from src.autobots.action.action_type.action_text2img.action_text2img_midjourney_
     ActionText2ImgMidjourneyButton
 from src.autobots.action.action_type.action_text2img.action_text2img_search_image import ActionText2ImgSearchImage
 from src.autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
+from src.autobots.action.action_type.action_text2text.action_text2text_api import ActionText2textAPI
 from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
     ActionText2TextIOMapper
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
@@ -52,6 +53,8 @@ ACTION_MAP = {
     ActionType.text2text_search_maps: ActionText2TextSearchMaps,
     ActionType.text2text_io_mapper: ActionText2TextIOMapper,
     ActionType.text2text_user_input: ActionText2textUserInput,
+    ActionType.text2text_api_call: ActionText2textAPI,
+
     # text2img
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,
     ActionType.text2img_stable_diffusion: ActionText2ImgStableDiffusion,
