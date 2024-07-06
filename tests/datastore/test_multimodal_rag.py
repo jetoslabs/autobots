@@ -2,8 +2,8 @@
 import base64
 import uuid
 import os
-from tests.datastore.chroma import Chroma, Document
-from tests.datastore.multi_vector import MultiVectorRetriever, BaseStore
+from src.autobots.conn.chroma.chroma import Chroma, Document
+from src.autobots.conn.chroma.multi_vector import MultiVectorRetriever, BaseStore
 from src.autobots.conn.openai.openai_embeddings.openai_embeddings import OpenaiEmbeddings
 from src.autobots.datastore.data_provider import DataProvider
 from concurrent.futures import ThreadPoolExecutor

@@ -1,7 +1,7 @@
 from enum import Enum 
 from typing import List, Optional, Dict, Sequence, Tuple
 from pydantic import Field, root_validator
-from tests.datastore.chroma import Document, Chroma
+from src.autobots.conn.chroma.chroma import Document, Chroma
 from typing import Generic, TypeVar, Dict, Optional, List,  Dict, Any
 
 
