@@ -47,7 +47,7 @@ async def test_assistant_generating_text_happy_path(set_test_settings):
         thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id, content="Who has the highest number of blogs")
         thread_message = await assistant_client.threads.messages.create(thread_message_create_1) # noqa F841
         # run thread
-        tools = [tool.model_dump() for tool in assistant.tools]
+        tools = [tool.model_dump(exclude_none=True) for tool in assistant.tools]
         thread_run_create = ThreadRunCreate(thread_id=thread.id, assistant_id=assistant.id, instructions=assistant.instructions, tools=tools)
         run = await assistant_client.threads.runs.create(thread_run_create)
         # # create thread and run
@@ -57,7 +57,7 @@ async def test_assistant_generating_text_happy_path(set_test_settings):
         # get run status - loop until status completed
         thread_run_retrieve = ThreadRunRetrieve(thread_id=run.thread_id, run_id=run.id)
         run_retrieved = await assistant_client.threads.runs.retrieve(thread_run_retrieve)
-        while run_retrieved.status in ["queued", "in_progress", "cancelling"]:
+        while run_retrieved.status in ["queued", "in_progress", "cancelling", "incomplete"]:
             time.sleep(10)
             run_retrieved = await assistant_client.threads.runs.retrieve(thread_run_retrieve)
         # get list of messages
@@ -125,7 +125,7 @@ async def test_assistant_generating_file_happy_path(set_test_settings):
         thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id, content="Write an essay on AI Agents. Store it in a file")
         thread_message = await assistant_client.threads.messages.create(thread_message_create_1) # noqa F841
         # run thread
-        tools = [tool.model_dump() for tool in assistant.tools]
+        tools = [tool.model_dump(exclude_none=True) for tool in assistant.tools]
         thread_run_create = ThreadRunCreate(thread_id=thread.id, assistant_id=assistant.id, instructions=assistant.instructions, tools=tools)
         run = await assistant_client.threads.runs.create(thread_run_create)
         # # create thread and run
@@ -135,7 +135,7 @@ async def test_assistant_generating_file_happy_path(set_test_settings):
         # get run status - loop until status completed
         thread_run_retrieve = ThreadRunRetrieve(thread_id=run.thread_id, run_id=run.id)
         run_retrieved = await assistant_client.threads.runs.retrieve(thread_run_retrieve)
-        while run_retrieved.status in ["queued", "in_progress", "cancelling"]:
+        while run_retrieved.status in ["queued", "in_progress", "cancelling", "incomplete"]:
             time.sleep(10)
             run_retrieved = await assistant_client.threads.runs.retrieve(thread_run_retrieve)
         # get list of messages
