@@ -9,9 +9,10 @@ from src.autobots.datastore.data_provider import DataProvider
 from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
 import asyncio
-
+from fastapi import UploadFile
 from src.autobots.conn.openai.openai_client import get_openai
-
+import unstructured_client
+from unstructured_client.models import operations, shared
 from src.autobots.conn.aws.s3 import get_s3
 from src.autobots.conn.pinecone.pinecone import get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
@@ -71,16 +72,22 @@ def categorize_elements(raw_pdf_elements):
     tables = []
     texts = []
     for element in raw_pdf_elements:
-        if "unstructured.documents.elements.Table" in str(type(element)):
-            tables.append(str(element))
-        elif "unstructured.documents.elements.CompositeElement" in str(type(element)):
-            texts.append(str(element))
+        print(element["type"])
+        if element["type"] == "Image":
+            name= uuid.uuid4()
+            with open(str(name)+".jpg", 'wb') as file:
+                file.write(element)
+        # if element["type"] == "Table":
+        # if element["type"] in ["NarrativeText",'UncategorizedText']:
+
+
     return texts, tables
 
 
 # File path
 fpath = "/Users/khushalsethi/godelsales/autobots/tests/resources/datastore/cj"
 fname = "cj.pdf"
+file_name = "tests/resources/datastore/cj/cj.pdf"
 
 
 s3 = get_s3()
@@ -89,90 +96,34 @@ unstructured = get_unstructured_io()
 # Get elements
 # raw_pdf_elements = extract_pdf_elements(fpath, fname)
 
+s = unstructured_client.UnstructuredClient(
+    api_key_auth=SettingsProvider.sget().UNSTRUCTURED_API_KEY,
+)
+with open(file_name, mode='rb') as file:
+    upload_file = UploadFile(filename=file_name, file=file)
+    req = shared.PartitionParameters(
+        files=shared.Files(
+                content=asyncio.run(upload_file.read()),
+                file_name=file_name,
+            ),
+        strategy="hi_res",
+        languages=["eng"],
+)
+
+
+raw_pdf_elements = s.general.partition(request=req
+)
+
 # # Get text, tables
-# texts, tables = categorize_elements(raw_pdf_elements)
+texts, tables = categorize_elements(raw_pdf_elements.elements)
 
+joined_texts = " ".join(texts)
 
-# class PyPDFParser(BaseBlobParser):
-#     """Load `PDF` using `pypdf`"""
-
-#     def __init__(
-#         self, password: Optional[Union[str, bytes]] = None, extract_images: bool = False
-#     ):
-#         self.password = password
-#         self.extract_images = extract_images
-
-#     def lazy_parse(self, blob: Blob) -> Iterator[Document]:  # type: ignore[valid-type]
-#         """Lazily parse the blob."""
-#         try:
-#             import pypdf
-#         except ImportError:
-#             raise ImportError(
-#                 "`pypdf` package not found, please install it with "
-#                 "`pip install pypdf`"
-#             )
-
-#         with blob.as_bytes_io() as pdf_file_obj:  # type: ignore[attr-defined]
-#             pdf_reader = pypdf.PdfReader(pdf_file_obj, password=self.password)
-#             yield from [
-#                 Document(
-#                     page_content=page.extract_text()
-#                     + self._extract_images_from_page(page),
-#                     metadata={"source": blob.source, "page": page_number},  # type: ignore[attr-defined]
-#                 )
-#                 for page_number, page in enumerate(pdf_reader.pages)
-#             ]
-
-
-# class PyPDFLoader(BasePDFLoader):
-#     """Load PDF using pypdf into list of documents.
-
-#     Loader chunks by page and stores page numbers in metadata.
-#     """
-
-# [docs]    def __init__(
-#         self,
-#         file_path: str,
-#         password: Optional[Union[str, bytes]] = None,
-#         headers: Optional[Dict] = None,
-#         extract_images: bool = False,
-#     ) -> None:
-#         """Initialize with a file path."""
-#         try:
-#             import pypdf  # noqa:F401
-#         except ImportError:
-#             raise ImportError(
-#                 "pypdf package not found, please install it with " "`pip install pypdf`"
-#             )
-#         super().__init__(file_path, headers=headers)
-#         self.parser = PyPDFParser(password=password, extract_images=extract_images)
-
-
-# [docs]    def lazy_load(
-#         self,
-#     ) -> Iterator[Document]:
-#         """Lazy load given path as pages."""
-#         if self.web_path:
-#             blob = Blob.from_data(open(self.file_path, "rb").read(), path=self.web_path)  # type: ignore[attr-defined]
-#         else:
-#             blob = Blob.from_path(self.file_path)  # type: ignore[attr-defined]
-#         yield from self.parser.parse(blob)
-
-# loader = PyPDFLoader(fpath + fname)
-# docs = loader.load()
-# tables = [] # Ignore w/ basic pdf loader
-# texts = [d.page_content for d in docs]
-texts=["In an era dominated by screens and digital content, the simple act of reading a book may seem quaint or even obsolete. Yet, the intrinsic value of books has endured throughout centuries, transcending the rapid changes in technology and lifestyle. Reading books is not just a leisure activity; it is a multifaceted endeavor that offers profound benefits for our cognitive abilities, emotional health, and social skills. This essay delves into the myriad advantages of reading, underscoring its importance in our increasingly digital world."]
+# texts=["In an era dominated by screens and digital content, the simple act of reading a book may seem quaint or even obsolete. Yet, the intrinsic value of books has endured throughout centuries, transcending the rapid changes in technology and lifestyle. Reading books is not just a leisure activity; it is a multifaceted endeavor that offers profound benefits for our cognitive abilities, emotional health, and social skills. This essay delves into the myriad advantages of reading, underscoring its importance in our increasingly digital world."]
 # # Optional: Enforce a specific token size for texts
-# text_splitter = DataProvider.read_text_splitter(
-#     chunk_size=4000, chunk_overlap=0
-# )
-# joined_texts = " ".join(texts)
-# texts_4k_token = text_splitter.split_text(joined_texts)
-texts_4k_token =texts
-
-
-
+texts_4k_token = DataProvider.create_data_chunks(joined_texts, DataProvider.read_file_line_by_line,4000
+)
+# texts_4k_token =texts
 
 def encode_image(image_path):
     """Getting the base64 string"""
@@ -186,7 +137,7 @@ def image_summarize(img_base64, prompt):
     response = client.chat.completions.create(model="gpt-4-vision-preview",
     messages=[
         {"role": "system", "content": prompt},
-        {"role": "user", "content": "", "image": img_base64}
+        {"role": "user", "content":[{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_base64}"}}]}
     ])
 
     return response.choices[0].message.content.strip()
