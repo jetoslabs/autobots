@@ -121,7 +121,7 @@ joined_texts = " ".join(texts)
 
 # texts=["In an era dominated by screens and digital content, the simple act of reading a book may seem quaint or even obsolete. Yet, the intrinsic value of books has endured throughout centuries, transcending the rapid changes in technology and lifestyle. Reading books is not just a leisure activity; it is a multifaceted endeavor that offers profound benefits for our cognitive abilities, emotional health, and social skills. This essay delves into the myriad advantages of reading, underscoring its importance in our increasingly digital world."]
 # # Optional: Enforce a specific token size for texts
-texts_4k_token = DataProvider.create_data_chunks(joined_texts, DataProvider.read_file_line_by_line,4000
+texts_4k_token = DataProvider.create_data_chunks(joined_texts, DataProvider.read_data_line_by_line,4000
 )
 # texts_4k_token =texts
 
@@ -261,7 +261,7 @@ retriever_multi_vector_img =  asyncio.run(create_multi_vector_retriever(
     text_summaries,
     texts,
     table_summaries,
-    None,
+    tables,
     image_summaries,
     img_base64_list,
 ))
