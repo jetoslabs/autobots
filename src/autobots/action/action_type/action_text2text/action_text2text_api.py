@@ -20,7 +20,7 @@ class APIRequest(BaseModel):
     params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
     headers: typing.Optional[typing.Mapping[str, str]] = None
     cookies: typing.Optional[typing.Dict[str, str]] = None
-    auth: typing.Union[typing.Tuple[typing.Union[str, bytes], typing.Union[str, bytes]]] = None
+    # auth: typing.Union[typing.Tuple[typing.Union[str, bytes]]] = None
     follow_redirects: typing.Union[bool] = False
     timeout: typing.Optional[float] = None
     # extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
