@@ -45,7 +45,7 @@ class ToolFactory:
                 func_def.get("function")["name"] = tool_name
                 func_defs.append(func_def)
             except Exception as e:
-                logger.error(str(e))
+                logger.bind(tool_name=tool_name).error(str(e))
         return func_defs if len(func_defs) > 0 else None
 
     @staticmethod
