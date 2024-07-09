@@ -1,6 +1,9 @@
 # from unstructured.partition.pdf import partition_pdf
 import base64
+import io
+import re
 import uuid
+from PIL import Image
 import os
 from src.autobots.conn.chroma.chroma import Chroma, Document
 from src.autobots.conn.chroma.multi_vector import MultiVectorRetriever, BaseStore
@@ -17,6 +20,7 @@ from src.autobots.conn.aws.s3 import get_s3
 from src.autobots.conn.pinecone.pinecone import get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from src.autobots.core.settings import Settings, SettingsProvider
+  
 
 client = OpenAI(api_key=SettingsProvider.sget().OPENAI_API_KEY)
 
@@ -72,13 +76,15 @@ def categorize_elements(raw_pdf_elements):
     tables = []
     texts = []
     for element in raw_pdf_elements:
-        print(element["type"])
+        # print(element)
         if element["type"] == "Image":
             name= uuid.uuid4()
             with open(str(name)+".jpg", 'wb') as file:
-                file.write(element)
-        # if element["type"] == "Table":
-        # if element["type"] in ["NarrativeText",'UncategorizedText']:
+                file.write(base64.b64decode(element["metadata"]["image_base64"]))
+        if element["type"] == "Table":
+            tables.append(element["metadata"]["text_as_html"])
+        if element["type"] in ["NarrativeText",'UncategorizedText']:
+            texts.append(element["text"])
 
 
     return texts, tables
@@ -108,6 +114,7 @@ with open(file_name, mode='rb') as file:
             ),
         strategy="hi_res",
         languages=["eng"],
+        extract_image_block_types=["Image"]
 )
 
 
@@ -121,8 +128,15 @@ joined_texts = " ".join(texts)
 
 # texts=["In an era dominated by screens and digital content, the simple act of reading a book may seem quaint or even obsolete. Yet, the intrinsic value of books has endured throughout centuries, transcending the rapid changes in technology and lifestyle. Reading books is not just a leisure activity; it is a multifaceted endeavor that offers profound benefits for our cognitive abilities, emotional health, and social skills. This essay delves into the myriad advantages of reading, underscoring its importance in our increasingly digital world."]
 # # Optional: Enforce a specific token size for texts
-texts_4k_token = DataProvider.create_data_chunks(joined_texts, DataProvider.read_data_line_by_line,4000
-)
+async def get_texts_4k(joined_texts):
+    texts=[]
+    texts_4k_token_agen = DataProvider.create_data_chunks(joined_texts, DataProvider.read_data_line_by_line,4000
+    )
+    async for text in texts_4k_token_agen:
+        texts.append(text)
+    return texts
+
+texts_4k_token = asyncio.run(get_texts_4k(joined_texts))
 # texts_4k_token =texts
 
 def encode_image(image_path):
@@ -272,4 +286,104 @@ docs = asyncio.run(retriever_multi_vector_img._get_relevant_documents(query))
 # We get 4 docs
 print(len(docs))
 
+
+def resize_base64_image(base64_string, size=(128, 128)):
+    """
+    Resize an image encoded as a Base64 string
+    """
+    # Decode the Base64 string
+    img_data = base64.b64decode(base64_string)
+    img = Image.open(io.BytesIO(img_data))
+
+    # Resize the image
+    resized_img = img.resize(size, Image.LANCZOS)
+
+    # Save the resized image to a bytes buffer
+    buffered = io.BytesIO()
+    resized_img.save(buffered, format=img.format)
+
+    # Encode the resized image to Base64
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+def looks_like_base64(sb):
+    """Check if the string looks like base64"""
+    return re.match("^[A-Za-z0-9+/]+[=]{0,2}$", sb) is not None
+
+
+def is_image_data(b64data):
+    """
+    Check if the base64 data is an image by looking at the start of the data
+    """
+    image_signatures = {
+        b"\xff\xd8\xff": "jpg",
+        b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a": "png",
+        b"\x47\x49\x46\x38": "gif",
+        b"\x52\x49\x46\x46": "webp",
+    }
+    try:
+        header = base64.b64decode(b64data)[:8]  # Decode and get the first 8 bytes
+        for sig, format in image_signatures.items():
+            if header.startswith(sig):
+                return True
+        return False
+    except Exception:
+        return False
+    
+def split_image_text_types(docs):
+    """
+    Split base64-encoded images and texts
+    """
+    b64_images = []
+    texts = []
+    for doc in docs:
+        # Check if the document is of type Document and extract page_content if so
+        if isinstance(doc, Document):
+            doc = doc.page_content
+        if looks_like_base64(doc) and is_image_data(doc):
+            doc = resize_base64_image(doc, size=(1300, 600))
+            b64_images.append(doc)
+        else:
+            texts.append(doc)
+    return {"images": b64_images, "texts": texts}
+
+
+def img_prompt_func(data_dict):
+    """
+    Join the context into a single string
+    """
+    formatted_texts = "\n".join(data_dict["context"]["texts"])
+    messages = []
+
+    # Adding image(s) to the messages if present
+    if data_dict["context"]["images"]:
+        for image in data_dict["context"]["images"]:
+            image_message = {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{image}"},
+            }
+            messages.append(image_message)
+
+    # Adding the text for analysis
+    text_message = {
+        "type": "text",
+        "text": (
+            "You are financial analyst tasking with providing investment advice.\n"
+            "You will be given a mixed of text, tables, and image(s) usually of charts or graphs.\n"
+            "Use this information to provide investment advice related to the user question. \n"
+            f"User-provided question: {data_dict['question']}\n\n"
+            "Text and / or tables:\n"
+            f"{formatted_texts}"
+        ),
+    }
+    messages.append(text_message)
+    return messages
+
+# chain = (
+#         {
+#             "context": retriever | RunnableLambda(split_image_text_types),
+#             "question": RunnablePassthrough(),
+#         }
+#         | RunnableLambda(img_prompt_func)
+#         | model
+# chain_multimodal_rag.invoke(query)
 
