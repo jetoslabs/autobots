@@ -32,7 +32,7 @@ class AnthropicChat:
 
     async def chat_loop(self, chat_req: ChatReqClaude) -> Message | AsyncStream[MessageStreamEvent]:
         while True:
-            print(chat_req.model_dump(exclude_none=True))
+            logger.info(chat_req.model_dump(exclude_none=True))
             chat_completion: Message = await self.client.messages.create(
                 **chat_req.model_dump(exclude_none=True)
             )
