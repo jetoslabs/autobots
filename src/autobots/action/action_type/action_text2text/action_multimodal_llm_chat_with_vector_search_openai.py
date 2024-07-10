@@ -9,7 +9,7 @@ import uuid
 from PIL import Image
 import os
 from src.autobots.conn.chroma.chroma import Chroma, Document
-
+from src.autobots.datastore.multidatastore import MultiDataStore
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action.action_doc_model import ActionCreate, ActionResult
@@ -21,6 +21,8 @@ from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.pinecone.pinecone import get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from src.autobots.datastore.datastore import Datastore
+from openai import OpenAI
+from src.autobots.core.settings import Settings, SettingsProvider
 
 
 def resize_base64_image(base64_string, size=(128, 128)):
@@ -162,13 +164,7 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
 
     def __init__(self, action_config: ActionCreateMultiModalLlmChatWithVectorSearchOpenaiConfig):
         super().__init__(action_config)
-        self.datastore = Datastore(
-            s3=get_s3(),
-            pinecone=get_pinecone(),
-            unstructured=get_unstructured_io()
-        ).hydrate(
-            datastore_id=action_config.datastore_id
-        )
+        self.datastore = MultiDataStore()
 
     # @staticmethod
     # async def update_config_with_prev_IO(
@@ -210,23 +206,22 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
     async def run_action(self, action_input: TextObj) -> TextObjs | None:
         # text_objs = TextObjs(texts=[])
         # vector search
-        search_results = await self.datastore.search(action_input.text, top_k=3)
-        if len(search_results) == 0:
-            return None
-        context = "Only use relevant context to give response. If the context is insufficient say \"Cannot answer from given context\"\nContext: \n"
-        for result in search_results:
-            context = f"{context}{result}\n"
+        search_results = await self.datastore._get_relevant_documents(action_input.text)
+        client = OpenAI(api_key=SettingsProvider.sget().OPENAI_API_KEY)
+
+        # if len(search_results) == 0:
+        #     return None
+        # context = "Only use relevant context to give response. If the context is insufficient say \"Cannot answer from given context\"\nContext: \n"
+        # for result in search_results:
+        #     context = f"{context}{result}\n"
         # LM chat
-        context = retriever()
-        processed_context = split_image_text_types(context)
-        question = query  # Assuming query is defined
-        prompt = img_prompt_func(processed_context, question)
-        response = model.invoke(prompt)
-        message = ChatCompletionUserMessageParam(role=Role.user.value, content=f"{context}Question: {action_input.text}")
-        self.action_config.chat_req.messages = self.action_config.chat_req.messages + [message]
-        self.action_config.input = action_input
-        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.chat_req)
-        action_results = TextObjs()
-        for choice in chat_res.choices:
-            action_results.texts.append(TextObj(text=choice.message.content))
-        return action_results
+        processed_context = split_image_text_types(search_results)
+        prompt = img_prompt_func(processed_context, action_input.text)
+        response = client.chat.completions.create(model="gpt-4-vision-preview",
+            messages=prompt)
+        # message = ChatCompletionUserMessageParam(role=Role.user.value, content=f"{context}Question: {action_input.text}")
+        # self.action_config.chat_req.messages = self.action_config.chat_req.messages + [message]
+        # self.action_config.input = action_input
+        # # chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.chat_req)
+        #     action_results.texts.append(TextObj(text=choice.message.content))
+        return response
