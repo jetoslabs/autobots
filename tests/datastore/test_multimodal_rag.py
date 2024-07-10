@@ -96,8 +96,6 @@ fname = "cj.pdf"
 file_name = "tests/resources/datastore/cj/cj.pdf"
 
 
-s3 = get_s3()
-pinecone = get_pinecone()
 unstructured = get_unstructured_io()
 # Get elements
 # raw_pdf_elements = extract_pdf_elements(fpath, fname)
@@ -387,3 +385,9 @@ def img_prompt_func(data_dict):
 #         | model
 # chain_multimodal_rag.invoke(query)
 
+
+# context = retriever()
+# processed_context = split_image_text_types(context)
+# question = query  # Assuming query is defined
+# prompt = img_prompt_func(processed_context, question)
+# response = model.invoke(prompt)
