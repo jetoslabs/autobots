@@ -95,11 +95,13 @@ class Opus:
         params = {'projectId': project_id}
         # Make the GET request to retrieve the clip details
         response = requests.get(Opus.RETRIEVE_CLIP_URL, headers=self.headers, params=params)
-
+        response_data = response.json()
         # Check the response status code
         if response.status_code == 200:
             # Parse and print the response JSON data
-            response_data = response.json()
+            if len(response_data) == 0:
+                logger.error(f"Failed to retrieve clip. Response is empty. Status code: {response.status_code}")
+                return AppException(detail="Failed to retrieve clip. Response is empty.", http_status=response.status_code)
             logger.info("Clip details retrieved successfully:")
             return OpusRes(url=response_data[0]['uriForExport'])
         else:
