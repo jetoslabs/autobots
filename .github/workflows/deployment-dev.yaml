@@ -172,6 +172,8 @@ jobs:
           -e CLAID_SIDE_S3_BUCKET=$CLAID_SIDE_S3_BUCKET
           -e CLAID_PATH_PREFIX=$CLAID_PATH_PREFIX
           -e SERP_API_KEY=$SERP_API_KEY
+          -e CLAUDE_API_KEY=$CLAUDE_API_KEY
+          -e OPUS_API_KEY=$OPUS_API_KEY
           registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}

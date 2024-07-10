@@ -11,6 +11,7 @@ from src.autobots.conn.selenium.selenium import get_selenium
 
 
 class ReadUrlConfig(BaseModel):
+    url: HttpUrl | None = None
     xpath: str = "/html/body"
     attribute: str = ""
 
@@ -51,10 +52,12 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
             selenium = get_selenium()
             urls = []
             potential_urls = action_input.text.split(",")
+            potential_urls.append(self.action_config.url) if self.action_config.url else None
             for potential_url in potential_urls:
                 try:
                     urls.append(HttpUrl(potential_url))
-                except Exception:
+                except Exception as e:
+                    logger.error(str(e))
                     pass
 
             out = await selenium.read_urls(urls, self.action_config.xpath, self.action_config.attribute)
@@ -72,7 +75,25 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
             logger.error(str(e))
 
     @staticmethod
-    async def create_and_run_action(action_config: ReadUrlConfig) -> TextObjs:
-        action = ActionText2TextReadUrl(action_config)
-        action_input = TextObj(text="")
-        return await action.run_action(action_input)
+    async def run_tool(action_config: ReadUrlConfig) -> TextObjs:
+        text_objs = TextObjs(texts=[])
+        try:
+            selenium = get_selenium()
+            urls = []
+            potential_urls = [action_config.url]
+            for potential_url in potential_urls:
+                try:
+                    urls.append(HttpUrl(potential_url))
+                except Exception as e:
+                    logger.error(str(e))
+                    pass
+
+            out = await selenium.read_urls(urls, action_config.xpath, action_config.attribute)
+            text_objs.texts.append(TextObj(text=out))
+            return text_objs
+        except ValidationError as e:
+            logger.error(str(e))
+            raise
+        except Exception as e:
+            logger.error(str(e))
+            raise

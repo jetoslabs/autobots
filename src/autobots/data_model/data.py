@@ -8,4 +8,4 @@ class MetaData(BaseModel):
 
 
 class Data(MetaData):
-    pass
+    data: Any | None = None

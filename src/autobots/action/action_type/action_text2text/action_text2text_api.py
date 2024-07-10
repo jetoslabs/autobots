@@ -7,6 +7,7 @@ from loguru import logger
 from pydantic import BaseModel, ConfigDict
 
 from src.autobots.action.action_type.abc.ActionABC import ActionABC
+from src.autobots.action.action_type.action_types import ActionType
 
 
 class APIRequest(BaseModel):
@@ -14,15 +15,15 @@ class APIRequest(BaseModel):
     url: str
     content: typing.Optional[str] = None
     data: typing.Optional[typing.Mapping[str, typing.Any]] = None
-    files: typing.Optional[typing.Mapping[str, typing.IO[bytes]]] = None
+    files: typing.Optional[typing.Mapping[str, bytes]] = None
     req_json: typing.Optional[typing.Any] = None
     params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
     headers: typing.Optional[typing.Mapping[str, str]] = None
     cookies: typing.Optional[typing.Dict[str, str]] = None
-    auth: typing.Union[typing.Tuple[typing.Union[str, bytes], typing.Union[str, bytes]]] = None
+    # auth: typing.Union[typing.Tuple[typing.Union[str, bytes]]] = None
     follow_redirects: typing.Union[bool] = False
     timeout: typing.Optional[float] = None
-    extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
+    # extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -49,6 +50,8 @@ class APIResponse(BaseModel):
 class ActionText2textAPI(
     ActionABC[APIRequest, APIRequest, APIRequest, APIInput, APIResponse]
 ):
+    type = ActionType.text2text_api_call
+
     @staticmethod
     def get_description() -> str:
         return "Make an API call"
@@ -102,17 +105,23 @@ class ActionText2textAPI(
             return e
 
     @staticmethod
-    async def create_and_run_action(action_config: APIRequest) -> APIResponse | Exception:
+    async def run_tool(action_config: APIRequest) -> APIResponse | Exception:
         try:
             config_type = ActionText2textAPI.get_config_type()
-            config_dict = ActionText2textAPI.create_config(action_config)
+            config_dict = await ActionText2textAPI.create_config(action_config)
             config = config_type.model_validate(config_dict)
 
-            action = ActionText2textAPI(config)
-            action_input = APIInput()
-            output = await action.run_action(action_input)
-            return output
+            client = httpx.AsyncClient()
+            resp = await client.request(**config.model_dump(exclude_none=True))
+            api_response = APIResponse(
+                status_code=resp.status_code,
+                headers=resp.headers,
+                content=resp.content,
+                text=resp.text,
+                # extensions=resp.extensions,
+                default_encoding=resp.default_encoding
+            )
+            return api_response
         except Exception as e:
             logger.error(str(e))
             return e
-

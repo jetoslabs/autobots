@@ -76,15 +76,20 @@ class Settings(BaseSettings):
     DISCORD_SERVER_ID: str
     DISCORD_TOKEN: str
     DISCORD_CHANNEL_ID: str
+
     USEAPI_NET_TOKEN: str
     USEAPI_NET_END_POINT_URL: str
+
     CLAID_API_KEY: str
     CLAID_SIDE_S3_BUCKET: str
     CLAID_PATH_PREFIX: str
 
     SERP_API_KEY: str
+
     OPUS_API_KEY: str
+
     CLAUDE_API_KEY: str
+
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
     API_AUTH: str = "/auth"
