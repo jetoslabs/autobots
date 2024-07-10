@@ -244,7 +244,7 @@ class MultiDataStore:
             )
         img_base64_list, image_summaries = generate_img_summaries("")
 
-        return create_multi_vector_retriever(
+        return await create_multi_vector_retriever(
         vectorstore,
         text_summaries,
         texts,
