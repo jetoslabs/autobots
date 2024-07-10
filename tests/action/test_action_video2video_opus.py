@@ -13,7 +13,7 @@ async def test_action_video2video_opus_happy_path(set_test_settings):
     
     action_config = Video2VideoReqModel()
     action_input = Video2VideoRunModel(
-       url = "https://www.youtube.com/watch?v=nJN_tHjzT9I"
+       url = "https://www.youtube.com/watch?v=hS5CfP8n_js"
     )
     action_doc = ActionDoc(
         id="1",
