@@ -185,20 +185,21 @@ async def create_multi_vector_retriever(
             for i, s in enumerate(doc_summaries)
         ]
         await retriever.vectorstore.add_documents(summary_docs)
-        retriever.docstore.mset(list(zip(doc_ids, doc_contents)))
+        return doc_ids
+        # await retriever.docstore.mset(list(zip(doc_ids, doc_contents)))
 
     # Add texts, tables, and images
     # Check that text_summaries is not empty before adding
     if text_summaries:
-        await add_documents(retriever, text_summaries, texts)
+        text_ids= await add_documents(retriever, text_summaries, texts)
     # Check that table_summaries is not empty before adding
     if table_summaries:
-        await add_documents(retriever, table_summaries, tables)
+        table_ids= await add_documents(retriever, table_summaries, tables)
     # Check that image_summaries is not empty before adding
     if image_summaries:
-        await add_documents(retriever, image_summaries, images)
+        image_ids= await add_documents(retriever, image_summaries, images)
 
-    return retriever
+    return retriever,text_ids, table_ids, image_ids
 
 
 # The vectorstore to use to index the summaries
@@ -211,6 +212,7 @@ class MultiDataStore:
         # Id for the datastore is unique identifier for the datastore
         self.id = f"{id}-{self.trace}"
         self.file_name = file_name
+        self.persist_directory="db"
        
     def hydrate(self, datastore_id: str):
         self.id = datastore_id
@@ -219,7 +221,13 @@ class MultiDataStore:
         # Get name from datastore_id
         self.name = datastore_id.replace(f"-{self.trace}", "")
         return self
-    
+
+    def _get_s3_basepath(self) -> str:
+        return f"{self._datastore_identifier()}/{self.id}"
+
+    async def _put_data(self, data: str, id: str) -> None:
+        await self.s3.put(data=data, filename=f"{self._get_s3_basepath()}/{id}")
+
     async def init(self):
         s = unstructured_client.UnstructuredClient(
             api_key_auth=SettingsProvider.sget().UNSTRUCTURED_API_KEY,
@@ -253,14 +261,14 @@ class MultiDataStore:
                 texts.append(text)
             return texts
         vectorstore = Chroma(
-            collection_name=self.id, embedding_function=OpenaiEmbeddings(client=get_openai().client)
+            collection_name=self.id, embedding_function=OpenaiEmbeddings(client=get_openai().client), persist_directory=self.persist_directory
         )
         texts_4k_token = await get_texts_4k(joined_texts)
         text_summaries, table_summaries = generate_text_summaries(
             texts_4k_token,None, summarize_texts=True
             )
         img_base64_list, image_summaries = generate_img_summaries(img_base64_list)
-        return await create_multi_vector_retriever(
+        retriever, text_ids, table_ids, image_ids = await create_multi_vector_retriever(
         vectorstore,
         text_summaries,
         texts,
@@ -269,7 +277,10 @@ class MultiDataStore:
         image_summaries,
         img_base64_list,
         )
+        for doc_id, doc_content in list(zip(text_ids, texts), zip(table_ids, tables),zip(image_ids, img_base64_list)):
+            self._put_data(doc_id, doc_content)
         
+        return retriever
         
     
 
