@@ -164,7 +164,7 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
 
     def __init__(self, action_config: ActionCreateMultiModalLlmChatWithVectorSearchOpenaiConfig):
         super().__init__(action_config)
-        self.datastore = MultiDataStore()
+        self.datastore = MultiDataStore().hydrate(datastore_id=action_config.datastore_id)
 
     # @staticmethod
     # async def update_config_with_prev_IO(

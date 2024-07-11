@@ -4,6 +4,8 @@ import re
 import uuid
 from PIL import Image
 import os
+import random
+import string
 from src.autobots.conn.chroma.chroma import Chroma, Document
 from src.autobots.conn.chroma.multi_vector import MultiVectorRetriever, BaseStore
 from src.autobots.conn.openai.openai_embeddings.openai_embeddings import OpenaiEmbeddings
@@ -56,19 +58,22 @@ def categorize_elements(raw_pdf_elements):
     """
     tables = []
     texts = []
+    img_base64_files=[]
+
     for element in raw_pdf_elements:
         # print(element)
         if element["type"] == "Image":
-            name= uuid.uuid4()
-            with open(str(name)+".jpg", 'wb') as file:
-                file.write(base64.b64decode(element["metadata"]["image_base64"]))
+            img_base64_files.append(element["metadata"]["image_base64"])
+            # name= uuid.uuid4()
+            # with open(str(name)+".jpg", 'wb') as file:
+            #     file.write(base64.b64decode(element["metadata"]["image_base64"]))
         if element["type"] == "Table":
             tables.append(element["metadata"]["text_as_html"])
         if element["type"] in ["NarrativeText",'UncategorizedText']:
             texts.append(element["text"])
 
 
-    return texts, tables
+    return texts, tables, img_base64_files
 
 
 
@@ -92,14 +97,14 @@ def image_summarize(img_base64, prompt):
     return response.choices[0].message.content.strip()
 
 
-def generate_img_summaries(path):
+def generate_img_summaries(img_base64_list):
     """
     Generate summaries and base64 encoded strings for images
     path: Path to list of .jpg files extracted by Unstructured
     """
 
     # Store base64 encoded images
-    img_base64_list = []
+    # img_base64_list = []
 
     # Store image summaries
     image_summaries = []
@@ -110,12 +115,13 @@ def generate_img_summaries(path):
     Give a concise summary of the image that is well optimized for retrieval."""
 
     # Apply to images
-    for img_file in sorted(os.listdir(path)):
-        if img_file.endswith(".jpg"):
-            img_path = os.path.join(path, img_file)
-            base64_image = encode_image(img_path)
-            img_base64_list.append(base64_image)
-            image_summaries.append(image_summarize(base64_image, prompt))
+    # for img_file in sorted(os.listdir(path)):
+    #     if img_file.endswith(".jpg"):
+            # img_path = os.path.join(path, img_file)
+            # base64_image = encode_image(img_path)
+            # img_base64_list.append(base64_image)
+    for base64_image in img_base64_list:
+        image_summaries.append(image_summarize(base64_image, prompt))
 
     return img_base64_list, image_summaries
 
@@ -200,29 +206,40 @@ async def create_multi_vector_retriever(
 
 class MultiDataStore:
     
-    async def __init__(self, file_name):
-
+    def __init__(self, id, file_name):
+        self.trace = ''.join(random.choices(string.hexdigits, k=9))
+        # Id for the datastore is unique identifier for the datastore
+        self.id = f"{id}-{self.trace}"
+        self.file_name = file_name
+       
+    def hydrate(self, datastore_id: str):
+        self.id = datastore_id
+        # Get Trace from datastore_id
+        self.trace = datastore_id.split("-")[-1]
+        # Get name from datastore_id
+        self.name = datastore_id.replace(f"-{self.trace}", "")
+        return self
+    
+    async def init(self):
         s = unstructured_client.UnstructuredClient(
             api_key_auth=SettingsProvider.sget().UNSTRUCTURED_API_KEY,
         )
-        with open(file_name, mode='rb') as file:
-            upload_file = UploadFile(filename=file_name, file=file)
+        with open(self.file_name, mode='rb') as file:
+            upload_file = UploadFile(filename=self.file_name, file=file)
             req = shared.PartitionParameters(
                 files=shared.Files(
-                        content=asyncio.run(upload_file.read()),
-                        file_name=file_name,
+                        content=await upload_file.read(),
+                        file_name=self.file_name,
                     ),
                 strategy="hi_res",
                 languages=["eng"],
                 extract_image_block_types=["Image"]
         )
-
-
         raw_pdf_elements = s.general.partition(request=req
         )
 
         # # Get text, tables
-        texts, tables = categorize_elements(raw_pdf_elements.elements)
+        texts, tables, img_base64_list = categorize_elements(raw_pdf_elements.elements)
 
         joined_texts = " ".join(texts)
 
@@ -236,14 +253,13 @@ class MultiDataStore:
                 texts.append(text)
             return texts
         vectorstore = Chroma(
-            collection_name="mm_rag_cj_blog", embedding_function=OpenaiEmbeddings(client=get_openai().client)
+            collection_name=self.id, embedding_function=OpenaiEmbeddings(client=get_openai().client)
         )
         texts_4k_token = await get_texts_4k(joined_texts)
         text_summaries, table_summaries = generate_text_summaries(
             texts_4k_token,None, summarize_texts=True
             )
-        img_base64_list, image_summaries = generate_img_summaries("")
-
+        img_base64_list, image_summaries = generate_img_summaries(img_base64_list)
         return await create_multi_vector_retriever(
         vectorstore,
         text_summaries,
@@ -252,6 +268,9 @@ class MultiDataStore:
         tables,
         image_summaries,
         img_base64_list,
-    )
+        )
+        
+        
+    
 
 

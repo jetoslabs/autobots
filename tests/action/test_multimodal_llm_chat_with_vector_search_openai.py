@@ -23,7 +23,8 @@ from openai.types.chat import ChatCompletionUserMessageParam
 async def test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_path():
     query = "Give me company names that are interesting investments based on EV / NTM and NTM rev growth. Consider EV / NTM multiples vs historical?"
     global datastore
-    datastore = await MultiDataStore(file_name="test/resources/datastore/cj/cj.pdf")
+    datastore =  MultiDataStore(file_name="tests/resources/datastore/cj/cj.pdf",id="name")
+    retriever = await datastore.init()
     chat_req = ChatReq(
         messages=[
             ChatCompletionUserMessageParam(
