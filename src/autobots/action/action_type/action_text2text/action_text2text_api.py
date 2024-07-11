@@ -16,7 +16,7 @@ class APIRequest(BaseModel):
     # content: typing.Optional[str] = None
     # data: typing.Optional[typing.Mapping[str, typing.Any]] = None
     files: typing.Optional[typing.Mapping[str, bytes]] = None
-    json: typing.Optional[typing.Any] = None
+    json: typing.Optional[str] = None
     params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
     headers: typing.Optional[typing.Mapping[str, str]] = None
     # cookies: typing.Optional[typing.Dict[str, str]] = None
