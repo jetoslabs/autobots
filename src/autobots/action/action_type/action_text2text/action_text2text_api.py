@@ -13,13 +13,13 @@ from src.autobots.action.action_type.action_types import ActionType
 class APIRequest(BaseModel):
     method: str
     url: str
-    content: typing.Optional[str] = None
-    data: typing.Optional[typing.Mapping[str, typing.Any]] = None
+    # content: typing.Optional[str] = None
+    # data: typing.Optional[typing.Mapping[str, typing.Any]] = None
     files: typing.Optional[typing.Mapping[str, bytes]] = None
-    req_json: typing.Optional[typing.Any] = None
+    json: typing.Optional[typing.Any] = None
     params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
     headers: typing.Optional[typing.Mapping[str, str]] = None
-    cookies: typing.Optional[typing.Dict[str, str]] = None
+    # cookies: typing.Optional[typing.Dict[str, str]] = None
     # auth: typing.Union[typing.Tuple[typing.Union[str, bytes]]] = None
     follow_redirects: typing.Union[bool] = False
     timeout: typing.Optional[float] = None
@@ -78,8 +78,8 @@ class ActionText2textAPI(
 
     @staticmethod
     def update_config(config: APIRequest, config_update: APIInput) -> APIRequest:
-        if config_update.data:
-            config.data = config_update.data
+        if isinstance(config_update.json, dict):
+            config.json = config_update.json
         # TODO: update config for all APIInput fields
         return config
 
