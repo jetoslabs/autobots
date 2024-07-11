@@ -117,19 +117,24 @@ class ActionText2textAPI(
     @staticmethod
     async def run_tool(action_config: APIRequest) -> APIResponse | Exception:
         try:
-            config_type = ActionText2textAPI.get_config_type()
-            config_dict = await ActionText2textAPI.create_config(action_config)
-            config = config_type.model_validate(config_dict)
+            # config_type = ActionText2textAPI.get_config_type()
+            config = await ActionText2textAPI.create_config(action_config)
+            config_dict = config.model_dump(exclude_none=True)
+
+            if config.body:
+                config_dict.pop("body")
+                config_dict["content"] = json.dumps(config.body)
+                config_dict["headers"]["Content-Type"] = "application/json"
 
             client = httpx.AsyncClient()
-            resp = await client.request(**config.model_dump(exclude_none=True))
+            resp = await client.request(**config_dict)
             api_response = APIResponse(
                 status_code=resp.status_code,
-                headers=resp.headers,
+                # headers=resp.headers,
                 content=resp.content,
-                text=resp.text,
+                # text=resp.text,
                 # extensions=resp.extensions,
-                default_encoding=resp.default_encoding
+                # default_encoding=resp.default_encoding
             )
             return api_response
         except Exception as e:
