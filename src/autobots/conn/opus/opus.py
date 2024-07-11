@@ -103,7 +103,7 @@ class Opus:
                 logger.error(f"Failed to retrieve clip. Response is empty. Status code: {response.status_code}")
                 return AppException(detail="Failed to retrieve clip. Response is empty.", http_status=response.status_code)
             logger.info("Clip details retrieved successfully:")
-            return OpusRes(url=response_data[0]['uriForExport'])
+            return OpusRes(url=response_data[0]['uriForPreview'])
         else:
             # Print an error message if the request failed
             logger.error(f"Failed to retrieve clip. Status code: {response.status_code}")
