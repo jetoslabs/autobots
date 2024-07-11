@@ -9,7 +9,7 @@ from src.autobots.action.action_type.action_types import ActionType
 
 
 @pytest.mark.asyncio
-async def test_action_text2text_api_2_happy_path(set_test_settings):
+async def test_action_text2text_api_1_happy_path(set_test_settings):
     action_config = APIRequest(
         method="GET",
         url="https://api.adviceslip.com/advice",
@@ -19,11 +19,11 @@ async def test_action_text2text_api_2_happy_path(set_test_settings):
     action_input = APIInput()
     action_output = await action.run_action(action_input)
     assert action_output.status_code == 200
-    assert action_output.text.__contains__("slip")
+    assert action_output.content.__contains__("slip")
 
 
 @pytest.mark.asyncio
-async def test_action_text2text_api_1_happy_path(set_test_settings):
+async def test_action_text2text_api_2_happy_path(set_test_settings):
     action_type = ActionType.text2text_api_call
     action = ACTION_MAP.get(action_type)
     action_input_dict = {
@@ -42,4 +42,4 @@ async def test_action_text2text_api_1_happy_path(set_test_settings):
     run_action_obj = await ActionFactory.run_action(action_doc, action_input_dict)
     run_output = action.get_output_type().model_validate(run_action_obj.output_dict)
     assert run_output.status_code == 200
-    assert run_output.text.__contains__("slip")
+    assert run_output.content.__contains__("slip")
