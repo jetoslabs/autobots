@@ -1,3 +1,4 @@
+import json
 import typing
 from typing import Type
 
@@ -15,10 +16,11 @@ class APIRequest(BaseModel):
     url: str
     # content: typing.Optional[str] = None
     # data: typing.Optional[typing.Mapping[str, typing.Any]] = None
-    files: typing.Optional[typing.Mapping[str, bytes]] = None
-    json: typing.Optional[str] = None
-    params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
     headers: typing.Optional[typing.Mapping[str, str]] = None
+    params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
+    files: typing.Optional[typing.Mapping[str, bytes]] = None
+    body: typing.Optional[typing.Dict[str, typing.Any]] = None
+    # json: typing.Optional[str] = None
     # cookies: typing.Optional[typing.Dict[str, str]] = None
     # auth: typing.Union[typing.Tuple[typing.Union[str, bytes]]] = None
     follow_redirects: typing.Union[bool] = False
@@ -35,14 +37,14 @@ class APIInput(APIRequest):
 
 class APIResponse(BaseModel):
     status_code: int
-    headers: typing.Optional[typing.Mapping[str, str]] = None
+    # headers: typing.Optional[typing.Mapping[str, str]] = None
     content: typing.Optional[str] = None
-    text: typing.Optional[str] = None
+    # text: typing.Optional[str] = None
     # stream: typing.Union[SyncByteStream, AsyncByteStream, None] = None
     # request: typing.Optional[Request] = None
-    extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
+    # extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
     # history: typing.Optional[typing.List["Response"]] = None
-    default_encoding: str = "utf-8"
+    # default_encoding: str = "utf-8"
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -77,9 +79,9 @@ class ActionText2textAPI(
         return APIResponse
 
     @staticmethod
-    def update_config(config: APIRequest, config_update: APIInput) -> APIRequest:
-        if isinstance(config_update.json, dict):
-            config.json = config_update.json
+    async def update_config(config: APIRequest, config_update: APIInput) -> APIRequest:
+        if isinstance(config_update.body, dict):
+            config.body = config_update.body
         # TODO: update config for all APIInput fields
         return config
 
@@ -88,16 +90,24 @@ class ActionText2textAPI(
 
     async def run_action(self, action_input: APIInput) -> APIResponse | Exception:
         try:
-            config = ActionText2textAPI.update_config(self.action_config, action_input)
+            config = await ActionText2textAPI.update_config(self.action_config, action_input)
+            config_dict = config.model_dump(exclude_none=True)
+
+            if config.body:
+                config_dict.pop("body")
+                config_dict["content"] = json.dumps(config.body)
+                config_dict["headers"]["Content-Type"] = "application/json"
+
             client = httpx.AsyncClient()
-            resp = await client.request(**config.model_dump(exclude_none=True))
+            # resp = await client.request(**config.model_dump(exclude_none=True))
+            resp = await client.request(**config_dict)
             api_response = APIResponse(
                 status_code=resp.status_code,
-                headers=resp.headers,
+                # headers=resp.headers,
                 content=resp.content,
-                text=resp.text,
-                extensions=resp.extensions,
-                default_encoding=resp.default_encoding
+                # text=resp.text,
+                # extensions=resp.extensions,
+                # default_encoding=resp.default_encoding
             )
             return api_response
         except Exception as e:
