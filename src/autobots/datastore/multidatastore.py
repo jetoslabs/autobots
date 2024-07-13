@@ -207,13 +207,13 @@ async def create_multi_vector_retriever(
 
 class MultiDataStore:
     
-    def __init__(self, id, file_name):
+    def __init__(self, s3, id, file_name):
         self.trace = ''.join(random.choices(string.hexdigits, k=9))
         # Id for the datastore is unique identifier for the datastore
         self.id = f"{id}-{self.trace}"
         self.file_name = file_name
         self.persist_directory="db"
-       
+        self.s3= s3
     def hydrate(self, datastore_id: str):
         self.id = datastore_id
         # Get Trace from datastore_id
