@@ -207,11 +207,10 @@ async def create_multi_vector_retriever(
 
 class MultiDataStore:
     
-    def __init__(self, s3, id, file_name):
+    def __init__(self, s3, id):
         self.trace = ''.join(random.choices(string.hexdigits, k=9))
         # Id for the datastore is unique identifier for the datastore
         self.id = f"{id}-{self.trace}"
-        self.file_name = file_name
         self.persist_directory="db"
         self.s3= s3
     def hydrate(self, datastore_id: str):
@@ -228,16 +227,16 @@ class MultiDataStore:
     async def _put_data(self, data: str, id: str) -> None:
         await self.s3.put(data=data, filename=f"{self._get_s3_basepath()}/{id}")
 
-    async def init(self):
+    async def put_data(self, filename: str):
         s = unstructured_client.UnstructuredClient(
             api_key_auth=SettingsProvider.sget().UNSTRUCTURED_API_KEY,
         )
-        with open(self.file_name, mode='rb') as file:
-            upload_file = UploadFile(filename=self.file_name, file=file)
+        with open(filename, mode='rb') as file:
+            upload_file = UploadFile(filename=filename, file=file)
             req = shared.PartitionParameters(
                 files=shared.Files(
                         content=await upload_file.read(),
-                        file_name=self.file_name,
+                        file_name=filename,
                     ),
                 strategy="hi_res",
                 languages=["eng"],
