@@ -48,38 +48,37 @@ class OpenaiChat:
             if isinstance(chat_completion, AsyncStream):
                 return chat_completion
             choice = chat_completion.choices[-1]
+            chat_req.messages.append(choice.message)
             if choice.finish_reason == "stop":
                 return chat_completion
             elif choice.finish_reason == "tool_calls":
-                function_name_for_logging = ""
+                tool_call_id = choice.message.tool_calls[0].id
+                tool_name = choice.message.tool_calls[0].function.name
+                tool_args = choice.message.tool_calls[0].function.arguments
                 try:
-                    name = choice.message.tool_calls[0].function.name
-                    function_name_for_logging = name
-                    args = choice.message.tool_calls[0].function.arguments
                     # run tool
-                    tool_output_str: str = await ToolFactory.run_tool(name, args)
+                    tool_output_str: str = await ToolFactory.run_tool(tool_name, tool_args)
                     logger.bind(
                         **LogBinder()
                         .with_app_code(AppCode.ACTION)
-                        .with_kwargs(tool=name, tool_output=tool_output_str)
+                        .with_kwargs(tool=tool_name, tool_output=tool_output_str)
                         .get_bind_dict()
                     ).debug(f"Ran tool in {OpenaiChat.__name__}")
                     # add tool call output to Messages
                     tool_output_message = ChatCompletionToolMessageParam(role="tool", content=tool_output_str,
-                                                                         tool_call_id=choice.message.tool_calls[
-                                                                             0].function.name)
+                                                                         tool_call_id=tool_call_id)
                     chat_req.messages.append(tool_output_message)
                     # await self.chat_loop(chat_req)
                 except Exception as e:
                     logger.bind(
                         **LogBinder()
                         .with_app_code(AppCode.ACTION)
-                        .with_kwargs(tool=function_name_for_logging, tool_error=str(e))
+                        .with_kwargs(tool=tool_name, tool_error=str(e))
                         .get_bind_dict()
                     ).error(str(e))
                     # add tool call error to Messages
                     tool_error_message = ChatCompletionToolMessageParam(role="tool", content=str(e),
-                                                                        tool_call_id=function_name_for_logging)
+                                                                        tool_call_id=tool_call_id)
                     chat_req.messages.append(tool_error_message)
 
     async def yield_chat_chunks(self, chat_res: AsyncStream[ChatCompletionChunk]) -> ChatCompletionChunk | None:

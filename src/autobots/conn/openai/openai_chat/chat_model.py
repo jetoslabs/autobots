@@ -5,7 +5,7 @@ import httpx
 from openai._types import Headers, Query, Body
 from openai.types import ChatModel
 from openai.types.chat import ChatCompletionMessageParam, completion_create_params, ChatCompletionToolChoiceOptionParam, \
-    ChatCompletionToolParam
+    ChatCompletionToolParam, ChatCompletionMessage
 from pydantic import BaseModel, ConfigDict
 
 
@@ -21,7 +21,7 @@ class Message(BaseModel):
 
 
 class ChatReq(BaseModel):
-    messages: List[ChatCompletionMessageParam]
+    messages: List[ChatCompletionMessageParam | ChatCompletionMessage]
     model: ChatModel = "gpt-4o"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None
