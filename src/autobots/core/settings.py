@@ -97,6 +97,7 @@ class Settings(BaseSettings):
     API_ACTION_GRAPHS_RESULTS: str = "/action_graphs_results"
     API_SCHEDULES: str = "/schedules"
     API_DATASTORE: str = "/datastore"
+    API_VECTORSTORE: str = "/vectorstore"
     API_FILES: str = "/files"
     API_OPENAI_STORAGE: str = "/openai_storage"
     API_ACTION_CHATS: str = "/action_chats"
