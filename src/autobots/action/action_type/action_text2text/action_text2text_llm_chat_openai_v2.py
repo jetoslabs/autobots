@@ -122,11 +122,18 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
 
     @staticmethod
     async def replace_action_tools_with_tools_defs(action_config: ChatReq) -> List[ChatCompletionToolParam] | None:
-        action_tools = []
+        tool_defs = []
         if action_config.tools:
+            action_tools = []
             for action_tool in action_config.tools:
                 if isinstance(action_tool, str):
                     if action_tool in TOOLS_MAP:
                         action_tools.append(action_tool)
-            tool_defs = await ToolFactory.get_chat_completion_tool_param(action_tools)
+                if isinstance(action_tool, dict):
+                    tool_defs.append(action_tool)
+            new_tool_defs = await ToolFactory.get_chat_completion_tool_param(action_tools)
+            if new_tool_defs:
+                tool_defs += new_tool_defs
+            if len(tool_defs) == 0:
+                return None
             return tool_defs
