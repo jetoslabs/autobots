@@ -15,7 +15,6 @@ async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settin
     tool_defs = await ToolFactory.get_chat_completion_tool_param(tools)
     assert tool_defs is not None
 
-
     action_config = ChatReq(
         messages=[
             ChatCompletionUserMessageParam(role="user", content="Be a helpful assistant")
@@ -46,4 +45,5 @@ async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settin
     assert action_run_obj_2.output_dict
     assert len(action_run_obj_2.config_dict.get("messages")) > 3
     assert action_run_obj_2.config_dict.get("messages")[1].get("content") == action_run_obj_1.input_dict.get("text")
-    assert action_run_obj_1.output_dict.get("texts")[0].get("text") in action_run_obj_2.config_dict.get("messages")[-2].get("content")
+    assert action_run_obj_1.output_dict.get("texts")[0].get("text") in action_run_obj_2.config_dict.get("messages")[
+        -3].get("content")
