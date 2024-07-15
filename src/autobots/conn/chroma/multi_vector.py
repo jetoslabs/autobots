@@ -161,13 +161,10 @@ class MultiVectorRetriever():
         for d in sub_docs:
             if self.id_key in d.metadata and d.metadata[self.id_key] not in ids:
                 ids.append(d.metadata[self.id_key])
-        result =[]
-        for id in ids:
-            data = await self.s3.get(f"{self._get_s3_basepath()}/{id}")
-            result.append(data)
+        
         # docs = self.docstore.mget(ids)
         # return [d for d in docs if d is not None]
-        return result
+        return ids
 
     async def _aget_relevant_documents(
         self, query: str) -> List[Document]:

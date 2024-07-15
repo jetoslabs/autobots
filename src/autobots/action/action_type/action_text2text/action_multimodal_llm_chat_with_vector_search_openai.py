@@ -89,11 +89,11 @@ def img_prompt_func(data_dict):
     """
     Join the context into a single string
     """
-    formatted_texts = "\n".join(data_dict["context"]["texts"])
+    formatted_texts = "\n".join(data_dict["texts"])
     messages = []
 
     # Adding image(s) to the messages if present
-    if data_dict["context"]["images"]:
+    if data_dict["images"]:
         for image in data_dict["context"]["images"]:
             image_message = {
                 "type": "image_url",
@@ -164,7 +164,7 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
 
     def __init__(self, action_config: ActionCreateMultiModalLlmChatWithVectorSearchOpenaiConfig):
         super().__init__(action_config)
-        self.datastore = MultiDataStore().hydrate(datastore_id=action_config.datastore_id)
+        self.datastore = MultiDataStore(s3=get_s3()).hydrate(datastore_id=action_config.datastore_id)
 
     # @staticmethod
     # async def update_config_with_prev_IO(
@@ -206,7 +206,7 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
     async def run_action(self, action_input: TextObj) -> TextObjs | None:
         # text_objs = TextObjs(texts=[])
         # vector search
-        search_results = await self.datastore._get_relevant_documents(action_input.text)
+        search_results = await self.datastore.search(action_input.text)
         client = OpenAI(api_key=SettingsProvider.sget().OPENAI_API_KEY)
 
         # if len(search_results) == 0:
@@ -216,7 +216,11 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
         #     context = f"{context}{result}\n"
         # LM chat
         processed_context = split_image_text_types(search_results)
-        prompt = img_prompt_func(processed_context, action_input.text)
+        processed_context['question']=action_input.text
+        prompt = img_prompt_func(processed_context)
+        prompt = [
+            {"role": "user", "content": prompt}
+        ]
         response = client.chat.completions.create(model="gpt-4-vision-preview",
             messages=prompt)
         # message = ChatCompletionUserMessageParam(role=Role.user.value, content=f"{context}Question: {action_input.text}")

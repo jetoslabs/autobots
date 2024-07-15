@@ -156,7 +156,7 @@ def generate_text_summaries(texts, tables, summarize_texts=False):
 
     # Apply to tables if tables are provided
     if tables:
-        table_summaries = summarize_texts(tables)
+        table_summaries = summarize_text(tables)
 
     return text_summaries, table_summaries
 
@@ -187,7 +187,7 @@ async def create_multi_vector_retriever(
         await retriever.vectorstore.add_documents(summary_docs)
         return doc_ids
         # await retriever.docstore.mset(list(zip(doc_ids, doc_contents)))
-
+    text_ids, table_ids, image_ids = [],[],[]
     # Add texts, tables, and images
     # Check that text_summaries is not empty before adding
     if text_summaries:
@@ -207,20 +207,26 @@ async def create_multi_vector_retriever(
 
 class MultiDataStore:
     
-    def __init__(self, s3, id):
+    def __init__(self, s3):
+        
+        self.persist_directory="db"
+        self.s3= s3
+
+    def init(self, id):
         self.trace = ''.join(random.choices(string.hexdigits, k=9))
         # Id for the datastore is unique identifier for the datastore
         self.id = f"{id}-{self.trace}"
-        self.persist_directory="db"
-        self.s3= s3
+        return self
     def hydrate(self, datastore_id: str):
         self.id = datastore_id
         # Get Trace from datastore_id
         self.trace = datastore_id.split("-")[-1]
         # Get name from datastore_id
-        self.name = datastore_id.replace(f"-{self.trace}", "")
         return self
-
+    
+    def _datastore_identifier(self) -> str:
+        return SettingsProvider.sget().DATASTORE_IDENTIFIER
+        
     def _get_s3_basepath(self) -> str:
         return f"{self._datastore_identifier()}/{self.id}"
 
@@ -276,11 +282,31 @@ class MultiDataStore:
         image_summaries,
         img_base64_list,
         )
-        for doc_id, doc_content in list(zip(text_ids, texts), zip(table_ids, tables),zip(image_ids, img_base64_list)):
-            self._put_data(doc_id, doc_content)
+        for doc_id, doc_content in list(zip(text_ids + table_ids + image_ids, texts + tables + img_base64_list)):
+           await self._put_data(doc_content, doc_id)
         
         return retriever
-        
+    async def search(self, query: str):
+        store= BaseStore()
+    # Initialize the storage layer
+        id_key = "doc_id"
+        vectorstore = Chroma(
+            collection_name=self.id, embedding_function=OpenaiEmbeddings(client=get_openai().client), persist_directory=self.persist_directory
+        )
+        retriever = MultiVectorRetriever(
+        vectorstore=vectorstore,
+        docstore=store,
+        id_key=id_key,
+    )
+        ids = await retriever._get_relevant_documents(query)
+        result =[]
+        for id in ids:
+            data = await self.s3.get(f"{self._get_s3_basepath()}/{id}")
+            result.append(data)
+        return result
+
+
+    
     
 
 
