@@ -9,6 +9,14 @@ class LogBinder:
     def __init__(self):
         self.bind_dict["app"] = "autobots"
 
+    def with_dict(self, obj: Dict[str, Any]):
+        self.bind_dict.update(**obj)
+        return self
+
+    def with_obj(self, obj: Any):
+        self.bind_dict.update(**obj)
+        return self
+
     def with_kwargs(self, **kwargs):
         self.bind_dict.update(kwargs)
         return self
@@ -31,6 +39,14 @@ class LogBinder:
     
     def with_action_run_id(self, action_run_id: str):
         self.bind_dict["action_run_id"] = action_run_id
+        return self
+
+    def with_user_id(self, user_id: str):
+        self.bind_dict["user_id"] = user_id
+        return self
+
+    def with_trace_id(self, trace_id: str):
+        self.bind_dict["trace_id"] = trace_id
         return self
 
     def get_bind_dict(self) -> Dict[str, Any]:
