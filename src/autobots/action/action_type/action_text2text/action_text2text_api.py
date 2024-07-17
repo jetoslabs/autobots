@@ -80,9 +80,11 @@ class ActionText2textAPI(
 
     @staticmethod
     async def update_config(config: APIRequest, config_update: APIInput) -> APIRequest:
-        if config_update:
-            config = APIRequest(**config_update.model_dump(exclude_none=True))
-        return config
+        config_dict = config.model_dump(exclude_none=True)
+        config_update_dict = config_update.model_dump(exclude_none=True)
+        updated_config_dict = config_dict | config_update_dict
+        updated_config = APIRequest.model_validate(updated_config_dict)
+        return updated_config
 
     def __init__(self, action_config: APIRequest):
         super().__init__(action_config)
