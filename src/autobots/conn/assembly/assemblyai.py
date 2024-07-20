@@ -2,6 +2,8 @@ import assemblyai as aai
 from src.autobots.core.settings import Settings, SettingsProvider
 from functools import lru_cache
 from pydantic import BaseModel, HttpUrl
+from typing import Optional
+
 
 class TranscriptionReq(BaseModel):
     file_url: HttpUrl | None = None

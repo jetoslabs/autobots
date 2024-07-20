@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Union
 from loguru import logger
 from pydantic import HttpUrl, ValidationError, BaseModel
 
@@ -6,14 +6,14 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.assembly.assemblyai import get_assemblyai
-from src.autobots.conn.assembly.assemblyai import TranscriptionReq, Transcription
+from src.autobots.conn.assembly.assemblyai import TranscriptionReq
 
 class AudioRes(BaseModel):
     url: str
 
 
 class ActionAudio2TextTranscriptionAssemblyai(
-    ActionABC[TranscriptionReq, TranscriptionReq, TranscriptionReq, AudioRes, Transcription]
+    ActionABC[TranscriptionReq, TranscriptionReq, TranscriptionReq, AudioRes, str]
 ):
     type = ActionType.audio2text_transcription_assemblyai
 
@@ -35,19 +35,19 @@ class ActionAudio2TextTranscriptionAssemblyai(
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        return Transcription
+        return str
 
     def __init__(self, action_config: TranscriptionReq):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: AudioRes) -> Transcription | None:
+    async def run_action(self, action_input: AudioRes) -> str | None:
         try:
             if self.action_config.file_url is None and action_input.url is None:
                 return None
             if action_input.url is not None:
                 self.action_config.file_url = HttpUrl(action_input.url)
 
-            transcription = await get_assemblyai().transcribe(self.action_config)
+            transcription = await get_assemblyai().transcribe(self.action_config.file_url)
             return transcription
         except ValidationError as e:
             logger.error(str(e))
