@@ -47,7 +47,9 @@ class ActionAudio2TextTranscriptionAssemblyai(
             if action_input.url is not None:
                 self.action_config.file_url = HttpUrl(action_input.url)
 
-            transcription = await get_assemblyai().transcribe(self.action_config.file_url)
+            # Convert the URL to a string before passing it to transcribe
+            file_url_str = str(self.action_config.file_url)
+            transcription = await get_assemblyai().transcribe(file_url_str)
             return transcription
         except ValidationError as e:
             logger.error(str(e))

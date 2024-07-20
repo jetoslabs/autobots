@@ -1,3 +1,4 @@
+import asyncio
 import assemblyai as aai
 from src.autobots.core.settings import Settings, SettingsProvider
 from functools import lru_cache
@@ -13,15 +14,15 @@ class AssemblyAIClient:
         aai.settings.api_key = api_key
         self.transcriber = aai.Transcriber()
 
-    def transcribe(self, audio_url: str) -> Optional[str]:
+    async def transcribe(self, audio_url: str) -> Optional[str]:
         """
-        Transcribe audio from a given URL using AssemblyAI.
+        Asynchronously transcribe audio from a given URL using AssemblyAI.
         
         :param audio_url: URL of the audio file to transcribe
         :return: Transcribed text or None if transcription failed
         """
         config = aai.TranscriptionConfig(speaker_labels=True)
-        transcript = self.transcriber.transcribe(audio_url, config)
+        transcript = await asyncio.to_thread(self.transcriber.transcribe, audio_url, config)
         return transcript.text if transcript else None
 
 @lru_cache
