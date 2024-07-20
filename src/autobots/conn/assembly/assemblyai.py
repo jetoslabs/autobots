@@ -3,7 +3,11 @@ import requests
 import time
 from typing import Optional
 from functools import lru_cache
+from pydantic import BaseModel, HttpUrl
 
+class TranscriptionReq(BaseModel):
+    file_url: HttpUrl | None = None
+    
 class AssemblyAIClient:
     BASE_URL = "https://api.assemblyai.com/v2"
 
@@ -58,7 +62,7 @@ class AssemblyAIClient:
         
         return result["status"], result.get("text")
 @lru_cache
-def get_assembly_ai(settings: Settings = SettingsProvider.sget()) -> AssemblyAIClient:
+def get_assemblyai(settings: Settings = SettingsProvider.sget()) -> AssemblyAIClient:
     """
     Create and return an instance of AssemblyAIClient using the API key from the settings provider.
     
