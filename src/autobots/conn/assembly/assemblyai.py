@@ -1,22 +1,15 @@
+import assemblyai as aai
 from src.autobots.core.settings import Settings, SettingsProvider
-import requests
-import time
-from typing import Optional
 from functools import lru_cache
 from pydantic import BaseModel, HttpUrl
 
 class TranscriptionReq(BaseModel):
     file_url: HttpUrl | None = None
-    
-class AssemblyAIClient:
-    BASE_URL = "https://api.assemblyai.com/v2"
 
+class AssemblyAIClient:
     def __init__(self, api_key: str):
-        self.api_key = api_key
-        self.headers = {
-            "Authorization": api_key,
-            "Content-Type": "application/json"
-        }
+        aai.settings.api_key = api_key
+        self.transcriber = aai.Transcriber()
 
     def transcribe(self, audio_url: str) -> Optional[str]:
         """
@@ -25,42 +18,10 @@ class AssemblyAIClient:
         :param audio_url: URL of the audio file to transcribe
         :return: Transcribed text or None if transcription failed
         """
-        # Create transcription request
-        response = requests.post(
-            f"{self.BASE_URL}/transcript",
-            json={"audio_url": audio_url},
-            headers=self.headers
-        )
-        response.raise_for_status()
-        transcript_id = response.json()["id"]
+        config = aai.TranscriptionConfig(speaker_labels=True)
+        transcript = self.transcriber.transcribe(audio_url, config)
+        return transcript.text if transcript else None
 
-        # Poll for transcription result
-        while True:
-            status, text = self._get_transcription_status(transcript_id)
-            
-            if status == "completed":
-                return text
-            elif status == "error":
-                return None
-            
-            # Wait before polling again
-            time.sleep(5)
-
-    def _get_transcription_status(self, transcript_id: str) -> tuple[str, Optional[str]]:
-        """
-        Get the status of a transcription job.
-        
-        :param transcript_id: ID of the transcription job
-        :return: Tuple of (status, transcribed_text)
-        """
-        response = requests.get(
-            f"{self.BASE_URL}/transcript/{transcript_id}",
-            headers=self.headers
-        )
-        response.raise_for_status()
-        result = response.json()
-        
-        return result["status"], result.get("text")
 @lru_cache
 def get_assemblyai(settings: Settings = SettingsProvider.sget()) -> AssemblyAIClient:
     """
