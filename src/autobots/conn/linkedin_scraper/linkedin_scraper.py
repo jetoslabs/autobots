@@ -2,31 +2,12 @@ import asyncio
 from typing import List, Dict
 from loguru import logger
 import requests
+from src.autobots.core.settings import Settings, SettingsProvider
+settings = SettingsProvider.sget()
 
 scraping_url ="https://api.scrapingdog.com/linkedin"
-params= {"api_key": "","type":"profile" ,"linkId":"kefalu"}
-response= requests.get(scraping_url, params=params)
-print( response.json())
 
-
-
-# kaspr_url = "https://api.developers.kaspr.io/profile/linkedin"
-# response= requests.get(kaspr_url, params=params)
-# print( response.json())
-
-# import requests
-# import json
-
-
-# apiEndPoint = "http://api.scraping-bot.io/scrape/data-scraper"
-
-# payload = json.dumps({
-#   "scraper": "linkedinCompanyProfile",
-#   "url": "https://www.linkedin.com/in/khushal-sethi-436109151/"
-# })
-# headers = {
-#   'Content-Type': "application/json"
-# }
-
-# response = requests.request("POST", apiEndPoint, data=payload, auth=(username,apiKey), headers=headers)
-# print(response)
+def get_linkedin_scrape(linkedin_id):
+    params= {"api_key": settings.SCRAPING_API_KEY,"type":"profile" ,"linkId":linkedin_id}
+    response= requests.get(scraping_url, params=params)
+    return response.json()
