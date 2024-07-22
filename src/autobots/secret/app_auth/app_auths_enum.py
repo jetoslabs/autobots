@@ -9,6 +9,7 @@ class ExtendedEnum(Enum):
 
 
 class APP_AUTHS(ExtendedEnum):
+    jira = "jira"
     slack = "slack"
     zoho = "zoho"
     zendesk = "zendesk"
