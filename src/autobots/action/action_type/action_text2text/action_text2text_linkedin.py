@@ -16,7 +16,7 @@ class LinkedInRes(BaseModel):
 class ActionLinkedInScrape(
     ActionABC[LinkedInReq, LinkedInReq, LinkedInReq, LinkedInRes, Dict[str, Any]]
 ):
-    type = ActionType.action_linkedin
+    type = ActionType.action_text2text_linkedin
 
     @staticmethod
     def get_config_create_type() -> Type[ActionConfigCreateType]:
