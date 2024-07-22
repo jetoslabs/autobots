@@ -90,7 +90,7 @@ class Settings(BaseSettings):
     OPUS_API_KEY: str
 
     CLAUDE_API_KEY: str
-    SCRAPING_API_KEY: str
+    LINKEDIN_SCRAPING_API_KEY: str
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
     API_AUTH: str = "/auth"
