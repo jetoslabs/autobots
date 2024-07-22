@@ -1,6 +1,6 @@
 import pytest
 
-from src.autobots.action.action_type.action_linkedin.action_linkedin import LinkedInReq, ActionLinkedInScrape
+from src.autobots.action.action_type.action_text2text.action_text2text_linkedin import LinkedInReq, ActionLinkedInScrape
 import asyncio
 
 @pytest.mark.asyncio
