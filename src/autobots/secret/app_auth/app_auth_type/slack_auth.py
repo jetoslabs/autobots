@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from src.autobots.conn.slack.slack import Slack
+from src.autobots.conn.only_auth.slack.slack import Slack
 from src.autobots.data_model.context import Context
 from src.autobots.secret.app_auth.app_auth_abc import AppAuthABC
 from src.autobots.secret.app_auth.app_auth_model import AppAuthSecret, AuthData

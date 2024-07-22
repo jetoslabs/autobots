@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from pydantic import HttpUrl
 from retry import retry
 
-from src.autobots.conn.zoho.zoho_model import ZohoTokenGenerateResponse, ZohoTokenRefreshResponse, \
+from src.autobots.conn.only_auth.zoho.zoho_model import ZohoTokenGenerateResponse, ZohoTokenRefreshResponse, \
     ZohoTokenRefreshRequest, ZohoTokenGenerateRequest
 
 

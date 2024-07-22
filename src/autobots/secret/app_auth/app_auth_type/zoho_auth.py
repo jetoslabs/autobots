@@ -1,7 +1,7 @@
 from typing import Dict, Literal
 
-from src.autobots.conn.zoho.zoho import Zoho
-from src.autobots.conn.zoho.zoho_model import ZohoTokenRefreshRequest
+from src.autobots.conn.only_auth.zoho.zoho import Zoho
+from src.autobots.conn.only_auth.zoho.zoho_model import ZohoTokenRefreshRequest
 from src.autobots.data_model.context import Context
 from src.autobots.secret.app_auth.app_auth_abc import AppAuthABC
 from src.autobots.secret.app_auth.app_auth_model import AppAuthSecret, AuthData
