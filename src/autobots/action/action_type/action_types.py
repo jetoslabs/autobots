@@ -46,8 +46,11 @@ class ActionType(str, Enum):
     # audio2text
     audio2text_transcription_openai = "audio2text_transcription_openai"
     audio2text_translation_openai = "audio2text_translation_openai"
-
+    audio2text_transcription_assemblyai = "audio2text_transcription_assemblyai"
+    #linkedin
+    action_text2text_linkedin = "action_text2text_linkedin"
     # mock
     mock_action = "mock_action"
+    
 
 

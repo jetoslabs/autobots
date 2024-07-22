@@ -85,10 +85,11 @@ class Settings(BaseSettings):
     CLAID_PATH_PREFIX: str
 
     SERP_API_KEY: str
-
+    ASSEMBLYAI_API_KEY: str
     OPUS_API_KEY: str
 
     CLAUDE_API_KEY: str
+    LINKEDIN_SCRAPING_API_KEY: str
 
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
@@ -102,6 +103,7 @@ class Settings(BaseSettings):
     API_ACTION_GRAPHS_RESULTS: str = "/action_graphs_results"
     API_SCHEDULES: str = "/schedules"
     API_DATASTORE: str = "/datastore"
+    API_VECTORSTORE: str = "/vectorstore"
     API_FILES: str = "/files"
     API_OPENAI_STORAGE: str = "/openai_storage"
     API_ACTION_CHATS: str = "/action_chats"
