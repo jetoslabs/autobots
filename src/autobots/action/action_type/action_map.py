@@ -40,6 +40,7 @@ from src.autobots.action.action_type.action_text2video.action_text2video_search_
 from src.autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
 from src.autobots.action.action_type.action_video2video.action_video2video_opus import ActionVideo2VideoOpus
+from src.autobots.action.action_type.action_linkedin.action_linkedin import ActionLinkedInScrape
 
 from src.autobots.action.action_type.action_types import ActionType
 
@@ -80,6 +81,8 @@ ACTION_MAP = {
     ActionType.audio2text_transcription_assemblyai: ActionAudio2TextTranscriptionAssemblyai,
     #video2video
     ActionType.video2video_opus: ActionVideo2VideoOpus,
+    ActionType.action_linkedin: ActionLinkedInScrape,
     # mock
-    ActionType.mock_action: MockAction
+    ActionType.mock_action: MockAction,
+
 }
