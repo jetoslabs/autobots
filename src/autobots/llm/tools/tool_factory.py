@@ -25,7 +25,7 @@ class ToolFactory:
             try:
                 action = TOOLS_MAP.get(tool_name)
                 func_def = await OpenAIFunctionDefinitionGen.get_function_tool_param(
-                    action.create_and_run_action, action.get_description()
+                    action.run_tool, action.get_description()
                 )
                 func_def.get("function")["name"] = tool_name
                 func_defs.append(func_def)
@@ -40,12 +40,12 @@ class ToolFactory:
             try:
                 action = TOOLS_MAP.get(tool_name)
                 func_def = await OpenAIFunctionDefinitionGen.get_chat_completion_tool_param(
-                    action.create_and_run_action, action.get_description()
+                    action.run_tool, action.get_description()
                 )
                 func_def.get("function")["name"] = tool_name
                 func_defs.append(func_def)
             except Exception as e:
-                logger.error(str(e))
+                logger.bind(tool_name=tool_name).error(str(e))
         return func_defs if len(func_defs) > 0 else None
 
     @staticmethod
@@ -54,7 +54,7 @@ class ToolFactory:
         try:
             action = TOOLS_MAP.get(tool_name)
             config = action.get_config_type().model_validate(json.loads(tool_args))
-            output = await action.create_and_run_action(config)
+            output = await action.run_tool(config)
             output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
             tool_output = output_str
         except Exception as e:

@@ -63,7 +63,7 @@ async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_p
         action_run_obj_1 = await ActionFactory.run_action(action_doc, action_input)
         # On Action run: for every run we add context input
         assert action_run_obj_1.output_dict
-        assert len(action_run_obj_1.config_dict.get("chat_req").get("messages")) == 2
+        assert len(action_run_obj_1.config_dict.get("chat_req").get("messages")) == 3
 
         action_doc.config = action_run_obj_1.config_dict
         action_doc.input = action_run_obj_1.input_dict
@@ -74,12 +74,12 @@ async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_p
         action_run_obj_2 = await ActionFactory.run_action(action_doc, action_input)
         # On Action run: for every run we dont add context input
         assert action_run_obj_2.output_dict
-        assert len(action_run_obj_2.config_dict.get("chat_req").get("messages")) == 5
+        assert len(action_run_obj_2.config_dict.get("chat_req").get("messages")) == 7
         #
-        assert (action_run_obj_2.config_dict.get("chat_req").get("messages")[2].get("content") ==
-                action_run_obj_1.input_dict.get("text"))
+        assert (action_run_obj_2.config_dict.get("chat_req").get("messages")[3].get("content") ==
+               action_run_obj_1.input_dict.get("text"))
         assert action_run_obj_1.output_dict.get("texts")[0].get("text") in \
                action_run_obj_2.config_dict.get("chat_req").get("messages")[
-                   3].get("content")
+                   2].get("content")
     finally:
         await datastore.empty_and_close()

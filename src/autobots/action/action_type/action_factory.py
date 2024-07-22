@@ -113,7 +113,7 @@ class ActionFactory:
             raise
 
     @staticmethod
-    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> RunActionObj:
+    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> RunActionObj | Exception:
         try:
             action = ACTION_MAP.get(action_doc.type)
             if not action:
@@ -124,6 +124,9 @@ class ActionFactory:
             updated_config = await action.update_config_with_prev_results(config, prev_results)
             input = action.get_input_type().model_validate(action_input_dict)
             output = await action(updated_config).run_action(input)
+
+            if isinstance(output, Exception):
+                return output
 
             return RunActionObj(
                 config_dict=updated_config.model_dump(exclude_none=True),

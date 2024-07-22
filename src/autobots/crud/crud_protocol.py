@@ -3,7 +3,7 @@ from typing import Protocol, TypeVar, List, Any, Type
 from motor.motor_asyncio import AsyncIOMotorCollection
 from pydantic import BaseModel, ConfigDict
 
-from src.autobots.data_model.context import Context
+from src.autobots.data_model.context import ContextData
 
 DataType = TypeVar("DataType", bound=BaseModel)
 # LiteDataType is minimal version of DocType, used in listing. Takes less memory.
@@ -20,9 +20,8 @@ class FindPageData(BaseModel):
     offset: int
 
 
-class CrudBaseData(BaseModel):
-    ctx: Context
-    data_source: AsyncIOMotorCollection
+class CrudBaseData(ContextData):
+    data_source: AsyncIOMotorCollection #TODO add more sources like sql, s3, https
     data_type: Type[DataType]
     lite_data_type: Type[LiteDataType]
 

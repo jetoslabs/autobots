@@ -5,10 +5,12 @@ from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssi
     ChatCompletionToolParam
 from pydantic import ValidationError
 
+from src.autobots.exception.app_exception import AppException
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
 from src.autobots.action.action.action_doc_model import ActionResult
-from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
+from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, \
+    ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
@@ -83,7 +85,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
-            tool_defs = await self.replace_action_tools_with_tools_defs()
+            tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(self.action_config)
             self.action_config.tools = tool_defs
 
             if action_input and action_input.text != "":
@@ -102,13 +104,36 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
         except ValidationError as e:
             logger.error(str(e))
 
-    async def replace_action_tools_with_tools_defs(self) -> List[ChatCompletionToolParam] | None:
-        action_tools = []
-        if self.action_config.tools:
-            for action_tool in self.action_config.tools:
+    @staticmethod
+    async def run_tool(action_config: ChatReq) -> TextObjs | Exception:
+        text_objs = TextObjs(texts=[])
+        try:
+            tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(action_config)
+            action_config.tools = tool_defs
+            chat_res = await get_openai().openai_chat.chat(chat_req=action_config)
+            if not chat_res:
+                raise AppException(detail="Cannot run LLM", http_status=500)
+            for choice in chat_res.choices:
+                text_objs.texts.append(TextObj(text=choice.message.content))
+            return text_objs
+        except Exception as e:
+            logger.error(str(e))
+            return e
+
+    @staticmethod
+    async def replace_action_tools_with_tools_defs(action_config: ChatReq) -> List[ChatCompletionToolParam] | None:
+        tool_defs = []
+        if action_config.tools:
+            action_tools = []
+            for action_tool in action_config.tools:
                 if isinstance(action_tool, str):
                     if action_tool in TOOLS_MAP:
                         action_tools.append(action_tool)
-            tool_defs = await ToolFactory.get_chat_completion_tool_param(action_tools)
+                if isinstance(action_tool, dict):
+                    tool_defs.append(action_tool)
+            new_tool_defs = await ToolFactory.get_chat_completion_tool_param(action_tools)
+            if new_tool_defs:
+                tool_defs += new_tool_defs
+            if len(tool_defs) == 0:
+                return None
             return tool_defs
-

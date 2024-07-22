@@ -19,7 +19,7 @@ class ActionMultimodalGoogleSearch(
         ActionMultimodalGoogleSearchOutput
     ]
 ):
-    type = ActionType.multimodal_google_search
+    type = ActionType.multimodal_google_search  # TODO: add type in ActionABC
 
     @staticmethod
     def get_description() -> str:
@@ -59,7 +59,7 @@ class ActionMultimodalGoogleSearch(
         return result_or_exception
 
     @staticmethod
-    async def create_and_run_action(
+    async def run_tool(
             action_config: ActionMultimodalGoogleSearchConfig
     ) -> ActionMultimodalGoogleSearchOutput:
         action = ActionMultimodalGoogleSearch(action_config)

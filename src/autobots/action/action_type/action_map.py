@@ -23,6 +23,7 @@ from src.autobots.action.action_type.action_text2img.action_text2img_midjourney_
     ActionText2ImgMidjourneyButton
 from src.autobots.action.action_type.action_text2img.action_text2img_search_image import ActionText2ImgSearchImage
 from src.autobots.action.action_type.action_text2img.action_text2img_stable_diffusion import ActionText2ImgStableDiffusion
+from src.autobots.action.action_type.action_text2text.action_text2text_api import ActionText2textAPI
 from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper.action_text2text_io_mapper import \
     ActionText2TextIOMapper
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_openai_v2 import \
@@ -31,7 +32,7 @@ from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_
     ActionText2TextLlmChatclaude
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
-from src.autobots.action.action_type.action_text2text.action_multimodal_llm_chat_with_vector_search_openai import ActionMultiModalLlmChatWithVectorSearchOpenai
+# from src.autobots.action.action_type.action_text2text.action_multimodal_llm_chat_with_vector_search_openai import ActionMultiModalLlmChatWithVectorSearchOpenai
 from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
 from src.autobots.action.action_type.action_text2text.action_text2text_search_map import ActionText2TextSearchMaps
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
@@ -52,12 +53,14 @@ ACTION_MAP = {
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
     ActionType.text2text_llm_chat_claude: ActionText2TextLlmChatclaude,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
-    ActionType.multimodal_llm_chat_with_vector_search_openai: ActionMultiModalLlmChatWithVectorSearchOpenai,
+    # ActionType.multimodal_llm_chat_with_vector_search_openai: ActionMultiModalLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
     ActionType.text2text_search_maps: ActionText2TextSearchMaps,
     ActionType.text2text_io_mapper: ActionText2TextIOMapper,
     ActionType.text2text_user_input: ActionText2textUserInput,
+    ActionType.text2text_api_call: ActionText2textAPI,
+
     # text2img
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,
     ActionType.text2img_stable_diffusion: ActionText2ImgStableDiffusion,

@@ -52,14 +52,16 @@ class ActionVideo2VideoOpus(
         if action_input.url:
             self.action_config.url = action_input.url
         opus = get_opus_video()
-        id = opus.create_clip(self.action_config)
+        id_or_err = opus.create_clip(self.action_config)
+        if isinstance(id_or_err, Exception):
+            return id_or_err
         start_time = time.time()
         total_run_time = 5 * 60
         interval = 10
 
         while (time.time() - start_time) < total_run_time:
-            if opus.query_clip(id)['stage']=='COMPLETED':
+            if opus.query_clip(id_or_err)['stage'] == 'COMPLETED':
                 break
         # Wait for the specified interval before the next iteration
-            asyncio.sleep(interval)
-        return opus.get_result_clip(id)
+            await asyncio.sleep(interval)
+        return opus.get_result_clip(id_or_err)

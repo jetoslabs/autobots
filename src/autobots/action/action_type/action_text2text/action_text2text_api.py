@@ -1,3 +1,4 @@
+import json
 import typing
 from typing import Type
 
@@ -7,22 +8,24 @@ from loguru import logger
 from pydantic import BaseModel, ConfigDict
 
 from src.autobots.action.action_type.abc.ActionABC import ActionABC
+from src.autobots.action.action_type.action_types import ActionType
 
 
 class APIRequest(BaseModel):
     method: str
     url: str
-    content: typing.Optional[str] = None
-    data: typing.Optional[typing.Mapping[str, typing.Any]] = None
-    files: typing.Optional[typing.Mapping[str, typing.IO[bytes]]] = None
-    req_json: typing.Optional[typing.Any] = None
-    params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
+    # content: typing.Optional[str] = None
+    # data: typing.Optional[typing.Mapping[str, typing.Any]] = None
     headers: typing.Optional[typing.Mapping[str, str]] = None
-    cookies: typing.Optional[typing.Dict[str, str]] = None
-    auth: typing.Union[typing.Tuple[typing.Union[str, bytes], typing.Union[str, bytes]]] = None
+    params: typing.Optional[typing.Mapping[str, typing.Union[PrimitiveData]]] = None
+    files: typing.Optional[typing.Mapping[str, bytes]] = None
+    body: typing.Optional[typing.Dict[str, typing.Any]] = None
+    # json: typing.Optional[str] = None
+    # cookies: typing.Optional[typing.Dict[str, str]] = None
+    # auth: typing.Union[typing.Tuple[typing.Union[str, bytes]]] = None
     follow_redirects: typing.Union[bool] = False
     timeout: typing.Optional[float] = None
-    extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
+    # extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -34,14 +37,14 @@ class APIInput(APIRequest):
 
 class APIResponse(BaseModel):
     status_code: int
-    headers: typing.Optional[typing.Mapping[str, str]] = None
+    # headers: typing.Optional[typing.Mapping[str, str]] = None
     content: typing.Optional[str] = None
-    text: typing.Optional[str] = None
+    # text: typing.Optional[str] = None
     # stream: typing.Union[SyncByteStream, AsyncByteStream, None] = None
     # request: typing.Optional[Request] = None
-    extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
+    # extensions: typing.Optional[typing.MutableMapping[str, typing.Any]] = None
     # history: typing.Optional[typing.List["Response"]] = None
-    default_encoding: str = "utf-8"
+    # default_encoding: str = "utf-8"
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -49,6 +52,8 @@ class APIResponse(BaseModel):
 class ActionText2textAPI(
     ActionABC[APIRequest, APIRequest, APIRequest, APIInput, APIResponse]
 ):
+    type = ActionType.text2text_api_call
+
     @staticmethod
     def get_description() -> str:
         return "Make an API call"
@@ -74,9 +79,9 @@ class ActionText2textAPI(
         return APIResponse
 
     @staticmethod
-    def update_config(config: APIRequest, config_update: APIInput) -> APIRequest:
-        if config_update.data:
-            config.data = config_update.data
+    async def update_config(config: APIRequest, config_update: APIInput) -> APIRequest:
+        if isinstance(config_update.body, dict):
+            config.body = config_update.body
         # TODO: update config for all APIInput fields
         return config
 
@@ -85,16 +90,24 @@ class ActionText2textAPI(
 
     async def run_action(self, action_input: APIInput) -> APIResponse | Exception:
         try:
-            config = ActionText2textAPI.update_config(self.action_config, action_input)
+            config = await ActionText2textAPI.update_config(self.action_config, action_input)
+            config_dict = config.model_dump(exclude_none=True)
+
+            if config.body:
+                config_dict.pop("body")
+                config_dict["content"] = json.dumps(config.body)
+                config_dict["headers"]["Content-Type"] = "application/json"
+
             client = httpx.AsyncClient()
-            resp = await client.request(**config.model_dump(exclude_none=True))
+            # resp = await client.request(**config.model_dump(exclude_none=True))
+            resp = await client.request(**config_dict)
             api_response = APIResponse(
                 status_code=resp.status_code,
-                headers=resp.headers,
+                # headers=resp.headers,
                 content=resp.content,
-                text=resp.text,
-                extensions=resp.extensions,
-                default_encoding=resp.default_encoding
+                # text=resp.text,
+                # extensions=resp.extensions,
+                # default_encoding=resp.default_encoding
             )
             return api_response
         except Exception as e:
@@ -102,17 +115,28 @@ class ActionText2textAPI(
             return e
 
     @staticmethod
-    async def create_and_run_action(action_config: APIRequest) -> APIResponse | Exception:
+    async def run_tool(action_config: APIRequest) -> APIResponse | Exception:
         try:
-            config_type = ActionText2textAPI.get_config_type()
-            config_dict = ActionText2textAPI.create_config(action_config)
-            config = config_type.model_validate(config_dict)
+            # config_type = ActionText2textAPI.get_config_type()
+            config = await ActionText2textAPI.create_config(action_config)
+            config_dict = config.model_dump(exclude_none=True)
 
-            action = ActionText2textAPI(config)
-            action_input = APIInput()
-            output = await action.run_action(action_input)
-            return output
+            if config.body:
+                config_dict.pop("body")
+                config_dict["content"] = json.dumps(config.body)
+                config_dict["headers"]["Content-Type"] = "application/json"
+
+            client = httpx.AsyncClient()
+            resp = await client.request(**config_dict)
+            api_response = APIResponse(
+                status_code=resp.status_code,
+                # headers=resp.headers,
+                content=resp.content,
+                # text=resp.text,
+                # extensions=resp.extensions,
+                # default_encoding=resp.default_encoding
+            )
+            return api_response
         except Exception as e:
             logger.error(str(e))
             return e
-

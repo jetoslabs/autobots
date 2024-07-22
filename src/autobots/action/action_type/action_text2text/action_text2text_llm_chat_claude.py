@@ -102,6 +102,7 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReqClaude, ChatReqClaude, ChatR
                             download_file_path = f'/tmp/{gen_uuid()}'
                             with open(download_file_path, "wb") as file:
                                 is_downloaded = await s3.download_fileobj(filename, file)
+                                assert is_downloaded
                             with open(download_file_path, "rb") as image_file:
                                 binary_data = image_file.read()
                                 base_64_encoded_data = base64.b64encode(binary_data)
@@ -126,7 +127,6 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReqClaude, ChatReqClaude, ChatR
                 text_objs.texts.append(MultiObj(text=choice.text))
             return text_objs
         except ValidationError as e:
-            print(e)
             logger.error(str(e))
 
     async def replace_action_tools_with_tools_defs(self) -> List[Dict[str, Any]] | None:

@@ -22,7 +22,7 @@ class ToolFactoryClaude:
             try:
                 action = TOOLS_MAP.get(tool_name)
                 func_def = await AnthropicFunctionDefinitionGen.get_defination(
-                    action.create_and_run_action, action.get_description()
+                    action.run_tool, action.get_description()
                 )
                 func_def["name"]= tool_name
                 func_def["description"]= tool_name
@@ -37,7 +37,7 @@ class ToolFactoryClaude:
         try:
             action = TOOLS_MAP.get(tool_name)
             config = action.get_config_type().model_validate(json.loads(json.dumps(tool_args)))
-            output = await action.create_and_run_action(config)
+            output = await action.run_tool(config)
             output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
             tool_output = output_str
         except Exception as e:

@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 from src.autobots.core.utils import gen_uuid
@@ -11,3 +10,7 @@ class Context(BaseModel):
 
     # def to_dict(self) -> Dict[str, Any]:
     #     return self.model_dump(exclude_none=True)
+
+
+class ContextData(BaseModel):
+    ctx: Context
