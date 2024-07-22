@@ -81,16 +81,16 @@ class Settings(BaseSettings):
     USEAPI_NET_END_POINT_URL: str
 
     CLAID_API_KEY: str
-    ASSEMBLYAI_API_KEY: str
     CLAID_SIDE_S3_BUCKET: str
     CLAID_PATH_PREFIX: str
 
     SERP_API_KEY: str
-
+    ASSEMBLYAI_API_KEY: str
     OPUS_API_KEY: str
 
     CLAUDE_API_KEY: str
     LINKEDIN_SCRAPING_API_KEY: str
+
     API_v1: str = "/v1"
     API_Hello: str = "/hello"
     API_AUTH: str = "/auth"
