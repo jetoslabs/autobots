@@ -2,7 +2,7 @@ from google.ads.googleads.client import GoogleAdsClient
 from google.ads.googleads.errors import GoogleAdsException
 from src.autobots.core.settings import Settings, SettingsProvider
 # Load the configuration from google-ads.yaml
-def get_keywords(keywords_seed, settings: Settings = SettingsProvider.sget()):
+def get_keywords(keywords_seed, url_seed, settings: Settings = SettingsProvider.sget()):
     config = {
         'developer_token': settings.developer_token,
         'client_id': settings.client_id,
@@ -23,6 +23,9 @@ def get_keywords(keywords_seed, settings: Settings = SettingsProvider.sget()):
         'keyword_plan_network': 'GOOGLE_SEARCH',
         'keyword_seed': {
             'keywords': keywords_seed
+        },
+        'url_seed': {
+            'urls': url_seed
         }
     }
 
