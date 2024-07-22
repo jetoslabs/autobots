@@ -9,6 +9,7 @@ from src.autobots.api.v1.api_action_market import api_actions_market
 from src.autobots.api.v1.api_action_type.stable_diffusion import fetch_stable_diffusion
 from src.autobots.api.v1.api_action import api_action
 from src.autobots.api.v1.api_auth import api_auth
+from src.autobots.api.v1.api_auth_secrets import api_secrets
 from src.autobots.api.v1.api_datastore import api_datastore
 from src.autobots.api.v1.api_files import api_files
 from src.autobots.api.v1.api_hello import api_hello
@@ -33,6 +34,7 @@ router.include_router(api_files.router)
 router.include_router(api_datastore.router)
 router.include_router(api_openai_storage.router)
 router.include_router(api_agents.router)
+router.include_router(api_secrets.router)
 
 # api docs router
 router_docs = APIRouter(prefix=SettingsProvider.sget().API_v1)
