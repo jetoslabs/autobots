@@ -161,8 +161,10 @@ class MultiVectorRetriever():
         for d in sub_docs:
             if self.id_key in d.metadata and d.metadata[self.id_key] not in ids:
                 ids.append(d.metadata[self.id_key])
-        docs = self.docstore.mget(ids)
-        return [d for d in docs if d is not None]
+        
+        # docs = self.docstore.mget(ids)
+        # return [d for d in docs if d is not None]
+        return ids
 
     async def _aget_relevant_documents(
         self, query: str) -> List[Document]:

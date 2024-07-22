@@ -4,6 +4,9 @@ from src.autobots.action.action_type.action_audio2text.action_audio2text_transcr
     ActionAudio2TextTranscriptionOpenai
 from src.autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
     ActionAudio2TextTranslationOpenai
+from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_assemblyai import \
+    ActionAudio2TextTranscriptionAssemblyai
+
 from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from src.autobots.action.action_type.action_img2img.action_img2img_bulkedit_claid import ActionImg2BulkEditClaid
@@ -29,7 +32,7 @@ from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_
     ActionText2TextLlmChatclaude
 from src.autobots.action.action_type.action_text2text.action_text2text_llm_chat_with_vector_search_openai import \
     ActionText2TextLlmChatWithVectorSearchOpenai
-# from src.autobots.action.action_type.action_text2text.action_multimodal_llm_chat_with_vector_search_openai import ActionMultiModalLlmChatWithVectorSearchOpenai
+from src.autobots.action.action_type.action_text2text.action_multimodal_llm_chat_with_vector_search_openai import ActionMultiModalLlmChatWithVectorSearchOpenai
 from src.autobots.action.action_type.action_text2text.action_text2text_read_urls import ActionText2TextReadUrl
 from src.autobots.action.action_type.action_text2text.action_text2text_search_map import ActionText2TextSearchMaps
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
@@ -38,6 +41,7 @@ from src.autobots.action.action_type.action_text2video.action_text2video_search_
 from src.autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
 from src.autobots.action.action_type.action_video2video.action_video2video_opus import ActionVideo2VideoOpus
+from src.autobots.action.action_type.action_text2text.action_text2text_linkedin import ActionLinkedInScrape
 
 from src.autobots.action.action_type.action_types import ActionType
 
@@ -49,7 +53,7 @@ ACTION_MAP = {
     ActionType.text2text_llm_chat_openai: ActionText2TextLlmChatOpenai,
     ActionType.text2text_llm_chat_claude: ActionText2TextLlmChatclaude,
     ActionType.text2text_llm_chat_with_vector_search_openai: ActionText2TextLlmChatWithVectorSearchOpenai,
-    # ActionType.multimodal_llm_chat_with_vector_search_openai: ActionMultiModalLlmChatWithVectorSearchOpenai,
+    ActionType.multimodal_llm_chat_with_vector_search_openai: ActionMultiModalLlmChatWithVectorSearchOpenai,
     ActionType.text2text_read_url: ActionText2TextReadUrl,
     ActionType.text2text_search_web: ActionText2TextSearchWeb,
     ActionType.text2text_search_maps: ActionText2TextSearchMaps,
@@ -77,8 +81,11 @@ ACTION_MAP = {
     # audio2text
     ActionType.audio2text_transcription_openai: ActionAudio2TextTranscriptionOpenai,
     ActionType.audio2text_translation_openai: ActionAudio2TextTranslationOpenai,
+    ActionType.audio2text_transcription_assemblyai: ActionAudio2TextTranscriptionAssemblyai,
     #video2video
     ActionType.video2video_opus: ActionVideo2VideoOpus,
+    ActionType.action_text2text_linkedin: ActionLinkedInScrape,
     # mock
-    ActionType.mock_action: MockAction
+    ActionType.mock_action: MockAction,
+
 }

@@ -1,8 +1,6 @@
 import boto3
 from botocore.exceptions import NoCredentialsError
 
-import boto3
-from botocore.exceptions import NoCredentialsError
 
 def upload_to_s3(file_name, bucket, object_name=None):
     # If S3 object_name was not specified, use file_name
