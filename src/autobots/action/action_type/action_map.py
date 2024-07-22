@@ -4,6 +4,9 @@ from src.autobots.action.action_type.action_audio2text.action_audio2text_transcr
     ActionAudio2TextTranscriptionOpenai
 from src.autobots.action.action_type.action_audio2text.action_audio2text_translation_openai import \
     ActionAudio2TextTranslationOpenai
+from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_assemblyai import \
+    ActionAudio2TextTranscriptionAssemblyai
+
 from src.autobots.action.action_type.action_img2img.action_image_mixer_stable_diffusion import \
     ActionImageMixerStableDiffusion
 from src.autobots.action.action_type.action_img2img.action_img2img_bulkedit_claid import ActionImg2BulkEditClaid
@@ -74,6 +77,7 @@ ACTION_MAP = {
     # audio2text
     ActionType.audio2text_transcription_openai: ActionAudio2TextTranscriptionOpenai,
     ActionType.audio2text_translation_openai: ActionAudio2TextTranslationOpenai,
+    ActionType.audio2text_transcription_assemblyai: ActionAudio2TextTranscriptionAssemblyai,
     #video2video
     ActionType.video2video_opus: ActionVideo2VideoOpus,
     # mock

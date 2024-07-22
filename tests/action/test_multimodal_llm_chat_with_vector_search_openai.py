@@ -20,6 +20,7 @@ from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from openai.types.chat import ChatCompletionUserMessageParam
 from src.autobots.conn.aws.s3 import get_s3
 import chromadb
+
 @pytest.mark.asyncio
 async def test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_path():
     query = "Give me company names that are interesting investments based on EV / NTM and NTM rev growth. Consider EV / NTM multiples vs historical?"
