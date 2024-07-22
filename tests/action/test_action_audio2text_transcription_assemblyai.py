@@ -10,4 +10,4 @@ async def test_action_audio2text_transcription_assemblyai_happy_path(set_test_se
     config = TranscriptionReq()
     input = AudioRes(url="https://meetkiwiinc.zendesk.com/attachments/token/DV6HIgMxsVG8rINvioXo6u0ZW/?name=recording+316829.mp3")
     transcription = await ActionAudio2TextTranscriptionAssemblyai(action_config=config).run_action(input)
-
+    assert transcription!=""
