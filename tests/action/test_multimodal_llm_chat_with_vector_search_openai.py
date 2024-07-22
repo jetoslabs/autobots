@@ -20,9 +20,9 @@ from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from openai.types.chat import ChatCompletionUserMessageParam
 from src.autobots.conn.aws.s3 import get_s3
 import chromadb
-
+import asyncio
 @pytest.mark.asyncio
-async def test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_path(set_test_settings):
+async def test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_path():
     query = "Give me company names that are interesting investments based on EV / NTM and NTM rev growth. Consider EV / NTM multiples vs historical?"
     global datastore
     s3 = get_s3()
@@ -61,4 +61,5 @@ async def test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_
     )
     action_input = {"text": query}
     action_run_obj_1 = await ActionFactory.run_action(action_doc, action_input)
+asyncio.run(test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_path())
     # On Action run: for every run we add context input
