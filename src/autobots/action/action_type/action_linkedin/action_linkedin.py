@@ -1,5 +1,5 @@
 import asyncio
-from typing import Type, Dict, Any
+from typing import Type, Dict, Any, List
 from loguru import logger
 from pydantic import BaseModel
 from src.autobots.conn.linkedin_scraper.linkedin_scraper import get_linkedin_scrape
@@ -8,10 +8,10 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 
 class LinkedInReq(BaseModel):
-    linkedin_id: str
+    linkedin_id: List[str]
 
 class LinkedInRes(BaseModel):
-    profile_data: Dict[str, Any]
+    profile_data: List[Dict[str, Any]]
 
 class ActionLinkedInScrape(
     ActionABC[LinkedInReq, LinkedInReq, LinkedInReq, LinkedInRes, Dict[str, Any]]
@@ -45,7 +45,7 @@ class ActionLinkedInScrape(
         try:
             if not self.action_config.linkedin_id:
                 return None
-            profile_data = await asyncio.to_thread(get_linkedin_scrape, self.action_config.linkedin_id)
+            profile_data = await asyncio.to_thread(get_linkedin_scrape, action_input.linkedin_id)
             return profile_data
         except Exception as e:
             logger.error(f"Error in running LinkedIn scrape action: {e}")
