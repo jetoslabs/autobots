@@ -23,7 +23,10 @@ class AssemblyAIClient:
         """
         config = aai.TranscriptionConfig(speaker_labels=True)
         transcript = await asyncio.to_thread(self.transcriber.transcribe, audio_url, config)
-        return transcript.text if transcript else None
+        if not transcript:
+            return None
+        texts = [f"Speaker {utterance.speaker}: {utterance.text}" for utterance in transcript.utterances]
+        return ''.join(texts)
 
 @lru_cache
 def get_assemblyai(settings: Settings = SettingsProvider.sget()) -> AssemblyAIClient:
