@@ -42,7 +42,6 @@ class Zoho:
     @staticmethod
     @retry(exceptions=Exception, tries=3, delay=5, backoff=2)
     async def refresh_token(req: ZohoTokenRefreshRequest) -> ZohoTokenRefreshResponse:
-        # url = f"{req.api_domain}{Zoho.TOKEN_PATH}"//TODO: test creation of zoho header
         url = await Zoho.get_auth_url(req.api_domain)
         params = {
             "client_id": req.client_id,
