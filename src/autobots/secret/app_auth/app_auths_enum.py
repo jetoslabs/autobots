@@ -11,3 +11,4 @@ class ExtendedEnum(Enum):
 class APP_AUTHS(ExtendedEnum):
     slack = "slack"
     zoho = "zoho"
+    zendesk = "zendesk"
