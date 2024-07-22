@@ -94,6 +94,7 @@ class Settings(BaseSettings):
     API_Hello: str = "/hello"
     API_AUTH: str = "/auth"
     API_AUTH_TOKEN: str = "/token"
+    API_SECRETS: str = "/secrets"
     API_ACTIONS: str = "/actions"
     API_ACTION_TYPES: str = "/action_types"
     API_ACTIONS_MARKET: str = "/action_market"
