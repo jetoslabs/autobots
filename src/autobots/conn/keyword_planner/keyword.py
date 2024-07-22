@@ -17,7 +17,7 @@ def get_keywords(keywords_seed, url_seed, settings: Settings = SettingsProvider.
 
     # Create the request
     request = {
-        'customer_id': settings.customer_id,
+        'customer_id': settings.login_customer_id,
         'language': 'en',
         'geo_target_constants': ['geoTargetConstantId'],
         'keyword_plan_network': 'GOOGLE_SEARCH',
