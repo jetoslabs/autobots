@@ -22,14 +22,14 @@ class Message(BaseModel):
 class ChatReqClaude(BaseModel):
     messages: List[Message]
     model: Literal[
-        "claude-2",
+        "claude-2.1",
         "claude-instant",
         "claude-1",
         "claude-1.2",
         "claude-1.3",
         "claude-1.3-100k",
         "claude-3-5-sonnet-20240620"
-    ] = "claude-2"
+    ] = "claude-3-5-sonnet-20240620"
     temperature: Optional[float] = 0.8
     max_tokens: Optional[int] = 2000
     top_p: Optional[float] = None
