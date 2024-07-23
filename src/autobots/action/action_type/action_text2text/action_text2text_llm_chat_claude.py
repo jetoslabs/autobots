@@ -13,7 +13,7 @@ from src.autobots.action.action.action_doc_model import ActionResult
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.action.action.common_action_models import MultiObj, MultiObjs
+from src.autobots.action.action.common_action_models import MultiObj, MultiObjs, TextObj
 from src.autobots.conn.claude.chat_model import ChatReqClaude, Role
 from src.autobots.conn.claude.claude_client import get_claude
 import base64
@@ -124,7 +124,7 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReqClaude, ChatReqClaude, ChatR
                 return text_objs
             # resp = Message.model_validate(chat_res.choices[0].message)
             for choice in chat_res.content:
-                text_objs.texts.append(MultiObj(text=choice.text))
+                text_objs.texts.append(TextObj(text=choice.text))
             return text_objs
         except ValidationError as e:
             logger.error(str(e))
