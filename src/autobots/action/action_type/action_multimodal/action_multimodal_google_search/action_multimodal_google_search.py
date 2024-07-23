@@ -58,11 +58,11 @@ class ActionMultimodalGoogleSearch(
             return None
         return result_or_exception
 
-    @staticmethod
     async def run_tool(
+            self,
             action_config: ActionMultimodalGoogleSearchConfig
     ) -> ActionMultimodalGoogleSearchOutput:
-        action = ActionMultimodalGoogleSearch(action_config)
+        action = ActionMultimodalGoogleSearch(action_config, self.user)
         input = ActionMultimodalGoogleSearchInput(text="")
         output = await action.run_action(input)
         return output

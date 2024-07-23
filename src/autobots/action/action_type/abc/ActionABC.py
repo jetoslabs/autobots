@@ -4,7 +4,7 @@ from typing import TypeVar, Generic, Type, List
 from pydantic import BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionResult
-# from src.autobots.action.action_type.toolable_protocol import ToolableProtocol
+from src.autobots.user.user_orm_model import UserORM
 
 ActionConfigCreateType = TypeVar("ActionConfigCreateType", bound=BaseModel)
 ActionConfigUpdateType = TypeVar("ActionConfigUpdateType", bound=BaseModel)
@@ -19,8 +19,9 @@ class ActionABC(
     ]
 ):
 
-    def __init__(self, action_config: ActionConfigType):
+    def __init__(self, action_config: ActionConfigType, user: UserORM | None = None):
         self.action_config = action_config
+        self.user = user
 
     @staticmethod
     @abstractmethod
@@ -75,8 +76,7 @@ class ActionABC(
         """To be deprecated in favour of static method run_action"""
         raise NotImplementedError
 
-    @staticmethod
     @abstractmethod
-    async def run_tool(action_config: ActionConfigType) -> ActionOutputType | Exception:
+    async def run_tool(self, action_config: ActionConfigType) -> ActionOutputType | Exception:
         raise NotImplementedError
 

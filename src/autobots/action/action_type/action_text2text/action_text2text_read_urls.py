@@ -43,8 +43,8 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ReadUrlConfig):
-        super().__init__(action_config)
+    # def __init__(self, action_config: ReadUrlConfig):
+    #     super().__init__(action_config)
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
@@ -74,8 +74,7 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
         except Exception as e:
             logger.error(str(e))
 
-    @staticmethod
-    async def run_tool(action_config: ReadUrlConfig) -> TextObjs:
+    async def run_tool(self, action_config: ReadUrlConfig) -> TextObjs | Exception:
         text_objs = TextObjs(texts=[])
         try:
             selenium = get_selenium()
@@ -93,7 +92,7 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
             return text_objs
         except ValidationError as e:
             logger.error(str(e))
-            raise
+            return e
         except Exception as e:
             logger.error(str(e))
-            raise
+            return e

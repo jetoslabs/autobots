@@ -113,7 +113,7 @@ class ActionMultimodalAssistantOpenai(
                         name = tool_call.function.name
                         args = tool_call.function.arguments
                         # run tool
-                        tool_output_str: str = await ToolFactory.run_tool(name, args)
+                        tool_output_str: str = await ToolFactory(self.user).run_tool(name, args)
                         tool_output = {
                             "output": tool_output_str,
                             "tool_call_id": tool_call.id

@@ -43,10 +43,10 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: SearchWebConfig):
-        super().__init__(action_config)
+    # def __init__(self, action_config: SearchWebConfig):
+    #     super().__init__(action_config)
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, action_input: TextObj) -> TextObjs | Exception:
         text_objs = TextObjs(texts=[])
         try:
             duckduckgo = get_duckduckgo()
@@ -64,11 +64,12 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
             return text_objs
         except ValidationError as e:
             logger.error(str(e))
+            return e
         except Exception as e:
             logger.error(str(e))
+            return e
 
-    @staticmethod
-    async def run_tool(action_config: SearchWebConfig) -> TextObjs:
+    async def run_tool(self, action_config: SearchWebConfig) -> TextObjs | Exception:
         action = ActionText2TextSearchWeb(action_config)
         action_input = TextObj(text="")
         text_objs = await action.run_action(action_input)
