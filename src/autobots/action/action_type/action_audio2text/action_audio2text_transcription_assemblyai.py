@@ -33,7 +33,7 @@ class ActionAudio2TextTranscriptionAssemblyai(
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return AudioRes
+        return AudioUrl
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
