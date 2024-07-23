@@ -202,7 +202,7 @@ class ActionFactory:
         except Exception as e:
             # Action resulted in an error
             action_result_doc.status = EventResultStatus.error
-            action_result_doc.error_message = TextObj(text="Action run error")
+            action_result_doc.error_message = TextObj(text=str(e))
             logger.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
         finally:
             # Finally persist the Action Result
