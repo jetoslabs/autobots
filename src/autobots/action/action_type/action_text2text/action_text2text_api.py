@@ -5,10 +5,15 @@ from typing import Type
 import httpx
 from httpx._types import PrimitiveData
 from loguru import logger
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, HttpUrl
 
 from src.autobots.action.action_type.abc.ActionABC import ActionABC
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.data_model.context import Context
+from src.autobots.secret.app_auth.app_auth_model import AppAuthSecretFind, OptionalAppAuthSecret, AppAuthSecret
+from src.autobots.secret.app_auth.app_auth_secret_crud import AppAuthSecretCRUD
+from src.autobots.secret.app_auth.user_app_auth_secret_handler import UserAppAuthSecretHandler
 
 
 class APIRequest(BaseModel):
@@ -120,11 +125,12 @@ class ActionText2textAPI(
             # config_type = ActionText2textAPI.get_config_type()
             config = await ActionText2textAPI.create_config(action_config)
             config_dict = config.model_dump(exclude_none=True)
-
+            auth_header = await self.get_auth_header(config)
+            config_dict["headers"] |= auth_header
             if config.body:
                 config_dict.pop("body")
                 config_dict["content"] = json.dumps(config.body)
-                config_dict["headers"]["Content-Type"] = "application/json"
+                config_dict["headers"]["Content-type"] = "application/json"
 
             client = httpx.AsyncClient()
             resp = await client.request(**config_dict)
@@ -140,3 +146,22 @@ class ActionText2textAPI(
         except Exception as e:
             logger.error(str(e))
             return e
+
+    async def get_auth_header(self, config: APIRequest) -> typing.Dict[str, str]:
+        ctx = Context()
+        api_url = HttpUrl(config.url)
+        api_domain = f"{api_url.scheme}://{api_url.host}"
+        app_auth_find = AppAuthSecretFind(secret=OptionalAppAuthSecret(api_domain=api_domain))
+        db = next(get_mongo_db())
+        user_secret_doc = await UserAppAuthSecretHandler.read(
+            ctx=ctx,
+            user=self.user,
+            crud=AppAuthSecretCRUD(db),
+            app_auth_find=app_auth_find
+        )
+        if user_secret_doc:
+            app_auth_secret = AppAuthSecret.model_validate(user_secret_doc.secret)
+            headers = app_auth_secret.auth_data.header
+            return headers
+        else:
+            logger.bind(ctx=ctx).error("No secret found")
