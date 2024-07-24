@@ -15,6 +15,7 @@ from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook
 from src.autobots.event_result.event_result_model import EventResultStatus
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionDataTypes(BaseModel):
@@ -113,7 +114,7 @@ class ActionFactory:
             raise
 
     @staticmethod
-    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> RunActionObj | Exception:
+    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any], user: UserORM | None = None) -> RunActionObj | Exception:
         try:
             action = ACTION_MAP.get(action_doc.type)
             if not action:
@@ -123,7 +124,7 @@ class ActionFactory:
             prev_results: List[ActionResult] | None = action_doc.results
             updated_config = await action.update_config_with_prev_results(config, prev_results)
             input = action.get_input_type().model_validate(action_input_dict)
-            output = await action(updated_config).run_action(input)
+            output = await action(updated_config, user).run_action(input)
 
             if isinstance(output, Exception):
                 return output
@@ -186,7 +187,7 @@ class ActionFactory:
     ) -> None:
         try:
             # Run the action
-            run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
+            run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict, user_action_result.user)
             # Action is a success
             # Update ActionDoc model config, input and output
             action_result_doc.status = EventResultStatus.success

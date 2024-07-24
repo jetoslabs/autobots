@@ -42,7 +42,7 @@ class UserAppAuthSecretHandler:
         await UserAppAuthSecretHandler.assert_crud_type(crud)
         await UserAppAuthSecretHandler.assert_crud_create_type(app_auth_create)
         # find if record exist with same app name for user_id
-        app_auth_find = AppAuthSecretFind(secret=OptionalAppAuthSecret(app=app_auth_create.app))
+        app_auth_find = AppAuthSecretFind(secret=OptionalAppAuthSecret(app=app_auth_create.secret.app))
         page = await UserAppAuthSecretHandler.find(
             ctx=ctx, user=user, crud=crud, app_auth_find=app_auth_find
         )
