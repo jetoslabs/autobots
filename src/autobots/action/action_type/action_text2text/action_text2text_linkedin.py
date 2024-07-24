@@ -14,7 +14,7 @@ class LinkedInRes(BaseModel):
     profile_data: List[Dict[str, Any]]
 
 class ActionLinkedInScrape(
-    ActionABC[LinkedInReq, LinkedInReq, LinkedInReq, LinkedInRes, Dict[str, Any]]
+    ActionABC[LinkedInReq, LinkedInReq, LinkedInReq, LinkedInReq, LinkedInRes]
 ):
     type = ActionType.action_text2text_linkedin
 
@@ -32,21 +32,21 @@ class ActionLinkedInScrape(
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return LinkedInRes
+        return LinkedInReq
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
-        return Dict[str, Any]
+        return LinkedInRes
 
     def __init__(self, action_config: LinkedInReq):
         super().__init__(action_config)
 
-    async def run_action(self, action_input: LinkedInRes) -> Dict[str, Any] | None:
+    async def run_action(self, action_input: LinkedInReq) -> LinkedInRes | None:
         try:
             if not self.action_config.linkedin_id:
                 return None
             profile_data = await asyncio.to_thread(get_linkedin_scrape, action_input.linkedin_id)
-            return profile_data
+            return LinkedInRes(profile_data=profile_data)
         except Exception as e:
             logger.error(f"Error in running LinkedIn scrape action: {e}")
             return None

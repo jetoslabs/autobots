@@ -11,6 +11,7 @@ from src.autobots.api.v1.api_action import api_action
 from src.autobots.api.v1.api_auth import api_auth
 from src.autobots.api.v1.api_auth_secrets import api_secrets
 from src.autobots.api.v1.api_datastore import api_datastore
+from src.autobots.api.v1.api_vectorstore import api_vectorstore
 from src.autobots.api.v1.api_files import api_files
 from src.autobots.api.v1.api_hello import api_hello
 from src.autobots.api.v1.api_schedules import api_schedules
@@ -32,6 +33,7 @@ router.include_router(api_action_graph_results.router)
 router.include_router(api_schedules.router)
 router.include_router(api_files.router)
 router.include_router(api_datastore.router)
+router.include_router(api_vectorstore.router)
 router.include_router(api_openai_storage.router)
 router.include_router(api_agents.router)
 router.include_router(api_secrets.router)
