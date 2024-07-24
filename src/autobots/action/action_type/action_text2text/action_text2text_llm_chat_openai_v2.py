@@ -41,8 +41,8 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ChatReq):
-        super().__init__(action_config)
+    # def __init__(self, action_config: ChatReq):
+    #     super().__init__(action_config)
 
     @staticmethod
     async def update_config_with_prev_results(
