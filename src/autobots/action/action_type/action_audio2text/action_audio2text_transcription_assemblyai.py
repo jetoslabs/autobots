@@ -12,7 +12,7 @@ class AudioRes(BaseModel):
     text: str
 
 class AudioUrl(BaseModel):
-    url: HttpUrl
+    url: str
 
 class ActionAudio2TextTranscriptionAssemblyai(
     ActionABC[TranscriptionReq, TranscriptionReq, TranscriptionReq, AudioUrl, AudioRes]
@@ -47,7 +47,7 @@ class ActionAudio2TextTranscriptionAssemblyai(
             if self.action_config.file_url is None and action_input.url is None:
                 return None
             if action_input.url is not None:
-                self.action_config.file_url = HttpUrl(action_input.url)
+                self.action_config.file_url = (action_input.url)
 
             # Convert the URL to a string before passing it to transcribe
             file_url_str = str(self.action_config.file_url)

@@ -28,7 +28,7 @@ class Text2VideoScheduler(str, Enum):
 
 
 class Text2VideoReqModel(BaseModel):
-    key: str = Field(default=SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
+    key: str = Field(default="",
                      description="Your API Key used for request authorization.")
     # model_id: str = Field(default="zeroscope",
     #                       description="The ID of the model to use. Can be zeroscope or one of the models present here https://modelslab.com/models/category/stable-diffusion")
