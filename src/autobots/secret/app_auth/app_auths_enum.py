@@ -7,6 +7,10 @@ class ExtendedEnum(Enum):
     def list(cls):
         return list(map(lambda c: c.value, cls))
 
+    @classmethod
+    def set(cls):
+        return set(map(lambda c: c.value, cls))
+
 
 class APP_AUTHS(ExtendedEnum):
     jira = "jira"

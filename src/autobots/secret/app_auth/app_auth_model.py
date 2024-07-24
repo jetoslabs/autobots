@@ -1,13 +1,9 @@
-from enum import Enum
 from typing import Dict, Any
 
-from fastapi import HTTPException
-from pydantic import BaseModel, field_validator
-from starlette import status
+from pydantic import BaseModel
 
 from src.autobots.data_model.created_at import CreatedAt
 from src.autobots.data_model.updated_at import UpdatedAt
-from src.autobots.secret.app_auth.app_auths_enum import APP_AUTHS
 
 
 class AuthData(BaseModel):
@@ -20,15 +16,15 @@ class AppAuthSecret(BaseModel):
     auth_meta: Dict[str, Any] | None = None
     auth_data: AuthData | None = None
 
-    @classmethod
-    @field_validator("app")
-    def validate_app(cls, value):
-        if isinstance(value, Enum):
-            if value == "app":
-                if not APP_AUTHS.__contains__(value):
-                    assert APP_AUTHS.__contains__(value)
-                    raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        return None
+    # @classmethod
+    # @field_validator("app")
+    # def validate_app(cls, value):
+    #     if isinstance(value, Enum):
+    #         if value == "app":
+    #             if not APP_AUTHS.__contains__(value):
+    #                 assert APP_AUTHS.__contains__(value)
+    #                 raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    #     return None
 
 
 class OptionalAppAuthSecret(AppAuthSecret):
