@@ -14,7 +14,7 @@ class NumInferenceSteps(int, Enum):
 
 
 class Text2ImgReqModel(BaseModel):
-    key: str = Field(default=SettingsProvider.sget().STABLE_DIFFUSION_API_KEY,
+    key: str = Field(default="",
                      description="Your API Key used for request authorization.")
     prompt: str = Field(...,
                         description="Text prompt with description of the things you want in the image to be generated.")

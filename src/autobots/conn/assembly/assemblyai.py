@@ -7,7 +7,7 @@ from typing import Optional
 
 
 class TranscriptionReq(BaseModel):
-    file_url: HttpUrl | None = None
+    file_url: str | None = None
 
 class AssemblyAIClient:
     def __init__(self, api_key: str):
