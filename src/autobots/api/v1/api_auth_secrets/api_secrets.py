@@ -1,4 +1,4 @@
-from typing import Any, Mapping
+from typing import Any, Mapping, List, Dict
 from uuid import UUID
 
 import gotrue
@@ -27,16 +27,16 @@ router = APIRouter(prefix=SettingsProvider.sget().API_SECRETS, tags=[SettingsPro
 @router.get("/apps")
 async def list_apps(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-):
+) -> List[str]:
     apps = APP_AUTHS.list()
     return apps
 
 
 @router.get("/apps/{app}")
 async def get_app_data_types(
-        app: str,
+        app: APP_AUTHS,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
-):
+) -> Dict[str, Any]:
     ctx = Context()
     app_data_type = await AppAuthFactory.get_data_type(ctx=ctx, app=app)
 
@@ -161,8 +161,8 @@ async def delete_api_auth_secrets(
             return doc.raw_result
 
 
-@router.post("/{id}/api-header")
-async def create_api_header(
+@router.put("/{id}/api-header")
+async def update_api_header(
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
