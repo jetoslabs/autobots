@@ -80,7 +80,7 @@ class OpenaiChat:
                 logger.bind(
                     **LogBinder()
                     .with_app_code(AppCode.ACTION)
-                    .with_kwargs(tool=tool_name, tool_output=tool_output_str)
+                    .with_kwargs(tool=tool_name, tool_input=tool_args, tool_output=tool_output_str)
                     .get_bind_dict()
                 ).debug(f"Ran tool in {OpenaiChat.__name__}")
                 # add tool call output to Messages
