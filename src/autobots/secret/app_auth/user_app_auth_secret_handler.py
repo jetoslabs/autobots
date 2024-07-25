@@ -1,4 +1,6 @@
+from fastapi import HTTPException
 from loguru import logger
+from pydantic import HttpUrl
 from pymongo.results import DeleteResult
 
 from src.autobots.exception.app_exception import AppException
@@ -42,12 +44,18 @@ class UserAppAuthSecretHandler:
         await UserAppAuthSecretHandler.assert_crud_type(crud)
         await UserAppAuthSecretHandler.assert_crud_create_type(app_auth_create)
         # find if record exist with same app name for user_id
-        app_auth_find = AppAuthSecretFind(secret=OptionalAppAuthSecret(app=app_auth_create.secret.app))
+        # todo: add this step in pydantic v
+        url = HttpUrl(app_auth_create.secret.api_domain)
+        api_domain = f"{url.scheme}://{url.host}"
+        app_auth_create.secret.api_domain = api_domain
+        # todo: add this step in pydantic ^
+        app_auth_find = AppAuthSecretFind(secret=OptionalAppAuthSecret(api_domain=app_auth_create.secret.api_domain))
         page = await UserAppAuthSecretHandler.find(
             ctx=ctx, user=user, crud=crud, app_auth_find=app_auth_find
         )
         if page.total_count > 0:
-            return AppException(detail="App Auth already exists", http_status=400)
+            logger.bind(ctx=ctx, app_auth_create=app_auth_create, user=user).info("App Auth already exists")
+            return HTTPException(detail="App Auth already exists", status_code=409)
 
         create_doc = UserAppAuthSecretDocCreate(user_id=str(user.id), **app_auth_create.model_dump(exclude_none=True))
         doc = await crud.insert_one(create_doc=create_doc)
