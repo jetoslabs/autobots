@@ -20,7 +20,7 @@ async def test_action_audio2text_transcription_assemblyai_happy_path(set_test_se
         type=ActionAudio2TextTranscriptionAssemblyai.type,
         config=config.model_dump(exclude_none=True),
     )
-    run_action_object: RunActionObj = await ActionFactory.run_action_in_background(
+    run_action_object: RunActionObj = await ActionFactory.run_action(
         action_doc,
         input.model_dump(exclude_none=True)
     )
