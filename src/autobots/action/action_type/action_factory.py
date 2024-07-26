@@ -16,7 +16,6 @@ from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook
 from src.autobots.event_result.event_result_model import EventResultStatus
-from src.autobots.exception.app_exception import AppException
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -131,7 +130,7 @@ class ActionFactory:
             if isinstance(output, Exception):
                 raise output
             elif not output:
-                raise AppException(detail="Output is empty", http_status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                raise HTTPException(detail="Output is empty", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 return RunActionObj(
                     config_dict=updated_config.model_dump(exclude_none=True),
@@ -192,6 +191,9 @@ class ActionFactory:
         try:
             # Run the action
             run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict, user_action_result.user)
+            # if Action is error
+            if isinstance(run_action_obj, Exception):
+                raise run_action_obj
             # Action is a success
             # Update ActionDoc model config, input and output
             action_result_doc.status = EventResultStatus.success
@@ -208,7 +210,7 @@ class ActionFactory:
             # Action resulted in an error
             action_result_doc.status = EventResultStatus.error
             action_result_doc.error_message = TextObj(text=str(e))
-            logger.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
+            logger.bind(action_result_doc=action_result_doc, error=str(e)).error("Action run error")
         finally:
             # Finally persist the Action Result
             action_result_update = ActionResultUpdate(**action_result_doc.model_dump())
