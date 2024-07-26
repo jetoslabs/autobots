@@ -85,19 +85,19 @@ class UserActions:
         delete_result = await self.action_crud.delete_many(action_doc_find)
         return delete_result.deleted_count
 
-    async def run_action(
-            self, action_id: str, input: Dict[str, Any]
-    ) -> Any:
-        action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
-        action_docs = await self.action_crud.find(action_doc_find)
-        if len(action_docs) != 1:
-            raise HTTPException(405, "Action cannot be run")
-        resp: RunActionObj = await ActionFactory.run_action(action_docs[0], input)
-        return resp.output_dict
+    # async def run_action(
+    #         self, action_id: str, input: Dict[str, Any]
+    # ) -> Any:
+    #     action_doc_find = ActionDocFind(id=action_id, user_id=self.user_id)
+    #     action_docs = await self.action_crud.find(action_doc_find)
+    #     if len(action_docs) != 1:
+    #         raise HTTPException(405, "Action cannot be run")
+    #     resp: RunActionObj = await ActionFactory.run_action(action_docs[0], input)
+    #     return resp.output_dict
 
     async def run_action_v1(
             self, action_id: str, input: Dict[str, Any], action_result_id: str = None
-    ) -> ActionDoc:
+    ) -> ActionDoc | Exception:
         if action_id == "":
             action_doc = ActionDoc(
                 id="", user_id=self.user_id, name="", type=ActionType.mock_action, input=input, output={"texts":[input]}
@@ -118,6 +118,8 @@ class UserActions:
                 raise HTTPException(404, "Action Result not found")
 
         run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        if isinstance(run_obj, Exception):
+            return run_obj
         action_doc.output = run_obj.output_dict
         if action_doc.results is None:
             action_doc.results = []
