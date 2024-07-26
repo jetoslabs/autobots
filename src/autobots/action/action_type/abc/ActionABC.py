@@ -4,6 +4,7 @@ from typing import TypeVar, Generic, Type, List
 from pydantic import BaseModel
 
 from src.autobots.action.action.action_doc_model import ActionResult
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 ActionConfigCreateType = TypeVar("ActionConfigCreateType", bound=BaseModel)
@@ -19,9 +20,12 @@ class ActionABC(
     ]
 ):
 
-    def __init__(self, action_config: ActionConfigType, user: UserORM | None = None):
+    def __init__(self, action_config: ActionConfigType, user: UserORM | None = None, ctx: Context | None = None):
         self.action_config = action_config
         self.user = user
+        self.ctx = ctx
+        if self.ctx is None:
+            self.ctx = Context()
 
     @staticmethod
     @abstractmethod
@@ -78,5 +82,5 @@ class ActionABC(
 
     @abstractmethod
     async def run_tool(self, action_config: ActionConfigType) -> ActionOutputType | Exception:
+        """DO NOT change the signature of the function. It is used to generate function definition for LLMs"""
         raise NotImplementedError
-

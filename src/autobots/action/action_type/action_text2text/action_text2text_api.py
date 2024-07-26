@@ -92,30 +92,13 @@ class ActionText2textAPI(
         updated_config = APIRequest.model_validate(updated_config_dict)
         return updated_config
 
-    def __init__(self, action_config: APIRequest, user: UserORM | None = None):
+    def __init__(self, action_config: APIRequest, user: UserORM | None = None, ctx: Context = None):
         super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: APIInput) -> APIResponse | Exception:
         try:
             config = await ActionText2textAPI.update_config(self.action_config, action_input)
-            config_dict = config.model_dump(exclude_none=True)
-
-            if config.body:
-                config_dict.pop("body")
-                config_dict["content"] = json.dumps(config.body)
-                config_dict["headers"]["Content-Type"] = "application/json"
-
-            client = httpx.AsyncClient()
-            # resp = await client.request(**config.model_dump(exclude_none=True))
-            resp = await client.request(**config_dict)
-            api_response = APIResponse(
-                status_code=resp.status_code,
-                # headers=resp.headers,
-                content=resp.content,
-                # text=resp.text,
-                # extensions=resp.extensions,
-                # default_encoding=resp.default_encoding
-            )
+            api_response = await self.run_or_err(self.ctx, config)
             return api_response
         except Exception as e:
             logger.error(str(e))
@@ -123,33 +106,42 @@ class ActionText2textAPI(
 
     async def run_tool(self, action_config: APIRequest) -> APIResponse | Exception:
         try:
-            # config_type = ActionText2textAPI.get_config_type()
             config = await ActionText2textAPI.create_config(action_config)
-            config_dict = config.model_dump(exclude_none=True)
-            auth_header = await self.get_auth_header(config)
-            config_dict["headers"] |= auth_header
-            if config.body:
-                config_dict.pop("body")
-                config_dict["content"] = json.dumps(config.body)
-                config_dict["headers"]["Content-type"] = "application/json"
-
-            client = httpx.AsyncClient()
-            resp = await client.request(**config_dict)
-            api_response = APIResponse(
-                status_code=resp.status_code,
-                # headers=resp.headers,
-                content=resp.content,
-                # text=resp.text,
-                # extensions=resp.extensions,
-                # default_encoding=resp.default_encoding
-            )
+            api_response = await self.run_or_err(self.ctx, config)
             return api_response
         except Exception as e:
             logger.error(str(e))
             return e
 
-    async def get_auth_header(self, config: APIRequest) -> typing.Dict[str, str]:
-        ctx = Context()
+    async def run_or_err(self, ctx: Context, action_config: APIRequest) -> APIResponse:
+        config = await self.build_headers(ctx, action_config)
+        # From body to content field
+        config_dict = config.model_dump(exclude_none=True)
+        if config.body:
+            config_dict.pop("body")  # removing
+            config_dict["content"] = json.dumps(config.body)  # moving
+
+        client = httpx.AsyncClient()
+        resp = await client.request(**config_dict)
+        api_response = APIResponse(
+            status_code=resp.status_code,
+            # headers=resp.headers,
+            content=resp.content,
+            # text=resp.text,
+            # extensions=resp.extensions,
+            # default_encoding=resp.default_encoding
+        )
+        logger.bind(ctx=ctx, api_request=config_dict, api_response=api_response).info("API called")
+        return api_response
+
+    async def build_headers(self, ctx: Context, config: APIRequest) -> APIRequest:
+        content_type_header = await self.get_content_type_header_if_not_set(ctx, config)
+        authorization_header = await self.get_authorization_header(ctx, config)
+        config_dict = config.model_dump(exclude_none=True)
+        config_dict["headers"] = config_dict["headers"] | authorization_header | content_type_header
+        return APIRequest.model_validate(config_dict)
+
+    async def get_authorization_header(self, ctx: Context, config: APIRequest) -> typing.Dict[str, str]:
         api_url = HttpUrl(config.url)
         api_domain = f"{api_url.scheme}://{api_url.host}"
         app_auth_find = AppAuthSecretFind(secret=OptionalAppAuthSecret(api_domain=api_domain))
@@ -166,3 +158,17 @@ class ActionText2textAPI(
             return headers
         else:
             logger.bind(ctx=ctx).error("No secret found")
+            return {}
+
+    async def get_content_type_header_if_not_set(self, ctx: Context, config: APIRequest, default: str = "application/json") -> typing.Dict[str, str]:
+        # Content-type
+        config_dict = config.model_dump(exclude_none=True)
+        is_content_type_set = False
+        for key in config_dict["headers"]:
+            if isinstance(key, str):
+                if "content-type" == key.lower():
+                    is_content_type_set = True
+                    break
+        if not is_content_type_set:
+            return {"Content-Type": default}
+        return {}
