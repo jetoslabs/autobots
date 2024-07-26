@@ -18,6 +18,7 @@ from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphCreate, \
     ActionGraphFind, ActionGraphUpdate, ActionGraphDocsFound, ActionGraphPublishedDocFind
 from src.autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
+from src.autobots.data_model.context import Context
 
 from src.autobots.user.user_orm_model import UserORM
 
@@ -121,11 +122,13 @@ async def async_run_action_graph(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc | None:
+    ctx = Context(user_id=user_res.user.id)
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)
     user_actions_market = UserActionsMarket(user_orm, db)
     user_action_graph_result = UserActionGraphResult(user_orm, db)
     resp = await UserActionGraphs(user=user_orm, db=db).run_in_background(
+        ctx,
         user_actions,
         user_actions_market,
         user_action_graph_result,
