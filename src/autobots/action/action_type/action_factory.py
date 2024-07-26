@@ -4,6 +4,7 @@ from typing import List, Any, Dict
 from fastapi import BackgroundTasks, HTTPException
 from loguru import logger
 from pydantic import BaseModel
+from starlette import status
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionResult
 from src.autobots.action.action.common_action_models import TextObj
@@ -15,6 +16,7 @@ from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook
 from src.autobots.event_result.event_result_model import EventResultStatus
+from src.autobots.exception.app_exception import AppException
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -127,16 +129,18 @@ class ActionFactory:
             output = await action(updated_config, user).run_action(input)
 
             if isinstance(output, Exception):
-                return output
-
-            return RunActionObj(
-                config_dict=updated_config.model_dump(exclude_none=True),
-                input_dict=input.model_dump(exclude_none=True),
-                output_dict=output.model_dump(exclude_none=True),
-            )
+                raise output
+            elif not output:
+                raise AppException(detail="Output is empty", http_status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return RunActionObj(
+                    config_dict=updated_config.model_dump(exclude_none=True),
+                    input_dict=input.model_dump(exclude_none=True),
+                    output_dict=output.model_dump(exclude_none=True),
+                )
         except Exception as e:
             logger.error(str(e))
-            raise
+            return e
 
     @staticmethod
     async def run_action_in_background(
