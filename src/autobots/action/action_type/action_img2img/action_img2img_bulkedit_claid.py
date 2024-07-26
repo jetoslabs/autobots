@@ -38,7 +38,7 @@ class ActionImg2BulkEditClaid(
     def __init__(self, action_config: ClaidBulkEditRequestModel, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: ClaidInputModel) -> ClaidBulkEditResponse | ClaidErrorResponse:
+    async def run_action(self, action_input: ClaidInputModel) -> ClaidBulkEditResponse | ClaidErrorResponse | Exception:
 
         claidai = get_claid()
         if action_input.operations:
@@ -49,7 +49,9 @@ class ActionImg2BulkEditClaid(
             return res
         except ValidationError as e:
             logger.error(str(e))
+            return e
         except Exception as e:
             logger.error(str(e))
+            return e
 
-        return res
+
