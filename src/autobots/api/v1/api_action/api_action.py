@@ -4,6 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from starlette import status
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate, ActionCreate
@@ -15,6 +16,7 @@ from src.autobots.action.action.user_actions import UserActions
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.exception.app_exception import AppException
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.user.user_orm_model import UserORM
 
@@ -119,7 +121,15 @@ async def run_action(
 ) -> Any:
     user_orm = UserORM(id=UUID(user_res.user.id))
     resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input, action_result_id)
-    return resp
+    match resp:
+        case ActionDoc():
+            return resp
+        case HTTPException():
+            raise resp
+        case AppException():
+            raise HTTPException(detail=resp.detail, status_code=resp.http_status)
+        case _:
+            raise HTTPException(detail="Error in Action run", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @router.post("/{id}/async_run")
