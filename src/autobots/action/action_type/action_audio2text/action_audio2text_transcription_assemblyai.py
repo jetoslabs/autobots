@@ -1,12 +1,14 @@
-from typing import Type, Union
+from typing import Type
 from loguru import logger
-from pydantic import HttpUrl, ValidationError, BaseModel
+from pydantic import ValidationError, BaseModel
 
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfigType, ActionInputType, ActionOutputType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.assembly.assemblyai import get_assemblyai
 from src.autobots.conn.assembly.assemblyai import TranscriptionReq
+from src.autobots.user.user_orm_model import UserORM
+
 
 class AudioRes(BaseModel):
     text: str
@@ -39,8 +41,8 @@ class ActionAudio2TextTranscriptionAssemblyai(
     def get_output_type() -> Type[ActionOutputType]:
         return AudioRes
 
-    def __init__(self, action_config: TranscriptionReq):
-        super().__init__(action_config)
+    def __init__(self, action_config: TranscriptionReq, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: AudioUrl) -> AudioRes | None:
         try:

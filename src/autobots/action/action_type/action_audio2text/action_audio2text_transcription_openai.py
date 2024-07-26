@@ -9,6 +9,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
+from src.autobots.user.user_orm_model import UserORM
 
 
 class AudioRes(BaseModel):
@@ -40,8 +41,8 @@ class ActionAudio2TextTranscriptionOpenai(
     def get_output_type() -> Type[ActionOutputType]:
         return Transcription
 
-    def __init__(self, action_config: TranscriptionReq):
-        super().__init__(action_config)
+    def __init__(self, action_config: TranscriptionReq, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: AudioRes) -> Transcription | None:
         try:

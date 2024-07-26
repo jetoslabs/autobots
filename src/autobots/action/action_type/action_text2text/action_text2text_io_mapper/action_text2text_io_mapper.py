@@ -7,6 +7,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_text2text.action_text2text_io_mapper.io_mapper import IOMapperConfig, IOMapper
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.user.user_orm_model import UserORM
 
 
 class IOMapperInput(BaseModel):
@@ -37,8 +38,8 @@ class ActionText2TextIOMapper(ActionABC[IOMapperConfig, IOMapperConfig, IOMapper
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: IOMapperConfig):
-        super().__init__(action_config)
+    def __init__(self, action_config: IOMapperConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: IOMapperInput) -> TextObjs | None:
         if action_input.input_action_output:

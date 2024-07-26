@@ -8,6 +8,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.img2img.img2img_model import SDImg2ImgReqModel
 from src.autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
+from src.autobots.user.user_orm_model import UserORM
 
 
 class Img2ImgRunModel(BaseModel):
@@ -56,8 +57,8 @@ class ActionImg2ImgStableDiffusion(
     def get_output_type() -> Type[ActionOutputType]:
         return StableDiffusionRes
 
-    def __init__(self, action_config: SDImg2ImgReqModel):
-        super().__init__(action_config)
+    def __init__(self, action_config: SDImg2ImgReqModel, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: Img2ImgRunModel) -> StableDiffusionRes:
         if action_input.prompt:

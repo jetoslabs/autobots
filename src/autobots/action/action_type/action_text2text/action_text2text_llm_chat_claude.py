@@ -19,6 +19,7 @@ from src.autobots.conn.claude.claude_client import get_claude
 import base64
 from src.autobots.conn.aws.aws_s3 import get_s3
 from src.autobots.core.utils import gen_uuid
+from src.autobots.user.user_orm_model import UserORM
 
 prefix = "test_"+str(gen_uuid())
 s3 = get_s3(object_prefix=prefix)
@@ -46,8 +47,8 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReqClaude, ChatReqClaude, ChatR
     def get_output_type() -> Type[ActionOutputType]:
         return MultiObjs
 
-    def __init__(self, action_config: ChatReqClaude):
-        super().__init__(action_config)
+    def __init__(self, action_config: ChatReqClaude, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     # @staticmethod
     # async def update_config_with_prev_IO(

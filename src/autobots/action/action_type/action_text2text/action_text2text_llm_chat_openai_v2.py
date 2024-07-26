@@ -16,6 +16,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
@@ -41,8 +42,8 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    # def __init__(self, action_config: ChatReq):
-    #     super().__init__(action_config)
+    def __init__(self, action_config: ChatReq, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     @staticmethod
     async def update_config_with_prev_results(

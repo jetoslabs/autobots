@@ -14,6 +14,7 @@ from src.autobots.data_model.context import Context
 from src.autobots.secret.app_auth.app_auth_model import AppAuthSecretFind, OptionalAppAuthSecret, AppAuthSecret
 from src.autobots.secret.app_auth.app_auth_secret_crud import AppAuthSecretCRUD
 from src.autobots.secret.app_auth.user_app_auth_secret_handler import UserAppAuthSecretHandler
+from src.autobots.user.user_orm_model import UserORM
 
 
 class APIRequest(BaseModel):
@@ -91,8 +92,8 @@ class ActionText2textAPI(
         updated_config = APIRequest.model_validate(updated_config_dict)
         return updated_config
 
-    # def __init__(self, action_config: APIRequest):
-    #     super().__init__(action_config)
+    def __init__(self, action_config: APIRequest, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: APIInput) -> APIResponse | Exception:
         try:

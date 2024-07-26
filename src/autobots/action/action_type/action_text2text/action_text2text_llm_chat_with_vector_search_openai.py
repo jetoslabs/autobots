@@ -14,6 +14,7 @@ from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.pinecone.pinecone import get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from src.autobots.datastore.datastore import Datastore
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig(BaseModel):
@@ -62,8 +63,8 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig):
-        super().__init__(action_config)
+    def __init__(self, action_config: ActionCreateText2TextLlmChatWithVectorSearchOpenaiConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
         self.datastore = Datastore(
             s3=get_s3(),
             pinecone=get_pinecone(),

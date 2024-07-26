@@ -10,6 +10,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_images.image_model import ImageCreateVariation
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ImageVariationInput(BaseModel):
@@ -40,8 +41,8 @@ class ActionImg2ImgVariationOpenai(ActionABC[ImageCreateVariation, ImageCreateVa
     def get_output_type() -> Type[ActionOutputType]:
         return ImagesResponse
 
-    def __init__(self, action_config: ImageCreateVariation):
-        super().__init__(action_config)
+    def __init__(self, action_config: ImageCreateVariation, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: ImageVariationInput) -> ImagesResponse:
         if action_input.image:

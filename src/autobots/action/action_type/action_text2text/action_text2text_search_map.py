@@ -9,6 +9,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchMapsParams
+from src.autobots.user.user_orm_model import UserORM
 
 
 class SearchMapsConfig(BaseModel):
@@ -39,8 +40,8 @@ class ActionText2TextSearchMaps(ActionABC[SearchMapsConfig, SearchMapsConfig, Se
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: TextObj):
-        super().__init__(action_config)
+    def __init__(self, action_config: TextObj, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])

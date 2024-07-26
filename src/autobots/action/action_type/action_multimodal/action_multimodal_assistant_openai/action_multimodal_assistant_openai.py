@@ -22,6 +22,7 @@ from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
 from src.autobots.core.logging.log_binder import LogBinder
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionMultimodalAssistantOpenai(
@@ -77,6 +78,9 @@ class ActionMultimodalAssistantOpenai(
         assistant_delete = AssistantDelete(assistant_id=config.id)
         await assistant_client.delete(assistant_delete)
         return config
+
+    def __init__(self, action_config: AssistantOpenaiConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: TextObj) -> TextObjs:
         assistant_client = get_openai().openai_assistants

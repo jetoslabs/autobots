@@ -8,6 +8,7 @@ from src.autobots.action.action_type.action_multimodal.action_multimodal_google_
     ActionMultimodalGoogleSearchConfig, ActionMultimodalGoogleSearchInput, ActionMultimodalGoogleSearchOutput
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.serp.serp import get_serp
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionMultimodalGoogleSearch(
@@ -44,6 +45,9 @@ class ActionMultimodalGoogleSearch(
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
         return ActionMultimodalGoogleSearchOutput
+
+    def __init__(self, action_config: ActionMultimodalGoogleSearchConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(
             self,

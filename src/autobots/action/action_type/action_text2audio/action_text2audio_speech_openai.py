@@ -12,6 +12,7 @@ from src.autobots.conn.aws.aws_s3 import get_public_s3
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from src.autobots.core.utils import gen_hash
+from src.autobots.user.user_orm_model import UserORM
 
 
 class AudioRes(BaseModel):
@@ -41,8 +42,8 @@ class ActionText2AudioSpeechOpenai(ActionABC[SpeechReq, SpeechReq, SpeechReq, Te
     def get_output_type() -> Type[ActionOutputType]:
         return AudioRes
 
-    def __init__(self, action_config: SpeechReq):
-        super().__init__(action_config)
+    def __init__(self, action_config: SpeechReq, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: TextObj) -> AudioRes | None:
         try:

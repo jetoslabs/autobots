@@ -11,6 +11,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_claid
 from src.autobots.conn.claid.claid_model import ClaidPhotoShootInputModel, ClaidErrorResponse, PhotoshootObject, PhotoshootScene, PhotoshootOutput
 from src.autobots.core.utils import gen_uuid
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionConfigPhotoshootClaid(BaseModel):
@@ -50,8 +51,8 @@ class ActionImg2ImgPhotoshootClaid(
     def get_output_type() -> Type[ActionOutputType]:
         return ImagesResponse
 
-    def __init__(self, action_config: ActionConfigPhotoshootClaid):
-        super().__init__(action_config)
+    def __init__(self, action_config: ActionConfigPhotoshootClaid, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: ActionInputPhotoshootClaid) -> ImagesResponse | Exception:
         claid_ai = get_claid()

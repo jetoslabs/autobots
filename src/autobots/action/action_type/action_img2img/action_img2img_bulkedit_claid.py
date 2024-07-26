@@ -7,6 +7,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.claid.claid import get_claid
 from src.autobots.conn.claid.claid_model import ClaidBulkEditRequestModel, ClaidBulkEditResponse, ClaidErrorResponse, ClaidInputModel
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionImg2BulkEditClaid(
@@ -34,8 +35,8 @@ class ActionImg2BulkEditClaid(
     def get_output_type() -> Type[ActionOutputType]:
         return ClaidBulkEditResponse
 
-    def __init__(self, action_config: ClaidBulkEditRequestModel):
-        super().__init__(action_config)
+    def __init__(self, action_config: ClaidBulkEditRequestModel, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     async def run_action(self, action_input: ClaidInputModel) -> ClaidBulkEditResponse | ClaidErrorResponse:
 
