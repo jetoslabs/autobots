@@ -40,6 +40,7 @@ async def test_news_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Ratelimit error")
 async def test_answer_happy_path(set_test_settings):
     ans_res: List[AnswerRes] = await get_duckduckgo().answer("cricket")
     assert len(ans_res) > 0
@@ -48,6 +49,7 @@ async def test_answer_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Ratelimit error")
 async def test_search_images_happy_path(set_test_settings):
     search_params = SearchImageParams(
         keywords="Tourism",
@@ -70,6 +72,7 @@ async def test_search_images_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Ratelimit error")
 async def test_search_map_happy_path(set_test_settings):
     search_params = SearchMapsParams(keywords="coffee", place="San Francisco")
     ans_res = await get_duckduckgo().search_maps(search_params)
@@ -79,6 +82,7 @@ async def test_search_map_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Ratelimit error")
 async def test_search_map_happy_path_1(set_test_settings):
     search_params = SearchMapsParams(
         keywords="coffee",
@@ -94,6 +98,7 @@ async def test_search_map_happy_path_1(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Ratelimit error")
 async def test_translate_happy_path(set_test_settings):
     ans_res = await get_duckduckgo().translate("Going to school", to="hi")
     assert ans_res.original
@@ -101,6 +106,7 @@ async def test_translate_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Ratelimit error")
 async def test_suggestions_happy_path(set_test_settings):
     ans_res = await get_duckduckgo().suggestions("arsenal.com")
     assert len(ans_res) > 0
