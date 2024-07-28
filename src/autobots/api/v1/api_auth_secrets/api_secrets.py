@@ -58,9 +58,9 @@ async def create_api_auth_secret(
         crud=crud,
         app_auth_create=secret_create,
     )
+    if isinstance(doc, UserSecretDoc):
+        return doc
     match doc:
-        case UserSecretDoc():
-            return doc
         case HTTPException():
             raise doc
         case AppException():
