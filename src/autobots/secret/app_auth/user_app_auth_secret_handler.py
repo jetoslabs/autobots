@@ -72,6 +72,8 @@ class UserAppAuthSecretHandler:
     ) -> UserSecretDoc | None:
         await UserAppAuthSecretHandler.assert_crud_type(crud)
         await UserAppAuthSecretHandler.assert_crud_find_type(app_auth_find)
+        if user is None:
+            return None
         find_doc = UserAppAuthSecretDocFind(user_id=str(user.id), **app_auth_find.model_dump(exclude_none=True))
         doc = await crud.find_one(doc_find=find_doc)
         match doc:

@@ -12,6 +12,7 @@ from src.autobots.conn.aws.aws_s3 import get_public_s3
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from src.autobots.core.utils import gen_hash
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -45,7 +46,7 @@ class ActionText2AudioSpeechOpenai(ActionABC[SpeechReq, SpeechReq, SpeechReq, Te
     def __init__(self, action_config: SpeechReq, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: TextObj) -> AudioRes | None:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> AudioRes | None:
         try:
             if action_input and action_input.text != "":
                 input = f"{self.action_config.input} {action_input.text}"

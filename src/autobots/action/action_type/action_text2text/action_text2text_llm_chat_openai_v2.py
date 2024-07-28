@@ -5,6 +5,7 @@ from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssi
     ChatCompletionToolParam
 from pydantic import ValidationError
 
+from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
@@ -64,7 +65,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
             curr_config.messages = curr_config.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(self.action_config)
@@ -74,7 +75,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
                 # message = Message(role=Role.user.value, content=action_input.text)
                 message = ChatCompletionUserMessageParam(role=Role.user.value, content=action_input.text)
                 self.action_config.messages = self.action_config.messages + [message]
-            chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config, user=self.user)
+            chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=self.action_config, user=self.user)
             # remove input message from Config messages #TODO: dont remove
             # self.action_config.messages.pop()
             if not chat_res:
@@ -86,12 +87,12 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
         except ValidationError as e:
             logger.error(str(e))
 
-    async def run_tool(self, action_config: ChatReq) -> TextObjs | Exception:
+    async def run_tool(self, action_config: ChatReq, ctx: Context) -> TextObjs | Exception:
         text_objs = TextObjs(texts=[])
         try:
             tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(action_config)
             action_config.tools = tool_defs
-            chat_res = await get_openai().openai_chat.chat(chat_req=action_config, user=self.user)
+            chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=action_config, user=self.user)
             if not chat_res:
                 raise AppException(detail="Cannot run LLM", http_status=500)
             for choice in chat_res.choices:

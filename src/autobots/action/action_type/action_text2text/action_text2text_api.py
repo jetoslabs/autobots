@@ -92,22 +92,22 @@ class ActionText2textAPI(
         updated_config = APIRequest.model_validate(updated_config_dict)
         return updated_config
 
-    def __init__(self, action_config: APIRequest, user: UserORM | None = None, ctx: Context = None):
+    def __init__(self, action_config: APIRequest, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: APIInput) -> APIResponse | Exception:
+    async def run_action(self, ctx: Context, action_input: APIInput) -> APIResponse | Exception:
         try:
             config = await ActionText2textAPI.update_config(self.action_config, action_input)
-            api_response = await self.run_or_err(self.ctx, config)
+            api_response = await self.run_or_err(ctx, config)
             return api_response
         except Exception as e:
             logger.error(str(e))
             return e
 
-    async def run_tool(self, action_config: APIRequest) -> APIResponse | Exception:
+    async def run_tool(self, action_config: APIRequest, ctx: Context) -> APIResponse | Exception:
         try:
             config = await ActionText2textAPI.create_config(action_config)
-            api_response = await self.run_or_err(self.ctx, config)
+            api_response = await self.run_or_err(ctx=ctx, action_config=config)
             return api_response
         except Exception as e:
             logger.error(str(e))

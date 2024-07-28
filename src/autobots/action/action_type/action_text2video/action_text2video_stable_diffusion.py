@@ -9,6 +9,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.stable_diffusion.common_models import StableDiffusionRes
 from src.autobots.conn.stable_diffusion.stable_diffusion import get_stable_diffusion
 from src.autobots.conn.stable_diffusion.text2video.text2video_model import Text2VideoReqModel, Text2VideoScheduler
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -56,7 +57,7 @@ class ActionText2VideoStableDiffusion(
     def __init__(self, action_config: Text2VideoReqModel, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: Text2VideoRunModel) -> StableDiffusionRes:
+    async def run_action(self, ctx: Context, action_input: Text2VideoRunModel) -> StableDiffusionRes:
         if action_input.prompt:
             self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.prompt}"
         if action_input.negative_prompt:

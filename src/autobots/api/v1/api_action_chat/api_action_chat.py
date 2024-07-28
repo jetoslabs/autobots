@@ -12,6 +12,7 @@ from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.action.action_chat.chat_doc_model import ChatDoc, ChatFind, ChatUpdate, ChatCreate
 from src.autobots.action.action_chat.user_chat import UserChat
 from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.data_model.context import Context
 
 from src.autobots.user.user_orm_model import UserORM
 
@@ -91,6 +92,7 @@ async def chat(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> str:
+    ctx = Context()
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserChat(user=user_orm, db=db).chat(id, input)
+    resp = await UserChat(user=user_orm, db=db).chat(ctx, id, input)
     return resp.messages[-1].content

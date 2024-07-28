@@ -9,6 +9,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.useapi.useapi import get_use_api_net
 from src.autobots.conn.useapi.text2img.text2img_model import DiscordReqModel, \
     DiscordErrorResponse, DiscordJobsApiResponse
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -51,7 +52,7 @@ class ActionText2ImgMidjourneyButton(
     def __init__(self, action_config: DiscordReqModel, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: Text2ImgRunModelButton) -> DiscordJobsApiResponse | DiscordErrorResponse:
+    async def run_action(self, ctx: Context, action_input: Text2ImgRunModelButton) -> DiscordJobsApiResponse | DiscordErrorResponse:
         if action_input.button:
             self.action_config.button = f"{self.action_config.button}{action_input.button}"
         if action_input.job_id:

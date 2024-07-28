@@ -12,6 +12,7 @@ from src.autobots.action.action_result.action_result_doc_model import ActionResu
 from src.autobots.action.action_result.user_action_result import UserActionResult
 from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -96,7 +97,7 @@ class UserActions:
     #     return resp.output_dict
 
     async def run_action_v1(
-            self, action_id: str, input: Dict[str, Any], action_result_id: str = None
+            self, ctx: Context, action_id: str, input: Dict[str, Any], action_result_id: str = None
     ) -> ActionDoc | Exception:
         if action_id == "":
             action_doc = ActionDoc(
@@ -117,7 +118,7 @@ class UserActions:
             if action_result_doc is None:
                 raise HTTPException(404, "Action Result not found")
 
-        run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        run_obj: RunActionObj = await ActionFactory.run_action(ctx, action_doc, input)
         if isinstance(run_obj, Exception):
             return run_obj
         action_doc.output = run_obj.output_dict
@@ -127,9 +128,9 @@ class UserActions:
         return action_doc
 
     @staticmethod
-    async def run_action_doc(action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
+    async def run_action_doc(ctx: Context, action_doc: ActionDoc, input: Dict[str, Any]) -> ActionDoc:
         action_doc.input = input
-        run_obj: RunActionObj = await ActionFactory.run_action(action_doc, input)
+        run_obj: RunActionObj = await ActionFactory.run_action(ctx, action_doc, input)
         action_doc.output = run_obj.output_dict
         if action_doc.results is None:
             action_doc.results = []

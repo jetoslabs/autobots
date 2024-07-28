@@ -10,11 +10,12 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.core.utils import gen_uuid
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
-async def test_action_mock_happy_path(set_test_settings):
+async def test_background_run_of_action_mock_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)
     user_id = gen_uuid()
@@ -42,6 +43,7 @@ async def test_action_mock_happy_path(set_test_settings):
         action_input = TextObj(text="okok")
 
         action_result_doc = await ActionFactory().run_action_in_background(
+            Context(),
             action_doc,
             action_input.model_dump(),
             user_action_result
@@ -59,7 +61,7 @@ async def test_action_mock_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-async def test_action_llm_chat_happy_path(set_test_settings):
+async def test_background_run_of_action_llm_chat_happy_path(set_test_settings):
     db = next(get_mongo_db())
     action_crud = ActionCRUD(db)
     user_id = gen_uuid()
@@ -88,6 +90,7 @@ async def test_action_llm_chat_happy_path(set_test_settings):
         action_input = TextObj(text="okok")
 
         action_result_doc = await ActionFactory().run_action_in_background(
+            Context(),
             action_doc,
             action_input.model_dump(),
             user_action_result

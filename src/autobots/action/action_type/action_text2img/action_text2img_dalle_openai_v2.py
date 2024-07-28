@@ -9,6 +9,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.conn.openai.openai_images.image_model import ImageReq
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -45,7 +46,7 @@ class ActionGenImageDalleOpenAiV2(ActionABC[ImageReq, ImageReq, ImageReq, TextOb
     def __init__(self, action_config: ImageReq, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: TextObj) -> ImagesResponse:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> ImagesResponse:
         self.action_config.prompt = f"{self.action_config.prompt}\n{action_input.text}"
         images = await get_openai().openai_images.create_image(self.action_config)
         return images

@@ -10,6 +10,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_images.image_model import ImageCreateVariation
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -44,7 +45,7 @@ class ActionImg2ImgVariationOpenai(ActionABC[ImageCreateVariation, ImageCreateVa
     def __init__(self, action_config: ImageCreateVariation, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: ImageVariationInput) -> ImagesResponse:
+    async def run_action(self, ctx: Context, action_input: ImageVariationInput) -> ImagesResponse:
         if action_input.image:
             self.action_config.image = action_input.image
         if action_input.size:

@@ -8,6 +8,7 @@ from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -65,7 +66,7 @@ class ActionText2textUserInput(ActionABC[UserInputParams, UserInputParams, TextO
         text_objs = await ActionText2textUserInput.create_config(config_update)
         return text_objs
 
-    async def run_action(self, action_input: UserInputParams) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: UserInputParams) -> TextObjs:
         text_objs = self.action_config
         if action_input.text:
             text_objs.texts.append(TextObj(text=f"{action_input.text}"))

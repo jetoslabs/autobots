@@ -7,6 +7,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.assembly.assemblyai import get_assemblyai
 from src.autobots.conn.assembly.assemblyai import TranscriptionReq
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -44,7 +45,7 @@ class ActionAudio2TextTranscriptionAssemblyai(
     def __init__(self, action_config: TranscriptionReq, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: AudioUrl) -> AudioRes | None:
+    async def run_action(self, ctx: Context, action_input: AudioUrl) -> AudioRes | None:
         try:
             if self.action_config.file_url is None and action_input.text is None:
                 return None

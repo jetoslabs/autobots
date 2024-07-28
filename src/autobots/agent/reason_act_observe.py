@@ -7,6 +7,7 @@ from openai.types.chat import ChatCompletionMessageParam, ChatCompletionSystemMe
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from src.autobots.conn.openai.openai_chat.chat_model import ChatRes, ChatReq
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.data_model.context import Context
 
 Task_Prefix = "Task: "
 Thought_Prefix = "Thought: "
@@ -47,16 +48,16 @@ class ReasonActObserve():
             ChatCompletionAssistantMessageParam(role="assistant", content=action_example_2)
         ]
 
-    async def do_task(self, user_goal: str) -> List[ChatCompletionMessageParam]:
+    async def do_task(self, ctx: Context, user_goal: str) -> List[ChatCompletionMessageParam]:
         messages = self.setup_messages + [ChatCompletionUserMessageParam(role="user", content=f"{Task_Prefix}{user_goal}")]
 
         is_finish = False
         logger.info(f"Task stared: {user_goal}")
         while not is_finish:
-            thought = await self.think(messages)
+            thought = await self.think(ctx, messages)
             messages = messages + [ChatCompletionAssistantMessageParam(role="assistant", content=thought)]
 
-            action = await self.act(messages)
+            action = await self.act(ctx, messages)
             messages = messages + [ChatCompletionAssistantMessageParam(role="assistant", content=action)]
 
             observation = await self.observe(action=action)
@@ -68,19 +69,19 @@ class ReasonActObserve():
                 logger.info(f"Task: {user_goal}\nResult: {action}")
         return messages
 
-    async def think(self, messages: List[ChatCompletionMessageParam]) -> str:
+    async def think(self, ctx: Context, messages: List[ChatCompletionMessageParam]) -> str:
         req_message = messages + [ChatCompletionUserMessageParam(role="user", content="Now Think. Respond in maximum of 500 words")]
         chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-        resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
+        resp: ChatRes = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
         response = resp.choices[0].message.content
         logger.info(f"{Thought_Prefix}{response}")
         return f"{response}"
 
-    async def act(self, messages: List[ChatCompletionMessageParam]) -> str:
+    async def act(self, ctx: Context, messages: List[ChatCompletionMessageParam]) -> str:
         try:
             req_message = messages + [ChatCompletionUserMessageParam(role="user", content="Based on above thought, Now Select one Action and one action only")]
             chat_req: ChatReq = ChatReq(messages=req_message, max_tokens=500, temperature=0.8)
-            resp: ChatRes = await get_openai().openai_chat.chat(chat_req)
+            resp: ChatRes = await get_openai().openai_chat.chat(ctx, chat_req)
             response = resp.choices[0].message.content
             logger.info(f"{response}")
             return f"{response}"

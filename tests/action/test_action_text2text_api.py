@@ -6,6 +6,7 @@ from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_text2text.action_text2text_api import APIRequest, ActionText2textAPI, \
     APIInput
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.data_model.context import Context
 
 
 @pytest.mark.asyncio
@@ -17,7 +18,7 @@ async def test_action_text2text_api_1_happy_path(set_test_settings):
     )
     action = ActionText2textAPI(action_config)
     action_input = APIInput()
-    action_output = await action.run_action(action_input)
+    action_output = await action.run_action(Context(),action_input)
     assert action_output.status_code == 200
     assert action_output.content.__contains__("slip")
 
@@ -39,7 +40,7 @@ async def test_action_text2text_api_2_happy_path(set_test_settings):
         type=action_type,
         config=action_input_dict,
     )
-    run_action_obj = await ActionFactory.run_action(action_doc, action_input_dict)
+    run_action_obj = await ActionFactory.run_action(Context(), action_doc, action_input_dict)
     run_output = action.get_output_type().model_validate(run_action_obj.output_dict)
     assert run_output.status_code == 200
     assert run_output.content.__contains__("slip")
@@ -70,7 +71,7 @@ async def test_action_text2text_api_slack_post_message_happy_path(set_test_setti
         type=action_type,
         config=action_input_dict,
     )
-    run_action_obj = await ActionFactory.run_action(action_doc, {})
+    run_action_obj = await ActionFactory.run_action(Context(), action_doc, {})
     run_output = action.get_output_type().model_validate(run_action_obj.output_dict)
     assert run_output.status_code == 200
     assert run_output.text.__contains__("\"ok\":true")

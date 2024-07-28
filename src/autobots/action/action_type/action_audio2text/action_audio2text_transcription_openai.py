@@ -9,6 +9,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.transcription_model import TranscriptionReq
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -44,7 +45,7 @@ class ActionAudio2TextTranscriptionOpenai(
     def __init__(self, action_config: TranscriptionReq, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: AudioRes) -> Transcription | None:
+    async def run_action(self, ctx: Context, action_input: AudioRes) -> Transcription | None:
         try:
             if self.action_config.file_url is None and action_input.url is None:
                 return None

@@ -7,6 +7,7 @@ from httpx import URL
 from pydantic import ValidationError
 # from anthropic.types import Message
 from src.autobots.conn.claude.chat_model import Message
+from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tool_factory_claude import ToolFactoryClaude
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
 from src.autobots.action.action.action_doc_model import ActionResult
@@ -88,7 +89,7 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReqClaude, ChatReqClaude, ChatR
             curr_config.messages = curr_config.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: MultiObj) -> MultiObjs:
+    async def run_action(self, ctx: Context, action_input: MultiObj) -> MultiObjs:
         text_objs = MultiObjs(texts=[])
         try:
             tool_defs = await self.replace_action_tools_with_tools_defs()
@@ -118,7 +119,7 @@ class ActionText2TextLlmChatclaude(ActionABC[ChatReqClaude, ChatReqClaude, ChatR
                     content.append({"type": "text", "text":self.action_config.messages[0].content[-1]["text"] + "\n"+action_input.text})
                 self.action_config.messages = [Message(role=Role.user.value, content = content)]
                 
-            chat_res = await get_claude().claude_chat.chat(chat_req=self.action_config)
+            chat_res = await get_claude().claude_chat.chat(ctx=ctx, chat_req=self.action_config)
             # remove input message from Config messages #TODO: dont remove
             # self.action_config.messages.pop()
             if not chat_res:

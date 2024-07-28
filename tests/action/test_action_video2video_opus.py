@@ -5,6 +5,7 @@ from src.autobots.action.action_type.action_video2video.action_video2video_opus 
 from src.autobots.conn.opus.opus import Video2VideoReqModel
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
+from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 
 
@@ -23,6 +24,7 @@ async def test_action_video2video_opus_happy_path(set_test_settings):
         config=action_config.model_dump(exclude_none=True),
     )
     run_action_object: RunActionObj = await ActionFactory.run_action(
+        Context(),
         action_doc,
         action_input.model_dump(exclude_none=True)
     )

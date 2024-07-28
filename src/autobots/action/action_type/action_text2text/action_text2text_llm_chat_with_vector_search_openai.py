@@ -13,6 +13,7 @@ from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.pinecone.pinecone import get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
+from src.autobots.data_model.context import Context
 from src.autobots.datastore.datastore import Datastore
 from src.autobots.user.user_orm_model import UserORM
 
@@ -110,7 +111,7 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
             curr_config.chat_req.messages = curr_config.chat_req.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs | None:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs | None:
         # text_objs = TextObjs(texts=[])
         # vector search
         search_results = await self.datastore.search(action_input.text, top_k=3)
@@ -123,7 +124,7 @@ class ActionText2TextLlmChatWithVectorSearchOpenai(
         message = ChatCompletionUserMessageParam(role=Role.user.value, content=f"{context}Question: {action_input.text}")
         self.action_config.chat_req.messages = self.action_config.chat_req.messages + [message]
         self.action_config.input = action_input
-        chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config.chat_req)
+        chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=self.action_config.chat_req)
         action_results = TextObjs()
         for choice in chat_res.choices:
             action_results.texts.append(TextObj(text=choice.message.content))

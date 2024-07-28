@@ -16,6 +16,7 @@ from src.autobots.action.action.user_actions import UserActions
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.user.user_orm_model import UserORM
@@ -119,8 +120,9 @@ async def run_action(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> Any:
+    ctx = Context()
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input, action_result_id)
+    resp = await UserActions(user=user_orm, db=db).run_action_v1(ctx, id, input, action_result_id)
     match resp:
         case ActionDoc():
             return resp
@@ -142,10 +144,18 @@ async def async_run_action(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db),
 ) -> ActionResultDoc:
+    ctx = Context(user_id=user_res.user.id)
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)
     action_doc = await user_actions.get_action(id)
     user_action_result = UserActionResult(user_orm, db)
-    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result,
-                                                                       action_result_id, background_tasks, webhook)
+    action_result_doc = await ActionFactory().run_action_in_background(
+        ctx=ctx,
+        action_doc=action_doc,
+        action_input_dict=input,
+        user_action_result=user_action_result,
+        action_result_id=action_result_id,
+        background_tasks=background_tasks,
+        webhook=webhook
+    )
     return action_result_doc

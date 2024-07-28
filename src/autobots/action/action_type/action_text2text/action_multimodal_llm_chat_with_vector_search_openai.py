@@ -7,6 +7,7 @@ import io
 import re
 from PIL import Image
 from src.autobots.conn.chroma.chroma import Document
+from src.autobots.data_model.context import Context
 from src.autobots.datastore.multidatastore import MultiDataStore
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
@@ -198,7 +199,7 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
             curr_config.chat_req.messages = curr_config.chat_req.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs | None:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs | None:
         # text_objs = TextObjs(texts=[])
         # vector search
         search_results = await self.datastore.search(action_input.text)

@@ -20,12 +20,9 @@ class ActionABC(
     ]
 ):
 
-    def __init__(self, action_config: ActionConfigType, user: UserORM | None = None, ctx: Context | None = None):
+    def __init__(self, action_config: ActionConfigType, user: UserORM | None = None):
         self.action_config = action_config
         self.user = user
-        self.ctx = ctx
-        if self.ctx is None:
-            self.ctx = Context()
 
     @staticmethod
     @abstractmethod
@@ -76,11 +73,11 @@ class ActionABC(
         return curr_config
 
     @abstractmethod
-    async def run_action(self, action_input: ActionInputType) -> ActionOutputType | Exception:
+    async def run_action(self, ctx: Context, action_input: ActionInputType) -> ActionOutputType | Exception:
         """To be deprecated in favour of static method run_action"""
         raise NotImplementedError
 
     @abstractmethod
-    async def run_tool(self, action_config: ActionConfigType) -> ActionOutputType | Exception:
+    async def run_tool(self, action_config: ActionConfigType, ctx: Context) -> ActionOutputType | Exception:
         """DO NOT change the signature of the function. It is used to generate function definition for LLMs"""
         raise NotImplementedError
