@@ -5,12 +5,12 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from starlette import status
+from starlette.requests import Request
 
 from src.autobots import SettingsProvider
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
 from src.autobots.core.database.mongo_base_crud import DocFindPage
-from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 from src.autobots.secret.app_auth.app_auth_factory import AppAuthFactory
 from src.autobots.secret.app_auth.app_auth_model import AppAuthSecretCreate, AppAuthSecretFind, AppAuthSecretUpdate, \
@@ -34,10 +34,11 @@ async def list_apps(
 
 @router.get("/apps/{app}")
 async def get_app_data_types(
+        request: Request,
         app: APP_AUTHS,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
 ) -> Dict[str, Any]:
-    ctx = Context()
+    ctx = request.state.context
     app_data_type = await AppAuthFactory.get_data_type(ctx=ctx, app=app)
 
     return app_data_type.model_json_schema()
@@ -45,11 +46,12 @@ async def get_app_data_types(
 
 @router.post("/")
 async def create_api_auth_secret(
+        request: Request,
         secret_create: AppAuthSecretCreate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> UserSecretDoc:
-    ctx = Context()
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     crud = AppAuthSecretCRUD(db)
     doc = await UserAppAuthSecretHandler.create(
@@ -71,12 +73,13 @@ async def create_api_auth_secret(
 
 @router.get("/")
 async def list_api_auth_secrets(
+        request: Request,
         id: str | None = None, app: str | None = None,
         limit: int = 100, offset: int = 0,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> DocFindPage:
-    ctx = Context()
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     crud = AppAuthSecretCRUD(db)
     app_auth_find = AppAuthSecretFind(id=id, secret=OptionalAppAuthSecret(app=app))
@@ -93,11 +96,12 @@ async def list_api_auth_secrets(
 
 @router.get("/{id}")
 async def get_api_auth_secret(
+        request: Request,
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> UserSecretDoc:
-    ctx = Context()
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     crud = AppAuthSecretCRUD(db)
     app_auth_find = AppAuthSecretFind(id=id)
@@ -116,12 +120,13 @@ async def get_api_auth_secret(
 
 @router.put("/{id}")
 async def update_api_auth_secret(
+        request: Request,
         id: str,
         app_auth_update: AppAuthSecretUpdate,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> UserSecretDoc:
-    ctx = Context()
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     crud = AppAuthSecretCRUD(db)
     assert id == app_auth_update.id
@@ -140,11 +145,12 @@ async def update_api_auth_secret(
 
 @router.delete("/{id}")
 async def delete_api_auth_secrets(
+        request: Request,
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> Mapping[str, Any]:
-    ctx = Context()
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     crud = AppAuthSecretCRUD(db)
     app_auth_find = AppAuthSecretFind(id=id)
@@ -163,11 +169,12 @@ async def delete_api_auth_secrets(
 
 @router.put("/{id}/api-header")
 async def update_api_header(
+        request: Request,
         id: str,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> UserSecretDoc:
-    ctx = Context()
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     crud = AppAuthSecretCRUD(db)
     app_auth_find = AppAuthSecretFind(id=id)
