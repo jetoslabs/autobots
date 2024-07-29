@@ -1,5 +1,6 @@
 from typing import Type, List
-
+import httpx
+import base64
 from loguru import logger
 from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam, \
     ChatCompletionToolParam
@@ -13,12 +14,12 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutpu
     ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.action.action.common_action_models import TextObj, TextObjs
+from src.autobots.action.action.common_action_models import MultiObj,TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
 
 
-class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
+class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, MultiObj, TextObjs]):
     type = ActionType.text2text_llm_chat_openai
 
     @staticmethod
@@ -35,7 +36,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return TextObj
+        return MultiObj
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:
@@ -82,16 +83,25 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
             curr_config.messages = curr_config.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, action_input: MultiObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(self.action_config)
             self.action_config.tools = tool_defs
-
+            messages=[]
+            if action_input and action_input.urls:
+                for url in action_input.urls :
+                    image_message = ChatCompletionUserMessageParam(
+                        role=Role.user.value,
+                        content=f'{{"type": "image_url", "image_url": {{"url": {url}}}}}'
+                    )
+                    messages.append(image_message)
             if action_input and action_input.text != "":
                 # message = Message(role=Role.user.value, content=action_input.text)
                 message = ChatCompletionUserMessageParam(role=Role.user.value, content=action_input.text)
-                self.action_config.messages = self.action_config.messages + [message]
+                messages.append(message)
+                    
+            self.action_config.messages = self.action_config.messages + messages
             chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config)
             # remove input message from Config messages #TODO: dont remove
             # self.action_config.messages.pop()
