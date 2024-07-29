@@ -91,12 +91,20 @@ class ActionMultimodalAssistantOpenai(
             thread_create = ThreadCreate()
             thread = await assistant_client.threads.create(thread_create)
             # add message
+            # if action_input and action_input.urls:
+            #     for url in action_input.urls :
+            #         image_message = ChatCompletionUserMessageParam(
+            #             role=Role.user.value,
+            #             content=f'{{"type": "image_url", "image_url": {{"url": {url}}}}}'
+            #         )
+            #         messages.append(image_message)
             thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id,
                                                            content=action_input.text)
             thread_message = await assistant_client.threads.messages.create(thread_message_create_1)  # noqa F841
             # run thread
             tools = [tool.model_dump(exclude_none=True) for tool in assistant.tools + action_input.tools] # TODO: add description to func definition
             # tool_resources = [resource.model_dump(exclude_none=True) for resource in action_input.tool_resources]
+            
             thread_run_create = ThreadRunCreate(thread_id=thread.id, assistant_id=assistant.id,
                                                 instructions=assistant.instructions, tools=tools)
             run = await assistant_client.threads.runs.create(thread_run_create)
