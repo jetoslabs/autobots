@@ -128,7 +128,7 @@ async def run_action(
         return resp
     match resp:
         case HTTPException():
-            raise resp
+            raise HTTPException(status_code=resp.status_code, detail=f"Secret Not Created, {resp.detail}")
         case AppException():
             raise HTTPException(detail=resp.detail, status_code=resp.http_status)
         case _:

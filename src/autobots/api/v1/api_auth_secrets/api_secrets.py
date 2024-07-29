@@ -64,7 +64,7 @@ async def create_api_auth_secret(
         return doc
     match doc:
         case HTTPException():
-            raise doc
+            raise HTTPException(status_code=doc.status_code, detail=f"Secret Not Created, {doc.detail}")
         case AppException():
             raise HTTPException(status_code=doc.http_status, detail=f"Secret Not Created, {doc.detail}")
         case _:
