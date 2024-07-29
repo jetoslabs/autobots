@@ -4,6 +4,7 @@ from typing import List, Any, Dict
 from fastapi import BackgroundTasks, HTTPException
 from loguru import logger
 from pydantic import BaseModel
+from starlette import status
 
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionResult
 from src.autobots.action.action.common_action_models import TextObj
@@ -14,7 +15,9 @@ from src.autobots.action.action_type.abc.ActionABC import ActionConfigType
 from src.autobots.action.action_type.action_map import ACTION_MAP
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.api.webhook import Webhook
+from src.autobots.data_model.context import Context
 from src.autobots.event_result.event_result_model import EventResultStatus
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionDataTypes(BaseModel):
@@ -113,32 +116,37 @@ class ActionFactory:
             raise
 
     @staticmethod
-    async def run_action(action_doc: ActionDoc, action_input_dict: Dict[str, Any]) -> RunActionObj | Exception:
+    async def run_action(ctx: Context, action_doc: ActionDoc, action_input_dict: Dict[str, Any], user: UserORM | None = None) -> RunActionObj | Exception:
         try:
             action = ACTION_MAP.get(action_doc.type)
             if not action:
-                logger.error(f"Action {action_doc.type} not found in ACTION_MAP")
+                logger.bind(ctx=ctx).error(f"Action {action_doc.type} not found in ACTION_MAP")
                 raise Exception(f"Action {action_doc.type} not found in ACTION_MAP")
             config = action.get_config_type().model_validate(action_doc.config)
             prev_results: List[ActionResult] | None = action_doc.results
             updated_config = await action.update_config_with_prev_results(config, prev_results)
             input = action.get_input_type().model_validate(action_input_dict)
-            output = await action(updated_config).run_action(input)
+            output = await action(action_config=updated_config, user=user).run_action(ctx=ctx, action_input=input)
 
             if isinstance(output, Exception):
-                return output
-
-            return RunActionObj(
-                config_dict=updated_config.model_dump(exclude_none=True),
-                input_dict=input.model_dump(exclude_none=True),
-                output_dict=output.model_dump(exclude_none=True),
-            )
+                raise output
+            elif not output:
+                raise HTTPException(detail="Output is empty", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                run_action_obj = RunActionObj(
+                    config_dict=updated_config.model_dump(exclude_none=True),
+                    input_dict=input.model_dump(exclude_none=True),
+                    output_dict=output.model_dump(exclude_none=True),
+                )
+                logger.bind(ctx=ctx, action_id=action_doc.id, action_run_obj=run_action_obj).info("Action run completed")
+                return run_action_obj
         except Exception as e:
-            logger.error(str(e))
-            raise
+            logger.bind(ctx=ctx, action_id=action_doc.id).error(str(e))
+            return e
 
     @staticmethod
     async def run_action_in_background(
+            ctx: Context,
             action_doc: ActionDoc,
             action_input_dict: Dict[str, Any],
             user_action_result: UserActionResult,
@@ -150,7 +158,7 @@ class ActionFactory:
         if action_result_id is not None:
             action_result_doc = await user_action_result.get_action_result(action_result_id)
             if action_result_doc is None:
-                logger.error(f"Action Result not found {action_result_id}")
+                logger.bind(ctx=ctx).error(f"Action Result not found {action_result_id}")
                 raise HTTPException(status_code=400, detail="Action Result not found")
             # Change status back to processing
             action_result_update: ActionResultUpdate = ActionResultUpdate(status=EventResultStatus.processing)
@@ -167,26 +175,35 @@ class ActionFactory:
         if background_tasks:
             # Run in background
             background_tasks.add_task(
-                ActionFactory._run_action_as_background_task, action_input_dict, action_result_doc, user_action_result,
+                ActionFactory._run_action_as_background_task, ctx, action_input_dict, action_result_doc, user_action_result,
                 webhook
             )
         else:
             # For testing
             await ActionFactory._run_action_as_background_task(
-                action_input_dict, action_result_doc, user_action_result, webhook
+                ctx=ctx,
+                action_input_dict=action_input_dict,
+                action_result_doc=action_result_doc,
+                user_action_result=user_action_result,
+                webhook=webhook
             )
         return action_result_doc
 
     @staticmethod
     async def _run_action_as_background_task(
+            ctx: Context,
             action_input_dict: Dict[str, Any],
             action_result_doc: ActionResultDoc,
             user_action_result: UserActionResult,
             webhook: Webhook | None = None,
+
     ) -> None:
         try:
             # Run the action
-            run_action_obj: RunActionObj = await ActionFactory.run_action(action_result_doc.result, action_input_dict)
+            run_action_obj: RunActionObj = await ActionFactory.run_action(ctx, action_result_doc.result, action_input_dict, user_action_result.user)
+            # if Action is error
+            if isinstance(run_action_obj, Exception):
+                raise run_action_obj
             # Action is a success
             # Update ActionDoc model config, input and output
             action_result_doc.status = EventResultStatus.success
@@ -198,12 +215,12 @@ class ActionFactory:
                 action_result_doc.result.results = []
             action_result_doc.result.results.append(
                 ActionResult(input=run_action_obj.input_dict, output=run_action_obj.output_dict))
-            logger.bind(action_result_doc=action_result_doc).info("Action run success")
+            logger.bind(ctx=ctx, action_result_doc=action_result_doc).info("Action run success")
         except Exception as e:
             # Action resulted in an error
             action_result_doc.status = EventResultStatus.error
             action_result_doc.error_message = TextObj(text=str(e))
-            logger.bind(action_result_doc=action_result_doc, error=e).error("Action run error")
+            logger.bind(ctx=ctx, action_result_doc=action_result_doc, error=str(e)).error("Action run error")
         finally:
             # Finally persist the Action Result
             action_result_update = ActionResultUpdate(**action_result_doc.model_dump())
@@ -211,7 +228,7 @@ class ActionFactory:
                 action_result_doc.id,
                 action_result_update
             )
-            logger.bind(action_result_doc=action_result_doc).info("Action Result updated")
+            logger.bind(ctx=ctx, action_result_doc=action_result_doc).info("Action Result updated")
             # Send webhook
             if webhook:
                 await webhook.send(action_result_doc.model_dump())

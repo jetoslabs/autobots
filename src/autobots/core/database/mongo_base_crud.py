@@ -31,10 +31,14 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         self.lite_doc_model = lite_doc_model
         self.document: AsyncIOMotorCollection = collection  # db[DocType.__collection__]
 
-    async def insert_one(self, create_doc: DocCreateType) -> DocType:
-        insert_result = await self.document.insert_one(create_doc.model_dump())
-        inserted_result = await self._find_by_id(insert_result.inserted_id)
-        return inserted_result
+    async def insert_one(self, create_doc: DocCreateType) -> DocType | Exception:
+        try:
+            insert_result = await self.document.insert_one(create_doc.model_dump())
+            inserted_result = await self._find_by_id(insert_result.inserted_id)
+            return inserted_result
+        except Exception as e:
+            logger.bind(create_doc=create_doc).error(str(e))
+            return e
 
     async def _find_by_id(self, id: str) -> DocType:
         object_id = ObjectId(id)
@@ -131,55 +135,70 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         delete_result = await self.document.delete_many(find_params)
         return delete_result
 
-    async def update_one(self, doc_update: DocUpdateType) -> DocType:
-        if not doc_update.id or not doc_update.user_id:
-            raise HTTPException(405, "Cannot find Doc to update")
+    async def update_one(self, doc_update: DocUpdateType) -> DocType | Exception:
+        try:
+            if not doc_update.id or not doc_update.user_id:
+                raise HTTPException(405, "Cannot find Doc to update")
 
-        update_params = {}
-        for key, value in doc_update.model_dump().items():
-            if value is not None:
-                if key == "id":
-                    update_params["_id"] = ObjectId(value)
-                else:
-                    update_params[key] = value
+            update_params = {}
+            for key, value in doc_update.model_dump().items():
+                if value is not None:
+                    if key == "id":
+                        update_params["_id"] = ObjectId(value)
+                    else:
+                        update_params[key] = value
 
-        updated_action_doc = await self.document.find_one_and_update(
-            filter={"_id": update_params.get("_id"), "user_id": update_params.get("user_id")},
-            update={"$set": update_params},
-            return_document=ReturnDocument.AFTER
-        )
-        if updated_action_doc is None:
-            raise HTTPException(405, "Unable to update doc")
+            updated_action_doc = await self.document.find_one_and_update(
+                filter={"_id": update_params.get("_id"), "user_id": update_params.get("user_id")},
+                update={"$set": update_params},
+                return_document=ReturnDocument.AFTER
+            )
+            if updated_action_doc is None:
+                raise HTTPException(405, "Unable to update doc")
 
-        updated_action_doc["_id"] = str(updated_action_doc.get("_id"))
-        doc_type = self.doc_model.model_validate(updated_action_doc)
-        return doc_type
+            updated_action_doc["_id"] = str(updated_action_doc.get("_id"))
+            doc_type = self.doc_model.model_validate(updated_action_doc)
+            return doc_type
+        except Exception as e:
+            logger.bind(doc_update=doc_update).exception(str(e))
+            return e
 
     async def _build_filter(
             self, doc_find: DocFindType, or_find_queries: List[DocFindType] | None = None
     ) -> Dict[str, Any] | Exception:
         query_filter = {}
-        filter1 = await self._build_find_params(doc_find)
+        filter1 = await self._build_find_params(doc_find.model_dump(exclude_none=True), {})
         if doc_find and (not or_find_queries or len(or_find_queries) == 0):
             query_filter = filter1
         elif or_find_queries and len(or_find_queries) > 0:
             query_filter["$or"] = [filter1]
             for query in or_find_queries:
-                filter2 = await self._build_find_params(query)
+                filter2 = await self._build_find_params(query.model_dump(exclude_none=True), {})
                 query_filter["$or"] += [filter2]
         return query_filter
 
     async def _build_find_params(
-            self, doc_find: DocFindType
+            self, model_params: Dict[str, Any], mongo_params: Dict[str, Any], mongo_param_prefix: str = ""
     ) -> Dict[str, Any] | Exception:
         try:
-            find_params = {}
-            for key, value in doc_find.model_dump().items():
+            find_params = mongo_params
+            for key, value in model_params.items():
                 if value is not None:
                     if key == "id":
-                        find_params["_id"] = ObjectId(value)
+                        find_params[f"{mongo_param_prefix}_id"] = ObjectId(value)
                     else:
-                        find_params[key] = value
+                        match value:
+                            case dict():
+                                new_find_params = await self._build_find_params(
+                                    value,
+                                    {},
+                                    f"{mongo_param_prefix}{key}."
+                                )
+                                for param_key in new_find_params.keys():
+                                    new_key = f"{mongo_param_prefix}{param_key}"
+                                    find_params[new_key] = new_find_params[param_key]
+                            case _:
+                                find_params[f"{mongo_param_prefix}{key}"] = value
             return find_params
         except Exception as e:
             logger.exception(str(e))

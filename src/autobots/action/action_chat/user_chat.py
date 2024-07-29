@@ -13,6 +13,7 @@ from src.autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, 
     ChatUpdate
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role, Message
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -69,14 +70,14 @@ class UserChat():
         delete_result = await self.chat_crud.delete_many(chat_doc_find)
         return delete_result.deleted_count
 
-    async def chat(self, chat_id: str, input: TextObj) -> ChatDoc:
+    async def chat(self, ctx: Context, chat_id: str, input: TextObj) -> ChatDoc:
         chat_doc = await self.get_chat(chat_id)
         if not chat_doc:
             raise HTTPException(404, "Chat not found")
         chat_req = ChatReq.model_validate(chat_doc.action.config)
         chat_req.messages = chat_req.messages + chat_doc.messages
 
-        run_obj: RunActionObj = await ActionFactory.run_action(chat_doc.action, input.model_dump())
+        run_obj: RunActionObj = await ActionFactory.run_action(ctx, chat_doc.action, input.model_dump())
         resp_text_objs: TextObjs = TextObjs.model_validate(run_obj.output_dict)
 
         messages = []
@@ -89,11 +90,11 @@ class UserChat():
 
         chat_doc.messages = (chat_doc.messages + messages)
         if chat_doc.title == UserChat.DEFAULT_TITLE:
-            chat_doc.title = await self._gen_title(chat_doc)
+            chat_doc.title = await self._gen_title(ctx, chat_doc)
         updated_chat_doc = await self.update_chat(chat_id, ChatUpdate(**chat_doc.model_dump()))
         return updated_chat_doc
 
-    async def _gen_title(self, chat_doc: ChatDoc) -> str:
+    async def _gen_title(self, ctx: Context, chat_doc: ChatDoc) -> str:
         try:
             title_gen_content = "Act as expert title generator. Generate very short text title for the following conversation:\n"
 
@@ -115,7 +116,10 @@ class UserChat():
                 role=Role.user.value,
                 content=title_gen_content+action_content+conversation_content
             )
-            chat_res = await get_openai().openai_chat.chat(ChatReq(messages=[title_gen_message], max_token=25))
+            chat_res = await get_openai().openai_chat.chat(
+                chat_req=ChatReq(messages=[title_gen_message], max_token=25),
+                ctx=ctx
+            )
             title = f"{chat_doc.action.name}-{chat_res.choices[0].message.content}"
             return title
         except Exception as e:

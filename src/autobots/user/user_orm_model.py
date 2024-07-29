@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import Column, UUID, DateTime, func
 
 from src.autobots.core.database.base import Base
@@ -9,5 +11,6 @@ class UserORM(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True)
     created_at = Column(DateTime, server_default=func.now())
 
-    def __init__(self, id: UUID):
+    def __init__(self, id: UUID, **kw: Any):
+        super().__init__(**kw)
         self.id = id

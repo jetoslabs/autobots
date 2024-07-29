@@ -5,10 +5,9 @@ from pydantic import BaseModel
 import base64
 import io
 import re
-import uuid
 from PIL import Image
-import os
-from src.autobots.conn.chroma.chroma import Chroma, Document
+from src.autobots.conn.chroma.chroma import Document
+from src.autobots.data_model.context import Context
 from src.autobots.datastore.multidatastore import MultiDataStore
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutputType, ActionInputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
@@ -16,13 +15,10 @@ from src.autobots.action.action.action_doc_model import ActionCreate, ActionResu
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.aws.s3 import get_s3
-from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
-from src.autobots.conn.openai.openai_client import get_openai
-from src.autobots.conn.pinecone.pinecone import get_pinecone
-from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
-from src.autobots.datastore.datastore import Datastore
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from openai import OpenAI
-from src.autobots.core.settings import Settings, SettingsProvider
+from src.autobots.core.settings import SettingsProvider
+from src.autobots.user.user_orm_model import UserORM
 
 
 def resize_base64_image(base64_string, size=(128, 128)):
@@ -162,8 +158,8 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ActionCreateMultiModalLlmChatWithVectorSearchOpenaiConfig):
-        super().__init__(action_config)
+    def __init__(self, action_config: ActionCreateMultiModalLlmChatWithVectorSearchOpenaiConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
         self.datastore = MultiDataStore(s3=get_s3()).hydrate(datastore_id=action_config.datastore_id)
 
     # @staticmethod
@@ -203,7 +199,7 @@ class ActionMultiModalLlmChatWithVectorSearchOpenai(
             curr_config.chat_req.messages = curr_config.chat_req.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs | None:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs | None:
         # text_objs = TextObjs(texts=[])
         # vector search
         search_results = await self.datastore.search(action_input.text)

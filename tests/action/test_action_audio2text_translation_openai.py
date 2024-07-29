@@ -11,6 +11,7 @@ from src.autobots.conn.openai.openai_audio.speech_model import SpeechReq
 from src.autobots.conn.openai.openai_audio.translation_model import TranslationReq
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.core.utils import gen_hash
+from src.autobots.data_model.context import Context
 
 
 @pytest.mark.asyncio
@@ -29,7 +30,7 @@ async def test_action_audio2text_translation_openai_happy_path(set_test_settings
         file_url=str(url)
     )
     input = AudioRes(url=url.unicode_string())
-    translation = await ActionAudio2TextTranslationOpenai(action_config=config).run_action(input)
+    translation = await ActionAudio2TextTranslationOpenai(action_config=config).run_action(Context(), input)
     assert translation is not None
     # flaky assert
     # assert translation.text.lower().__contains__("i am here to help you")

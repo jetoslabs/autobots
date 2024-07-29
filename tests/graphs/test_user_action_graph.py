@@ -17,12 +17,14 @@ from src.autobots.core.utils import gen_random_str
 from src.autobots.core.database.mongo_base import get_mongo_db
 
 from src.autobots.action_graph.action_graph.user_action_graph import UserActionGraphs
+from src.autobots.data_model.context import Context
 from src.autobots.event_result.event_result_model import EventResultStatus
 from src.autobots.user.user_orm_model import UserORM
 
 
 @pytest.mark.asyncio
 async def test_user_graph_run_happy_path(set_test_settings):
+    ctx = Context()
     rand: str = gen_random_str()
 
     user_id = uuid.UUID("4d5d5063-36fb-422e-a811-cac8c2003d38")
@@ -69,6 +71,7 @@ async def test_user_graph_run_happy_path(set_test_settings):
         # run action graph
         user_input = TextObj(text="Campaign for Nike shoes during Diwali Festival")
         action_graph_result_doc = await user_action_graph.run_in_background(
+            ctx,
             user_actions,
             user_action_market,
             user_action_graph_result,

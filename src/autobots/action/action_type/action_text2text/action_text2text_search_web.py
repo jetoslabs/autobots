@@ -9,6 +9,8 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchTextParams
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class SearchWebConfig(BaseModel):
@@ -43,10 +45,10 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: SearchWebConfig):
-        super().__init__(action_config)
+    def __init__(self, action_config: SearchWebConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs | Exception:
         text_objs = TextObjs(texts=[])
         try:
             duckduckgo = get_duckduckgo()
@@ -64,12 +66,13 @@ class ActionText2TextSearchWeb(ActionABC[SearchWebConfig, SearchWebConfig, Searc
             return text_objs
         except ValidationError as e:
             logger.error(str(e))
+            return e
         except Exception as e:
             logger.error(str(e))
+            return e
 
-    @staticmethod
-    async def run_tool(action_config: SearchWebConfig) -> TextObjs:
+    async def run_tool(self, action_config: SearchWebConfig, ctx: Context) -> TextObjs | Exception:
         action = ActionText2TextSearchWeb(action_config)
         action_input = TextObj(text="")
-        text_objs = await action.run_action(action_input)
+        text_objs = await action.run_action(ctx=ctx, action_input=action_input)
         return text_objs

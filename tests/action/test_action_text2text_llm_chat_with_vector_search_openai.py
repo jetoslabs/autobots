@@ -10,6 +10,7 @@ from src.autobots.conn.aws.s3 import get_s3
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.conn.pinecone.pinecone import get_pinecone
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
+from src.autobots.data_model.context import Context
 from src.autobots.datastore.datastore import Datastore
 
 text = ("## Definition of story structure"
@@ -60,7 +61,7 @@ async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_p
             config=action_config.model_dump(exclude_none=True)
         )
         action_input = {"text": "Sunny day in Sahara"}
-        action_run_obj_1 = await ActionFactory.run_action(action_doc, action_input)
+        action_run_obj_1 = await ActionFactory.run_action(Context(), action_doc, action_input)
         # On Action run: for every run we add context input
         assert action_run_obj_1.output_dict
         assert len(action_run_obj_1.config_dict.get("chat_req").get("messages")) == 3
@@ -71,7 +72,7 @@ async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_p
         action_doc.results.append(ActionResult(input=action_doc.input, output=action_doc.output))
 
         action_input = {"text": "Keep the same plot but make it funny"}
-        action_run_obj_2 = await ActionFactory.run_action(action_doc, action_input)
+        action_run_obj_2 = await ActionFactory.run_action(Context(), action_doc, action_input)
         # On Action run: for every run we dont add context input
         assert action_run_obj_2.output_dict
         assert len(action_run_obj_2.config_dict.get("chat_req").get("messages")) == 7
