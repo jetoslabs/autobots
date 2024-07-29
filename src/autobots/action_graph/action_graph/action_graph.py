@@ -184,7 +184,7 @@ class ActionGraph:
 
                     if len(upstream_nodes) == 0:
                         # Run action with no dependency
-                        action_result: ActionDoc = await ActionGraph.run_action(
+                        action_result: ActionDoc = await ActionGraph.run_action(ctx,
                             user_actions,
                             user_actions_market,
                             node_action_map.get(node),
@@ -197,7 +197,7 @@ class ActionGraph:
                         curr_action = await ActionGraph.get_action(user_actions, user_actions_market,
                                                                    node_action_map.get(node))
                         action_input = await ActionGraph.to_input(ctx, upstream_nodes, curr_action.type, action_response)
-                        action_result: ActionDoc = await ActionGraph.run_action(
+                        action_result: ActionDoc = await ActionGraph.run_action(ctx,
                             user_actions,
                             user_actions_market,
                             node_action_map.get(node),
@@ -302,6 +302,7 @@ class ActionGraph:
 
     @staticmethod
     async def run_action(
+            ctx: Context,
             user_actions: UserActions,
             user_action_market: UserActionsMarket,
             action_id: str,
@@ -309,7 +310,7 @@ class ActionGraph:
     ) -> ActionDoc:
         exception = None
         try:
-            action_result = await user_actions.run_action_v1(action_id, action_graph_input_dict)
+            action_result = await user_actions.run_action_v1(ctx, action_id, action_graph_input_dict)
             return action_result
         except HTTPException as e:
             exception = e
@@ -347,7 +348,7 @@ class ActionGraph:
             action_graph_input_dict: Dict[str, Any]
     ) -> ActionDoc:
         try:
-            action_doc = await user_actions.run_action_doc(action_doc, action_graph_input_dict)
+            action_doc = await user_actions.run_action_doc(ctx, action_doc, action_graph_input_dict)
             return action_doc
         except Exception as e:
             logger.bind(ctx=ctx).exception(str(e))
@@ -457,7 +458,7 @@ class ActionGraph:
                 response_format={"type": "json_object"}
             )
             run_input = TextObj(text=llm_input)
-            text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(run_input)
+            text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(ctx, run_input)
             output_json = text_objs.texts[0].text
             json_dict = json.loads(output_json)
             curr_action_input_obj = curr_action_input_type.model_validate(json_dict)

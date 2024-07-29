@@ -11,6 +11,7 @@ class TextObj(BaseModel):
 
 class AssistantObj(BaseModel):
     text: str = ""
+    urls: Optional[List[str]] =[] 
     tools: Optional[List[AssistantTool]] = []
     tool_resources: Optional[ToolResources] = None
 
