@@ -30,7 +30,7 @@ async def test_crud_mongo_db_happy_path(set_test_settings):
     settings = SettingsProvider.sget()
     name = "test_crud_mongo_db_happy_path"
     # client_gen = MongoDBCRUD.client_agen(ctx, settings)
-    client = await MongoDBCRUD.client()
+    client = await MongoDBCRUD.client(ctx_json=ctx.model_dump_json())
     try:
         for i in range(10):
             try:

@@ -26,9 +26,9 @@ class MongoDBCRUD(
 
     @staticmethod
     @lru_cache()
-    async def client() -> AsyncIOMotorClient:
-        ctx = Context(user_id="SYSTEM", span=MongoDBCRUD.__name__)
+    async def client(ctx_json: str) -> AsyncIOMotorClient:
         settings = SettingsProvider.sget()
+        ctx = Context.model_validate_json(ctx_json)
         return await MongoDBCRUD._client(ctx, settings)
 
     @staticmethod

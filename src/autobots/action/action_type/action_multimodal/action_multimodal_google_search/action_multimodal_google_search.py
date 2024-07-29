@@ -8,6 +8,8 @@ from src.autobots.action.action_type.action_multimodal.action_multimodal_google_
     ActionMultimodalGoogleSearchConfig, ActionMultimodalGoogleSearchInput, ActionMultimodalGoogleSearchOutput
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.serp.serp import get_serp
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionMultimodalGoogleSearch(
@@ -45,8 +47,12 @@ class ActionMultimodalGoogleSearch(
     def get_output_type() -> Type[ActionOutputType]:
         return ActionMultimodalGoogleSearchOutput
 
+    def __init__(self, action_config: ActionMultimodalGoogleSearchConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
+
     async def run_action(
             self,
+            ctx: Context,
             action_input: ActionMultimodalGoogleSearchInput
     ) -> ActionMultimodalGoogleSearchOutput | None:
         if action_input and action_input.text != "":
@@ -58,11 +64,12 @@ class ActionMultimodalGoogleSearch(
             return None
         return result_or_exception
 
-    @staticmethod
     async def run_tool(
-            action_config: ActionMultimodalGoogleSearchConfig
+            self,
+            action_config: ActionMultimodalGoogleSearchConfig,
+            ctx: Context
     ) -> ActionMultimodalGoogleSearchOutput:
-        action = ActionMultimodalGoogleSearch(action_config)
+        action = ActionMultimodalGoogleSearch(action_config, self.user)
         input = ActionMultimodalGoogleSearchInput(text="")
-        output = await action.run_action(input)
+        output = await action.run_action(ctx=ctx, action_input=input)
         return output

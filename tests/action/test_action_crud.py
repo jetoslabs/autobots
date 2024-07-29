@@ -11,6 +11,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.data_model.context import Context
 
 
 @pytest.mark.asyncio
@@ -45,7 +46,7 @@ async def test_action_crud_happy_path(set_test_settings):
         # resp: TextObjs = await action_factory.run_action(action_doc, user_input.model_dump())
         # assert len(resp.texts) > 0
         # assert resp.texts[0] != ""
-        run_action_obj: RunActionObj = await action_factory.run_action(action_doc, user_input.model_dump())
+        run_action_obj: RunActionObj = await action_factory.run_action(Context(), action_doc, user_input.model_dump())
         resp = ACTION_MAP.get(ActionType.text2text_llm_chat_openai).get_output_type().model_validate(run_action_obj.output_dict)
         assert len(resp.texts) > 0
         assert resp.texts[0] != ""

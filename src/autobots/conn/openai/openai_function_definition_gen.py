@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 
+from loguru import logger
 from openai.types.beta import FunctionToolParam
 from openai.types.chat import ChatCompletionToolParam
 from openai.types.shared_params import FunctionDefinition, FunctionParameters
@@ -17,6 +18,7 @@ class OpenAIFunctionDefinitionGen:
         parameters_obj = await OpenAIFunctionDefinitionGen._get_func_parameters(func)
         function_obj = FunctionDefinition(name=func_name, description=description, parameters=parameters_obj)
         function_schema = FunctionToolParam(type="function", function=function_obj)
+        logger.bind(func=func, func_definition=function_schema).debug("Function definition generated")
         return function_schema
 
     @staticmethod
@@ -25,6 +27,7 @@ class OpenAIFunctionDefinitionGen:
         parameters_obj = await OpenAIFunctionDefinitionGen._get_func_parameters(func)
         function_obj = FunctionDefinition(name=func_name, description=description, parameters=parameters_obj)
         function_schema = ChatCompletionToolParam(type="function", function=function_obj)
+        logger.bind(func=func, func_definition=function_schema).debug("Function definition generated")
         return function_schema
 
     @staticmethod
@@ -38,6 +41,10 @@ class OpenAIFunctionDefinitionGen:
                 # TODO: Currently Openai does not support function with multiple arguments
                 # func_parameters[func_parameter_name] = func_param
                 func_parameters = func_param
+                logger.warning(
+                    "Breaking after 1st param of function while building function definition. "
+                    "Currently Openai does not support function with multiple arguments"
+                )
                 break
         return func_parameters
 
