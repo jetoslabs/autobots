@@ -9,6 +9,8 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.duckduckgo.duckduckgo import get_duckduckgo
 from src.autobots.conn.duckduckgo.duckduckgo_model import SearchImageParams
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class SearchImageConfig(BaseModel):
@@ -38,10 +40,10 @@ class ActionText2ImgSearchImage(ActionABC[SearchImageConfig, SearchImageConfig, 
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: TextObj):
-        super().__init__(action_config)
+    def __init__(self, action_config: TextObj, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             duckduckgo = get_duckduckgo()

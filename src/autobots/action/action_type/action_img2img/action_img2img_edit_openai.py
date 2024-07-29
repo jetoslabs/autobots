@@ -10,6 +10,8 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_images.image_model import ImageEdit
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ImageEditInput(BaseModel):
@@ -42,10 +44,10 @@ class ActionImg2ImgEditOpenai(ActionABC[ImageEdit, ImageEdit, ImageEdit, ImageEd
     def get_output_type() -> Type[ActionOutputType]:
         return ImagesResponse
 
-    def __init__(self, action_config: ImageEdit):
-        super().__init__(action_config)
+    def __init__(self, action_config: ImageEdit, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: ImageEditInput) -> ImagesResponse:
+    async def run_action(self, ctx: Context, action_input: ImageEditInput) -> ImagesResponse:
         if action_input.prompt:
             self.action_config.prompt = f"{self.action_config.prompt} {action_input.prompt}"
         if action_input.image:

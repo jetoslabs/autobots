@@ -10,5 +10,6 @@ class AppException(Exception):
             detail: Optional[str] = None,
             http_status: Optional[int] = None
     ):
+        super().__init__(detail, http_status)
         self.detail = detail if detail is not None else ""
         self.http_status = http_status

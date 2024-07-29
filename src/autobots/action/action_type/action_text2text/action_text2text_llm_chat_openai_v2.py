@@ -5,6 +5,7 @@ from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssi
     ChatCompletionToolParam
 from pydantic import ValidationError
 
+from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
@@ -16,6 +17,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
 from src.autobots.conn.openai.openai_client import get_openai
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj, TextObjs]):
@@ -41,27 +43,8 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ChatReq):
-        super().__init__(action_config)
-
-    # @staticmethod
-    # async def update_config_with_prev_IO(
-    #         curr_config: ChatReq,
-    #         prev_input: TextObj | None = None,
-    #         prev_output: TextObjs | None = None,
-    # ) -> ChatReq:
-    #     #     ChatCompletionUserMessageParam,
-    #     #     ChatCompletionAssistantMessageParam,
-    #     if not prev_input or not prev_output or prev_input.text == "" or len(prev_output.texts) == 0:
-    #         return curr_config
-    #     updated_messages = (
-    #             curr_config.messages +
-    #             [ChatCompletionUserMessageParam(role="user", content=prev_input.text)] +
-    #             [ChatCompletionAssistantMessageParam(role="assistant", content=prev_output_text_obj.text) for
-    #              prev_output_text_obj in prev_output.texts]
-    #     )
-    #     curr_config.messages = updated_messages
-    #     return curr_config
+    def __init__(self, action_config: ChatReq, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     @staticmethod
     async def update_config_with_prev_results(
@@ -82,7 +65,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
             curr_config.messages = curr_config.messages + config_message_1 + config_messages_2
         return curr_config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(self.action_config)
@@ -92,7 +75,7 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
                 # message = Message(role=Role.user.value, content=action_input.text)
                 message = ChatCompletionUserMessageParam(role=Role.user.value, content=action_input.text)
                 self.action_config.messages = self.action_config.messages + [message]
-            chat_res = await get_openai().openai_chat.chat(chat_req=self.action_config)
+            chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=self.action_config, user=self.user)
             # remove input message from Config messages #TODO: dont remove
             # self.action_config.messages.pop()
             if not chat_res:
@@ -104,13 +87,12 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, TextObj,
         except ValidationError as e:
             logger.error(str(e))
 
-    @staticmethod
-    async def run_tool(action_config: ChatReq) -> TextObjs | Exception:
+    async def run_tool(self, action_config: ChatReq, ctx: Context) -> TextObjs | Exception:
         text_objs = TextObjs(texts=[])
         try:
             tool_defs = await ActionText2TextLlmChatOpenai.replace_action_tools_with_tools_defs(action_config)
             action_config.tools = tool_defs
-            chat_res = await get_openai().openai_chat.chat(chat_req=action_config)
+            chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=action_config, user=self.user)
             if not chat_res:
                 raise AppException(detail="Cannot run LLM", http_status=500)
             for choice in chat_res.choices:

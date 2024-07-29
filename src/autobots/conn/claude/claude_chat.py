@@ -8,6 +8,7 @@ from anthropic.types import (
 from src.autobots.conn.claude.chat_model import ChatReqClaude
 from src.autobots.core.logging.app_code import AppCode
 from src.autobots.core.logging.log_binder import LogBinder
+from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tool_factory_claude import ToolFactoryClaude
 
 
@@ -17,10 +18,10 @@ class AnthropicChat:
         self.client = anthropic_client
 
     @retry(exceptions=Exception, tries=3, delay=30)
-    async def chat(self, chat_req: ChatReqClaude) -> Message | AsyncStream[MessageStreamEvent] | None:
+    async def chat(self, ctx: Context, chat_req: ChatReqClaude) -> Message | AsyncStream[MessageStreamEvent] | None:
         try:
             logger.trace("Starting Anthropic Chat, try: 1")
-            res: Message = await self.chat_loop(chat_req)
+            res: Message = await self.chat_loop(ctx=ctx, chat_req=chat_req)
             logger.trace("Completed Anthropic Chat")
             if isinstance(res, AsyncStream):
                 return self.yield_chat_chunks(res)
@@ -30,7 +31,7 @@ class AnthropicChat:
             logger.error(str(e))
             raise
 
-    async def chat_loop(self, chat_req: ChatReqClaude) -> Message | AsyncStream[MessageStreamEvent]:
+    async def chat_loop(self, ctx: Context, chat_req: ChatReqClaude) -> Message | AsyncStream[MessageStreamEvent]:
         while True:
             logger.info(chat_req.model_dump(exclude_none=True))
             chat_completion: Message = await self.client.messages.create(
@@ -54,7 +55,7 @@ class AnthropicChat:
                     )
                     chat_req.messages.append(tool_message)
                     # run tool
-                    tool_output_str: str = await ToolFactoryClaude.run_tool(name, args)
+                    tool_output_str: str = await ToolFactoryClaude.run_tool(ctx, name, args)
                     tool_output_message = MessageParam(role="user", content=tool_output_str)
                     logger.bind(
                         **LogBinder()

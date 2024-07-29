@@ -20,8 +20,10 @@ from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_mo
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
 from src.autobots.core.logging.log_binder import LogBinder
+from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionMultimodalAssistantOpenai(
@@ -78,7 +80,10 @@ class ActionMultimodalAssistantOpenai(
         await assistant_client.delete(assistant_delete)
         return config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    def __init__(self, action_config: AssistantOpenaiConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
+
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs:
         assistant_client = get_openai().openai_assistants
         assistant = self.action_config
         try:
@@ -113,7 +118,7 @@ class ActionMultimodalAssistantOpenai(
                         name = tool_call.function.name
                         args = tool_call.function.arguments
                         # run tool
-                        tool_output_str: str = await ToolFactory.run_tool(name, args)
+                        tool_output_str: str = await ToolFactory(self.user).run_tool(ctx, name, args)
                         tool_output = {
                             "output": tool_output_str,
                             "tool_call_id": tool_call.id

@@ -2,7 +2,7 @@ from typing import List
 from sentence_transformers import SentenceTransformer, util
 import spacy
 from src.autobots.conn.tiktoken.tiktoken import get_tiktoken
-from typing import Callable, AsyncGenerator
+from typing import AsyncGenerator
 from src.autobots.datastore.data_provider import DataProvider
 class SentenceTransformersSimilarity:
     
@@ -67,6 +67,7 @@ class SimilarSentenceSplitter:
 class SemanticDataProvider(DataProvider):
     
     def __init__(self, model_name="all-MiniLM-L6-v2", similarity_threshold=0.2):
+        super().__init__()
         self.similarity_model = SentenceTransformersSimilarity(model=model_name, similarity_threshold=similarity_threshold)
         self.sentence_splitter = SpacySentenceSplitter()
         self.similar_sentence_splitter = SimilarSentenceSplitter(self.similarity_model, self.sentence_splitter)

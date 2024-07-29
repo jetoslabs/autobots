@@ -8,6 +8,7 @@ from pydantic import BaseModel, HttpUrl
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.selenium.selenium import get_selenium
+from src.autobots.data_model.context import Context
 
 tot_prompt = "Role: You are LogicGPT, a highly evolved AI Language Model built on the GPT architecture, boasting exceptional logical reasoning, critical thinking, and common sense understanding. Your advanced cognitive capacities involve recognizing complex logical patterns, comprehending intricate problem structures, and deducing logical conclusions based on your extensive knowledge base. Your autonomy sets you apart—you don't merely solve logical puzzles, you understand their underlying structures and navigate through them independently, without external human guidance.\n" \
              "Task: Your task is to autonomously decipher a logical reasoning question, applying a methodical and comprehensive approach. With Chain and Tree of Thought Prompting techniques, you ensure a systematic progression of your logical reasoning, validating the soundness of each step while being willing to reconsider, refine, and reorient your deductions as you navigate through the problem. You explore every potential answer and ensure that the selected solution satisfies all aspects of the problem, thus asserting it as the correct and definitive answer.\n" \
@@ -45,20 +46,20 @@ class AgentData(BaseModel):
 
 class OneStepAgent:
 
-    async def run(self, agent_data: AgentData, loops_allowed=5):
+    async def run(self, ctx: Context, agent_data: AgentData, loops_allowed=5):
         agent_data.context.append(ChatCompletionUserMessageParam(role="user", content=f"{agent_data.goal}"))
-        while not await self.is_goal_completed(agent_data) and loops_allowed >= 1:
+        while not await self.is_goal_completed(ctx, agent_data) and loops_allowed >= 1:
             loops_allowed = loops_allowed - 1
             logger.debug(f"OneStepAgent run: {agent_data.context[-1]}")
-            plan_str: str = await self.plan_for_goal(agent_data)
+            plan_str: str = await self.plan_for_goal(ctx, agent_data)
             plan_message = ChatCompletionUserMessageParam(role="user", content=plan_str)
             agent_data.context.append(plan_message)
             # Decide the next action based on the current context
-            next_action_str: str = await self.decide_next_action(agent_data)
+            next_action_str: str = await self.decide_next_action(ctx, agent_data)
             # Execute the action and update the context
-            await self.run_next_action(next_action_str, agent_data)
+            await self.run_next_action(ctx, next_action_str, agent_data)
 
-    async def is_goal_completed(self, agent_data: AgentData) -> bool:
+    async def is_goal_completed(self, ctx: Context, agent_data: AgentData) -> bool:
         messages = [
             ChatCompletionUserMessageParam(role="user",
                     content=f"Act as a critical thinker. Evaluate if the user goal is complete? Respond with only YES or NO.\n"
@@ -67,28 +68,28 @@ class OneStepAgent:
                     )
         ]
         chat_req = ChatReq(messages=messages)
-        chat_res_1 = await get_openai().openai_chat.chat(chat_req=chat_req)
+        chat_res_1 = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
         resp_1 = chat_res_1.choices[0].message
-        chat_res_2 = await get_openai().openai_chat.chat(chat_req=chat_req)
+        chat_res_2 = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
         resp_2 = chat_res_2.choices[0].message
 
         completed = "yes" in resp_1.content.lower() and "yes" in resp_2.content.lower()
         return completed
 
-    async def decide_next_action(self, agent_data) -> str:
-        prompt: str = await self.generate_prompt_for_goal(agent_data)
-        next_action_str = await self.next_action_str(prompt)
+    async def decide_next_action(self, ctx: Context, agent_data) -> str:
+        prompt: str = await self.generate_prompt_for_goal(ctx, agent_data)
+        next_action_str = await self.next_action_str(ctx, prompt)
         print(f"next action: {next_action_str}")
         return next_action_str
 
-    async def generate_prompt_for_goal(self, agent_data) -> str:
+    async def generate_prompt_for_goal(self, ctx: Context, agent_data) -> str:
         msg1 = ChatCompletionUserMessageParam(role="user", content=f"My goal: {agent_data.context[-1]}")
         chat_req = ChatReq(messages=prompt_generator_messages + [msg1])  # + agent_data.context)
-        chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
+        chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content
 
-    async def next_action_str(self, prompt) -> str:
+    async def next_action_str(self, ctx: Context, prompt) -> str:
         msg0 = ChatCompletionSystemMessageParam(role="system",
                        content="You are a intelligent critical thinker. "
                                "To complete user goal decide one action from the given set of actions.\n"
@@ -101,7 +102,7 @@ class OneStepAgent:
         msg1 = ChatCompletionUserMessageParam(role="user", content=f"My goal: {prompt}")
         chat_req = ChatReq(messages=[msg0, msg1])
 
-        chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
+        chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content
 
@@ -113,7 +114,7 @@ class OneStepAgent:
         if "ReadUrls" in next_action_str:
             return "ReadUrls"
 
-    async def run_next_action(self, next_action_str, agent_data: AgentData):
+    async def run_next_action(self, ctx: Context, next_action_str, agent_data: AgentData):
         next_action = await self.map_str_to_action(next_action_str)
         next_action_input = next_action_str.split("[")[1].replace("]", "")
 
@@ -121,7 +122,7 @@ class OneStepAgent:
             chat_req: ChatReq = ChatReq(messages=[ChatCompletionUserMessageParam(role="user", content=next_action_input)])
             # llm_chat_data = LLMChatData(chat_req=chat_req)
             # await LLMChat().run(action_data=llm_chat_data)
-            chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
+            chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
             resp = chat_res.choices[0].message
 
             agent_data.context.append(
@@ -140,9 +141,9 @@ class OneStepAgent:
                 ChatCompletionUserMessageParam(role="user", content=content)
             )
 
-    async def plan_for_goal(self, agent_data):
+    async def plan_for_goal(self, ctx: Context, agent_data):
         msg1 = ChatCompletionUserMessageParam(role="user", content=f"My goal: {agent_data.goal}")
         chat_req = ChatReq(messages=[tot_message, msg1])
-        chat_res = await get_openai().openai_chat.chat(chat_req=chat_req)
+        chat_res = await get_openai().openai_chat.chat(ctx=ctx, chat_req=chat_req)
         resp = chat_res.choices[0].message
         return resp.content

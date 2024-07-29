@@ -9,6 +9,8 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_audio.translation_model import TranslationReq
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class AudioRes(BaseModel):
@@ -38,10 +40,10 @@ class ActionAudio2TextTranslationOpenai(ActionABC[TranslationReq, TranslationReq
     def get_output_type() -> Type[ActionOutputType]:
         return Translation
 
-    def __init__(self, action_config: TranslationReq):
-        super().__init__(action_config)
+    def __init__(self, action_config: TranslationReq, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: AudioRes) -> Translation | None:
+    async def run_action(self, ctx: Context, action_input: AudioRes) -> Translation | None:
         try:
             if self.action_config.file_url is None and action_input.url is None:
                 return None

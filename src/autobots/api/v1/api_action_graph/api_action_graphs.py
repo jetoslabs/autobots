@@ -5,6 +5,7 @@ import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from loguru import logger
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from starlette.requests import Request
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.common_action_models import TextObj
@@ -112,6 +113,7 @@ async def delete_action_graph(
 
 @router.post("/{id}/async_run")
 async def async_run_action_graph(
+        request: Request,
         id: str,
         input: TextObj,
         background_tasks: BackgroundTasks,
@@ -121,11 +123,13 @@ async def async_run_action_graph(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionGraphResultDoc | None:
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)
     user_actions_market = UserActionsMarket(user_orm, db)
     user_action_graph_result = UserActionGraphResult(user_orm, db)
     resp = await UserActionGraphs(user=user_orm, db=db).run_in_background(
+        ctx,
         user_actions,
         user_actions_market,
         user_action_graph_result,

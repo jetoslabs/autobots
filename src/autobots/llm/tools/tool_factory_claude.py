@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 
 from loguru import logger
 from src.autobots.conn.claude.fn_defn import AnthropicFunctionDefinitionGen
+from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
 
 
@@ -32,12 +33,12 @@ class ToolFactoryClaude:
         return func_defs if len(func_defs) > 0 else None
 
     @staticmethod
-    async def run_tool(tool_name, tool_args) -> str:
+    async def run_tool(ctx: Context, tool_name, tool_args) -> str:
         tool_output = ""
         try:
             action = TOOLS_MAP.get(tool_name)
             config = action.get_config_type().model_validate(json.loads(json.dumps(tool_args)))
-            output = await action.run_tool(config)
+            output = await action.run_tool(action_config=config, ctx=ctx)
             output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
             tool_output = output_str
         except Exception as e:

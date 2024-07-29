@@ -22,6 +22,7 @@ from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.logging.app_code import AppCode
 from src.autobots.core.logging.log_binder import LogBinder
 from src.autobots.core.profiler.profiler import Profiler
+from src.autobots.data_model.context import Context
 from src.autobots.event_result.event_result_model import EventResultStatus
 
 
@@ -29,6 +30,7 @@ class ActionGraph:
 
     @staticmethod
     async def run_in_background(
+            ctx: Context,
             action_graph_doc: ActionGraphDoc,
             action_graph_input_dict: Dict[str, Any],
             user_actions: UserActions,
@@ -66,6 +68,7 @@ class ActionGraph:
             if background_tasks:
                 background_tasks.add_task(
                     ActionGraph._run_as_background_task,
+                    ctx,
                     user_actions,
                     user_actions_market,
                     action_graph_input_dict,
@@ -76,6 +79,7 @@ class ActionGraph:
                 )
             else:
                 action_graph_result_doc = await ActionGraph._run_as_background_task(
+                    ctx,
                     user_actions,
                     user_actions_market,
                     action_graph_input_dict,
@@ -91,11 +95,12 @@ class ActionGraph:
                          .with_action_graph_id(action_graph_doc.id)
                          .with_action_graph_run_id(action_graph_result_doc.id)
                          .get_bind_dict())
-            logger.bind(**bind_dict).error(f"ActionGraph run failed due to {e}")
+            logger.bind(ctx=ctx, **bind_dict).error(f"ActionGraph run failed due to {e}")
             raise
 
     @staticmethod
     async def _run_as_background_task(
+            ctx: Context,
             user_actions: UserActions,
             user_actions_market: UserActionsMarket,
             action_graph_input_dict: Dict[str, Any],
@@ -110,6 +115,7 @@ class ActionGraph:
         # ACTION GRAPH RESULT - NODE RERUN
         if action_graph_node_id:
             action_graph_result_doc = await ActionGraph.run_node(
+                ctx,
                 user_actions,
                 action_graph_input_dict,
                 action_graph_result_doc,
@@ -120,6 +126,7 @@ class ActionGraph:
         # ACTION GRAPH RESULT - GRAPH RUN / RERUN
         else:
             action_graph_result_doc = await ActionGraph.run_action_graph(
+                ctx,
                 user_actions,
                 user_actions_market,
                 action_graph_input_dict,
@@ -132,6 +139,7 @@ class ActionGraph:
 
     @staticmethod
     async def run_action_graph(
+            ctx: Context,
             user_actions: UserActions,
             user_actions_market: UserActionsMarket,
             action_graph_input_dict: Dict[str, Any],
@@ -188,7 +196,7 @@ class ActionGraph:
                         # Run action with at least 1 dependency
                         curr_action = await ActionGraph.get_action(user_actions, user_actions_market,
                                                                    node_action_map.get(node))
-                        action_input = await ActionGraph.to_input(upstream_nodes, curr_action.type, action_response)
+                        action_input = await ActionGraph.to_input(ctx, upstream_nodes, curr_action.type, action_response)
                         action_result: ActionDoc = await ActionGraph.run_action(
                             user_actions,
                             user_actions_market,
@@ -199,7 +207,7 @@ class ActionGraph:
                         action_response[node] = ActionDoc.model_validate(action_result)
 
                         memory_profile = await Profiler.do_memory_profile()
-                        logger.bind(memory_profile=memory_profile).info(
+                        logger.bind(ctx=ctx, memory_profile=memory_profile).info(
                             f"Memory profile for Action run {action_result.name}:{action_result.version}")
 
                     # Update action result graph
@@ -232,7 +240,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
+            logger.bind(ctx=ctx, **bind_dict).exception(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
@@ -245,11 +253,12 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        logger.bind(**bind_dict).info("Completed Action Graph _run_as_background_task")
+        logger.bind(ctx=ctx, **bind_dict).info("Completed Action Graph _run_as_background_task")
         return action_graph_result_doc
 
     @staticmethod
     async def run_node(
+            ctx: Context,
             user_actions: UserActions,
             action_graph_input_dict: Dict[str, Any],
             action_graph_result_doc: ActionGraphResultDoc,
@@ -269,6 +278,7 @@ class ActionGraph:
                      .get_bind_dict())
         try:
             action_result: ActionDoc = await ActionGraph.run_action_doc(  # noqa F841
+                ctx,
                 user_actions,
                 node_action_doc,
                 action_graph_input_dict
@@ -286,7 +296,7 @@ class ActionGraph:
 
             return action_graph_result_doc
         except Exception as e:
-            logger.bind(**bind_dict).info(f"Error in rerun node of Action Graph: {str(e)}")
+            logger.bind(ctx=ctx, **bind_dict).info(f"Error in rerun node of Action Graph: {str(e)}")
             return action_graph_result_doc
 
 
@@ -331,6 +341,7 @@ class ActionGraph:
 
     @staticmethod
     async def run_action_doc(
+            ctx: Context,
             user_actions: UserActions,
             action_doc: ActionDoc,
             action_graph_input_dict: Dict[str, Any]
@@ -339,7 +350,7 @@ class ActionGraph:
             action_doc = await user_actions.run_action_doc(action_doc, action_graph_input_dict)
             return action_doc
         except Exception as e:
-            logger.exception(str(e))
+            logger.bind(ctx=ctx).exception(str(e))
             raise
 
     @staticmethod
@@ -374,7 +385,7 @@ class ActionGraph:
 
     @staticmethod
     async def to_input(
-            upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
+            ctx: Context, upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
     ) -> TextObj | Any:
         input_msg = ""
 
@@ -385,7 +396,7 @@ class ActionGraph:
             upstream_action_doc = action_response.get(upstream_node)
             upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
             if upstream_action_output_type != TextObjs and upstream_action_output_type != TextObj:
-                curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type,
+                curr_action_input = await ActionGraph.gen_input(ctx, upstream_nodes, current_node_action_type,
                                                                 action_response)
                 return curr_action_input
         # Use manual code to build input obj
@@ -406,7 +417,7 @@ class ActionGraph:
                         text_obj = TextObj.model_validate(action_output)
                         input_msg = f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"
             except Exception as e:
-                logger.warning(f"Cannot convert to Input: {str(e)}")
+                logger.bind(ctx=ctx).warning(f"Cannot convert to Input: {str(e)}")
             # if isinstance(action_outputs, TextObjs):
             #     for action_output in action_outputs.texts:
             #         if isinstance(action_output, TextObj):
@@ -420,34 +431,38 @@ class ActionGraph:
 
     @staticmethod
     async def gen_input(
-            upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
+            ctx: Context, upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
     ) -> Dict[str, Any]:
-        llm_input = ("You are an expert programmer and logician."
-                     "Create result json for a given model json schema for result, "
-                     "from the input(s) data and its/their json model schema\n\n")
-        for upstream_node in upstream_nodes:
-            upstream_action_doc = action_response.get(upstream_node)
-            upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
-            upstream_action_output_model_schema = upstream_action_output_type.model_json_schema()
-            upstream_action_output = upstream_action_doc.output
-            llm_input += f"#####\nInput model schema:\n{upstream_action_output_model_schema}\n\nInput data:\n{upstream_action_output}\n\n"
+        try:
+            llm_input = ("You are an expert programmer and logician."
+                         "Create result json for a given model json schema for result, "
+                         "from the input(s) data and its/their json model schema\n\n")
+            for upstream_node in upstream_nodes:
+                upstream_action_doc = action_response.get(upstream_node)
+                upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
+                upstream_action_output_model_schema = upstream_action_output_type.model_json_schema()
+                upstream_action_output = upstream_action_doc.output
+                llm_input += f"#####\nInput model schema:\n{upstream_action_output_model_schema}\n\nInput data:\n{upstream_action_output}\n\n"
 
-        curr_action_input_type = ACTION_MAP.get(current_node_action_type).get_input_type()
-        curr_action_input_model_schema = curr_action_input_type.model_json_schema()
-        llm_input += f"#####\nOutput model schema:\n{curr_action_input_model_schema}\n\n"
-        llm_input += (
-            "Add all inputs to give me the output data that adheres to Output model schema. You have to provide only the output in JSON. "
-            "Start straight with { and end with }.")
+            curr_action_input_type = ACTION_MAP.get(current_node_action_type).get_input_type()
+            curr_action_input_model_schema = curr_action_input_type.model_json_schema()
+            llm_input += f"#####\nOutput model schema:\n{curr_action_input_model_schema}\n\n"
+            llm_input += (
+                "Add all inputs to give me the output data that adheres to Output model schema. You have to provide only the output in JSON. "
+                "Start straight with { and end with }.")
 
-        chat_req = ChatReq(
-            model="gpt-4-turbo",
-            messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
-            response_format={"type": "json_object"}
-        )
-        run_input = TextObj(text=llm_input)
-        text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(run_input)
-        output_json = text_objs.texts[0].text
-        json_dict = json.loads(output_json)
-        curr_action_input_obj = curr_action_input_type.model_validate(json_dict)
-        return curr_action_input_obj
-        # return json_dict
+            chat_req = ChatReq(
+                model="gpt-4-turbo",
+                messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
+                response_format={"type": "json_object"}
+            )
+            run_input = TextObj(text=llm_input)
+            text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(run_input)
+            output_json = text_objs.texts[0].text
+            json_dict = json.loads(output_json)
+            curr_action_input_obj = curr_action_input_type.model_validate(json_dict)
+            return curr_action_input_obj
+            # return json_dict
+        except Exception as e:
+            logger.bind(ctx=ctx).error(f"Cannot generate Input: {str(e)}")
+            return {}

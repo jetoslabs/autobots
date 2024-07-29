@@ -8,6 +8,8 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutpu
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.opus.opus import OpusRes, Video2VideoReqModel, get_opus_video
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class Video2VideoRunModel(BaseModel):
@@ -45,10 +47,10 @@ class ActionVideo2VideoOpus(
     def get_output_type() -> Type[ActionOutputType]:
         return OpusRes
 
-    def __init__(self, action_config: Video2VideoReqModel):
-        super().__init__(action_config)
+    def __init__(self, action_config: Video2VideoReqModel, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: Video2VideoRunModel):
+    async def run_action(self, ctx: Context, action_input: Video2VideoRunModel):
         if action_input.url:
             self.action_config.url = action_input.url
         opus = get_opus_video()
