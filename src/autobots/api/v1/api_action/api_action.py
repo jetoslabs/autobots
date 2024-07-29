@@ -124,9 +124,9 @@ async def run_action(
     ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     resp = await UserActions(user=user_orm, db=db).run_action_v1(ctx, id, input, action_result_id)
-    if isinstance(resp, ActionDoc):
-        return resp
     match resp:
+        case ActionDoc():
+            return resp
         case HTTPException():
             raise HTTPException(status_code=resp.status_code, detail=f"Secret Not Created, {resp.detail}")
         case AppException():
