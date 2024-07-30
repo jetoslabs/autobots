@@ -1,12 +1,12 @@
 import pytest
 
-from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_assemblyai import AudioRes, AudioUrl, \
+from src.autobots.action.action.common_action_models import TextObjs
+from src.autobots.action.action_type.action_audio2text.action_audio2text_transcription_assemblyai import AudioUrl, \
     ActionAudio2TextTranscriptionAssemblyai
 from src.autobots.conn.assembly.assemblyai import TranscriptionReq
 
 from src.autobots.action.action.action_doc_model import ActionDoc
 from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
-import asyncio
 
 @pytest.mark.asyncio
 async def test_action_audio2text_transcription_assemblyai_happy_path(set_test_settings):
@@ -24,7 +24,10 @@ async def test_action_audio2text_transcription_assemblyai_happy_path(set_test_se
         action_doc,
         input.model_dump(exclude_none=True)
     )
-    action_output = ActionAudio2TextTranscriptionAssemblyai.get_output_type().model_validate(
+    action_output: TextObjs = ActionAudio2TextTranscriptionAssemblyai.get_output_type().model_validate(
         run_action_object.output_dict
     )
+    assert action_output
+    assert len(action_output.texts) > 0
+    assert len(action_output.texts[0].text) > 0
     # assert transcription.text!=""
