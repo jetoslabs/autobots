@@ -7,7 +7,7 @@ from openai.types.chat import ChatCompletionUserMessageParam
 
 from src.autobots.action.action_type.action_factory import ActionFactory, RunActionObj
 from src.autobots.action.action_type.action_types import ActionType
-from src.autobots.action.action.common_action_models import TextObj, TextObjs
+from src.autobots.action.action.common_action_models import MultiObj,TextObj, TextObjs
 from src.autobots.action.action_chat.chat_crud import ChatCRUD
 from src.autobots.action.action_chat.chat_doc_model import ChatCreate, ChatDoc, ChatDocCreate, ChatFind, ChatDocFind, ChatDocUpdate, \
     ChatUpdate
@@ -70,7 +70,7 @@ class UserChat():
         delete_result = await self.chat_crud.delete_many(chat_doc_find)
         return delete_result.deleted_count
 
-    async def chat(self, ctx: Context, chat_id: str, input: TextObj) -> ChatDoc:
+    async def chat(self, ctx: Context, chat_id: str, input: MultiObj) -> ChatDoc:
         chat_doc = await self.get_chat(chat_id)
         if not chat_doc:
             raise HTTPException(404, "Chat not found")
