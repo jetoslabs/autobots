@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 
-from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc
+from src.autobots.action_graph.action_graph.action_graph_doc_model import ActionGraphDoc, ActionGraphLiteDoc
 from src.autobots.core.database.mongo_base_crud import DocFindPage
 from src.autobots.event_result.event_result_model import EventResultUpdate, EventResultCreate, EventType, \
     EventResultDoc, EventResultLiteDoc
@@ -24,7 +24,7 @@ class ActionGraphResultDoc(EventResultDoc):
 
 
 class ActionGraphResultLiteDoc(EventResultLiteDoc):
-    pass
+    result: Optional[ActionGraphLiteDoc] = None
 
 
 class ActionGraphResultDocsFound(DocFindPage):

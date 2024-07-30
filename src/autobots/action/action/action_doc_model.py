@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional, List
 
+from pydantic_extra_types.pendulum_dt import DateTime
 from pydantic import BaseModel, Field, ConfigDict
 
 from src.autobots.action.action_type.action_types import ActionType
@@ -19,6 +20,7 @@ class ActionFind(BaseModel):
     config: Optional[Dict[str, Any]] = None
     is_published: Optional[bool] = None
     created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 
 class ActionDocFind(ActionFind):
@@ -70,6 +72,18 @@ class ActionDocCreate(ActionCreate, UpdatedAt):
     user_id: str
     created_at: datetime = datetime.now()
 
+class ActionLiteDoc(BaseModel):
+    id: str = Field(..., alias='_id')
+    type: ActionType
+    name: str
+    version: float = 0
+    description: str = ""
+    is_published: bool = False
+    user_id: str
+    created_at: datetime
+    updated_at: DateTime
+
+    model_config = ConfigDict(populate_by_name=True)
 
 class ActionDoc(ActionDocCreate):
     __collection__ = "Actions"
