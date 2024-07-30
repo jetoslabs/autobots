@@ -53,6 +53,8 @@ class ActionAudio2TextTranscriptionAssemblyai(
             # Convert the text to a string before passing it to transcribe
             file_url_str = str(self.action_config.file_url)
             transcription = await get_assemblyai().transcribe(file_url_str)
+            if transcription is None:
+                return None
             return TextObjs(texts=[TextObj(text=transcription)])
         except ValidationError as e:
             logger.error(str(e))
