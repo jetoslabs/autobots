@@ -58,7 +58,7 @@ class AwsS3:
         try:
             length = len(file_obj.getvalue())
             self.bucket.upload_fileobj(file_obj, object_path)
-            object_url = await self.get_object_url(object_path)
+            object_url = await self.get_https_url(object_path)
             logger.debug(f"File written to s3, filename: {object_url}, size: {length}")
             return object_url
         except Exception as e:
@@ -72,7 +72,7 @@ class AwsS3:
         object_path = f"{self.object_prefix}{filename}"
         try:
             self.bucket.upload_fileobj(file_obj, object_path)
-            object_url = await self.get_object_url(object_path)
+            object_url = await self.get_https_url(object_path)
             logger.debug(f"Fileobj written to s3, filename: {object_url}")
             return object_url
         except Exception as e:
@@ -86,7 +86,7 @@ class AwsS3:
         object_path = self.object_prefix + filename
         try:
             self.bucket.download_fileobj(object_path, fileobj)
-            object_url = await self.get_object_url(object_path)
+            object_url = await self.get_https_url(object_path)
             logger.debug(f"Fileobj Downloaded, filename: {object_url}")
             return object_url
         except Exception as e:
@@ -120,16 +120,21 @@ class AwsS3:
             logger.error(str(e))
 
     async def list(self, prefix: Optional[str] = None, limit: int = 300) -> List[ObjectSummary]:
-        if prefix and not prefix.startswith(self.object_prefix):
-            prefix = self.object_prefix + prefix
-        s3_objects = []
-        size = 0
-        for s3_object in self.bucket.objects.filter(Prefix=prefix):
-            if size >= limit:
-                break
-            size = size + 1
-            s3_objects.append(s3_object)
-        return s3_objects
+        try:
+            if prefix and not prefix.startswith(self.object_prefix):
+                prefix = self.object_prefix + prefix
+            else:
+                prefix = self.object_prefix
+            s3_objects = []
+            size = 0
+            for s3_object in self.bucket.objects.filter(Prefix=prefix):
+                if size >= limit:
+                    break
+                size = size + 1
+                s3_objects.append(s3_object)
+            return s3_objects
+        except Exception as e:
+            logger.error(str(e))
 
     async def delete_prefix(self, prefix: str) -> List[DeletedObjectTypeDef]:
         if prefix and not prefix.startswith(self.object_prefix):
@@ -142,7 +147,7 @@ class AwsS3:
             deleted += deleted_in_this_iter
         return deleted
 
-    async def get_object_url(self, key: str) -> HttpUrl:
+    async def get_https_url(self, key: str) -> HttpUrl:
         """
         key is the complete object_path
         """
