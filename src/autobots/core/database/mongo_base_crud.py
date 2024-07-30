@@ -105,7 +105,11 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         model_fields = self.lite_doc_model.model_fields.keys()
         fields_to_select = {}
         for field in model_fields:
-            fields_to_select[field] = 1
+            if isinstance(field, dict):
+                for k, v in field.items():
+                    fields_to_select[f"{k}.{field}"] = 1
+            else:
+                fields_to_select[field] = 1
 
         cursor = self.document.find(find_params, fields_to_select)
         cursor.allow_disk_use(True)
