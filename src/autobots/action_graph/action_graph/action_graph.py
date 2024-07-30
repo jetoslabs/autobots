@@ -440,14 +440,18 @@ class ActionGraph:
             "Start straight with { and end with }.")
 
         chat_req = ChatReq(
-            model="gpt-4-turbo",
+            model="gpt-4",
+            max_tokens=8192,
             messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
             response_format={"type": "json_object"}
         )
         run_input = TextObj(text=llm_input)
         text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(run_input)
         output_json = text_objs.texts[0].text
-        json_dict = json.loads(output_json)
+        try:
+            json_dict = json.loads(output_json)
+        except Exception:
+            json_dict = output_json
         curr_action_input_obj = curr_action_input_type.model_validate(json_dict)
         return curr_action_input_obj
         # return json_dict
