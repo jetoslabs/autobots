@@ -2,6 +2,7 @@ from typing import Optional, List
 from uuid import UUID
 
 from fastapi import HTTPException, BackgroundTasks
+from loguru import logger
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.autobots.action.action.common_action_models import TextObj
@@ -17,6 +18,7 @@ from src.autobots.action_graph.action_graph.action_graph_doc_model import Action
     ActionGraphDocCreate, \
     ActionGraphFind, ActionGraphDocFind, ActionGraphUpdate, ActionGraphDocUpdate, ActionGraphDocsFound, \
     ActionGraphLiteDoc, ActionGraphPublishedDocFind
+from src.autobots.data_model.context import Context
 
 from src.autobots.user.user_orm_model import UserORM
 
@@ -100,6 +102,7 @@ class UserActionGraphs:
 
     async def run_in_background(
             self,
+            ctx: Context,
             user_actions: UserActions,
             user_actions_market: UserActionsMarket,
             user_action_graph_result: UserActionGraphResult,
@@ -115,6 +118,7 @@ class UserActionGraphs:
             raise HTTPException(405, "Action Graph cannot be run")
 
         resp = await ActionGraph.run_in_background(
+            ctx=ctx,
             action_graph_doc=action_graph_doc,
             action_graph_input_dict=input.model_dump(),
             user_actions=user_actions,
@@ -137,11 +141,18 @@ class UserActionGraphs:
             webhook: Webhook | None = None,
             db: AsyncIOMotorDatabase = next(get_mongo_db())
     ) -> ActionGraphResultDoc | None:
+        ctx = Context(user_id=user_id)
+        logger.bind(
+            ctx=ctx,
+            action_graph_id=action_graph_id,
+            action_graph_result_id=action_graph_result_id
+        ).info("Started run of scheduled graph")
         user_orm = UserORM(id=UUID(user_id))
         user_actions = UserActions(user_orm, db)
         user_actions_market = UserActionsMarket(user_orm, db)
         user_action_graph_result = UserActionGraphResult(user_orm, db)
         resp = await UserActionGraphs(user=user_orm, db=db).run_in_background(
+            ctx=ctx,
             user_actions=user_actions,
             user_actions_market=user_actions_market,
             user_action_graph_result=user_action_graph_result,
@@ -151,4 +162,9 @@ class UserActionGraphs:
             # background_tasks,
             webhook=webhook
         )
+        logger.bind(
+            ctx=ctx,
+            action_graph_id=action_graph_id,
+            action_graph_result_id=action_graph_result_id
+        ).info("Completed run of scheduled graph")
         return resp

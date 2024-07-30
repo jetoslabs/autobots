@@ -5,7 +5,7 @@ from loguru import logger
 from openai.types.beta import Assistant, AssistantToolParam
 from openai.types.beta.threads import Message, ImageFileContentBlock, TextContentBlock
 
-from src.autobots.action.action.common_action_models import TextObj, TextObjs
+from src.autobots.action.action.common_action_models import AssistantObj, TextObj, TextObjs
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.assistant_openai_model import \
@@ -14,14 +14,16 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantDelete, AssistantUpdate
 from src.autobots.conn.openai.openai_assistants.openai_thread_messages.openai_thread_messages_model import \
     ThreadMessagesCreate, ThreadMessageList
-from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread_runs_model import ThreadRunCreate, \
+from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread_runs_model import ThreadRunCreate, ThreadRunCreateAndRun, \
     ThreadRunRetrieve, ThreadRunSubmitToolOutputs
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_model import ThreadCreate
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
 from src.autobots.core.logging.log_binder import LogBinder
+from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.llm.tools.tools_map import TOOLS_MAP
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionMultimodalAssistantOpenai(
@@ -78,7 +80,10 @@ class ActionMultimodalAssistantOpenai(
         await assistant_client.delete(assistant_delete)
         return config
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    def __init__(self, action_config: AssistantOpenaiConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
+
+    async def run_action(self, ctx: Context, action_input: AssistantObj) -> TextObjs:
         assistant_client = get_openai().openai_assistants
         assistant = self.action_config
         try:
@@ -86,11 +91,20 @@ class ActionMultimodalAssistantOpenai(
             thread_create = ThreadCreate()
             thread = await assistant_client.threads.create(thread_create)
             # add message
+            # if action_input and action_input.urls:
+            #     for url in action_input.urls :
+            #         image_message = ChatCompletionUserMessageParam(
+            #             role=Role.user.value,
+            #             content=f'{{"type": "image_url", "image_url": {{"url": {url}}}}}'
+            #         )
+            #         messages.append(image_message)
             thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id,
                                                            content=action_input.text)
             thread_message = await assistant_client.threads.messages.create(thread_message_create_1)  # noqa F841
             # run thread
-            tools = [tool.model_dump(exclude_none=True) for tool in assistant.tools] # TODO: add description to func definition
+            tools = [tool.model_dump(exclude_none=True) for tool in assistant.tools + action_input.tools] # TODO: add description to func definition
+            # tool_resources = [resource.model_dump(exclude_none=True) for resource in action_input.tool_resources]
+            
             thread_run_create = ThreadRunCreate(thread_id=thread.id, assistant_id=assistant.id,
                                                 instructions=assistant.instructions, tools=tools)
             run = await assistant_client.threads.runs.create(thread_run_create)
@@ -113,7 +127,7 @@ class ActionMultimodalAssistantOpenai(
                         name = tool_call.function.name
                         args = tool_call.function.arguments
                         # run tool
-                        tool_output_str: str = await ToolFactory.run_tool(name, args)
+                        tool_output_str: str = await ToolFactory(self.user).run_tool(ctx, name, args)
                         tool_output = {
                             "output": tool_output_str,
                             "tool_call_id": tool_call.id

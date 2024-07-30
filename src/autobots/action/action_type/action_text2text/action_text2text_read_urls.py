@@ -8,6 +8,8 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionConfi
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.selenium.selenium import get_selenium
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class ReadUrlConfig(BaseModel):
@@ -43,10 +45,10 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: ReadUrlConfig):
-        super().__init__(action_config)
+    def __init__(self, action_config: ReadUrlConfig, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
-    async def run_action(self, action_input: TextObj) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: TextObj) -> TextObjs:
         text_objs = TextObjs(texts=[])
         try:
             selenium = get_selenium()
@@ -74,8 +76,7 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
         except Exception as e:
             logger.error(str(e))
 
-    @staticmethod
-    async def run_tool(action_config: ReadUrlConfig) -> TextObjs:
+    async def run_tool(self, action_config: ReadUrlConfig, ctx: Context) -> TextObjs | Exception:
         text_objs = TextObjs(texts=[])
         try:
             selenium = get_selenium()
@@ -93,7 +94,7 @@ class ActionText2TextReadUrl(ActionABC[ReadUrlConfig, ReadUrlConfig, ReadUrlConf
             return text_objs
         except ValidationError as e:
             logger.error(str(e))
-            raise
+            return e
         except Exception as e:
             logger.error(str(e))
-            raise
+            return e

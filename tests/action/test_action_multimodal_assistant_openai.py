@@ -1,14 +1,14 @@
 import pytest
 
-from src.autobots.action.action.common_action_models import TextObj
+from src.autobots.action.action.common_action_models import TextObj, AssistantObj
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.action_multimodal_assistant_openai import \
     ActionMultimodalAssistantOpenai
 from src.autobots.action.action_type.action_multimodal.action_multimodal_assistant_openai.assistant_openai_model import \
     AssistantOpenaiConfigCreate
-
+from src.autobots.data_model.context import Context
 
 @pytest.mark.asyncio
-async def test_action_multimodal_assistant_openai_happy_path(set_test_settings):
+async def test_action_multimodal_assistant_openai_happy_path():
     action: ActionMultimodalAssistantOpenai | None = None
     try:
         action_config_create = AssistantOpenaiConfigCreate(
@@ -27,9 +27,9 @@ async def test_action_multimodal_assistant_openai_happy_path(set_test_settings):
         )
         action_config = await ActionMultimodalAssistantOpenai.create_config(action_config_create)
         action = ActionMultimodalAssistantOpenai(action_config)
-        action_input = TextObj(
+        action_input = AssistantObj(
             text="Find me the latest news of India. Then analyze the sentiment of the news you told me and create bar chart of news count vs sentiment")
-        action_output = await action.run_action(action_input)
+        action_output = await action.run_action(Context(), action_input)
         assert "India" in action_output.texts[0].text
     finally:
         if action:

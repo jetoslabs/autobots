@@ -54,7 +54,7 @@ async def imagineApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordEr
             while True:
                 job_res = await jobApi(res.jobid)
                 if job_res.code == 200 and job_res.status == 'completed':
-                    return job_res
+                    return DiscordJobsApiResponse.model_validate(job_res)
                 else:
                     retry_count += 1
                     if retry_count >= 15:  # Maximum of 5 retries
@@ -65,10 +65,11 @@ async def imagineApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordEr
 
             logger.error(f"Mid journey text2img error for job id: {res.jobid}")
             response_json = {"error"}
-            err = DiscordErrorResponse(error="Mid Journey job fetch failed", code=500).dict()
+            err = DiscordErrorResponse(error="Mid Journey job fetch failed", code=500)
             return err
-    except ValidationError or TypeError:
+    except ValidationError or TypeError as e:
         logger.error(f"Mid journey text2img validation error for response: {response_json}")
+        return e
 
 async def buttonApi(req: DiscordReqModel) -> DiscordJobsApiResponse | DiscordErrorResponse:
     useApiConfig = UseApiConfig()

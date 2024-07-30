@@ -4,6 +4,8 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from starlette import status
+from starlette.requests import Request
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.action_doc_model import ActionDoc, ActionFind, ActionUpdate, ActionCreate
@@ -15,6 +17,7 @@ from src.autobots.action.action.user_actions import UserActions
 from src.autobots.api.webhook import Webhook
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.core.database.mongo_base import get_mongo_db
+from src.autobots.exception.app_exception import AppException
 from src.autobots.llm.tools.tool_factory import ToolFactory
 from src.autobots.user.user_orm_model import UserORM
 
@@ -111,19 +114,30 @@ async def delete_action(
 
 @router.post("/{id}/run")
 async def run_action(
+        request: Request,
         id: str,
         input: Dict[str, Any],
         action_result_id: str = None,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> Any:
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserActions(user=user_orm, db=db).run_action_v1(id, input, action_result_id)
-    return resp
+    resp = await UserActions(user=user_orm, db=db).run_action_v1(ctx, id, input, action_result_id)
+    match resp:
+        case ActionDoc():
+            return resp
+        case HTTPException():
+            raise HTTPException(status_code=resp.status_code, detail=f"Secret Not Created, {resp.detail}")
+        case AppException():
+            raise HTTPException(detail=resp.detail, status_code=resp.http_status)
+        case _:
+            raise HTTPException(detail="Error in Action run", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @router.post("/{id}/async_run")
 async def async_run_action(
+        request: Request,
         id: str,
         input: Dict[str, Any],
         background_tasks: BackgroundTasks,
@@ -132,10 +146,18 @@ async def async_run_action(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db),
 ) -> ActionResultDoc:
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_actions = UserActions(user_orm, db)
     action_doc = await user_actions.get_action(id)
     user_action_result = UserActionResult(user_orm, db)
-    action_result_doc = await ActionFactory().run_action_in_background(action_doc, input, user_action_result,
-                                                                       action_result_id, background_tasks, webhook)
+    action_result_doc = await ActionFactory().run_action_in_background(
+        ctx=ctx,
+        action_doc=action_doc,
+        action_input_dict=input,
+        user_action_result=user_action_result,
+        action_result_id=action_result_id,
+        background_tasks=background_tasks,
+        webhook=webhook
+    )
     return action_result_doc

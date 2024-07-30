@@ -4,6 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from starlette.requests import Request
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.common_action_models import TextObj
@@ -86,11 +87,13 @@ async def delete_chat(
 
 @router.post("/{id}")
 async def chat(
+        request: Request,
         id: str,
         input: TextObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> str:
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
-    resp = await UserChat(user=user_orm, db=db).chat(id, input)
+    resp = await UserChat(user=user_orm, db=db).chat(ctx, id, input)
     return resp.messages[-1].content

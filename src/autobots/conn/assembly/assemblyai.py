@@ -21,12 +21,14 @@ class AssemblyAIClient:
         :param audio_url: URL of the audio file to transcribe
         :return: Transcribed text or None if transcription failed
         """
-        config = aai.TranscriptionConfig(speaker_labels=True)
+        config = aai.TranscriptionConfig(speaker_labels=True, sentiment_analysis=True)
         transcript = await asyncio.to_thread(self.transcriber.transcribe, audio_url, config)
         if not transcript or not transcript.utterances:
             return None
         texts = [f"Speaker {utterance.speaker}: {utterance.text}" for utterance in transcript.utterances]
-        return ''.join(texts)
+        sentitments = [f"{sentiment_result.text} {sentiment_result.sentiment} Timestamp: {sentiment_result.start} - {sentiment_result.end}" for sentiment_result in transcript.sentiment_analysis]
+
+        return ''.join(texts)+ ''.join(sentitments)
 
 @lru_cache
 def get_assemblyai(settings: Settings = SettingsProvider.sget()) -> AssemblyAIClient:

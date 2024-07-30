@@ -9,7 +9,9 @@ from retry import retry
 from src.autobots.conn.openai.openai_chat.chat_model import ChatReq
 from src.autobots.core.logging.app_code import AppCode
 from src.autobots.core.logging.log_binder import LogBinder
+from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tool_factory import ToolFactory
+from src.autobots.user.user_orm_model import UserORM
 
 
 class OpenaiChat:
@@ -18,7 +20,9 @@ class OpenaiChat:
         self.client = openai_client
 
     @retry(exceptions=Exception, tries=3, delay=30)
-    async def chat(self, chat_req: ChatReq) -> ChatCompletion | AsyncStream[ChatCompletionChunk] | None:
+    async def chat(
+            self, chat_req: ChatReq, user: UserORM | None = None, ctx: Context = Context()
+    ) -> ChatCompletion | AsyncStream[ChatCompletionChunk] | None:
         # model vision is resulting in error because of these 6 extra params
         # if chat_req.model.__contains__("-vision-"):
         #     chat_req.logit_bias = None
@@ -32,7 +36,7 @@ class OpenaiChat:
         try:
             logger.trace("Starting OpenAI Chat, try: 1")
             # res: ChatCompletion = await self.client.chat.completions.create(**chat_req.model_dump(exclude_none=True))
-            res: ChatCompletion = await self.chat_loop(chat_req)
+            res: ChatCompletion = await self.chat_loop(ctx, chat_req, user)
             logger.trace("Completed OpenAI Chat")
             if isinstance(res, AsyncStream):
                 return self.yield_chat_chunks(res)
@@ -42,7 +46,7 @@ class OpenaiChat:
             logger.error(str(e))
             raise
 
-    async def chat_loop(self, chat_req: ChatReq) -> ChatCompletion | AsyncStream[ChatCompletionChunk]:
+    async def chat_loop(self, ctx: Context, chat_req: ChatReq, user: UserORM | None = None) -> ChatCompletion | AsyncStream[ChatCompletionChunk]:
         # is_continue: bool = True
         while True:
             chat_completion: ChatCompletion = await self.client.chat.completions.create(
@@ -57,7 +61,7 @@ class OpenaiChat:
             if choice.finish_reason == "length":
                 return chat_completion # TODO: length to stop
             elif choice.finish_reason == "tool_calls":
-                messages = await self.run_tools(choice)
+                messages = await self.run_tools(ctx, choice, user)
                 chat_req.messages = chat_req.messages + messages
             else:
                 return chat_completion
@@ -69,7 +73,7 @@ class OpenaiChat:
         except Exception as e:
             logger.error(str(e))
 
-    async def run_tools(self, choice) -> List[ChatCompletionMessageParam | ChatCompletionMessage]:
+    async def run_tools(self, ctx: Context, choice, user: UserORM | None = None) -> List[ChatCompletionMessageParam | ChatCompletionMessage]:
         messages = []
         for tool_call in choice.message.tool_calls:
             tool_call_id = tool_call.id
@@ -77,7 +81,7 @@ class OpenaiChat:
             tool_args = tool_call.function.arguments
             try:
                 # run tool
-                tool_output_str: str = await ToolFactory.run_tool(tool_name, tool_args)
+                tool_output_str: str = await ToolFactory(user).run_tool(ctx, tool_name, tool_args)
                 logger.bind(
                     **LogBinder()
                     .with_app_code(AppCode.ACTION)

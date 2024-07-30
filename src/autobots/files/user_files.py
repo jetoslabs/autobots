@@ -8,7 +8,7 @@ from loguru import logger
 from src.autobots.conn.aws.aws_s3 import AwsS3
 from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
 from src.autobots.core.settings import Settings, SettingsProvider
-from src.autobots.files.user_files_model import FilesAndProcessingParams
+from src.autobots.files.user_files_model import FilesAndProcessingParams, FileMeta
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -22,25 +22,27 @@ class UserFiles:
         self._download_path = f"{setting.TEMPORARY_DIR}/{_s3_obj_prefix}"
         self.unstructured = get_unstructured_io()
 
-    async def upload_files(self, files: List[UploadFile]) -> List[str]:
+    async def upload_files(self, files: List[UploadFile]) -> List[FileMeta]:
         assert str(self._user.id) in self._s3.object_prefix
         uploaded_files = []
         for upload_file in files:
             secure_filename = await self.secure_filename(upload_file.filename)
             uploaded_file = await self._s3.upload_fileobj(upload_file.file, secure_filename)
             if uploaded_file:
-                uploaded_files.append(secure_filename)
+                file_meta = FileMeta(name=secure_filename, url=str(uploaded_file))
+                uploaded_files.append(file_meta)
         return uploaded_files
 
-    async def list_files(self, prefix: Optional[str] = None) -> List[str]:
+    async def list_files(self, filename: Optional[str] = None) -> List[FileMeta]:
         assert str(self._user.id) in self._s3.object_prefix
-        secure_prefix = await self.secure_filename(prefix)
-        files = []
+        secure_prefix = await self.secure_filename(filename)
+        file_metas = []
         object_summaries = await self._s3.list(secure_prefix)
         for object_summary in object_summaries:
             filename = await self._s3.get_filename(object_summary.key)
-            files.append(filename)
-        return files
+            url = await self._s3.get_https_url(object_summary.key)
+            file_metas.append(FileMeta(name=filename, url=url))
+        return file_metas
 
     async def delete_files(self, filenames: List[str]) -> List[str]:
         assert str(self._user.id) in self._s3.object_prefix
@@ -61,7 +63,9 @@ class UserFiles:
             async for download_path_filename in self.download_file_and_yield([file_and_params.filename]):
                 with open(download_path_filename, "rb") as downloaded_file:
                     secure_filename = await self.secure_filename(downloaded_file.name)
-                    file = UploadFile(filename=secure_filename, file=downloaded_file)
+                    filename = downloaded_file.name.split("/")[-1]
+                    file = UploadFile(filename=f"{filename}", file=downloaded_file)
+                    # file_content = await file.read()
                     chunks = await self.unstructured.get_file_chunks(file, file_and_params.processing_params)
                     processed = f"########\nFilename: {secure_filename}\nContent:\n" + " ".join(chunks) + "\n\n"
                     logger.info(f"Processed file: {secure_filename}")
@@ -82,7 +86,7 @@ class UserFiles:
                     downloaded = await self._s3.download_fileobj(secure_filename, file)
                     assert downloaded
                     logger.info(f"Downloaded file to file system: {download_path_filename}")
-                    yield download_path_filename
+                yield download_path_filename
 
                 await self.delete_downloaded_files([secure_filename])
             except Exception as e:

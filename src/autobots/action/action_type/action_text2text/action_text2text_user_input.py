@@ -8,6 +8,8 @@ from src.autobots.action.action.common_action_models import TextObj, TextObjs
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
+from src.autobots.data_model.context import Context
+from src.autobots.user.user_orm_model import UserORM
 
 
 class FileParams(BaseModel):
@@ -43,8 +45,8 @@ class ActionText2textUserInput(ActionABC[UserInputParams, UserInputParams, TextO
     def get_output_type() -> Type[ActionOutputType]:
         return TextObjs
 
-    def __init__(self, action_config: TextObjs):
-        super().__init__(action_config)
+    def __init__(self, action_config: TextObjs, user: UserORM | None = None):
+        super().__init__(action_config=action_config, user=user)
 
     @staticmethod
     async def create_config(config_create: UserInputParams) -> TextObjs:
@@ -64,7 +66,7 @@ class ActionText2textUserInput(ActionABC[UserInputParams, UserInputParams, TextO
         text_objs = await ActionText2textUserInput.create_config(config_update)
         return text_objs
 
-    async def run_action(self, action_input: UserInputParams) -> TextObjs:
+    async def run_action(self, ctx: Context, action_input: UserInputParams) -> TextObjs:
         text_objs = self.action_config
         if action_input.text:
             text_objs.texts.append(TextObj(text=f"{action_input.text}"))

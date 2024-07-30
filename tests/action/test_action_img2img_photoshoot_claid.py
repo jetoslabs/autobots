@@ -5,6 +5,7 @@ from src.autobots.action.action_type.action_factory import ActionFactory, RunAct
 from src.autobots.action.action_type.action_img2img.action_img2img_photoshoot_claid import ActionImg2ImgPhotoshootClaid, \
     ActionConfigPhotoshootClaid, ActionInputPhotoshootClaid
 from src.autobots.conn.claid.claid_model import PhotoshootObject, PhotoshootScene
+from src.autobots.data_model.context import Context
 
 
 @pytest.mark.asyncio
@@ -43,6 +44,7 @@ async def test_action_img2img_photoshoot_claid_happy_path_1():
         config=action_config.model_dump(exclude_none=True),
     )
     run_action_object: RunActionObj = await ActionFactory.run_action(
+        Context(),
         action_doc,
         action_input.model_dump(exclude_none=True)
     )
