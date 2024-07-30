@@ -2,7 +2,7 @@ import asyncio
 import assemblyai as aai
 from src.autobots.core.settings import Settings, SettingsProvider
 from functools import lru_cache
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from typing import Optional
 
 
@@ -23,7 +23,7 @@ class AssemblyAIClient:
         """
         config = aai.TranscriptionConfig(speaker_labels=True)
         transcript = await asyncio.to_thread(self.transcriber.transcribe, audio_url, config)
-        if not transcript:
+        if not transcript or not transcript.utterances:
             return None
         texts = [f"Speaker {utterance.speaker}: {utterance.text}" for utterance in transcript.utterances]
         return ''.join(texts)
