@@ -7,7 +7,7 @@ from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import HttpUrl
 
 from src.autobots.action.action.action_doc_model import ActionDoc
-from src.autobots.action.action.common_action_models import TextObj, TextObjs
+from src.autobots.action.action.common_action_models import MultiObj,TextObj, TextObjs
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.user_actions_market import UserActionsMarket
 from src.autobots.action.action_type.action_map import ACTION_MAP
@@ -457,7 +457,7 @@ class ActionGraph:
                 messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
                 response_format={"type": "json_object"}
             )
-            run_input = TextObj(text=llm_input)
+            run_input = MultiObj(text=llm_input)
             text_objs: TextObjs = await ActionText2TextLlmChatOpenai(chat_req).run_action(ctx, run_input)
             output_json = text_objs.texts[0].text
             json_dict = json.loads(output_json)
