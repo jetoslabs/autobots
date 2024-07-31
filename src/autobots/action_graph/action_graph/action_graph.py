@@ -427,7 +427,7 @@ class ActionGraph:
             # else:
             #     logger.warning("Cannot convert to Input")
 
-        text_obj = TextObj(text=input_msg)
+        text_obj = MultiObj(text=input_msg)
         return text_obj
 
     @staticmethod
