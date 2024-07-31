@@ -11,3 +11,10 @@ async def register_api_key(
     passport: Passport = Depends(Passport)
 ):
     return await passport.register_api_key(api_key_create)
+
+@router.put("/update", response_model=APIKeyCreate)
+async def update_api_key(
+    api_key_create: APIKeyCreate,
+    passport: Passport = Depends(Passport)
+):
+    return await passport.update_api_key(api_key_create)
