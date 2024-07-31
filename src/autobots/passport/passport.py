@@ -27,3 +27,13 @@ class Passport:
             return api_key
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    async def update_api_key(self, token: str, api_key_update: APIKeyCreate):
+        try:
+            existing_api_key = await self.api_key_crud.find_one(APIKeyFind(token=token))
+            if not existing_api_key:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
+            updated_api_key = await self.api_key_crud.update_one(api_key_update)
+            return updated_api_key
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
