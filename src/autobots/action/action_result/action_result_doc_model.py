@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
-from src.autobots.action.action.action_doc_model import ActionDoc
+from src.autobots.action.action.action_doc_model import ActionDoc, ActionLiteDoc
 from src.autobots.event_result.event_result_model import EventResultCreate, EventResultUpdate, EventResultDoc, \
     EventType, EventResultLiteDoc
 
@@ -24,7 +24,7 @@ class ActionResultDoc(EventResultDoc):
 
 
 class ActionResultLiteDoc(EventResultLiteDoc):
-    pass
+    result: Optional[ActionLiteDoc] = None
 
 
 class ActionResultDocsFound(BaseModel):

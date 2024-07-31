@@ -14,8 +14,7 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.conn.openai.openai_assistants.assistant_model import AssistantDelete, AssistantUpdate
 from src.autobots.conn.openai.openai_assistants.openai_thread_messages.openai_thread_messages_model import \
     ThreadMessagesCreate, ThreadMessageList
-from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread_runs_model import ThreadRunCreate, ThreadRunCreateAndRun, \
-    ThreadRunRetrieve, ThreadRunSubmitToolOutputs
+from src.autobots.conn.openai.openai_assistants.openai_thread_runs.openai_thread_runs_model import ThreadRunCreate, ThreadRunRetrieve, ThreadRunSubmitToolOutputs
 from src.autobots.conn.openai.openai_assistants.openai_threads.openai_threads_model import ThreadCreate
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.conn.openai.openai_files.openai_files_model import FileContent
@@ -27,7 +26,7 @@ from src.autobots.user.user_orm_model import UserORM
 
 
 class ActionMultimodalAssistantOpenai(
-    ActionABC[AssistantOpenaiConfigCreate, AssistantOpenaiConfigUpdate, AssistantOpenaiConfig, TextObj, TextObjs]
+    ActionABC[AssistantOpenaiConfigCreate, AssistantOpenaiConfigUpdate, AssistantOpenaiConfig, AssistantObj, TextObjs]
 ):
     type = ActionType.multimodal_assistant_openai
 
@@ -45,7 +44,7 @@ class ActionMultimodalAssistantOpenai(
 
     @staticmethod
     def get_input_type() -> Type[ActionInputType]:
-        return TextObj
+        return AssistantObj
 
     @staticmethod
     def get_output_type() -> Type[ActionOutputType]:

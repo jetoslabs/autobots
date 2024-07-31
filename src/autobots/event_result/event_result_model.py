@@ -71,6 +71,7 @@ class EventResultLiteDoc(BaseModel):
     is_saved: bool = False
     created_at: datetime
     updated_at: DateTime
+    result: Optional[Dict[str, Any]] = None
 
     model_config = ConfigDict(populate_by_name=True)
 

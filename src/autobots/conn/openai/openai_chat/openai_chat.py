@@ -58,9 +58,13 @@ class OpenaiChat:
             chat_req.messages.append(choice.message)
             if choice.finish_reason == "stop":
                 return chat_completion
+            if choice.finish_reason == "length":
+                return chat_completion # TODO: length to stop
             elif choice.finish_reason == "tool_calls":
                 messages = await self.run_tools(ctx, choice, user)
                 chat_req.messages = chat_req.messages + messages
+            else:
+                return chat_completion
 
     async def yield_chat_chunks(self, chat_res: AsyncStream[ChatCompletionChunk]) -> ChatCompletionChunk | None:
         try:
