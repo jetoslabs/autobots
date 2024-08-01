@@ -4,6 +4,7 @@ from uuid import UUID
 import gotrue
 from fastapi import APIRouter, Depends, BackgroundTasks
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from starlette.requests import Request
 
 from src.autobots import SettingsProvider
 from src.autobots.action.action.action_doc_model import ActionDoc
@@ -76,19 +77,22 @@ async def delete_market_action(
 
 @router.post("/{id}/market/run")
 async def run_market_action(
+        request: Request,
         id: str,
         input: Dict[str, Any],
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> ActionDoc:
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_action = UserActionsMarket(user_orm, db)
-    resp = await user_market_action.run_market_action(id, input)
+    resp = await user_market_action.run_market_action(ctx, id, input)
     return resp
 
 
 @router.post("/{id}/market/async_run")
 async def async_run_action(
+        request: Request,
         id: str,
         input: Dict[str, Any],
         background_tasks: BackgroundTasks,
@@ -96,8 +100,12 @@ async def async_run_action(
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db),
 ) -> ActionResultDoc:
+    ctx = request.state.context
     user_orm = UserORM(id=UUID(user_res.user.id))
     user_market_action = UserActionsMarket(user_orm, db)
     user_action_result = UserActionResult(user_orm, db)
-    resp = await user_market_action.run_market_action_async(id, input, user_action_result, background_tasks, webhook)
+    resp = await user_market_action.run_market_action_async(
+        ctx=ctx, action_id=id, input=input, user_action_result=user_action_result,
+        background_tasks=background_tasks, webhook=webhook
+    )
     return resp

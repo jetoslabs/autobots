@@ -2,6 +2,7 @@ from functools import lru_cache
 
 import gotrue
 from fastapi import HTTPException
+from gotrue import UserAttributes
 from pydantic import EmailStr, HttpUrl
 
 from src.autobots.conn.supabase.supabase import Supabase, get_supabase
@@ -46,6 +47,10 @@ class Auth:
 
     async def sign_out(self) -> None:
         self.supabase_client.auth.sign_out()
+
+    async def update_user(self, attributes: UserAttributes) -> gotrue.UserResponse:
+        user = self.supabase_client.auth.update_user(attributes=attributes)
+        return user
 
 
 
