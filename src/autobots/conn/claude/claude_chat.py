@@ -66,6 +66,8 @@ class AnthropicChat:
                     chat_req.messages.append(tool_output_message)
                 except Exception as e:
                     logger.error(str(e))
+            else:
+                return chat_completion
 
     async def yield_chat_chunks(self, chat_res: AsyncStream[MessageStreamEvent]) -> MessageStreamEvent | None: # type: ignore
         try:
