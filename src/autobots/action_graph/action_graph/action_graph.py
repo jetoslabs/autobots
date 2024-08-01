@@ -387,7 +387,7 @@ class ActionGraph:
     @staticmethod
     async def to_input(
             ctx: Context, upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
-    ) -> TextObj | Any:
+    ) -> MultiObj | Any:
         input_msg = ""
 
         # curr_action_input = await ActionGraph.gen_input(upstream_nodes, current_node_action_type, action_response)
