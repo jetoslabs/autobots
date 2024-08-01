@@ -7,7 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from starlette.requests import Request
 
 from src.autobots import SettingsProvider
-from src.autobots.action.action.common_action_models import TextObj
+from src.autobots.action.action.common_action_models import MultiObj
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.auth.security import get_user_from_access_token
 from src.autobots.action.action_chat.chat_doc_model import ChatDoc, ChatFind, ChatUpdate, ChatCreate
@@ -89,7 +89,7 @@ async def delete_chat(
 async def chat(
         request: Request,
         id: str,
-        input: TextObj,
+        input: MultiObj,
         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
         db: AsyncIOMotorDatabase = Depends(get_mongo_db)
 ) -> str:

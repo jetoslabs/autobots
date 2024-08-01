@@ -334,7 +334,7 @@ class ActionGraph:
         except HTTPException as e:
             exception = e
         try:
-            action_result = await user_action_market.run_market_action(action_id, action_graph_input_dict)
+            action_result = await user_action_market.run_market_action(ctx, action_id, action_graph_input_dict)
             return action_result
         except Exception as e:
             raise HTTPException(405, f"{exception.detail} and {e}")
