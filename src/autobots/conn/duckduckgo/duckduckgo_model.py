@@ -27,8 +27,8 @@ class SearchTextParams(BaseModel):
     timelimit: Timelimit | None = None
     max_results: int = Field(3, ge=1, le=10)
 
-    @field_validator("region", "timelimit")
     @classmethod
+    @field_validator("region", "timelimit")
     def get_enum_name(cls, value):
         if isinstance(value, Enum):
             if isinstance(value, Timelimit):
@@ -75,8 +75,8 @@ class SearchImageParams(BaseModel):
     license_image: LicenseImage | None = None
     max_results: int = Field(3, ge=1, le=10)
 
-    @field_validator("region")#, "license_image")
     @classmethod
+    @field_validator("region")#, "license_image")
     def get_enum_name(cls, value):
         if isinstance(value, Enum):
             return value.name
@@ -93,8 +93,8 @@ class SearchVideoParams(BaseModel):
     license_videos: Literal["creativeCommon", "youtube"] | None = None
     max_results: int = Field(3, ge=1, le=10)
 
-    @field_validator("region")
     @classmethod
+    @field_validator("region")
     def get_enum_name(cls, value):
         if isinstance(value, Enum):
             return value.name

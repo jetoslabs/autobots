@@ -7,7 +7,7 @@ from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import HttpUrl
 
 from src.autobots.action.action.action_doc_model import ActionDoc
-from src.autobots.action.action.common_action_models import MultiObj,TextObj, TextObjs
+from src.autobots.action.action.common_action_models import MultiObj, TextObj, TextObjs
 from src.autobots.action.action.user_actions import UserActions
 from src.autobots.action.action_market.user_actions_market import UserActionsMarket
 from src.autobots.action.action_type.action_map import ACTION_MAP
@@ -41,9 +41,11 @@ class ActionGraph:
             background_tasks: BackgroundTasks = None,
             webhook: Webhook | None = None,
     ) -> ActionGraphResultDoc | None:
+        logger.bind(ctx=ctx).info("Action Graph Run started")
         action_graph_result_doc: ActionGraphResultDoc | None = None
         try:
             if not action_graph_result_id:
+                logger.bind(ctx=ctx).info("Creating Action Graph Run")
                 # Create initial Action Graph Result if not provided
                 action_graph_doc.input = action_graph_input_dict
                 action_graph_doc.output = {}
@@ -52,12 +54,15 @@ class ActionGraph:
                 )
                 action_graph_result_doc = await user_action_graph_result.create_action_graph_result(
                     action_graph_result_create)
+                logger.bind(ctx=ctx, action_graph_result_doc=action_graph_result_doc).info("Created Action Graph Run")
                 if webhook:
                     await webhook.send(action_graph_result_doc.model_dump())
             else:
+                logger.bind(ctx=ctx).info("Find and use Action Graph Result")
                 # find and use Action Graph Result
                 action_graph_result_doc = await user_action_graph_result.get_action_graph_result(action_graph_result_id)
                 # Change status back to processing
+                logger.bind(ctx=ctx).info("Updating status of Action Graph Result to processing")
                 action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
                     status=EventResultStatus.processing)
                 action_graph_result_doc = await user_action_graph_result.update_action_graph_result(
@@ -66,6 +71,7 @@ class ActionGraph:
                 )
 
             if background_tasks:
+                logger.bind(ctx=ctx).info("Starting background tasks")
                 background_tasks.add_task(
                     ActionGraph._run_as_background_task,
                     ctx,
@@ -78,6 +84,7 @@ class ActionGraph:
                     webhook
                 )
             else:
+                logger.bind(ctx=ctx).info("Running background tasks as method")
                 action_graph_result_doc = await ActionGraph._run_as_background_task(
                     ctx,
                     user_actions,
@@ -114,6 +121,7 @@ class ActionGraph:
 
         # ACTION GRAPH RESULT - NODE RERUN
         if action_graph_node_id:
+            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun")
             action_graph_result_doc = await ActionGraph.run_node(
                 ctx,
                 user_actions,
@@ -125,6 +133,7 @@ class ActionGraph:
             )
         # ACTION GRAPH RESULT - GRAPH RUN / RERUN
         else:
+            logger.bind(ctx=ctx).info("Action Graph Run/Rerun")
             action_graph_result_doc = await ActionGraph.run_action_graph(
                 ctx,
                 user_actions,
@@ -148,6 +157,7 @@ class ActionGraph:
             webhook: Webhook | None = None
     ) -> ActionGraphResultDoc:
         bind_dict = (LogBinder().with_app_code(AppCode.ACTION_GRAPH_RUN)
+                     .with_kwargs(ctx=ctx)
                      .with_action_graph_id(action_graph_result_doc.result.id)
                      .with_action_graph_run_id(action_graph_result_doc.id)
                      .get_bind_dict())
@@ -164,9 +174,13 @@ class ActionGraph:
 
         try:
             while len(action_response) + len(review_required_nodes) != len(total_nodes):
+                logger.bind(**bind_dict).info(
+                    "Running Action Graph as action_response + review_required_nodes != total_nodes")
                 for node, upstream_nodes in inverted_map.items():
                     if await ActionGraph.is_work_done([node], action_response) or \
                             not await ActionGraph.is_work_done(upstream_nodes, action_response):
+                        logger.bind(**bind_dict).info(
+                            "Continuing to next None as this Node's result is calculated or Upstream dependencies are not met")
                         continue
                     # Check if user review required
                     is_any_dependent_require_review = False
@@ -179,7 +193,11 @@ class ActionGraph:
                         ):
                             review_required_nodes.append(upstream_node)
                             is_any_dependent_require_review = True
+                            logger.bind(**bind_dict).info(
+                                f"Upstream node requires User review, node_id: {upstream_node}")
                     if is_any_dependent_require_review:
+                        logger.bind(**bind_dict).info(
+                            "Continuing to run next node in graph as dependent requires review")
                         continue
 
                     if len(upstream_nodes) == 0:
@@ -191,18 +209,20 @@ class ActionGraph:
                             action_graph_input_dict
                         )
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_graph_input.model_dump())
+
                         action_response[node] = ActionDoc.model_validate(action_result)
                     else:
                         # Run action with at least 1 dependency
                         curr_action = await ActionGraph.get_action(user_actions, user_actions_market,
                                                                    node_action_map.get(node))
-                        action_input = await ActionGraph.to_input(ctx, upstream_nodes, curr_action.type, action_response)
+                        action_input = await ActionGraph.to_input(ctx, upstream_nodes, curr_action.type,
+                                                                  action_response)
                         action_result: ActionDoc = await ActionGraph.run_action(ctx,
-                            user_actions,
-                            user_actions_market,
-                            node_action_map.get(node),
-                            action_input.model_dump()
-                        )
+                                                                                user_actions,
+                                                                                user_actions_market,
+                                                                                node_action_map.get(node),
+                                                                                action_input.model_dump()
+                                                                                )
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_input.model_dump())
                         action_response[node] = ActionDoc.model_validate(action_result)
 
@@ -299,7 +319,6 @@ class ActionGraph:
             logger.bind(ctx=ctx, **bind_dict).info(f"Error in rerun node of Action Graph: {str(e)}")
             return action_graph_result_doc
 
-
     @staticmethod
     async def run_action(
             ctx: Context,
@@ -315,7 +334,7 @@ class ActionGraph:
         except HTTPException as e:
             exception = e
         try:
-            action_result = await user_action_market.run_market_action(action_id, action_graph_input_dict)
+            action_result = await user_action_market.run_market_action(ctx, action_id, action_graph_input_dict)
             return action_result
         except Exception as e:
             raise HTTPException(405, f"{exception.detail} and {e}")
@@ -397,10 +416,13 @@ class ActionGraph:
             upstream_action_doc = action_response.get(upstream_node)
             upstream_action_output_type = ACTION_MAP.get(upstream_action_doc.type).get_output_type()
             if upstream_action_output_type != TextObjs and upstream_action_output_type != TextObj:
+                logger.bind(ctx=ctx).info("Choosing llm to generate input for Node")
                 curr_action_input = await ActionGraph.gen_input(ctx, upstream_nodes, current_node_action_type,
                                                                 action_response)
+                logger.bind(ctx=ctx).info("Used llm to generate input for Node")
                 return curr_action_input
         # Use manual code to build input obj
+        logger.bind(ctx=ctx).info("Choosing manual path to generate input for Node")
         for upstream_node in upstream_nodes:
             action_doc = action_response.get(upstream_node)
             action_outputs = action_doc.output
@@ -414,9 +436,11 @@ class ActionGraph:
                         for potential_url in potential_urls:
                             url = HttpUrl(potential_url)
                             input_msg = input_msg + f"{url.unicode_string()},"
+                            logger.bind(ctx=ctx).info("Added url to input_msg")
                     except Exception:
                         text_obj = TextObj.model_validate(action_output)
                         input_msg = f"{input_msg}\n## {action_doc.name}:\n{text_obj.text}\n\n"
+                        logger.bind(ctx=ctx).info("Added TextObj to input_msg")
             except Exception as e:
                 logger.bind(ctx=ctx).warning(f"Cannot convert to Input: {str(e)}")
             # if isinstance(action_outputs, TextObjs):
@@ -432,7 +456,8 @@ class ActionGraph:
 
     @staticmethod
     async def gen_input(
-            ctx: Context, upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
+            ctx: Context, upstream_nodes: List[str], current_node_action_type: str,
+            action_response: Dict[str, ActionDoc]
     ) -> Dict[str, Any]:
         try:
             llm_input = ("You are an expert programmer and logician."
@@ -451,10 +476,10 @@ class ActionGraph:
             llm_input += (
                 "Add all inputs to give me the output data that adheres to Output model schema. You have to provide only the output in JSON. "
                 "Start straight with { and end with }.")
-            
+
             chat_req = ChatReq(
                 model="gpt-4o",
-                max_tokens=8192,
+                max_tokens=4096,
                 messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
                 response_format={"type": "json_object"}
             )
@@ -466,6 +491,8 @@ class ActionGraph:
             except Exception:
                 json_dict = output_json
             curr_action_input_obj = curr_action_input_type.model_validate(json_dict)
+            logger.bind(ctx=ctx, action_input=curr_action_input_obj).info(
+                "Used Llm to generate input by using outputs of upstream nodes")
             return curr_action_input_obj
             # return json_dict
         except Exception as e:

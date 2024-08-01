@@ -66,3 +66,10 @@ async def reset_password_email(email: EmailStr, redirect_to: Optional[HttpUrl] =
 @router.post("/session/refresh")
 async def refresh_password_email(refresh_token: str, user_res: gotrue.UserResponse = Depends(get_user_from_access_token)) -> AuthResponse:
     return await get_auth().refresh_session(refresh_token)
+
+# @router.put("/user")
+# async def update_user(
+#         attributes: UserAttributes,
+#         user_res: gotrue.UserResponse = Depends(get_user_from_access_token),
+# ) -> gotrue.UserResponse:
+#     return await get_auth().update_user(attributes=attributes)
