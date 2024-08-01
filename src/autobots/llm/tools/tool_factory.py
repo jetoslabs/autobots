@@ -61,7 +61,12 @@ class ToolFactory:
             config = action_type.get_config_type().model_validate(json.loads(tool_args))
             action = action_type(config, self.user)
             output = await action.run_tool(action_config=config, ctx=ctx)
-            output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
+            output_str = ""
+            match output:
+                case Exception():
+                    output_str = str(output)
+                case _:
+                    output_str = output.model_dump_json(exclude_none=True)  #json.dumps(output.model_dump())
             tool_output = output_str
             logger.bind(ctx=ctx, tool_name=tool_name, tool_args=tool_args, tool_output=tool_output).info("Ran tool")
         except Exception as e:
