@@ -7,7 +7,7 @@ from pydantic import BaseModel, ValidationError, Field
 from unstructured_client import UnstructuredClient
 from unstructured_client.models import shared
 from unstructured_client.models.errors import SDKError
-from unstructured_client.models.operations import PartitionResponse
+from unstructured_client.models.operations import PartitionResponse, PartitionRequest
 
 from src.autobots.core.settings import Settings, SettingsProvider
 
@@ -81,15 +81,16 @@ class PartitionResponseElement(BaseModel):
 
 class UnstructuredIO:
 
-    def __init__(self, unstructured_api_key: str):
+    def __init__(self, unstructured_api_key: str, unstructured_url: str):
         self.client = UnstructuredClient(
             api_key_auth=unstructured_api_key,
+            server_url=unstructured_url
         )
 
     async def get_file_chunks(self, file: UploadFile, partition_parameters_params: PartitionParametersParams) -> List[str]:
         strings = []
         try:
-            req = await self._build_PartitionParameters(file, partition_parameters_params)
+            req = await self._build_PartitionRequest(file, partition_parameters_params)
             res: PartitionResponse | None = await self._get_PartitionResponse(req)
             elements = await self.get_file_partition_elements(res)
 
@@ -106,9 +107,9 @@ class UnstructuredIO:
             logger.error(str(e))
         return strings
 
-    async def _build_PartitionParameters(
+    async def _build_PartitionRequest(
             self, file: UploadFile, partition_parameters_params: PartitionParametersParams
-    ) -> shared.PartitionParameters:
+    ) -> PartitionRequest:
         req = shared.PartitionParameters(
             # Note that this currently only supports a single file
             # files=file,
@@ -124,10 +125,13 @@ class UnstructuredIO:
             # hi_res_model_name=None,
             # strategy="hi_res",
         )
-        return req
+        req1 = PartitionRequest(
+            partition_parameters=req,
+        )
+        return req1
 
     async def _get_PartitionResponse(
-            self, req: shared.PartitionParameters
+            self, req: PartitionRequest
     ) -> PartitionResponse | None:
         res: PartitionResponse | None = None
         try:
@@ -137,7 +141,7 @@ class UnstructuredIO:
         except Exception as e:
             logger.error(str(e))
         if not res or res.status_code != 200:
-            logger.error(f"Error in extracting data from file {req.files.file_name}")
+            logger.error(f"Error in extracting data from file {req.partition_parameters.files.file_name}")
         return res
         # res_str = ("\n\n".join([str(el) for el in res.elements]))
 
@@ -156,4 +160,7 @@ class UnstructuredIO:
 
 @lru_cache
 def get_unstructured_io(settings: Settings = SettingsProvider.sget()) -> UnstructuredIO:
-    return UnstructuredIO(settings.UNSTRUCTURED_API_KEY)
+    return UnstructuredIO(
+        unstructured_api_key=settings.UNSTRUCTURED_API_KEY,
+        unstructured_url=settings.UNSTRUCTURED_URL,
+    )
