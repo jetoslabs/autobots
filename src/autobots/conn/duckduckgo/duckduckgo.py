@@ -12,66 +12,66 @@ from src.autobots.core.settings import Settings, SettingsProvider
 
 
 class SearchRes(BaseModel):
-    title: str
-    href: HttpUrl
-    body: str
+    title: Optional[str] = None
+    href: Optional[HttpUrl] = None
+    body: Optional[str] = None
 
 
 class NewsRes(BaseModel):
-    date: str
-    title: str
-    body: str
-    url: HttpUrl
-    image: Optional[HttpUrl]
-    source: str
+    date: Optional[str] = None
+    title: Optional[str] = None
+    body: Optional[str] = None
+    url: Optional[HttpUrl] = None
+    image: Optional[HttpUrl] = None
+    source: Optional[str] = None
 
 
 class AnswerRes(BaseModel):
-    icon: Optional[str]
-    text: str
-    topic: Optional[str]
-    url: HttpUrl
+    icon: Optional[str] = None
+    text: Optional[str] = None
+    topic: Optional[str] = None
+    url: Optional[HttpUrl] = None
 
 
 class ImageRes(BaseModel):
-    title: str
-    image: HttpUrl
-    thumbnail: HttpUrl
-    url: HttpUrl
-    height: int
-    width: int
-    source: str
+    title: Optional[str] = None
+    image: Optional[HttpUrl] = None
+    thumbnail: Optional[HttpUrl] = None
+    url: Optional[HttpUrl] = None
+    height: Optional[int] = None
+    width: Optional[int] = None
+    source: Optional[str] = None
 
 
 class VideoRes(BaseModel):
-    content: HttpUrl
-    description: str
-    duration: str
-    embed_html: str
-    embed_url: HttpUrl
-    image_token: str
-    images: dict
-    provider: str
-    published: str
-    publisher: str
-    statistics: dict
-    title: str
-    uploader: str
+    content: Optional[HttpUrl] = None
+    description: Optional[str] = None
+    duration: Optional[str] = None
+    embed_html: Optional[str] = None
+    embed_url: Optional[HttpUrl] = None
+    image_token: Optional[str] = None
+    images: Optional[dict] = None
+    provider: Optional[str] = None
+    published: Optional[str] = None
+    publisher: Optional[str] = None
+    statistics: Optional[dict] = None
+    title: Optional[str] = None
+    uploader: Optional[str] = None
 
 
 class MapRes(BaseModel):
-    title: str
-    address: str
+    title: Optional[str] = None
+    address: Optional[str] = None
     country_code: Optional[str] = None
-    latitude: float
-    longitude: float
-    url: HttpUrl | str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    url: Optional[HttpUrl | str] = None
     desc: Optional[str] = None
     phone: Optional[str] = None
     image: Optional[HttpUrl] | str = None
-    source: HttpUrl
+    source: Optional[HttpUrl] = None
     links: Optional[str] = None
-    hours: dict | str
+    hours: Optional[dict | str] = None
     category: Optional[str] = None
     facebook: Optional[str] = None
     instagram: Optional[str] = None
@@ -79,13 +79,13 @@ class MapRes(BaseModel):
 
 
 class TranslateRes(BaseModel):
-    detected_language: str
-    translated: str
-    original: str
+    detected_language: Optional[str] = None
+    translated: Optional[str] = None
+    original: Optional[str] = None
 
 
 class SuggestionRes(BaseModel):
-    phrase: str
+    phrase: Optional[str] = None
 
 
 class DuckDuckGo:
