@@ -30,7 +30,7 @@ These summaries will be embedded and used to retrieve the raw text or table elem
 Give a concise summary of the table or text that is well optimized for retrieval. Table or text: {element}"""
 
     # Call the OpenAI API to generate the summary
-    response = client.chat.completions.create(model="gpt-4-turbo",
+    response = client.chat.completions.create(model="gpt-4o",
                                                messages=[
             {"role": "system", "content": "You are an assistant tasked with summarizing tables and text for retrieval."},
             {"role": "user", "content": prompt_text}
