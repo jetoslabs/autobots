@@ -27,7 +27,7 @@ class OpenAIFunctionDefinitionGen:
         parameters_obj = await OpenAIFunctionDefinitionGen._get_func_parameters(func)
         function_obj = FunctionDefinition(name=func_name, description=description, parameters=parameters_obj)
         function_schema = ChatCompletionToolParam(type="function", function=function_obj)
-        logger.bind(func=func, func_definition=function_schema).debug("Function definition generated")
+        logger.bind(func_name=func_name, func_definition=function_schema).debug(f"Function definition generated: {func_name}")
         return function_schema
 
     @staticmethod
