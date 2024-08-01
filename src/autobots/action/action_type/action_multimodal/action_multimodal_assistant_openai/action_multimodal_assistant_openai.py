@@ -190,4 +190,4 @@ class ActionMultimodalAssistantOpenai(
             final_list_of_tools += already_assistant_tools
         if assistant_function_tools and len(assistant_function_tools) > 0:
             final_list_of_tools += assistant_function_tools
-        return final_list_of_tools if len(final_list_of_tools) > 0 else None
+        return final_list_of_tools if len(final_list_of_tools) > 0 else []
