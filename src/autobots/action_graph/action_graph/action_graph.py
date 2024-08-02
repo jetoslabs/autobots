@@ -184,11 +184,16 @@ class ActionGraph:
                     **bind_dict
                 ).info("Running Action Graph as action_response + review_required_nodes != total_nodes")
                 for node, upstream_nodes in inverted_map.items():
-                    if await ActionGraph.is_work_done([node], action_response) or \
-                            not await ActionGraph.is_work_done(upstream_nodes, action_response):
+                    if (
+                            await ActionGraph.is_work_done([node], action_response) or
+                            not await ActionGraph.is_work_done(upstream_nodes, action_response)
+                    ):
                         logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
                             "Continuing to next None as this Node's result is calculated or Upstream dependencies are not met")
                         continue
+                    else:
+                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
+                            "Continuing exec as Node's result not yet calculated and Upstream dependencies are met")
                     # Check if user review required
                     is_any_dependent_require_review = False
                     for upstream_node in upstream_nodes:
@@ -203,9 +208,14 @@ class ActionGraph:
                             logger.bind(**bind_dict).info(
                                 f"Upstream node requires User review, node_id: {upstream_node}")
                     if is_any_dependent_require_review:
-                        logger.bind(**bind_dict).info(
-                            "Continuing to run next node in graph as dependent requires review")
+                        (logger
+                        .bind(**bind_dict)
+                        .info("Continuing to run next node in graph as dependent requires review, node_id: {upstream_node}")
+                         )
                         continue
+                    else:
+                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
+                            "Continuing exec as this Node's result is not yet calculated are review requirement are met")
 
                     if len(upstream_nodes) == 0:
                         # Run action with no dependency
