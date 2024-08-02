@@ -212,22 +212,28 @@ class ActionGraph:
                             if upstream_node not in review_required_nodes:
                                 review_required_nodes.append(upstream_node)
                                 dependent_nodes = graph_map.get(upstream_node)
-                                new_unreachable_nodes = [dependent_node for dependent_node in dependent_nodes if dependent_node not in unreachable_nodes]
+                                new_unreachable_nodes = [dependent_node for dependent_node in dependent_nodes if
+                                                         dependent_node not in unreachable_nodes]
                                 unreachable_nodes += new_unreachable_nodes
                                 logger.bind(**bind_dict).info(f"Unreachable nodes: {unreachable_nodes}")
                             is_any_dependent_require_review = True
-                            logger.bind(
-                                node_id=node,
-                                upstream_node_id=upstream_node,
-                                **bind_dict
-                            ).info("Upstream node requires User review")
+                            logger.bind(node_id=node, upstream_node_id=upstream_node, **bind_dict).info(
+                                "Upstream node requires User review")
+                        elif (
+                                node_details_map and
+                                node_details_map.get(upstream_node) and
+                                node_details_map.get(upstream_node).data.user_review_required and
+                                node_details_map.get(upstream_node).data.user_review_done
+                        ):
+                            dependent_nodes = graph_map.get(upstream_node)
+                            for dependent_node in dependent_nodes:
+                                if dependent_node in unreachable_nodes:
+                                    unreachable_nodes.remove(dependent_node)
+                                    logger.bind(node_id=dependent_node, upstream_node_id=upstream_node,
+                                                **bind_dict).info("Removed node from unreachable list")
                     if is_any_dependent_require_review:
-                        (logger
-                        .bind(
-                            node_id=node,
-                            **bind_dict)
-                        .info("Continuing to run next node in graph as this node requires review")
-                         )
+                        logger.bind(node_id=node, **bind_dict).info(
+                            "Continuing to run next node in graph as this node requires review")
                         continue
                     else:
                         logger.bind(**bind_dict, action_id=node_action_map.get(node)).info(
@@ -236,11 +242,11 @@ class ActionGraph:
                     if len(upstream_nodes) == 0:
                         # Run action with no dependency
                         action_result: ActionDoc = await ActionGraph.run_action(ctx,
-                            user_actions,
-                            user_actions_market,
-                            node_action_map.get(node),
-                            action_graph_input_dict
-                        )
+                                                                                user_actions,
+                                                                                user_actions_market,
+                                                                                node_action_map.get(node),
+                                                                                action_graph_input_dict
+                                                                                )
                         # action_result = await user_actions.run_action_v1(node_action_map.get(node), action_graph_input.model_dump())
 
                         action_response[node] = ActionDoc.model_validate(action_result)
@@ -279,7 +285,8 @@ class ActionGraph:
                 count_unreachable_nodes=len(unreachable_nodes),
                 count_total_nodes=len(total_nodes),
                 **bind_dict
-            ).info("Exited Action Graph Run While loop len(action_response) + len(unreachable_nodes) >= len(total_nodes)")
+            ).info(
+                "Exited Action Graph Run While loop len(action_response) + len(unreachable_nodes) >= len(total_nodes)")
 
             # Update action result graph as success or waiting
             action_graph_result_update: ActionGraphResultUpdate | None
@@ -446,7 +453,8 @@ class ActionGraph:
 
     @staticmethod
     async def to_input(
-            ctx: Context, upstream_nodes: List[str], current_node_action_type: str, action_response: Dict[str, ActionDoc]
+            ctx: Context, upstream_nodes: List[str], current_node_action_type: str,
+            action_response: Dict[str, ActionDoc]
     ) -> MultiObj | Any:
         input_msg = ""
 
