@@ -66,6 +66,7 @@ class Settings(BaseSettings):
     PINECONE_API_KEY: str = None
 
     UNSTRUCTURED_API_KEY: str = None
+    UNSTRUCTURED_URL: str = "https://api.unstructured.io/general/v0/general"
 
     REPLICATE_API_KEY: str = None
 

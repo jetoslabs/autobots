@@ -34,7 +34,7 @@ async def test_action_multimodal_llm_chat_with_vector_search_openai_rerun_happy_
                 content="Write a simple story"
             )
         ],
-        model="gpt-4-0613"
+        model="gpt-4o-mini"
     )
     action_config = ActionCreateMultiModalLlmChatWithVectorSearchOpenaiConfig(
         datastore_id="vector_search_teststore-7fD7Eab3d",

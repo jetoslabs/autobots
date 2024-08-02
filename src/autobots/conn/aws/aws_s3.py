@@ -124,7 +124,8 @@ class AwsS3:
             if prefix and not prefix.startswith(self.object_prefix):
                 prefix = self.object_prefix + prefix
             else:
-                prefix = self.object_prefix
+                extra_prefix = prefix.split(self.object_prefix)[-1]
+                prefix = self.object_prefix + extra_prefix
             s3_objects = []
             size = 0
             for s3_object in self.bucket.objects.filter(Prefix=prefix):
@@ -139,6 +140,9 @@ class AwsS3:
     async def delete_prefix(self, prefix: str) -> List[DeletedObjectTypeDef]:
         if prefix and not prefix.startswith(self.object_prefix):
             prefix = self.object_prefix + prefix
+        else:
+            extra_prefix = prefix.split(self.object_prefix)[-1]
+            prefix = self.object_prefix + extra_prefix
         s3_objects = await self.list(prefix=prefix)
         deleted = []
         for s3_object in s3_objects:

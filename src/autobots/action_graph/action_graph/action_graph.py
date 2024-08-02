@@ -121,7 +121,7 @@ class ActionGraph:
 
         # ACTION GRAPH RESULT - NODE RERUN
         if action_graph_node_id:
-            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun")
+            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun start")
             action_graph_result_doc = await ActionGraph.run_node(
                 ctx,
                 user_actions,
@@ -131,9 +131,10 @@ class ActionGraph:
                 user_action_graph_result,
                 webhook
             )
+            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun complete")
         # ACTION GRAPH RESULT - GRAPH RUN / RERUN
         else:
-            logger.bind(ctx=ctx).info("Action Graph Run/Rerun")
+            logger.bind(ctx=ctx).info("Action Graph Run/Rerun Start")
             action_graph_result_doc = await ActionGraph.run_action_graph(
                 ctx,
                 user_actions,
@@ -143,6 +144,7 @@ class ActionGraph:
                 user_action_graph_result,
                 webhook
             )
+            logger.bind(ctx=ctx).info("Action Graph Run/Rerun Complete")
 
         return action_graph_result_doc
 
@@ -161,6 +163,7 @@ class ActionGraph:
                      .with_action_graph_id(action_graph_result_doc.result.id)
                      .with_action_graph_run_id(action_graph_result_doc.id)
                      .get_bind_dict())
+        logger.bind(**bind_dict).info("Action Graph Run Start")
         graph_map = action_graph_result_doc.result.graph
         node_action_map = action_graph_result_doc.result.nodes
         node_details_map = action_graph_result_doc.result.node_details
@@ -172,16 +175,30 @@ class ActionGraph:
 
         review_required_nodes: List[str] = []
 
+        count = 0
         try:
             while len(action_response) + len(review_required_nodes) != len(total_nodes):
-                logger.bind(**bind_dict).info(
-                    "Running Action Graph as action_response + review_required_nodes != total_nodes")
+                count += 1
+                if count > 100:
+                    logger.bind(**bind_dict).error("Exiting Action Graph Run as total loops > 100")
+                    raise StopIteration
+                logger.bind(
+                    count_action_response=len(action_response),
+                    count_review_required_nodes=len(review_required_nodes),
+                    count_total_nodes=len(total_nodes),
+                    **bind_dict
+                ).info("Running Action Graph as action_response + review_required_nodes != total_nodes")
                 for node, upstream_nodes in inverted_map.items():
-                    if await ActionGraph.is_work_done([node], action_response) or \
-                            not await ActionGraph.is_work_done(upstream_nodes, action_response):
-                        logger.bind(**bind_dict).info(
+                    if (
+                            await ActionGraph.is_work_done([node], action_response) or
+                            not await ActionGraph.is_work_done(upstream_nodes, action_response)
+                    ):
+                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
                             "Continuing to next None as this Node's result is calculated or Upstream dependencies are not met")
                         continue
+                    else:
+                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
+                            "Continuing exec as Node's result not yet calculated and Upstream dependencies are met")
                     # Check if user review required
                     is_any_dependent_require_review = False
                     for upstream_node in upstream_nodes:
@@ -196,9 +213,14 @@ class ActionGraph:
                             logger.bind(**bind_dict).info(
                                 f"Upstream node requires User review, node_id: {upstream_node}")
                     if is_any_dependent_require_review:
-                        logger.bind(**bind_dict).info(
-                            "Continuing to run next node in graph as dependent requires review")
+                        (logger
+                        .bind(**bind_dict)
+                        .info("Continuing to run next node in graph as dependent requires review, node_id: {upstream_node}")
+                         )
                         continue
+                    else:
+                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
+                            "Continuing exec as this Node's result is not yet calculated are review requirement are met")
 
                     if len(upstream_nodes) == 0:
                         # Run action with no dependency
@@ -241,6 +263,7 @@ class ActionGraph:
                     )
                     if webhook:
                         await webhook.send(action_graph_result_doc.model_dump())
+            logger.bind(**bind_dict).info("Exited Action Graph Run While loop len(action_response) + len(review_required_nodes) == len(total_nodes)")
 
             # Update action result graph as success or waiting
             action_graph_result_update: ActionGraphResultUpdate | None
@@ -259,8 +282,10 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
+        except StopIteration as e:
+            logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
         except Exception as e:
-            logger.bind(ctx=ctx, **bind_dict).exception(f"Error while graph run, {str(e)}")
+            logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
@@ -273,8 +298,9 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        logger.bind(ctx=ctx, **bind_dict).info("Completed Action Graph _run_as_background_task")
-        return action_graph_result_doc
+        finally:
+            logger.bind(**bind_dict).info("Action Graph Run Completed")
+            return action_graph_result_doc
 
     @staticmethod
     async def run_node(
@@ -327,6 +353,7 @@ class ActionGraph:
             action_id: str,
             action_graph_input_dict: Dict[str, Any]
     ) -> ActionDoc:
+        logger.bind(ctx=ctx, action_id=action_id).info("Run action")
         exception = None
         try:
             action_result = await user_actions.run_action_v1(ctx, action_id, action_graph_input_dict)
@@ -478,7 +505,7 @@ class ActionGraph:
                 "Start straight with { and end with }.")
 
             chat_req = ChatReq(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 max_tokens=4096,
                 messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
                 response_format={"type": "json_object"}

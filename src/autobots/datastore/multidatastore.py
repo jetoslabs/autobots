@@ -1,9 +1,5 @@
 import base64
-import io
-import re
 import uuid
-from PIL import Image
-import os
 import random
 import string
 from src.autobots.conn.chroma.chroma import Chroma, Document
@@ -12,15 +8,11 @@ from src.autobots.conn.openai.openai_embeddings.openai_embeddings import OpenaiE
 from src.autobots.datastore.data_provider import DataProvider
 from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
-import asyncio
 from fastapi import UploadFile
 from src.autobots.conn.openai.openai_client import get_openai
 import unstructured_client
-from unstructured_client.models import operations, shared
-from src.autobots.conn.aws.s3 import get_s3
-from src.autobots.conn.pinecone.pinecone import get_pinecone
-from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
-from src.autobots.core.settings import Settings, SettingsProvider
+from unstructured_client.models import shared
+from src.autobots.core.settings import SettingsProvider
   
 
 client = OpenAI(api_key=SettingsProvider.sget().OPENAI_API_KEY)

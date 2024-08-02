@@ -24,7 +24,7 @@ def setup_logger(level: str = get_config().LOG_LEVEL.debug):
         logger.add(sys.stdout,
                    level=level,
                    # format=formatter,
-                   format="{message} - {extra} - {name}:{function}:{line}",
+                   format="{message} - {name}:{function}:{line}",
                    serialize=True,
                    backtrace=True,
                    diagnose=True,
