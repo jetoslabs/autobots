@@ -283,7 +283,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         except Exception as e:
-            logger.bind(ctx=ctx, **bind_dict).exception(f"Error while graph run, {str(e)}")
+            logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
 
             # Update action result graph as error
             action_graph_result_update: ActionGraphResultUpdate = ActionGraphResultUpdate(
@@ -297,7 +297,7 @@ class ActionGraph:
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
         finally:
-            logger.bind(ctx=ctx, **bind_dict).info("Action Graph Run Completed")
+            logger.bind(**bind_dict).info("Action Graph Run Completed")
             return action_graph_result_doc
 
     @staticmethod
