@@ -174,10 +174,11 @@ class ActionGraph:
         inverted_map = await ActionGraph.invert_map(graph_map)
 
         review_required_nodes: List[str] = []
+        unreachable_nodes: List[str] = []
 
         count = 0
         try:
-            while len(action_response) + len(review_required_nodes) != len(total_nodes):
+            while len(action_response) + len(unreachable_nodes) >= len(total_nodes):
                 count += 1
                 if count > 100:
                     logger.bind(**bind_dict).error("Exiting Action Graph Run as total loops > 100")
@@ -208,7 +209,12 @@ class ActionGraph:
                                 node_details_map.get(upstream_node).data.user_review_required and
                                 not node_details_map.get(upstream_node).data.user_review_done
                         ):
-                            review_required_nodes.append(upstream_node)
+                            if upstream_node not in review_required_nodes:
+                                review_required_nodes.append(upstream_node)
+                                dependent_nodes = graph_map.get(upstream_node)
+                                new_unreachable_nodes = [dependent_node for dependent_node in dependent_nodes if dependent_node not in unreachable_nodes]
+                                unreachable_nodes += new_unreachable_nodes
+                                logger.bind(**bind_dict).info(f"Unreachable nodes: {unreachable_nodes}")
                             is_any_dependent_require_review = True
                             logger.bind(**bind_dict).info(
                                 f"Upstream node requires User review, node_id: {upstream_node}")
