@@ -121,7 +121,7 @@ class ActionGraph:
 
         # ACTION GRAPH RESULT - NODE RERUN
         if action_graph_node_id:
-            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun")
+            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun start")
             action_graph_result_doc = await ActionGraph.run_node(
                 ctx,
                 user_actions,
@@ -131,9 +131,10 @@ class ActionGraph:
                 user_action_graph_result,
                 webhook
             )
+            logger.bind(ctx=ctx, action_graph_node_id=action_graph_node_id).info("Action Graph Node Rerun complete")
         # ACTION GRAPH RESULT - GRAPH RUN / RERUN
         else:
-            logger.bind(ctx=ctx).info("Action Graph Run/Rerun")
+            logger.bind(ctx=ctx).info("Action Graph Run/Rerun Start")
             action_graph_result_doc = await ActionGraph.run_action_graph(
                 ctx,
                 user_actions,
@@ -143,6 +144,7 @@ class ActionGraph:
                 user_action_graph_result,
                 webhook
             )
+            logger.bind(ctx=ctx).info("Action Graph Run/Rerun Complete")
 
         return action_graph_result_doc
 
@@ -161,6 +163,7 @@ class ActionGraph:
                      .with_action_graph_id(action_graph_result_doc.result.id)
                      .with_action_graph_run_id(action_graph_result_doc.id)
                      .get_bind_dict())
+        logger.bind(**bind_dict).info("Action Graph Run Start")
         graph_map = action_graph_result_doc.result.graph
         node_action_map = action_graph_result_doc.result.nodes
         node_details_map = action_graph_result_doc.result.node_details
@@ -277,7 +280,7 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        logger.bind(ctx=ctx, **bind_dict).info("Completed Action Graph _run_as_background_task")
+        logger.bind(ctx=ctx, **bind_dict).info("Action Graph Run Completed")
         return action_graph_result_doc
 
     @staticmethod
@@ -331,6 +334,7 @@ class ActionGraph:
             action_id: str,
             action_graph_input_dict: Dict[str, Any]
     ) -> ActionDoc:
+        logger.bind(ctx=ctx, action_id=action_id).info("Run action")
         exception = None
         try:
             action_result = await user_actions.run_action_v1(ctx, action_id, action_graph_input_dict)
