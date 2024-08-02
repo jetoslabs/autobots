@@ -40,7 +40,7 @@ async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_p
                     content="Write a simple story"
                 )
             ],
-            model="gpt-4-0613"
+            model="gpt-4o-mini"
         )
 
         s3 = get_s3()

@@ -478,7 +478,7 @@ class ActionGraph:
                 "Start straight with { and end with }.")
 
             chat_req = ChatReq(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 max_tokens=4096,
                 messages=[ChatCompletionUserMessageParam(role="user", content=llm_input)],
                 response_format={"type": "json_object"}
