@@ -174,12 +174,16 @@ class ActionGraph:
 
         try:
             while len(action_response) + len(review_required_nodes) != len(total_nodes):
-                logger.bind(**bind_dict).info(
-                    "Running Action Graph as action_response + review_required_nodes != total_nodes")
+                logger.bind(
+                    count_action_response=len(action_response),
+                    count_review_required_nodes=len(review_required_nodes),
+                    count_total_nodes=len(total_nodes),
+                    **bind_dict
+                ).info("Running Action Graph as action_response + review_required_nodes != total_nodes")
                 for node, upstream_nodes in inverted_map.items():
                     if await ActionGraph.is_work_done([node], action_response) or \
                             not await ActionGraph.is_work_done(upstream_nodes, action_response):
-                        logger.bind(**bind_dict).info(
+                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
                             "Continuing to next None as this Node's result is calculated or Upstream dependencies are not met")
                         continue
                     # Check if user review required
