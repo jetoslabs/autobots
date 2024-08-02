@@ -282,6 +282,8 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
+        except StopIteration as e:
+            logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
         except Exception as e:
             logger.bind(**bind_dict).exception(f"Error while graph run, {str(e)}")
 
