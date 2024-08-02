@@ -17,4 +17,4 @@ class Tiktoken:
 
 @lru_cache
 def get_tiktoken(settings: Settings = SettingsProvider.sget()) -> Tiktoken:
-    return Tiktoken(model="gpt-4")
+    return Tiktoken(model="gpt-4o")
