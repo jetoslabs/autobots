@@ -185,10 +185,10 @@ class ActionGraph:
                     raise StopIteration
                 logger.bind(
                     count_action_response=len(action_response),
-                    count_review_required_nodes=len(review_required_nodes),
+                    count_unreachable_nodes=len(unreachable_nodes),
                     count_total_nodes=len(total_nodes),
                     **bind_dict
-                ).info("Running Action Graph as action_response + review_required_nodes != total_nodes")
+                ).info("Running Action Graph as action_response + unreachable_nodes < total_nodes")
                 for node, upstream_nodes in inverted_map.items():
                     if (
                             await ActionGraph.is_work_done([node], action_response) or
@@ -216,16 +216,21 @@ class ActionGraph:
                                 unreachable_nodes += new_unreachable_nodes
                                 logger.bind(**bind_dict).info(f"Unreachable nodes: {unreachable_nodes}")
                             is_any_dependent_require_review = True
-                            logger.bind(**bind_dict).info(
-                                f"Upstream node requires User review, node_id: {upstream_node}")
+                            logger.bind(
+                                node_id=node,
+                                upstream_node_id=upstream_node,
+                                **bind_dict
+                            ).info("Upstream node requires User review")
                     if is_any_dependent_require_review:
                         (logger
-                        .bind(**bind_dict)
-                        .info("Continuing to run next node in graph as dependent requires review, node_id: {upstream_node}")
+                        .bind(
+                            node_id=node,
+                            **bind_dict)
+                        .info("Continuing to run next node in graph as this node requires review")
                          )
                         continue
                     else:
-                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
+                        logger.bind(**bind_dict, action_id=node_action_map.get(node)).info(
                             "Continuing exec as this Node's result is not yet calculated are review requirement are met")
 
                     if len(upstream_nodes) == 0:
@@ -269,7 +274,12 @@ class ActionGraph:
                     )
                     if webhook:
                         await webhook.send(action_graph_result_doc.model_dump())
-            logger.bind(**bind_dict).info("Exited Action Graph Run While loop len(action_response) + len(review_required_nodes) == len(total_nodes)")
+            logger.bind(
+                count_action_response=len(action_response),
+                count_unreachable_nodes=len(unreachable_nodes),
+                count_total_nodes=len(total_nodes),
+                **bind_dict
+            ).info("Exited Action Graph Run While loop len(action_response) + len(unreachable_nodes) >= len(total_nodes)")
 
             # Update action result graph as success or waiting
             action_graph_result_update: ActionGraphResultUpdate | None
