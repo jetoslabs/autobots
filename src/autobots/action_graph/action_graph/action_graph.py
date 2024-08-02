@@ -178,7 +178,7 @@ class ActionGraph:
 
         count = 0
         try:
-            while len(action_response) + len(unreachable_nodes) >= len(total_nodes):
+            while len(action_response) + len(unreachable_nodes) < len(total_nodes):
                 count += 1
                 if count > 100:
                     logger.bind(**bind_dict).error("Exiting Action Graph Run as total loops > 100")
@@ -198,7 +198,7 @@ class ActionGraph:
                             "Continuing to next None as this Node's result is calculated or Upstream dependencies are not met")
                         continue
                     else:
-                        logger.bind(**bind_dict, action_name=node_action_map.get(node)).info(
+                        logger.bind(**bind_dict, action_id=node_action_map.get(node)).info(
                             "Continuing exec as Node's result not yet calculated and Upstream dependencies are met")
                     # Check if user review required
                     is_any_dependent_require_review = False
