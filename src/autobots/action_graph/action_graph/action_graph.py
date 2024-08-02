@@ -175,8 +175,13 @@ class ActionGraph:
 
         review_required_nodes: List[str] = []
 
+        count = 0
         try:
             while len(action_response) + len(review_required_nodes) != len(total_nodes):
+                count += 1
+                if count > 100:
+                    logger.bind(**bind_dict).error("Exiting Action Graph Run as total loops > 100")
+                    raise StopIteration
                 logger.bind(
                     count_action_response=len(action_response),
                     count_review_required_nodes=len(review_required_nodes),
