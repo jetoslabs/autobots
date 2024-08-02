@@ -296,8 +296,9 @@ class ActionGraph:
             )
             if webhook:
                 await webhook.send(action_graph_result_doc.model_dump())
-        logger.bind(ctx=ctx, **bind_dict).info("Action Graph Run Completed")
-        return action_graph_result_doc
+        finally:
+            logger.bind(ctx=ctx, **bind_dict).info("Action Graph Run Completed")
+            return action_graph_result_doc
 
     @staticmethod
     async def run_node(
