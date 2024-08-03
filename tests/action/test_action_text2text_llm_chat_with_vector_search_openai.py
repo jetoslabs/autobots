@@ -30,7 +30,7 @@ text = ("## Definition of story structure"
         "\nThe final stage of the story structure is the ending or close. Success or failure are both valid outcomes, but the ending should provide a conclusion and resolution to your story. The ending should close the loop on all crises, plot twists, and loose ends but could also leave the reader wanting more. "
         )
 
-@pytest.mark.skip("skipped")
+@pytest.mark.skip("Expense Related")
 @pytest.mark.asyncio
 async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_path(set_test_settings):
     global datastore

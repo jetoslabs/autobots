@@ -8,7 +8,7 @@ from src.autobots.action.action_type.action_multimodal.action_multimodal_assista
 from src.autobots.data_model.context import Context
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="skipping")
+@pytest.mark.skip(reason="Expense Related")
 async def test_action_multimodal_assistant_openai_happy_path():
     action: ActionMultimodalAssistantOpenai | None = None
     try:
