@@ -8,7 +8,6 @@ from src.autobots.action.action_type.action_factory import ActionFactory, RunAct
 from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 
-
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="Expensive to test everytime")
 async def test_action_video2video_opus_happy_path(set_test_settings):
