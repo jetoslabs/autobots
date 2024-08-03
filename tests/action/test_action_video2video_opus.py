@@ -9,7 +9,7 @@ from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Below test takes care of this test case")
+@pytest.mark.skip(reason="Expensive to test everytime")
 async def test_action_video2video_opus_happy_path(set_test_settings):
     
     action_config = Video2VideoReqModel()
