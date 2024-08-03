@@ -27,7 +27,7 @@ async def test_action_img2img_photoshoot_claid_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Below test takes care of this test case")
+@pytest.mark.skip(reason="Expensive to test everytime")
 async def test_action_img2img_photoshoot_claid_happy_path_1():
     action_config = ActionConfigPhotoshootClaid()
     action_input = ActionInputPhotoshootClaid(
