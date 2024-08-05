@@ -12,8 +12,9 @@ class ExtendedEnum(Enum):
         return set(map(lambda c: c.value, cls))
 
 
-class APP_AUTHS(ExtendedEnum):
+class APPS_ENUM(ExtendedEnum):
     jira = "jira"
     slack = "slack"
     zoho = "zoho"
     zendesk = "zendesk"
+    google = "google"
