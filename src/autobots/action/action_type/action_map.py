@@ -37,6 +37,7 @@ from src.autobots.action.action_type.action_text2text.action_text2text_read_urls
 from src.autobots.action.action_type.action_text2text.action_text2text_search_map import ActionText2TextSearchMaps
 from src.autobots.action.action_type.action_text2text.action_text2text_search_web import ActionText2TextSearchWeb
 from src.autobots.action.action_type.action_text2text.action_text2text_user_input import ActionText2textUserInput
+from src.autobots.action.action_type.action_text2text.action_text2text_read_api_file import ActionText2textReadApiFile
 from src.autobots.action.action_type.action_text2video.action_text2video_search_video import ActionText2VideoSearchVideo
 from src.autobots.action.action_type.action_text2video.action_text2video_stable_diffusion import \
     ActionText2VideoStableDiffusion
@@ -60,6 +61,7 @@ ACTION_MAP = {
     ActionType.text2text_io_mapper: ActionText2TextIOMapper,
     ActionType.text2text_user_input: ActionText2textUserInput,
     ActionType.text2text_api_call: ActionText2textAPI,
+    ActionType.text2text_read_api_file: ActionText2textReadApiFile,
 
     # text2img
     ActionType.text2img_dalle_openai: ActionGenImageDalleOpenAiV2,
