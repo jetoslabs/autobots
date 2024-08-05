@@ -12,8 +12,17 @@ from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.data_model.context import Context
 from src.autobots.user.user_orm_model import UserORM
 
-class ActionText2textAPI(
-    ActionABC[None, None, None, None]
+class ActionConfig(BaseModel):
+    key: str
+
+class ActionInput(BaseModel):
+    key: str
+
+class ActionOutput(BaseModel):  # Define ActionOutput as a Pydantic model
+    text: str
+
+class ActionText2textReadApiFile(
+    ActionABC[ActionConfig, ActionConfig, ActionConfig, ActionInput, ActionOutput]
 ):
     type = ActionType.text2text_read_api_file
 
@@ -22,30 +31,30 @@ class ActionText2textAPI(
         return "Read API definitions from a JSON file"
 
     @staticmethod
-    def get_config_create_type() -> Type[None]:
-        return None
+    def get_config_create_type() -> Type[ActionConfig]:
+        return ActionConfig
 
     @staticmethod
-    def get_config_update_type() -> Type[None]:
-        return None
+    def get_config_update_type() -> Type[ActionConfig]:
+        return ActionConfig
 
     @staticmethod
-    def get_config_type() -> Type[None]:
-        return None
+    def get_config_type() -> Type[ActionConfig]:
+        return ActionConfig
 
     @staticmethod
-    def get_input_type() -> Type[None]:
-        return None
+    def get_input_type() -> Type[ActionInput]:
+        return ActionInput
 
     @staticmethod
-    def get_output_type() -> Type[None]:
-        return None
+    def get_output_type() -> Type[ActionOutput]:
+        return ActionOutput
 
     @staticmethod
-    async def update_config(config: None, config_update: None) -> None:
+    async def update_config(config: ActionConfig, config_update: ActionConfig) -> None:
         return None
 
-    def __init__(self, action_config: None, user: UserORM | None = None):
+    def __init__(self, action_config: ActionConfig, user: UserORM | None = None):
         super().__init__(action_config=action_config, user=user)
 
     async def get_api_definition(self, key: str, json_file: str) -> None:
@@ -53,22 +62,18 @@ class ActionText2textAPI(
             api_defs = json.load(file)
         return api_defs.get(key)  # Return the specific API definition
 
-    async def run_action(self, ctx: Context, action_input: None) -> None | Exception:
+    async def run_action(self, ctx: Context, action_input: ActionInput) -> ActionOutput | Exception:
         try:
-            config = None
-            # Call get_api_definition directly
-            api_response = await self.get_api_definition(action_input, "path/to/your/json_file.json")  # Use action_input as key
-            return api_response
+            api_response = await self.get_api_definition(action_input.key, "path/to/your/json_file.json")  # Use action_input.key as key
+            return ActionOutput(text=json.dumps(api_response))  # Convert dict to JSON string
         except Exception as e:
             logger.error(str(e))
             return e
 
-    async def run_tool(self, action_config: None, ctx: Context) -> None | Exception:
+    async def run_tool(self, action_config: ActionConfig, ctx: Context) -> ActionOutput | Exception:
         try:
-            config = await ActionText2textAPI.create_config(action_config)
-            # Call get_api_definition if needed
-            api_response = await self.get_api_definition("some_key", "path/to/your/json_file.json")  # Specify the key
-            return api_response
+            api_response = await self.get_api_definition(action_config.key, "path/to/your/json_file.json")  # Specify the key
+            return ActionOutput(text=json.dumps(api_response))  # Convert dict to JSON string
         except Exception as e:
             logger.error(str(e))
             return e
