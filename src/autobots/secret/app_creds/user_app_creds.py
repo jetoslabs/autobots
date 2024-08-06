@@ -1,10 +1,15 @@
+from typing import List, Any, Dict
+
 from loguru import logger
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo.results import DeleteResult
 
 from src.autobots.data_model.context import Context
 from src.autobots.secret.app_creds.app_creds_crud import AppCredsCRUD
-from src.autobots.secret.app_creds.app_creds_model import AppCredsDoc, AppCredsCreate, AppCredsRead, AppCredsUpdate, AppCredsDocCreate, AppCredsDocUpdate, AppCredsDocRead, AppCredsLiteDocPage
+from src.autobots.secret.app_creds.app_creds_model import AppCredsDoc, AppCredsCreate, AppCredsRead, AppCredsUpdate, \
+    AppCredsDocCreate, AppCredsDocUpdate, AppCredsDocRead, AppCredsLiteDocPage
+from src.autobots.secret.app_creds.app_creds_type.app_type_to_app_creds_class import AppTypeToAppCredsClass
+from src.autobots.secret.app_types import AppTypes
 from src.autobots.user.user_orm_model import UserORM
 
 
@@ -12,6 +17,14 @@ class UserAppCreds:
 
     # Does User level isolation
     # params common in all functions: user: UserORM, db: AsyncIOMotorDatabase
+
+    @staticmethod
+    async def app_creds_types(ctx: Context) -> List[str]:
+        return AppTypes.list()
+
+    @staticmethod
+    async def app_creds_data_type(ctx: Context, app_name: AppTypes) -> Dict[str, Any]:
+        return AppTypeToAppCredsClass.get(app_name).get_cred_model_type().model_json_schema()
 
     @staticmethod
     async def create_app_creds(
@@ -35,7 +48,7 @@ class UserAppCreds:
         crud = AppCredsCRUD(db=db)
         find_doc = AppCredsDocRead(user_id=str(user.id), **app_creds_list.model_dump(exclude_none=True))
         page = await crud.find_page(doc_find=find_doc, limit=limit, offset=offset)
-        app_creds_page = AppCredsLiteDocPage.model_validate(page)
+        app_creds_page = AppCredsLiteDocPage.model_validate(page.model_dump(exclude_none=True))
         return app_creds_page
 
     @staticmethod
@@ -49,10 +62,10 @@ class UserAppCreds:
 
     @staticmethod
     async def update_app_creds(
-            ctx: Context, db: AsyncIOMotorDatabase, user: UserORM, app_creds_update: AppCredsUpdate
+            ctx: Context, db: AsyncIOMotorDatabase, user: UserORM, id: str, app_creds_update: AppCredsUpdate
     ) -> AppCredsDoc | None:
         crud = AppCredsCRUD(db=db)
-        doc_update = AppCredsDocUpdate(user_id=str(user.id), **app_creds_update.model_dump(exclude_none=True))
+        doc_update = AppCredsDocUpdate(id=id, user_id=str(user.id), **app_creds_update.model_dump(exclude_none=True))
         doc = await crud.update_one(doc_update=doc_update)
         match doc:
             case AppCredsDoc():

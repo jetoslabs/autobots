@@ -3,16 +3,16 @@ from typing import TypeVar, Type
 
 from pydantic import BaseModel
 
-from src.autobots.secret.app_creds.apps_enum import APPS_ENUM
+from src.autobots.secret.app_types import AppTypes
 
 CredsModelType = TypeVar("CredsModelType", bound=BaseModel)
 
 
-class AppCredsType:
+class AppCredsTypeABC:
 
     @staticmethod
     @abstractmethod
-    def get_app() -> APPS_ENUM: ...
+    def get_app() -> AppTypes: ...
 
     @staticmethod
     @abstractmethod
