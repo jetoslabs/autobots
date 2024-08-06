@@ -66,29 +66,8 @@ class CRUDBase(Generic[DocType, LiteDocType, DocCreateType, DocFindType, DocUpda
         find_params = await self._build_filter(doc_find, or_find_queries)
         if isinstance(find_params, Exception) or len(find_params) == 0:
             return DocFindPage(docs=[], total_count=0, limit=limit, offset=offset)
-
         docs = await self.find(doc_find=doc_find, or_find_queries=or_find_queries, limit=limit, offset=offset)
-
-        # model_fields = self.lite_doc_model.model_fields.keys()
-        # fields_to_select = {}
-        # for field in model_fields:
-        #     fields_to_select[field] = 1
-        #
-        # cursor = self.document.find(find_params, fields_to_select).allow_disk_use(True)
-        # cursor.sort([("updated_at", DESCENDING), ("created_at", DESCENDING)]).skip(offset * limit).limit(limit)
-        # docs = []
-        #
-        # async for doc in cursor:
-        #     try:
-        #         # Mongo Result field _id has ObjectId, converting it to str for pydantic model
-        #         doc["_id"] = str(doc.get("_id"))
-        #         doc_type = self.lite_doc_model.model_validate(doc)
-        #         docs.append(doc_type)
-        #     except Exception as e:
-        #         logger.bind(**LogBinder().with_kwargs(doc_find=doc_find, doc=doc).get_bind_dict()).error(str(e))
-
         total_count = await self.count(find_params=find_params)
-
         return DocFindPage(docs=docs, total_count=total_count, limit=limit, offset=offset)
 
     async def find(

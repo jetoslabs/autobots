@@ -8,7 +8,7 @@ from src.autobots.api.v1.api_action_chat import api_action_chat
 from src.autobots.api.v1.api_action_market import api_actions_market
 from src.autobots.api.v1.api_action_type.stable_diffusion import fetch_stable_diffusion
 from src.autobots.api.v1.api_action import api_action
-from src.autobots.api.v1.api_auth import api_auth
+from src.autobots.api.v1.api_auth import api_auth, api_google_auth
 from src.autobots.api.v1.api_auth_secrets import api_secrets
 from src.autobots.api.v1.api_datastore import api_datastore
 from src.autobots.api.v1.api_vectorstore import api_vectorstore
@@ -22,6 +22,7 @@ router = APIRouter(prefix=SettingsProvider.sget().API_v1)
 
 router.include_router(api_hello.router)
 router.include_router(api_auth.router)
+router.include_router(api_google_auth.router)
 router.include_router(api_action.router)
 router.include_router(api_action_type.router)
 router.include_router(api_action_results.router)

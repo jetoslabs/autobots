@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ExtendedEnum(Enum):
+class ExtendedEnum(str, Enum):
 
     @classmethod
     def list(cls):
@@ -12,8 +12,9 @@ class ExtendedEnum(Enum):
         return set(map(lambda c: c.value, cls))
 
 
-class APP_AUTHS(ExtendedEnum):
+class AppTypes(ExtendedEnum):
     jira = "jira"
     slack = "slack"
     zoho = "zoho"
     zendesk = "zendesk"
+    google = "google"
