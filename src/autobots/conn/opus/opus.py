@@ -2,7 +2,7 @@ import requests
 from fastapi import APIRouter
 from loguru import logger
 from pydantic import HttpUrl, BaseModel, Field
-
+from typing import List
 import json
 from typing import Optional, Any
 from src.autobots.core.settings import Settings, SettingsProvider
@@ -15,6 +15,7 @@ router = APIRouter()
 
 class Video2VideoReqModel(BaseModel):
     url: Optional[str] = Field(default=None, description="")
+    keywords: Optional[List[str]] = Field(default=[], description="")
 
 
 class OpusRes(BaseModel):
@@ -56,7 +57,7 @@ class Opus:
                     "clipDurations": [
                         [30, 60]
                     ],
-                    "topicKeywords": ["example_keyword1", "example_keyword2"]
+                    "topicKeywords": req.keywords
                 }
             }
 
