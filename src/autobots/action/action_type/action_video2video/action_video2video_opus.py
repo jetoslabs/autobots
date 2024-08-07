@@ -15,6 +15,8 @@ from src.autobots.user.user_orm_model import UserORM
 class Video2VideoRunModel(BaseModel):
     url: Optional[str] = Field(default=None, description="")
     keywords: Optional[List[str]] = Field(default=[], description="")
+    duration: Optional[List[int]] = Field(default=[30,60])
+
 
 
 
@@ -57,6 +59,9 @@ class ActionVideo2VideoOpus(
             self.action_config.url = action_input.url
         if action_input.keywords!=[]:
             self.action_config.keywords =action_input.keywords
+        if action_input.duration!=[30,60]:
+            self.action_config.duration = action_input.duration
+
         opus = get_opus_video()
         id_or_err = opus.create_clip(self.action_config)
         if isinstance(id_or_err, Exception):

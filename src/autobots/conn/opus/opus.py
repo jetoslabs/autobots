@@ -16,6 +16,7 @@ router = APIRouter()
 class Video2VideoReqModel(BaseModel):
     url: Optional[str] = Field(default=None, description="")
     keywords: Optional[List[str]] = Field(default=[], description="")
+    duration: Optional[List[int]] = Field(default=[30,60])
 
 
 class OpusRes(BaseModel):
@@ -55,7 +56,7 @@ class Opus:
                         "endSec": 60
                     },
                     "clipDurations": [
-                        [30, 60]
+                        req.duration
                     ],
                     "topicKeywords": req.keywords
                 }
