@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Optional, Type, List
 
 from pydantic import BaseModel, Field
 import time
@@ -14,6 +14,8 @@ from src.autobots.user.user_orm_model import UserORM
 
 class Video2VideoRunModel(BaseModel):
     url: Optional[str] = Field(default=None, description="")
+    keywords: Optional[List[str]] = Field(default=[], description="")
+
 
 
 class ActionCreateVideo2VideoOpus(ActionCreate):
@@ -53,6 +55,8 @@ class ActionVideo2VideoOpus(
     async def run_action(self, ctx: Context, action_input: Video2VideoRunModel):
         if action_input.url:
             self.action_config.url = action_input.url
+        if action_input.keywords!=[]:
+            self.action_config.keywords =action_input.keywords
         opus = get_opus_video()
         id_or_err = opus.create_clip(self.action_config)
         if isinstance(id_or_err, Exception):
