@@ -17,6 +17,8 @@ class Video2VideoReqModel(BaseModel):
     url: Optional[str] = Field(default=None, description="")
     keywords: Optional[List[str]] = Field(default=[], description="")
     duration: Optional[List[int]] = Field(default=[30,60])
+    startsec : Optional[int] = Field(default=30)
+    endsec : Optional[int] = Field(default=60)
 
 
 class OpusRes(BaseModel):
@@ -52,8 +54,8 @@ class Opus:
                 ],
                 "curationPref": {
                     "rangeZ": {
-                        "startSec": 30,
-                        "endSec": 60
+                        "startSec": req.startsec,
+                        "endSec": req.endsec
                     },
                     "clipDurations": [
                         req.duration

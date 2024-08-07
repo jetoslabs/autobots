@@ -16,6 +16,8 @@ class Video2VideoRunModel(BaseModel):
     url: Optional[str] = Field(default=None, description="")
     keywords: Optional[List[str]] = Field(default=[], description="")
     duration: Optional[List[int]] = Field(default=[30,60])
+    startsec : Optional[int] = Field(default=30)
+    endsec : Optional[int] = Field(default=60)
 
 
 
@@ -61,6 +63,10 @@ class ActionVideo2VideoOpus(
             self.action_config.keywords =action_input.keywords
         if action_input.duration!=[30,60]:
             self.action_config.duration = action_input.duration
+        if action_input.startsec!=30:
+            self.action_config.startsec = action_input.startsec
+        if action_input.endsec!=60:
+            self.action_config.endsec=action_input.endsec
 
         opus = get_opus_video()
         id_or_err = opus.create_clip(self.action_config)
