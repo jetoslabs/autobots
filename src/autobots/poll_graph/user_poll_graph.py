@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from src.autobots.action.action_chat.chat_doc_model import ChatDoc
 from src.autobots.user.user_orm_model import UserORM
 from src.autobots.data_model.context import Context
-from src.autobots.poll_graph.poll_graph import PollDoc, PollCreate, PollUpdate, PollFind
+from src.autobots.poll_graph.poll_graph import PollDoc, PollCreate, PollUpdate, PollFind, PollGraph
 from src.autobots.poll_graph.poll_graph_crud import PollCRUD
 from typing import Optional
 from fastapi import BackgroundTasks
@@ -79,27 +79,13 @@ class UserPollGraph:
             created_at="timestamp",  # Use actual timestamp
             updated_at="timestamp"   # Use actual timestamp
         )
-
+        resp = await PollGraph.run_in_background(
+            ctx=ctx,
+            action_graph_input_dict=input.model_dump(),
+            background_tasks=background_tasks,
+        )
         # Add the task to background tasks
-        background_tasks.add_task(self._execute_poll_graph, result_doc, input, user_poll_graph_actions, user_poll_graph_market)
 
         return result_doc
 
-    async def _execute_poll_graph(
-        self,
-        result_doc: PollGraphResultDoc,
-        input: dict,
-        user_poll_graph_actions,
-        user_poll_graph_market
-    ):
-        # Implement the logic to execute the poll graph
-        try:
-            # Simulate processing
-            await asyncio.sleep(5)  # Replace with actual processing logic
-
-            # Update result data
-            result_doc.result_data = {"status": "success", "input": input}  # Example result data
-
-        except Exception as e:
-            # Handle exceptions and update result document accordingly
-            result_doc.result_data = {"status": "failed", "error": str(e)}
+    

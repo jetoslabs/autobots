@@ -35,20 +35,10 @@ class OutputQueue:
         return self.queue.empty()
 
 # Define the WorkflowAgent
-class WorkflowAgent:
-    def process_message(self, message):
-        print(f"Processing message: {message}")
-        # Implement message processing logic here
-        asyncio.run(self._simulate_processing())  # Use asyncio for processing
-        print(f"Finished processing message: {message}")
-
-    async def _simulate_processing(self):
-        await asyncio.sleep(2)  # Simulate some processing asyncio
 
 # Define the PollingAgent
 class PollingAgent:
-    def __init__(self, api_url, output_queue, polling_interval=5):
-        self.api_url = api_url
+    def __init__(self, input_action, output_queue, polling_interval=5):
         self.output_queue = output_queue
         self.polling_interval = polling_interval
         self._stop_event = threading.Event()
@@ -60,17 +50,7 @@ class PollingAgent:
     def _poll(self):
         while not self._stop_event.is_set():
             # run llm action here
-            asyncio.run(self.llm_action())
-            # try:
-            #     # Poll the API
-            #     response = requests.get(self.api_url)
-            #     if response.status_code == 200:
-            #         data = response.json()
-            #         # Assuming the API returns a list of messages
-            #         for message in data:
-            #             self.output_queue.add_message(message)
-            # except Exception as e:
-            #     print(f"Error polling API: {e}")
+
             asyncio.sleep(self.polling_interval)
     
     def stop(self):
@@ -78,32 +58,35 @@ class PollingAgent:
         self.thread.join()
 
 # Example usage
-if __name__ == "__main__":
-    output_queue = OutputQueue()
-    workflow_agent = WorkflowAgent()
+
+class PollGraph:
+    def __init__(self, input_action, workflow_agent):
+        self.input_action = input_action
+        self.workflow_agent = workflow_agent
+        self.output_queue = OutputQueue()
+        self.polling_agent = PollingAgent(self.output_queue, polling_interval=5)
+
     
     # Define the API URL
-    api_url = "http://example.com/api/messages"
-    
-    polling_agent = PollingAgent(api_url, output_queue, polling_interval=5)
-    polling_agent.start()
+    def run_in_background(self, api_url, polling_interval=5):
+        self.polling_agent.start()
 
-    # Simulate a separate thread or process for the WorkflowAgent
-    def process_queue():
-        while True:
-            if not output_queue.is_empty():
-                message = output_queue.get_message()
-                workflow_agent.process_message(message)
-            else:
-                asyncio.sleep(1)
+        # Simulate a separate thread or process for the WorkflowAgent
+        def process_queue():
+            while True:
+                if not self.output_queue.is_empty():
+                    message = self.output_queue.get_message()
+                    self.workflow_agent.run_in_background(message)
+                else:
+                    asyncio.sleep(1)
 
-    processing_thread = threading.Thread(target=process_queue)
-    processing_thread.start()
+        self.processing_thread = threading.Thread(target=process_queue)
+        self.processing_thread.start()
 
-    # Allow the system to run for a while
-    asyncio.sleep(60)
+        # Allow the system to run for a while
 
-    # Stop the polling agent
-    polling_agent.stop()
-    # Stop the processing thread
-    processing_thread.join()
+    def stop(self):
+        # Stop the polling agent
+        self.polling_agent.stop()
+        # Stop the processing thread
+        self.processing_thread.join()
