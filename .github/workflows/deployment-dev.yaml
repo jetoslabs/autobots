@@ -176,6 +176,7 @@ jobs:
           -e OPUS_API_KEY=$OPUS_API_KEY
           -e LINKEDIN_SCRAPING_API_KEY=$LINKEDIN_SCRAPING_API_KEY
           -e ASSEMBLYAI_API_KEY=$ASSEMBLYAI_API_KEY
+          -e CHROMA_TOKEN_CREDENTIALS=$CHROMA_TOKEN_CREDENTIALS
           registry.gitlab.com/meetkiwi/autobots:${IMAGE_TAG}
         env:
           LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_AUTOBOTS_USERNAME }}
@@ -219,3 +220,4 @@ jobs:
           OPUS_API_KEY: ${{ secrets.OPUS_API_KEY }}
           LINKEDIN_SCRAPING_API_KEY: ${{ secrets.LINKEDIN_SCRAPING_API_KEY }}
           ASSEMBLYAI_API_KEY: ${{ secrets.ASSEMBLYAI_API_KEY }}
+          CHROMA_TOKEN_CREDENTIALS: ${{ secrets.CHROMA_TOKEN_CREDENTIALS }}

@@ -71,5 +71,7 @@ jobs:
           OPUS_API_KEY: ${{ secrets.OPUS_API_KEY }}
           LINKEDIN_SCRAPING_API_KEY: ${{ secrets.LINKEDIN_SCRAPING_API_KEY }}
           ASSEMBLYAI_API_KEY: ${{ secrets.ASSEMBLYAI_API_KEY }}
+          CHROMA_TOKEN_CREDENTIALS: ${{ secrets.CHROMA_TOKEN_CREDENTIALS }}
+
 
 
