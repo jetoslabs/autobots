@@ -27,7 +27,7 @@ async def test_assistant_generating_text_happy_path(set_test_settings):
         # create assistant
         assistant_create = AssistantCreate(
             name="test_assistant",
-            model="gpt-4-turbo-preview",
+            model="gpt-4o-mini",
             instructions="Write a SQL query to execute user request",
             # file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
             tools=[
@@ -105,7 +105,7 @@ async def test_assistant_generating_file_happy_path(set_test_settings):
         # create assistant
         assistant_create = AssistantCreate(
             name="test_assistant",
-            model="gpt-4-turbo-preview",
+            model="gpt-4o-mini",
             instructions="Generate downloadable json file for each request.",
             # file_ids=["file-5h9P25H5PEVXYGdPzdKs4Rpb"],
             tools=[

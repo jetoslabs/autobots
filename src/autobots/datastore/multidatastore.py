@@ -1,9 +1,5 @@
 import base64
-import io
-import re
 import uuid
-from PIL import Image
-import os
 import random
 import string
 from src.autobots.conn.chroma.chroma import Chroma, Document
@@ -12,15 +8,11 @@ from src.autobots.conn.openai.openai_embeddings.openai_embeddings import OpenaiE
 from src.autobots.datastore.data_provider import DataProvider
 from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
-import asyncio
 from fastapi import UploadFile
 from src.autobots.conn.openai.openai_client import get_openai
 import unstructured_client
-from unstructured_client.models import operations, shared
-from src.autobots.conn.aws.s3 import get_s3
-from src.autobots.conn.pinecone.pinecone import get_pinecone
-from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_io
-from src.autobots.core.settings import Settings, SettingsProvider
+from unstructured_client.models import shared
+from src.autobots.core.settings import SettingsProvider
   
 
 client = OpenAI(api_key=SettingsProvider.sget().OPENAI_API_KEY)
@@ -30,7 +22,7 @@ These summaries will be embedded and used to retrieve the raw text or table elem
 Give a concise summary of the table or text that is well optimized for retrieval. Table or text: {element}"""
 
     # Call the OpenAI API to generate the summary
-    response = client.chat.completions.create(model="gpt-4-turbo",
+    response = client.chat.completions.create(model="gpt-4o",
                                                messages=[
             {"role": "system", "content": "You are an assistant tasked with summarizing tables and text for retrieval."},
             {"role": "user", "content": prompt_text}
