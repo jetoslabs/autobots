@@ -227,6 +227,7 @@ class MultiDataStore:
 
     async def put_data(self, filename: str):
         s = unstructured_client.UnstructuredClient(
+            server='free-api',
             api_key_auth=SettingsProvider.sget().UNSTRUCTURED_API_KEY,
         )
         with open(filename, mode='rb') as file:

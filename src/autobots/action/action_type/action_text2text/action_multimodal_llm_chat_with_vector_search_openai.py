@@ -90,7 +90,7 @@ def img_prompt_func(data_dict):
 
     # Adding image(s) to the messages if present
     if data_dict["images"]:
-        for image in data_dict["context"]["images"]:
+        for image in data_dict["images"]:
             image_message = {
                 "type": "image_url",
                 "image_url": {"url": f"data:image/jpeg;base64,{image}"},
