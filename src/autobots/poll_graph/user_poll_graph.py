@@ -7,7 +7,10 @@ from src.autobots.user.user_orm_model import UserORM
 from src.autobots.data_model.context import Context
 from src.autobots.poll_graph.poll_graph import PollDoc, PollCreate, PollUpdate, PollFind
 from src.autobots.poll_graph.poll_graph_crud import PollCRUD
-
+from typing import Optional
+from fastapi import BackgroundTasks
+import asyncio
+from src.autobots.poll_graph.poll_graph_result import PollGraphResultDoc
 
 class UserPollGraph:
     """
@@ -55,3 +58,48 @@ class UserPollGraph:
     async def delete_poll(self, poll_id: str):
         delete_result = await self.poll_crud.delete_many({"id": poll_id, "user_id": self.user_id})
         return delete_result.deleted_count
+
+    async def run_in_background(
+        self,
+        ctx,
+        user_poll_graph_actions,
+        user_poll_graph_market,
+        user_poll_graph_result,
+        id: str,
+        input: dict,  # Adjust the type as necessary
+        poll_graph_result_id: Optional[str],
+        poll_graph_node_id: Optional[str],
+        background_tasks: BackgroundTasks
+    ) -> PollGraphResultDoc:
+        # Create a new PollGraphResultDoc instance
+        result_doc = PollGraphResultDoc(
+            id=poll_graph_result_id or "new_id",  # Generate a new ID as needed
+            poll_graph_id=id,
+            result_data={},  # Initialize with empty data or as needed
+            created_at="timestamp",  # Use actual timestamp
+            updated_at="timestamp"   # Use actual timestamp
+        )
+
+        # Add the task to background tasks
+        background_tasks.add_task(self._execute_poll_graph, result_doc, input, user_poll_graph_actions, user_poll_graph_market)
+
+        return result_doc
+
+    async def _execute_poll_graph(
+        self,
+        result_doc: PollGraphResultDoc,
+        input: dict,
+        user_poll_graph_actions,
+        user_poll_graph_market
+    ):
+        # Implement the logic to execute the poll graph
+        try:
+            # Simulate processing
+            await asyncio.sleep(5)  # Replace with actual processing logic
+
+            # Update result data
+            result_doc.result_data = {"status": "success", "input": input}  # Example result data
+
+        except Exception as e:
+            # Handle exceptions and update result document accordingly
+            result_doc.result_data = {"status": "failed", "error": str(e)}

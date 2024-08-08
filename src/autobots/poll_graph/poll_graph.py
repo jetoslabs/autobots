@@ -1,6 +1,6 @@
 import queue
 import threading
-import time
+import asyncio  # Changed from asyncio to asyncio
 import requests
 from pydantic import BaseModel
 
@@ -39,8 +39,11 @@ class WorkflowAgent:
     def process_message(self, message):
         print(f"Processing message: {message}")
         # Implement message processing logic here
-        time.sleep(2)  # Simulate some processing time
+        asyncio.run(self._simulate_processing())  # Use asyncio for processing
         print(f"Finished processing message: {message}")
+
+    async def _simulate_processing(self):
+        await asyncio.sleep(2)  # Simulate some processing asyncio
 
 # Define the PollingAgent
 class PollingAgent:
@@ -57,6 +60,7 @@ class PollingAgent:
     def _poll(self):
         while not self._stop_event.is_set():
             # run llm action here
+            asyncio.run(self.llm_action())
             # try:
             #     # Poll the API
             #     response = requests.get(self.api_url)
@@ -67,7 +71,7 @@ class PollingAgent:
             #             self.output_queue.add_message(message)
             # except Exception as e:
             #     print(f"Error polling API: {e}")
-            time.sleep(self.polling_interval)
+            asyncio.sleep(self.polling_interval)
     
     def stop(self):
         self._stop_event.set()
@@ -91,13 +95,13 @@ if __name__ == "__main__":
                 message = output_queue.get_message()
                 workflow_agent.process_message(message)
             else:
-                time.sleep(1)
+                asyncio.sleep(1)
 
     processing_thread = threading.Thread(target=process_queue)
     processing_thread.start()
 
     # Allow the system to run for a while
-    time.sleep(60)
+    asyncio.sleep(60)
 
     # Stop the polling agent
     polling_agent.stop()
