@@ -17,6 +17,7 @@ class ActionType(str, Enum):
     text2text_io_mapper = "text2text_io_mapper"
     text2text_user_input = "text2text_user_input"
     text2text_api_call = "text2text_api_call"
+    text2text_read_api_file = "text2text_read_api_file"
 
     # text2img
     text2img_dalle_openai = "text2img_dalle_openai"

@@ -21,6 +21,7 @@ async def test_chat_happy_path(set_test_settings):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip("Expense Related")
 async def test_vision_chat_happy_path(set_test_settings):
     msg0 = ChatCompletionSystemMessageParam(role="system", content="You are a helpful assistant.")
     msg1 = ChatCompletionUserMessageParam(role="user", content=[
