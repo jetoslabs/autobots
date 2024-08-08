@@ -107,6 +107,7 @@ class Settings(BaseSettings):
     API_VECTORSTORE: str = "/vectorstore"
     API_FILES: str = "/files"
     API_OPENAI_STORAGE: str = "/openai_storage"
+    API_POLL_GRAPHS: str = "/poll_graphs"
     API_ACTION_CHATS: str = "/action_chats"
     API_AGENTS: str = "/agents"
     API_GRAPHS: str = "/graphs"
