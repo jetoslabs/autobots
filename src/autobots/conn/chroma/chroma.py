@@ -213,7 +213,7 @@ class Chroma():
             _client_settings.chroma_client_auth_provider="chromadb.auth.token_authn.TokenAuthClientProvider"
             _client_settings.chroma_client_auth_credentials=SettingsProvider.sget().CHROMA_TOKEN_CREDENTIALS
             self._client_settings = _client_settings
-            self._client = chromadb.HttpClient(host="localhost",port=8000, settings=_client_settings)
+            self._client = chromadb.HttpClient(host=SettingsProvider.sget().CHROMA_HOST,port=443, settings=_client_settings)
             self._persist_directory = (
                 _client_settings.persist_directory or persist_directory
             )
