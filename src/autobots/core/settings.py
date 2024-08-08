@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     USEAPI_NET_END_POINT_URL: str
 
     CLAID_API_KEY: str
+    CHROMA_HOST: str
+    CHROMA_TOKEN_CREDENTIALS: str
     CLAID_SIDE_S3_BUCKET: str
     CLAID_PATH_PREFIX: str
 
