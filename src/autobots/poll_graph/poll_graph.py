@@ -52,10 +52,10 @@ class PollingAgent:
         self.thread = threading.Thread(target=self._poll)
         self.thread.start()
     
-    def _poll(self):
+    async def _poll(self):
         while not self._stop_event.is_set():
             # run llm action here
-            action_result = ActionFactory.run_in_background(self.input_action)
+            action_result = await ActionFactory.run_in_background(self.input_action)
             self.output_queue.add_message(action_result)
             asyncio.sleep(self.polling_interval)
     
@@ -75,7 +75,7 @@ class PollGraph:
 
     
     # Define the API URL
-    def run_in_background(self, api_url, polling_interval=5):
+    async def run_in_background(self):
         self.polling_agent.start()
 
         # Simulate a separate thread or process for the WorkflowAgent
