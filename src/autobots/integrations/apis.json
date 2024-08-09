@@ -804,10 +804,54 @@
     "person_titles": ["sales manager", "engineer manager"]
   }
   }
+},
+
+"Zendesk":
+{
+  "api_key": "YOUR API KEY HERE",
+  "endpoints": {
+    "Get Tickets": {
+      "method": "GET",
+      "url": "https://{org_name}.zendesk.com/api/v2/tickets",
+      "headers": {
+        "Authorization": "Basic {{API Key}}"
+      }
+    },
+    "Create Ticket": {
+      "method": "POST",
+      "url": "https://{org_name}.zendesk.com/api/v2/tickets",
+      "headers": {
+        "Authorization": "Basic {{API Key}}"
+      },
+      "body": {
+        "ticket": {
+          "comment": {
+            "body": "The smoke is very colorful."
+          },
+          "priority": "urgent",
+          "subject": "My printer is on fire!"
+        }
+      }
+    },
+    "Update Ticket": {
+      "method": "PUT",
+      "url": "https://{org_name}.zendesk.com/api/v2/tickets/{ticket_id}",
+      "headers": {
+        "Authorization": "Basic {{API Key}}"
+      },
+      "body": {
+        "ticket": {
+          "comment": {
+            "body": "Thanks for choosing Acme Jet Motors.",
+            "public": true
+          },
+          "custom_status_id": 321,
+          "status": "solved"
+        }
+      }
+    }
+  }
 }
-
-
-
 
 
 
