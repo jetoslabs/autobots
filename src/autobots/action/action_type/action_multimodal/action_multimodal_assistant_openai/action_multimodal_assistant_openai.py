@@ -3,7 +3,7 @@ from typing import Type, List, Iterable
 
 from loguru import logger
 from openai.types.beta import Assistant, AssistantToolParam
-from openai.types.beta.threads import Message, ImageFileContentBlock, TextContentBlock
+from openai.types.beta.threads import ImageFileContentBlock, TextContentBlock
 
 from src.autobots.action.action.common_action_models import AssistantObj, TextObj, TextObjs
 from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionInputType, ActionOutputType, ActionConfigType, \
@@ -90,15 +90,13 @@ class ActionMultimodalAssistantOpenai(
             thread_create = ThreadCreate()
             thread = await assistant_client.threads.create(thread_create)
             # add message
-            # if action_input and action_input.urls:
-            #     for url in action_input.urls :
-            #         image_message = ChatCompletionUserMessageParam(
-            #             role=Role.user.value,
-            #             content=f'{{"type": "image_url", "image_url": {{"url": {url}}}}}'
-            #         )
-            #         messages.append(image_message)
+            content=[{"type": "text", "text":action_input.text}]
+            if action_input and action_input.urls:
+                for url in action_input.urls :
+                        content.append({"type": "image_url", "image_url": {"url": url}})
+            
             thread_message_create_1 = ThreadMessagesCreate(thread_id=thread.id,
-                                                           content=action_input.text)
+                                                           content=content)
             thread_message = await assistant_client.threads.messages.create(thread_message_create_1)  # noqa F841
             # run thread
             tools = [tool.model_dump(exclude_none=True) for tool in assistant.tools + action_input.tools] # TODO: add description to func definition

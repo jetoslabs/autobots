@@ -17,11 +17,11 @@ class Role(str, Enum):
 
 class Message(BaseModel):
     role: Role
-    content: str
+    content: Union[str,List[Dict]]
 
 
 class ChatReq(BaseModel):
-    messages: List[ChatCompletionMessageParam | ChatCompletionMessage]
+    messages: List[Message | ChatCompletionMessage | ChatCompletionMessageParam]
     model: ChatModel = "gpt-4o-mini"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None

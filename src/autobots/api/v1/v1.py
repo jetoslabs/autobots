@@ -15,6 +15,7 @@ from src.autobots.api.v1.api_vectorstore import api_vectorstore
 from src.autobots.api.v1.api_files import api_files
 from src.autobots.api.v1.api_hello import api_hello
 from src.autobots.api.v1.api_schedules import api_schedules
+from src.autobots.api.v1.api_poll_graph import api_poll_graph
 from src.autobots.core.settings import SettingsProvider
 
 # API v1 router
@@ -37,7 +38,7 @@ router.include_router(api_vectorstore.router)
 router.include_router(api_openai_storage.router)
 router.include_router(api_agents.router)
 router.include_router(api_secrets.router)
-
+router.include_router(api_poll_graph.router)
 # api docs router
 router_docs = APIRouter(prefix=SettingsProvider.sget().API_v1)
 

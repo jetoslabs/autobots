@@ -1,4 +1,4 @@
-from typing import Literal, Iterable
+from typing import Literal, Iterable, Union, List, Dict
 
 from openai.types.beta.threads import message_create_params
 from pydantic import BaseModel
@@ -7,7 +7,7 @@ from pydantic import BaseModel
 class ThreadMessagesCreate(BaseModel):
     thread_id: str
     role: Literal["user", "assistant"] = "user"
-    content: str
+    content: Union[str,List[Dict]]
     attachments: Iterable[message_create_params.Attachment] | None = None
     metadata: object | None = None
 
