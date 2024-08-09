@@ -1,0 +1,810 @@
+{
+"Gmail": {
+    "base_url": "https://gmail.googleapis.com",
+    "endpoints": [
+      {
+        "name": "List Messages",
+        "method": "GET",
+        "path": "/gmail/v1/users/{userId}/messages",
+        "url": "https://developers.google.com/gmail/api/v1/reference/users/messages/list",
+        "headers": {
+          "Authorization": "Bearer {accessToken}"
+        }
+      },
+      {
+        "name": "Get Message",
+        "method": "GET",
+        "path": "/gmail/v1/users/{userId}/messages/{id}",
+        "url": "https://developers.google.com/gmail/api/v1/reference/users/messages/get",
+        "headers": {
+          "Authorization": "Bearer {accessToken}"
+        }
+      },
+      {
+        "name": "Send Message",
+        "method": "POST",
+        "path": "/gmail/v1/users/{userId}/messages/send",
+        "url": "https://developers.google.com/gmail/api/v1/reference/users/messages/send",
+        "headers": {
+          "Authorization": "Bearer {accessToken}",
+          "Content-Type": "application/json"
+        }
+      }
+    ]
+  },
+  "Microsoft Outlook": {
+    "base_url": "https://graph.microsoft.com",
+    "endpoints": [
+      {
+        "name": "List Messages",
+        "method": "GET",
+        "path": "/v1.0/me/messages",
+        "url": "https://docs.microsoft.com/en-us/graph/api/user-list-messages"
+      },
+      {
+        "name": "Get Message",
+        "method": "GET",
+        "path": "/v1.0/me/messages/{id}",
+        "url": "https://docs.microsoft.com/en-us/graph/api/message-get"
+      },
+      {
+        "name": "Send Mail",
+        "method": "POST",
+        "path": "/v1.0/me/sendMail",
+        "url": "https://docs.microsoft.com/en-us/graph/api/user-sendmail"
+      }
+    ]
+  },
+  "Slack": {
+    "base_url": "https://slack.com/api",
+    "endpoints": [
+      {
+        "name": "Post Message",
+        "method": "POST",
+        "path": "/api/chat.postMessage",
+        "url": "https://api.slack.com/methods/chat.postMessage"
+      },
+      {
+        "name": "List Channels",
+        "method": "GET",
+        "path": "/api/conversations.list",
+        "url": "https://api.slack.com/methods/conversations.list"
+      }
+    ]
+  },
+  "Zoom": {
+    "base_url": "https://api.zoom.us/v2",
+    "endpoints": [
+      {
+        "name": "Create Meeting",
+        "method": "POST",
+        "path": "/users/{userId}/meetings",
+        "url": "https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate"
+      },
+      {
+        "name": "List Meetings",
+        "method": "GET",
+        "path": "/users/{userId}/meetings",
+        "url": "https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetings"
+      }
+    ]
+  },
+  "Microsoft Teams": {
+    "base_url": "https://graph.microsoft.com",
+    "endpoints": [
+      {
+        "name": "Get Teams",
+        "method": "GET",
+        "path": "/v1.0/me/joinedTeams",
+        "url": "https://docs.microsoft.com/en-us/graph/api/user-list-joinedteams"
+      },
+      {
+        "name": "Send Message",
+        "method": "POST",
+        "path": "/v1.0/teams/{teamId}/channels/{channelId}/messages",
+        "url": "https://docs.microsoft.com/en-us/graph/api/channel-post-messages"
+      }
+    ]
+  },
+  "Google Calendar": {
+    "base_url": "https://www.googleapis.com/calendar/v3",
+    "endpoints": [
+      {
+        "name": "List Events",
+        "method": "GET",
+        "path": "/calendars/{calendarId}/events",
+        "url": "https://developers.google.com/calendar/api/v3/reference/events/list"
+      },
+      {
+        "name": "Create Event",
+        "method": "POST",
+        "path": "/calendars/{calendarId}/events",
+        "url": "https://developers.google.com/calendar/api/v3/reference/events/insert"
+      }
+    ]
+  },
+  "OneDrive": {
+    "base_url": "https://graph.microsoft.com/v1.0",
+    "endpoints": [
+      {
+        "name": "List Items",
+        "method": "GET",
+        "path": "/me/drive/root/children",
+        "url": "https://docs.microsoft.com/en-us/graph/api/driveitem-list-children"
+      },
+      {
+        "name": "Upload Item",
+        "method": "PUT",
+        "path": "/me/drive/items/{itemId}/content",
+        "url": "https://docs.microsoft.com/en-us/graph/api/driveitem-put-content"
+      }
+    ]
+  },
+  "Google Drive": {
+    "base_url": "https://www.googleapis.com/drive/v3",
+    "endpoints": [
+      {
+        "name": "List Files",
+        "method": "GET",
+        "path": "/files",
+        "url": "https://developers.google.com/drive/api/v3/reference/files/list"
+      },
+      {
+        "name": "Upload File",
+        "method": "POST",
+        "path": "/files?uploadType=multipart",
+        "url": "https://developers.google.com/drive/api/v3/reference/files/create"
+      }
+    ]
+  },
+  "SharePoint": {
+    "base_url": "https://{site_name}.sharepoint.com/_api",
+    "endpoints": [
+      {
+        "name": "Get Lists",
+        "method": "GET",
+        "path": "/web/lists",
+        "url": "https://docs.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest"
+      },
+      {
+        "name": "Get List Items",
+        "method": "GET",
+        "path": "/web/lists/getbytitle('{listTitle}')/items",
+        "url": "https://docs.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest"
+      }
+    ]
+  },
+  "Dropbox": {
+    "base_url": "https://api.dropboxapi.com/2",
+    "endpoints": [
+      {
+        "name": "List Folder",
+        "method": "POST",
+        "path": "/files/list_folder",
+        "url": "https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder"
+      },
+      {
+        "name": "Upload File",
+        "method": "POST",
+        "path": "/files/upload",
+        "url": "https://www.dropbox.com/developers/documentation/http/documentation#files-upload"
+      }
+    ]
+  },
+  "DocuSign": {
+    "base_url": "https://demo.docusign.net/restapi/v2.1",
+    "endpoints": [
+      {
+        "name": "Create Envelope",
+        "method": "POST",
+        "path": "/accounts/{accountId}/envelopes",
+        "url": "https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopes/create/"
+      },
+      {
+        "name": "List Envelopes",
+        "method": "GET",
+        "path": "/accounts/{accountId}/envelopes",
+        "url": "https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopes/liststatus/"
+      }
+    ]
+  },
+
+  "Netsuite": {
+    "Base URL": "https://netsuite.com",
+    "Authentication": {
+        "Login": "/api/v1/login",
+        "Logout": "/api/v1/logout"
+    },
+    "Records": {
+        "Get Record": "/api/v1/record/{id}",
+        "Create Record": "/api/v1/record",
+        "Update Record": "/api/v1/record/{id}",
+        "Delete Record": "/api/v1/record/{id}"
+    },
+    "Search": {
+        "Basic Search": "/api/v1/search/basic",
+        "Advanced Search": "/api/v1/search/advanced"
+    },
+    "Custom Fields": {
+        "Get Custom Field": "/api/v1/customfield/{id}",
+        "Create Custom Field": "/api/v1/customfield",
+        "Update Custom Field": "/api/v1/customfield/{id}",
+        "Delete Custom Field": "/api/v1/customfield/{id}"
+    },
+    "SuiteQL": {
+        "Execute Query": "/api/v1/suiteql"
+    },
+    "Records Metadata": {
+        "Get Metadata": "/api/v1/metadata"
+    }
+},
+
+"Microsoft Dynamics 365": {
+    "Base URL": "https://api.businesscentral.dynamics.com",
+    "Authentication": {
+        "OAuth2 Token": "/oauth2/token"
+    },
+    "Endpoints": {
+        "Companies": "/v2.0/{tenant_id}/companies",
+        "Customers": "/v2.0/{tenant_id}/customers",
+        "Sales Orders": "/v2.0/{tenant_id}/salesOrders",
+        "Vendors": "/v2.0/{tenant_id}/vendors",
+        "Purchase Orders": "/v2.0/{tenant_id}/purchaseOrders"
+    }
+},
+"Oracle": {
+    "Base URL": "https://{instance_name}.fa.{datacenter}.oraclecloud.com",
+    "Endpoints": {
+        "Accounts Receivable": "/fscmRestApi/resources/11.13.18.05/receivablesInvoices",
+        "Accounts Payable": "/fscmRestApi/resources/11.13.18.05/payablesInvoices",
+        "General Ledger": "/fscmRestApi/resources/11.13.18.05/journalEntries",
+        "Inventory": "/fscmRestApi/resources/11.13.18.05/inventoryItems",
+        "Purchase Orders": "/fscmRestApi/resources/11.13.18.05/purchaseOrders"
+    }
+},
+"Workday": {
+    "Base URL": "https://{instance}.workday.com",
+    "Endpoints": {
+        "Worker": "/ccx/service/{tenant}/Human_Resources/v33.2/Worker",
+        "Job Requisition": "/ccx/service/{tenant}/Recruiting/v33.2/Job_Requisition",
+        "Compensation": "/ccx/service/{tenant}/Compensation/v33.2/Compensation",
+        "Time Tracking": "/ccx/service/{tenant}/Time_Tracking/v33.2/Time_Entry",
+        "Expense": "/ccx/service/{tenant}/Expense_Management/v33.2/Expense_Report"
+    }
+},
+"Greenhouse": {
+    "Base URL": "https://api.greenhouse.io/v1",
+    "Endpoints": {
+        "Jobs": "/jobs",
+        "Candidates": "/candidates",
+        "Applications": "/applications",
+        "Offers": "/offers",
+        "Departments": "/departments"
+    }
+},
+"Lattice": {
+    "Base URL": "https://lattice.com/api/v2",
+    "Endpoints": {
+        "Users": "/users",
+        "Feedback": "/feedback",
+        "Goals": "/goals",
+        "Reviews": "/reviews",
+        "Updates": "/updates"
+    }
+},
+
+  "Xero": {
+    "endpoints": [
+      {
+        "name": "Get Invoices",
+        "method": "GET",
+        "url": "https://api.xero.com/api.xro/2.0/Invoices"
+      },
+      {
+        "name": "Create Invoice",
+        "method": "POST",
+        "url": "https://api.xero.com/api.xro/2.0/Invoices"
+      },
+      {
+        "name": "Get Contacts",
+        "method": "GET",
+        "url": "https://api.xero.com/api.xro/2.0/Contacts"
+      },
+      {
+        "name": "Create Contact",
+        "method": "POST",
+        "url": "https://api.xero.com/api.xro/2.0/Contacts"
+      }
+    ]
+  },
+
+
+  "ServiceNow": {
+    "endpoints": [
+      {
+        "name": "Get Incident",
+        "method": "GET",
+        "url": "https://instance.service-now.com/api/now/table/incident"
+      },
+      {
+        "name": "Create Incident",
+        "method": "POST",
+        "url": "https://instance.service-now.com/api/now/table/incident"
+      },
+      {
+        "name": "Update Incident",
+        "method": "PUT",
+        "url": "https://instance.service-now.com/api/now/table/incident/{sys_id}"
+      },
+      {
+        "name": "Delete Incident",
+        "method": "DELETE",
+        "url": "https://instance.service-now.com/api/now/table/incident/{sys_id}"
+      }
+    ]
+  },
+
+
+
+  "Meta Ad Manager": {
+    "endpoints": [
+      {
+        "name": "Get Campaigns",
+        "method": "GET",
+        "url": "https://graph.facebook.com/v15.0/act_{ad_account_id}/campaigns"
+      },
+      {
+        "name": "Create Campaign",
+        "method": "POST",
+        "url": "https://graph.facebook.com/v15.0/act_{ad_account_id}/campaigns"
+      },
+      {
+        "name": "Get Ad Sets",
+        "method": "GET",
+        "url": "https://graph.facebook.com/v15.0/act_{ad_account_id}/adsets"
+      },
+      {
+        "name": "Create Ad Set",
+        "method": "POST",
+        "url": "https://graph.facebook.com/v15.0/act_{ad_account_id}/adsets"
+      }
+    ]
+  },
+
+
+
+  "Google Ad Manager": {
+    "endpoints": [
+      {
+        "name": "Get Orders",
+        "method": "GET",
+        "url": "https://www.googleapis.com/dfp/v202305/OrderService"
+      },
+      {
+        "name": "Create Orders",
+        "method": "POST",
+        "url": "https://www.googleapis.com/dfp/v202305/OrderService"
+      },
+      {
+        "name": "Get Line Items",
+        "method": "GET",
+        "url": "https://www.googleapis.com/dfp/v202305/LineItemService"
+      },
+      {
+        "name": "Create Line Items",
+        "method": "POST",
+        "url": "https://www.googleapis.com/dfp/v202305/LineItemService"
+      }
+    ]
+  },
+
+
+  "Zoho CRM": {
+    "endpoints": [
+      {
+        "name": "Search Records by Phone",
+        "method": "GET",
+        "url": "https://www.zohoapis.com/crm/v6/{module_api_name}/search?phone={phone_number}"
+      },
+      {
+        "name": "Search Records by Word",
+        "method": "GET",
+        "url": "https://www.zohoapis.com/crm/v6/{module_api_name}/search?word={search_word}"
+      },
+      {
+        "name": "Add Tags to Multiple Records",
+        "method": "POST",
+        "url": "https://www.zohoapis.com/crm/v6/Leads/actions/add_tags"
+      },
+      {
+        "name": "Insert Records",
+        "method": "POST",
+        "url": "https://www.zohoapis.com/crm/v6/{module_api_name}"
+      }
+    ]
+  },
+
+  "Keyword Insight":
+  {
+  "base_url": "https://google-keyword-insight1.p.rapidapi.com",
+  "authentication": {
+    "type": "RapidAPI",
+    "headers": {
+      "x-rapidapi-host": "google-keyword-insight1.p.rapidapi.com",
+      "x-rapidapi-key": "Your API KEY"
+    }
+  },
+  "endpoints": {
+    "keysuggest": {
+      "method": "GET",
+      "url": "/keysuggest",
+      "description": "Retrieves keyword suggestions based on a provided keyword, specific to a location and language.",
+      "parameters": {
+        "keyword": "string (The keyword for which suggestions are required)",
+        "location": "string (The geographical location for keyword suggestions, e.g., 'US', 'UK')",
+        "lang": "string (The language code for the suggestions, e.g., 'en', 'es')"
+      },
+      "example_request": "curl --request GET \\\n--url 'https://google-keyword-insight1.p.rapidapi.com/keysuggest/?keyword=Sustainable%20Living&location=US&lang=en' \\\n--header 'x-rapidapi-host: google-keyword-insight1.p.rapidapi.com' \\\n--header 'x-rapidapi-key: Your API KEY'"
+    },
+    "urlkeysuggest": {
+      "method": "GET",
+      "url": "/urlkeysuggest",
+      "description": "Retrieves keyword suggestions based on the content of a provided URL, specific to a location and language.",
+      "parameters": {
+        "url": "string (The URL of the webpage from which to derive keyword suggestions)",
+        "location": "string (The geographical location for keyword suggestions)",
+        "lang": "string (The language code for the suggestions)"
+      },
+      "example_request": "curl --request GET \\\n--url 'https://google-keyword-insight1.p.rapidapi.com/urlkeysuggest/?url=rapidapi.com&location=US&lang=en' \\\n--header 'x-rapidapi-host: google-keyword-insight1.p.rapidapi.com' \\\n--header 'x-rapidapi-key: Your API KEY'"
+    },
+    "globalkey": {
+      "method": "GET",
+      "url": "/globalkey",
+      "description": "Retrieves keyword suggestions on a global scale based on a provided keyword and language.",
+      "parameters": {
+        "keyword": "string (The keyword for which suggestions are required)",
+        "lang": "string (The language code for the suggestions)"
+      },
+      "example_request": "curl --request GET \\\n--url 'https://google-keyword-insight1.p.rapidapi.com/globalkey/?keyword=Sustainable%20Living&lang=en' \\\n--header 'x-rapidapi-host: google-keyword-insight1.p.rapidapi.com' \\\n--header 'x-rapidapi-key: Your API KEY'"
+    },
+    "globalurl": {
+      "method": "GET",
+      "url": "/globalurl",
+      "description": "Retrieves keyword suggestions on a global scale based on the content of a provided URL and language.",
+      "parameters": {
+        "url": "string (The URL of the webpage from which to derive keyword suggestions)",
+        "lang": "string (The language code for the suggestions)"
+      },
+      "example_request": "curl --request GET \\\n--url 'https://google-keyword-insight1.p.rapidapi.com/globalurl/?url=rapidapi.com&lang=en' \\\n--header 'x-rapidapi-host: google-keyword-insight1.p.rapidapi.com' \\\n--header 'x-rapidapi-key: Your API KEY'"
+    }
+  }
+},
+
+  "Github": {
+      "base_url": "https://api.github.com",
+    "Actions": {
+      "endpoints": [
+        {
+          "name": "List Artifacts",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/actions/artifacts",
+          "url": "https://docs.github.com/en/rest/actions/artifacts#list-artifacts-for-a-repository"
+        },
+        {
+          "name": "Delete Artifact",
+          "method": "DELETE",
+          "path": "/repos/{owner}/{repo}/actions/artifacts/{artifact_id}",
+          "url": "https://docs.github.com/en/rest/actions/artifacts#delete-an-artifact"
+        },
+        {
+          "name": "List Cache Usage",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/actions/cache/usage",
+          "url": "https://docs.github.com/en/rest/actions/cache#list-repository-cache-usage"
+        },
+        {
+          "name": "Delete a Self-hosted Runner",
+          "method": "DELETE",
+          "path": "/repos/{owner}/{repo}/actions/runners/{runner_id}",
+          "url": "https://docs.github.com/en/rest/actions/self-hosted-runners#delete-a-self-hosted-runner-from-a-repository"
+        }
+      ]
+    },
+    "Activity": {
+      "endpoints": [
+        {
+          "name": "List Events",
+          "method": "GET",
+          "path": "/users/{username}/events",
+          "url": "https://docs.github.com/en/rest/activity/events#list-events-for-the-authenticated-user"
+        },
+        {
+          "name": "List Notifications",
+          "method": "GET",
+          "path": "/notifications",
+          "url": "https://docs.github.com/en/rest/activity/notifications#list-notifications-for-the-authenticated-user"
+        },
+        {
+          "name": "List Repositories Watched",
+          "method": "GET",
+          "path": "/users/{username}/subscriptions",
+          "url": "https://docs.github.com/en/rest/activity/watching#list-repositories-watched-by-the-authenticated-user"
+        }
+      ]
+    },
+    "Apps": {
+      "endpoints": [
+        {
+          "name": "List Repositories Accessible to the App",
+          "method": "GET",
+          "path": "/installation/repositories",
+          "url": "https://docs.github.com/en/rest/apps/installations#list-repositories-accessible-to-the-app-installation"
+        },
+        {
+          "name": "Create an OAuth App Authorization",
+          "method": "POST",
+          "path": "/applications/{client_id}/tokens",
+          "url": "https://docs.github.com/en/rest/apps/oauth-applications#create-an-oauth-access-token"
+        },
+        {
+          "name": "Create a Webhook",
+          "method": "POST",
+          "path": "/repos/{owner}/{repo}/hooks",
+          "url": "https://docs.github.com/en/rest/webhooks/repos#create-a-repository-webhook"
+        }
+      ]
+    },
+    "Billing": {
+      "endpoints": [
+        {
+          "name": "Get GitHub Actions Billing for a User",
+          "method": "GET",
+          "path": "/users/{username}/settings/billing/actions",
+          "url": "https://docs.github.com/en/rest/billing#get-github-actions-billing-for-a-user"
+        },
+        {
+          "name": "Get GitHub Packages Billing for a User",
+          "method": "GET",
+          "path": "/users/{username}/settings/billing/packages",
+          "url": "https://docs.github.com/en/rest/billing#get-github-packages-billing-for-a-user"
+        },
+        {
+          "name": "Get GitHub Pages Billing for a User",
+          "method": "GET",
+          "path": "/users/{username}/settings/billing/pages",
+          "url": "https://docs.github.com/en/rest/billing#get-github-pages-billing-for-a-user"
+        }
+      ]
+    },
+    "Branches": {
+      "endpoints": [
+        {
+          "name": "Get Branch",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/branches/{branch}",
+          "url": "https://docs.github.com/en/rest/branches/branches#get-a-branch"
+        },
+        {
+          "name": "Update Branch Protection",
+          "method": "PUT",
+          "path": "/repos/{owner}/{repo}/branches/{branch}/protection",
+          "url": "https://docs.github.com/en/rest/branches/branch-protection#update-branch-protection"
+        },
+        {
+          "name": "Delete Branch Protection",
+          "method": "DELETE",
+          "path": "/repos/{owner}/{repo}/branches/{branch}/protection",
+          "url": "https://docs.github.com/en/rest/branches/branch-protection#delete-branch-protection"
+        }
+      ]
+    },
+    "Checks": {
+      "endpoints": [
+        {
+          "name": "Create a Check Run",
+          "method": "POST",
+          "path": "/repos/{owner}/{repo}/check-runs",
+          "url": "https://docs.github.com/en/rest/checks/runs#create-a-check-run"
+        },
+        {
+          "name": "Get a Check Suite",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/check-suites/{check_suite_id}",
+          "url": "https://docs.github.com/en/rest/checks/suites#get-a-check-suite"
+        },
+        {
+          "name": "List Check Suites for a Git Reference",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/commits/{ref}/check-suites",
+          "url": "https://docs.github.com/en/rest/checks/suites#list-check-suites-for-a-git-reference"
+        }
+      ]
+    },
+    "Commits": {
+      "endpoints": [
+        {
+          "name": "Get a Commit",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/commits/{ref}",
+          "url": "https://docs.github.com/en/rest/commits/commits#get-a-commit"
+        },
+        {
+          "name": "List Commit Comments",
+          "method": "GET",
+          "path": "/repos/{owner}/{repo}/commits/{commit_sha}/comments",
+          "url": "https://docs.github.com/en/rest/commits/comments#list-commit-comments"
+        },
+        {
+          "name": "Create a Commit Status",
+          "method": "POST",
+          "path": "/repos/{owner}/{repo}/statuses/{sha}",
+          "url": "https://docs.github.com/en/rest/commits/statuses#create-a-commit-status"
+        }
+      ]
+    },
+     "Pull Requests": {
+      "endpoints": [
+        {
+          "name": "List pull requests",
+          "url": "/repos/{owner}/{repo}/pulls"
+        },
+        {
+          "name": "Get a single pull request",
+          "url": "/repos/{owner}/{repo}/pulls/{pull_number}"
+        },
+        {
+          "name": "Create a pull request",
+          "method": "POST",
+          "url": "/repos/{owner}/{repo}/pulls"
+        },
+        {
+          "name": "Update a pull request",
+          "method": "PATCH",
+          "url": "/repos/{owner}/{repo}/pulls/{pull_number}"
+        },
+        {
+          "name": "Merge a pull request",
+          "method": "PUT",
+          "url": "/repos/{owner}/{repo}/pulls/{pull_number}/merge"
+        }
+      ]
+    }
+  },
+
+ "Hubspot":{
+    "base_url": "https://api.hubapi.com",
+    "auth_method": {
+    "type": "OAuth2"},
+  "endpoints": [
+    {
+      "name": "Marketing",
+      "endpoints": [
+        {
+          "name": "Marketing Emails",
+          "children": [
+            {
+              "name": "Get a marketing email",
+              "url": "/marketing-emails/v1/emails/{emailId}"
+            },
+            {
+              "name": "Get all marketing emails",
+              "url": "/marketing-emails/v1/emails"
+            }
+          ]
+        },
+        {
+          "name": "Social Media",
+          "children": [
+            {
+              "name": "Get a social media account",
+              "url": "/social-media/v1/accounts/{accountId}"
+            },
+            {
+              "name": "Get all social media accounts",
+              "url": "/social-media/v1/accounts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRM",
+      "endpoints": [
+        {
+          "name": "Contacts",
+          "children": [
+            {
+              "name": "Get a contact",
+              "url": "/contacts/v1/contact/vid/{vid}/profile"
+            },
+            {
+              "name": "Get all contacts",
+              "url": "/contacts/v1/lists/all/contacts/all"
+            }
+          ]
+        },
+        {
+          "name": "Companies",
+          "children": [
+            {
+              "name": "Get a company",
+              "url": "/companies/v2/companies/{companyId}"
+            },
+            {
+              "name": "Get all companies",
+              "url": "/companies/v2/companies/paged"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+},
+
+"Apollo": 
+{  "X-Api-Key": "API-KEY",
+    "base_url": "https://api.apollo.io/v1",
+    "endpoints": [
+      {
+        "name": "Enrich Person",
+        "method": "POST",
+        "url": "/people/match",
+        "description": "Enrich a person's information using their email or other identifying data."
+      },
+      {
+        "name": "Search Contacts",
+        "method": "POST",
+        "url": "/contacts/search",
+        "description": "Search for contacts based on various criteria."
+      },
+      {
+        "name": "Get Custom Fields",
+        "method": "GET",
+        "url": "/typed_custom_fields",
+        "description": "Retrieve a list of all custom fields in Apollo."
+      },
+      {
+        "name": "Update Custom Fields",
+        "method": "PUT",
+        "url": "/contacts",
+        "description": "Update custom field values for a contact."
+      }
+    ],
+"Bulk People Enrichment": {
+      "url": "/bulk/people/enrichment",
+      "method": "POST",
+      "params": {
+        "api_key": "Your Apollo API Key"
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Api-Key": "Your Apollo API Key"
+      }
+    },
+
+  "People Search" :{ 
+    "method": "POST",
+  "url": "https://api.apollo.io/v1/mixed_people/search",
+  "headers": {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-cache",
+    "X-Api-Key": "YOUR API KEY HERE"
+  },
+  "data": {
+    "q_organization_domains": "apollo.io\ngoogle.com",
+    "page": 1,
+    "per_page": 10,
+    "organization_locations": ["California, US"],
+    "person_seniorities": ["senior", "manager"],
+    "organization_num_employees_ranges": ["1,1000000"],
+    "person_titles": ["sales manager", "engineer manager"]
+  }
+  }
+}
+
+
+
+
+
+
+}
