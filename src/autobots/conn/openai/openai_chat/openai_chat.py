@@ -49,6 +49,7 @@ class OpenaiChat:
     async def chat_loop(self, ctx: Context, chat_req: ChatReq, user: UserORM | None = None) -> ChatCompletion | AsyncStream[ChatCompletionChunk]:
         # is_continue: bool = True
         while True:
+            
             chat_completion: ChatCompletion = await self.client.chat.completions.create(
                 **chat_req.model_dump(exclude_none=True)
             )
@@ -89,6 +90,7 @@ class OpenaiChat:
                     .get_bind_dict()
                 ).debug(f"Ran tool in {OpenaiChat.__name__}")
                 # add tool call output to Messages
+                print("tooloutputstr", tool_output_str)
                 tool_output_message = ChatCompletionToolMessageParam(role="tool", content=tool_output_str,
                                                                      tool_call_id=tool_call_id)
                 messages.append(tool_output_message)
@@ -103,5 +105,7 @@ class OpenaiChat:
                 # add tool call error to Messages
                 tool_error_message = ChatCompletionToolMessageParam(role="tool", content=str(e),
                                                                     tool_call_id=tool_call_id)
+                print("toolerrormessage", tool_output_str)
+                
                 messages.append(tool_error_message)
         return messages

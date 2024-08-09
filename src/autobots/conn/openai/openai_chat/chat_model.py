@@ -21,7 +21,7 @@ class Message(BaseModel):
 
 
 class ChatReq(BaseModel):
-    messages: List[Message]
+    messages: List[Message | ChatCompletionMessage | ChatCompletionMessageParam]
     model: ChatModel = "gpt-4o-mini"
     frequency_penalty: Optional[float] = None
     # function_call: completion_create_params.FunctionCall = None
