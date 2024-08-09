@@ -20,7 +20,7 @@ async def test_action_text2text_llm_chat_openai_rerun_happy_path(set_test_settin
         messages=[
             ChatCompletionUserMessageParam(role="user", content="Be a helpful assistant")
         ],
-        model="gpt-4",
+        model="gpt-4o-mini",
         tools=tools,
     )
     action_doc = ActionDoc(

@@ -13,6 +13,8 @@ from src.autobots.conn.unstructured_io.unstructured_io import get_unstructured_i
 from src.autobots.data_model.context import Context
 from src.autobots.datastore.datastore import Datastore
 
+
+
 text = ("## Definition of story structure"
         "\n# As the sequence and backbone of your book, story structure is the order in which you present the narrative. The linear storyline shapes the flow of events (rising action, climax, and resolution) while establishing the book’s setting and plot."
         "\n# Before we get into the different story archetypes and narrative types, there are a few fundamental structural elements worth learning. While these are most often used to describe written storytelling, you can easily use this structure to push a visually-driven story along. They include:"
@@ -28,7 +30,7 @@ text = ("## Definition of story structure"
         "\nThe final stage of the story structure is the ending or close. Success or failure are both valid outcomes, but the ending should provide a conclusion and resolution to your story. The ending should close the loop on all crises, plot twists, and loose ends but could also leave the reader wanting more. "
         )
 
-
+@pytest.mark.skip("Expense Related")
 @pytest.mark.asyncio
 async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_path(set_test_settings):
     global datastore
@@ -40,7 +42,7 @@ async def test_action_text2text_llm_chat_with_vector_search_openai_rerun_happy_p
                     content="Write a simple story"
                 )
             ],
-            model="gpt-4-0613"
+            model="gpt-4o-mini"
         )
 
         s3 = get_s3()

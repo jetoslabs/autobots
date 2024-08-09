@@ -8,6 +8,7 @@ from src.autobots.data_model.context import Context
 from src.autobots.llm.tools.tool_factory_claude import ToolFactoryClaude
 
 @pytest.mark.asyncio
+@pytest.mark.skip("Expense Related")
 async def test_action_text2text_llm_chat_claude_rerun_happy_path():
     tools = await ToolFactoryClaude.get_tools()
     assert tools is not None

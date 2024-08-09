@@ -11,6 +11,7 @@ from src.autobots.data_model.context import Context
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="Below test takes care of this test case")
 async def test_action_img2img_photoshoot_claid_happy_path(set_test_settings):
+    ctx = Context()
     action_config = ActionConfigPhotoshootClaid()
     action = ActionImg2ImgPhotoshootClaid(action_config)
     action_input = ActionInputPhotoshootClaid(
@@ -21,11 +22,12 @@ async def test_action_img2img_photoshoot_claid_happy_path(set_test_settings):
             prompt="Make it Black and White"
         )
     )
-    action_output = await action.run_action(action_input)
+    action_output = await action.run_action(ctx, action_input)
     assert len(action_output.data) == 1
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Expensive to test everytime")
 async def test_action_img2img_photoshoot_claid_happy_path_1():
     action_config = ActionConfigPhotoshootClaid()
     action_input = ActionInputPhotoshootClaid(
