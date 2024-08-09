@@ -5,6 +5,7 @@ from loguru import logger
 from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam, \
     ChatCompletionToolParam
 from pydantic import ValidationError
+from httpx import URL
 
 from src.autobots.data_model.context import Context
 from src.autobots.exception.app_exception import AppException
@@ -16,7 +17,7 @@ from src.autobots.action.action_type.abc.ActionABC import ActionABC, ActionOutpu
     ActionConfigUpdateType, ActionConfigCreateType
 from src.autobots.action.action_type.action_types import ActionType
 from src.autobots.action.action.common_action_models import MultiObj,TextObj, TextObjs
-from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role
+from src.autobots.conn.openai.openai_chat.chat_model import ChatReq, Role,Message
 from src.autobots.conn.openai.openai_client import get_openai
 from src.autobots.user.user_orm_model import UserORM
 
@@ -74,9 +75,16 @@ class ActionText2TextLlmChatOpenai(ActionABC[ChatReq, ChatReq, ChatReq, MultiObj
             messages=[]
             if action_input and action_input.urls:
                 for url in action_input.urls :
-                    image_message = ChatCompletionUserMessageParam(
+                    # response= httpx.Client().get(url=URL(url))
+                    # base_64_encoded_data= base64.b64encode(response.content)
+                    # base64_string = base_64_encoded_data.decode('utf-8')
+                    # image_message = Message(
+                    #     role=Role.user.value,
+                    #     content=[{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_string}"}}]
+                    # )
+                    image_message = Message(
                         role=Role.user.value,
-                        content=f'{{"type": "image_url", "image_url": {{"url": {url}}}}}'
+                        content=[{"type": "image_url", "image_url": {"url": url }}]
                     )
                     messages.append(image_message)
             if action_input and action_input.text != "":
