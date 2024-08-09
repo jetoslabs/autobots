@@ -482,6 +482,9 @@
 
   "Github": {
       "base_url": "https://api.github.com",
+      "headers": {
+          "Authorization": "Bearer {accessToken}"
+        },
     "Actions": {
       "endpoints": [
         {
@@ -673,8 +676,9 @@
 
  "Hubspot":{
     "base_url": "https://api.hubapi.com",
-    "auth_method": {
-    "type": "OAuth2"},
+    "headers": {
+          "Authorization": "Bearer {API_KEY}"
+        },
   "endpoints": [
     {
       "name": "Marketing",
