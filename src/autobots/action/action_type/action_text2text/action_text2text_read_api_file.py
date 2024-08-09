@@ -64,7 +64,7 @@ class ActionText2textReadApiFile(
 
     async def run_action(self, ctx: Context, action_input: ActionInput) -> ActionOutput | Exception:
         try:
-            api_response = await self.get_api_definition(action_input.text, "integrations/apis.json")  # Use action_input.key as key
+            api_response = await self.get_api_definition(action_input.text, "src/autobots/integrations/apis.json")  # Use action_input.key as key
             return ActionOutput(text=json.dumps(api_response))  # Convert dict to JSON string
         except Exception as e:
             logger.error(str(e))
@@ -72,7 +72,7 @@ class ActionText2textReadApiFile(
 
     async def run_tool(self, action_config: ActionConfig, ctx: Context) -> ActionOutput | Exception:
         try:
-            api_response = await self.get_api_definition(action_config.text, "integrations/apis.json")  # Specify the key
+            api_response = await self.get_api_definition(action_config.text, "src/autobots/integrations/apis.json")  # Specify the key
             return ActionOutput(text=json.dumps(api_response))  # Convert dict to JSON string
         except Exception as e:
             logger.error(str(e))
